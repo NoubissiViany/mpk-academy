@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f8f6f0;
+  --foreground: #152720;
+  --card: #fffefb;
+  --card-foreground: #152720;
+  --primary: #12634f;
+  --primary-foreground: #ffffff;
+  --accent: #b8483f;
+  --muted: #ebece7;
+  --muted-foreground: #5f6d67;
+  --border: #d9ddd6;
+  --input: #cdd4cd;
+  --danger: #b42318;
+  --ink: #13231d;
+  --learn: #2164a8;
+  --practice: #8b5b0b;
+  --exam: #8d3438;
+}
+
+@theme inline {
+  --color-background: var(--background); --color-foreground: var(--foreground);
+  --color-card: var(--card); --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary); --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent); --color-muted: var(--muted); --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border); --color-input: var(--input); --color-danger: var(--danger); --color-ink: var(--ink);
+  --color-learn: var(--learn); --color-practice: var(--practice); --color-exam: var(--exam);
+  --font-sans: var(--font-sans);
+}
+
+* { border-color: var(--border); }
+html { scroll-behavior: smooth; }
+body { background: var(--background); color: var(--foreground); font-family: var(--font-sans), ui-sans-serif, system-ui; }
+::selection { background: color-mix(in srgb, var(--primary) 20%, transparent); }
+.eyebrow { color: var(--primary); font-size: .75rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.focus-shell { background-image: radial-gradient(circle at 15% 5%, color-mix(in srgb, var(--primary) 8%, transparent), transparent 32rem); }
+.container-page { width: min(100% - 2rem, 76rem); margin-inline: auto; }
+
+@media (prefers-color-scheme: dark) {
+  :root { --background: #101814; --foreground: #edf3ef; --card: #17221d; --card-foreground: #edf3ef; --primary: #64c9a8; --primary-foreground: #0c2119; --accent: #e78179; --muted: #24312b; --muted-foreground: #aebdb5; --border: #33443c; --input: #43564d; --danger: #ef6f65; --ink: #080d0b; --learn: #7db7ed; --practice: #e1b968; --exam: #ef989b; }
+}

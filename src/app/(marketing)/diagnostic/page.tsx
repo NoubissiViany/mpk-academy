@@ -1,0 +1,3 @@
+import { DiagnosticFlow } from "@/features/diagnostic/diagnostic-flow";
+export const metadata = { title: "Free diagnostic", description: "Identify your current French competencies and recommended starting point." };
+export default function DiagnosticPage() { return <div className="focus-shell min-h-[calc(100vh-4rem)] py-10"><div className="container-page"><header className="mx-auto mb-8 max-w-3xl"><p className="eyebrow">Free French diagnostic</p><h1 className="mt-2 text-3xl font-bold">Find your strongest skills—and what to work on next.</h1><p className="mt-3 text-sm leading-6 text-muted-foreground">Answer ten short questions. You can navigate back before finishing, and your answers stay in this browser.</p></header><DiagnosticFlow /></div></div>; }

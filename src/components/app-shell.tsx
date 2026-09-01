@@ -1,0 +1,20 @@
+"use client";
+import Link from "next/link";
+import { LogOut, Menu, X } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { useApp } from "@/components/providers/app-provider";
+import { Wordmark } from "@/components/shared";
+import { Button } from "@/components/ui/button";
+import { secondaryNavigation, studentNavigation } from "@/config/navigation";
+import { cn } from "@/lib/utils";
+
+export function AppShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname(); const router = useRouter(); const { state, updateUser } = useApp(); const [open, setOpen] = useState(false);
+  if (pathname === "/exam/session") return <>{children}</>;
+  const locale = state.user?.locale ?? "en";
+  const nav = (items: typeof studentNavigation | typeof secondaryNavigation) => items.map((item) => { const Icon = item.icon; const active = pathname === item.href || pathname.startsWith(`${item.href}/`); return <Link key={item.href} href={item.href} onClick={() => setOpen(false)} aria-current={active ? "page" : undefined} className={cn("flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-semibold", active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground")}><Icon className="size-4" aria-hidden="true" />{locale === "fr" ? item.labelFr : item.label}</Link>; });
+  const sidebar = <><div className="flex h-16 items-center justify-between"><Wordmark /><button className="rounded-lg p-2 lg:hidden" onClick={() => setOpen(false)} aria-label="Close navigation"><X className="size-5" /></button></div><div className="mt-5 flex-1"><nav className="space-y-1" aria-label="Student navigation">{nav(studentNavigation)}</nav><div className="my-5 border-t" /><nav className="space-y-1" aria-label="Account navigation">{nav(secondaryNavigation)}</nav></div><LanguageSwitcher /><button className="mt-3 flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-semibold text-muted-foreground hover:bg-muted" onClick={() => { updateUser(null); router.push("/"); }}><LogOut className="size-4" />{locale === "fr" ? "Se déconnecter" : "Log out"}</button><div className="mt-4 flex items-center gap-3 border-t pt-5"><div className="grid size-9 place-items-center rounded-full bg-primary text-sm font-bold text-primary-foreground">{state.user?.firstName?.[0] ?? "A"}</div><div className="min-w-0"><p className="truncate text-sm font-semibold">{state.user?.firstName ?? "Alex"} {state.user?.lastName ?? "Morgan"}</p><p className="truncate text-xs text-muted-foreground">{state.user?.tier === "paid_student" ? "Full program" : "Free plan"}</p></div></div></>;
+  return <div className="min-h-screen bg-background"><aside className="fixed inset-y-0 left-0 z-50 hidden w-64 flex-col border-r bg-card px-4 pb-5 lg:flex">{sidebar}</aside>{open && <><button aria-label="Close navigation overlay" className="fixed inset-0 z-40 bg-ink/50 lg:hidden" onClick={() => setOpen(false)} /><aside className="fixed inset-y-0 left-0 z-50 flex w-[min(20rem,90vw)] flex-col bg-card px-4 pb-5 shadow-xl lg:hidden">{sidebar}</aside></>}<header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background/90 px-4 backdrop-blur lg:hidden"><Wordmark /><Button size="icon" variant="ghost" onClick={() => setOpen(true)} aria-label="Open navigation"><Menu /></Button></header><main className="lg:pl-64"><div className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-7 sm:py-10 lg:px-10">{children}</div></main><nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t bg-card px-2 py-1.5 lg:hidden" aria-label="Quick navigation">{studentNavigation.slice(0, 4).map((item) => { const Icon = item.icon; const active = pathname.startsWith(item.href); return <Link href={item.href} key={item.href} className={cn("flex flex-col items-center gap-1 rounded-lg py-1.5 text-[10px] font-semibold", active ? "text-primary" : "text-muted-foreground")}><Icon className="size-5" />{locale === "fr" ? item.labelFr : item.label}</Link>; })}</nav></div>;
+}
