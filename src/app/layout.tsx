@@ -11,10 +11,12 @@ const manrope = localFont({
   weight: "200 800",
 });
 
+const appUrl = process.env.NEXT_PUBLIC_APP_URL?.trim() || "http://localhost:3000";
+
 export const metadata: Metadata = {
   title: { default: "MPK Academy — TEF/TCF preparation", template: "%s | MPK Academy" },
   description: "Prepare for TEF/TCF with a plan built around your weaknesses and English support when you need it.",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
+  metadataBase: new URL(appUrl),
   openGraph: { title: "MPK Academy", description: productConfig.courseName, type: "website" },
 };
 
