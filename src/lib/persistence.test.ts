@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { productConfig } from "@/config/product";
 import { defaultState } from "@/data/mock-state";
 import { diagnosticQuestions } from "@/data/questions";
-import { loadState, saveState } from "./persistence";
+import { loadState, persistenceMigration, saveState } from "./persistence";
 describe("versioned persistence", () => {
   beforeEach(() => localStorage.clear());
   it("falls back when stored data is invalid or obsolete", () => {
@@ -10,19 +10,46 @@ describe("versioned persistence", () => {
       productConfig.storageKey,
       JSON.stringify({ schemaVersion: 0 }),
     );
-    expect(loadState().schemaVersion).toBe(2);
+    expect(loadState().schemaVersion).toBe(3);
   });
   it("migrates version 1 without discarding learner data", () => {
     const versionOne = { ...defaultState, schemaVersion: 1 };
     delete (versionOne as Partial<typeof versionOne>).diagnosticIntake;
     localStorage.setItem(productConfig.storageKey, JSON.stringify(versionOne));
     const result = loadState();
-    expect(result.schemaVersion).toBe(2);
+    expect(result.schemaVersion).toBe(3);
     expect(result.user?.firstName).toBe("Alex");
     expect(result.progress.courseCompletion).toBe(
       defaultState.progress.courseCompletion,
     );
     expect(result.diagnosticIntake).toBeNull();
+  });
+  it("migrates CEFR goals and creates an independent active-exam profile", () => {
+    const versionTwo = {
+      ...defaultState,
+      schemaVersion: 2,
+      examProfiles: undefined,
+      user: defaultState.user
+        ? {
+            ...defaultState.user,
+            goal: { ...defaultState.user.goal, target: "B2" },
+          }
+        : null,
+    };
+    localStorage.setItem(productConfig.storageKey, JSON.stringify(versionTwo));
+    const result = loadState();
+    expect(result.user?.goal.target).toBe("NCLC 7");
+    expect(result.examProfiles["TEF Canada"]?.exam).toBe("TEF Canada");
+    expect(result.progress.completedLessonIds).toEqual(
+      defaultState.progress.completedLessonIds,
+    );
+  });
+  it("maps every legacy CEFR target to its NCLC target", () => {
+    expect(["B1", "B2", "C1"].map(persistenceMigration.migrateTarget)).toEqual([
+      "NCLC 5",
+      "NCLC 7",
+      "NCLC 9+",
+    ]);
   });
   it("rebuilds a legacy result with the six-skill profile", () => {
     const versionOne = { ...defaultState, schemaVersion: 1 };

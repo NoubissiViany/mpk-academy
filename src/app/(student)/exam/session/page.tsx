@@ -1,2 +1,5 @@
-import { ExamSession } from "@/features/exam/exam-session";
-export default function ExamSessionPage() { return <ExamSession />; }
+import { ScaledMockSession } from "@/features/exam/scaled-mock-session";
+
+export default function ExamSessionPage() {
+  return <ScaledMockSession />;
+}

@@ -1,21 +1,218 @@
 "use client";
+
 import Link from "next/link";
-import { ArrowRight, BookOpen, CalendarDays, Headphones, Info, TrendingUp } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpen,
+  Headphones,
+  Mic2,
+  PenLine,
+  Target,
+} from "lucide-react";
 import { useApp } from "@/components/providers/app-provider";
-import { MetricBar, PageHeader } from "@/components/shared";
-import { Badge } from "@/components/ui/badge";
+import { PageHeader } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { competencies } from "@/data/mock-state";
-import { calculateReadiness } from "@/lib/domain/readiness";
-import { generateRecommendations } from "@/lib/domain/recommendations";
-import { formatDate } from "@/lib/utils";
+import {
+  examConfigurations,
+  examSkillContent,
+  examSkillOrder,
+} from "@/config/exams";
+import {
+  createEmptyExamProfile,
+  activateExamProfile,
+  getSkillStatus,
+  getWeakestExamSkill,
+} from "@/lib/domain/exam-progress";
+import type { ExamId, ExamSkill } from "@/types/domain";
+
+const skillIcons = {
+  reading: BookOpen,
+  listening: Headphones,
+  writing: PenLine,
+  speaking: Mic2,
+} satisfies Record<ExamSkill, typeof BookOpen>;
 
 export function DashboardView() {
-  const { state } = useApp(); const user = state.user; const readiness = calculateReadiness(state.progress); const recommendation = generateRecommendations(state.progress, state.mistakes)[0];
-  return <><PageHeader eyebrow="Your preparation today" title={`Good morning, ${user?.firstName ?? "Alex"}`} description={`${user?.goal.exam ?? "TEF Canada"} preparation · Target ${user?.goal.target ?? "B2"}${user?.goal.targetDate ? ` · ${formatDate(user.goal.targetDate)}` : ""}`} />
-    <div className="grid gap-5 xl:grid-cols-[1.35fr_.65fr]"><Card className="overflow-hidden border-primary/20 bg-primary text-primary-foreground"><CardContent className="relative pt-6"><div className="absolute -right-10 -top-16 size-52 rounded-full bg-white/10" /><Badge className="border-white/15 bg-white/10 text-white">Recommended next action</Badge><span className="mt-7 grid size-11 place-items-center rounded-xl bg-white/10"><Headphones className="size-5" /></span><h2 className="mt-5 text-2xl font-bold">{recommendation.title}</h2><p className="mt-3 max-w-xl text-sm leading-6 opacity-80">{recommendation.reason}</p><Button asChild variant="secondary" className="mt-7"><Link href={recommendation.href}>Start 10-minute practice <ArrowRight className="size-4" /></Link></Button></CardContent></Card><Card><CardHeader><div className="flex items-center justify-between"><div><p className="text-sm font-bold">MPK Readiness</p><p className="mt-1 text-xs text-muted-foreground">Preparation indicator</p></div><TrendingUp className="size-5 text-primary" /></div></CardHeader><CardContent>{readiness.overall === null ? <><p className="text-2xl font-bold">Not enough data yet</p><p className="mt-3 text-sm leading-6 text-muted-foreground">Complete more practice and at least one simulation to unlock your indicator.</p></> : <><div className="flex items-baseline gap-2"><strong className="text-5xl tracking-tight">{readiness.overall}%</strong><span className="text-sm font-semibold text-primary">+{readiness.trend}%</span></div><Progress value={readiness.overall} label={`MPK readiness ${readiness.overall}%`} className="mt-5" /><p className="mt-4 flex gap-2 text-xs leading-5 text-muted-foreground"><Info className="size-4 shrink-0" />Not an official TEF/TCF score or immigration outcome.</p></>}</CardContent></Card></div>
-    <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_.8fr]"><Card><CardHeader><h2 className="text-lg font-bold">Competency snapshot</h2><p className="text-sm text-muted-foreground">Based on recent answers</p></CardHeader><CardContent className="space-y-5">{competencies.map((competency) => <MetricBar key={competency.id} label={competency.label} value={competency.score} status={competency.score >= 75 ? "Strong" : competency.score >= 65 ? "Developing" : "Needs work"} />)}</CardContent></Card><div className="space-y-5"><Card><CardHeader><div className="flex items-center justify-between"><h2 className="text-lg font-bold">Course progress</h2><strong>{state.progress.courseCompletion}%</strong></div></CardHeader><CardContent><Progress value={state.progress.courseCompletion} label="Course completion" /><div className="mt-5 grid grid-cols-2 gap-4 text-sm"><div><p className="text-muted-foreground">Lessons</p><strong>{state.progress.completedLessonIds.length} completed</strong></div><div><p className="text-muted-foreground">Quiz average</p><strong>{state.progress.quizAverage}%</strong></div></div></CardContent></Card><Card><CardHeader><h2 className="text-lg font-bold">Continue learning</h2></CardHeader><CardContent><div className="flex gap-3"><span className="grid size-10 shrink-0 place-items-center rounded-xl bg-learn/10 text-learn"><BookOpen className="size-5" /></span><div><p className="font-bold">Understanding connectors</p><p className="mt-1 text-sm text-muted-foreground">Core Grammar · 18 min</p></div></div><Button asChild variant="secondary" className="mt-5 w-full"><Link href="/learn/core-grammar/connectors">Resume lesson</Link></Button></CardContent></Card></div></div>
-    <div className="mt-5 grid gap-5 lg:grid-cols-2"><Card><CardHeader><h2 className="text-lg font-bold">Top weaknesses</h2></CardHeader><CardContent className="space-y-5">{competencies.slice().sort((a,b) => a.score-b.score).slice(0,3).map((item) => <div key={item.id} className="flex items-start justify-between gap-4 border-b pb-4 last:border-0 last:pb-0"><div><p className="font-semibold">{item.label}</p><p className="mt-1 text-xs text-muted-foreground">{item.score}% across {item.attempts} recent questions</p></div><Link href="/practice/session" className="text-xs font-bold text-primary hover:underline">Practice</Link></div>)}</CardContent></Card><Card><CardHeader><h2 className="text-lg font-bold">Recent activity</h2></CardHeader><CardContent className="space-y-5">{state.activities.slice(0,4).map((activity) => <div key={activity.id} className="flex gap-3"><span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-muted"><CalendarDays className="size-4 text-primary" /></span><div><p className="text-sm font-semibold">{activity.label}</p><p className="mt-1 text-xs text-muted-foreground">{activity.detail}</p></div></div>)}</CardContent></Card></div></>;
+  const { state, setState } = useApp();
+  const user = state.user;
+  const activeExam =
+    user?.goal.exam === "TEF Canada" || user?.goal.exam === "TCF Canada"
+      ? user.goal.exam
+      : null;
+
+  const selectExam = (exam: ExamId) => {
+    setState((current) => activateExamProfile(current, exam));
+  };
+
+  if (!activeExam) {
+    return (
+      <>
+        <PageHeader
+          eyebrow="Choose your preparation"
+          title="Which Canadian French exam are you preparing for?"
+          description="TEF Canada and TCF Canada assess the same four language abilities through different formats. Your choice creates a separate dashboard that you can switch later in Settings."
+        />
+        <div className="grid gap-5 md:grid-cols-2">
+          {(["TEF Canada", "TCF Canada"] as const).map((exam) => {
+            const config = examConfigurations[exam];
+            return (
+              <Card key={exam}>
+                <CardContent className="pt-6">
+                  <h2 className="text-2xl font-bold">{exam}</h2>
+                  <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                    {config.officialFormat.reading}.{" "}
+                    {config.officialFormat.writing}.
+                  </p>
+                  <Button className="mt-6" onClick={() => selectExam(exam)}>
+                    Prepare for {config.shortName}
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      </>
+    );
+  }
+
+  const profile =
+    state.examProfiles[activeExam] ?? createEmptyExamProfile(activeExam);
+  const weakest = getWeakestExamSkill(profile) ?? "speaking";
+  const recommendation = examSkillContent[weakest];
+  const shortName = examConfigurations[activeExam].shortName;
+  const readiness = profile.readiness;
+
+  return (
+    <>
+      <PageHeader
+        eyebrow="Dashboard"
+        title={`Welcome back, ${user?.firstName ?? "Alex"}`}
+        description="Your exam, current progress, and clearest next step in one place."
+      />
+      <Card className="border-primary/20">
+        <CardContent className="pt-6">
+          <p className="text-xs font-bold tracking-[0.14em] text-muted-foreground">
+            MY EXAM
+          </p>
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-2xl font-bold">{activeExam}</h2>
+            <p className="font-semibold">Target: {user?.goal.target}</p>
+          </div>
+          <div className="mt-7 flex items-end justify-between gap-4 text-sm">
+            <span className="font-semibold">Exam readiness</span>
+            <strong className="text-2xl">
+              {readiness === null ? "—" : `${readiness}%`}
+            </strong>
+          </div>
+          <Progress
+            className="mt-3"
+            value={readiness ?? 0}
+            label={
+              readiness === null
+                ? "Exam readiness not available yet"
+                : `Exam readiness ${readiness}%`
+            }
+          />
+          <p className="mt-3 text-xs text-muted-foreground">
+            MPK readiness is a practice indicator, not an official {shortName}{" "}
+            or immigration score.
+          </p>
+        </CardContent>
+      </Card>
+
+      <h2 className="mt-9 text-sm font-bold tracking-[0.14em]">
+        YOUR 4 EXAM SKILLS
+      </h2>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        {examSkillOrder.map((skill) => {
+          const Icon = skillIcons[skill];
+          const content = examSkillContent[skill];
+          const score = profile.skills[skill].current;
+          return (
+            <Card key={skill}>
+              <CardContent className="pt-6">
+                <span className="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary">
+                  <Icon className="size-5" />
+                </span>
+                <h3 className="mt-4 text-lg font-bold">{content.label}</h3>
+                <p className="text-sm text-muted-foreground">
+                  {content.labelFr}
+                </p>
+                <p className="mt-5 text-3xl font-bold">
+                  {score === null ? "—" : `${score}%`}
+                </p>
+                <p className="mt-1 text-sm font-semibold text-muted-foreground">
+                  {getSkillStatus(score)}
+                </p>
+                <Link
+                  className="mt-6 inline-flex items-center gap-1 text-sm font-bold text-primary hover:underline"
+                  href={`/practice/session?skill=${skill}`}
+                >
+                  Practice <ArrowRight className="size-4" />
+                </Link>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      <div className="mt-8 grid gap-5 lg:grid-cols-[1.2fr_.8fr]">
+        <Card className="border-primary/20 bg-primary text-primary-foreground">
+          <CardContent className="pt-6">
+            <p className="text-xs font-bold tracking-[0.14em] text-white/70">
+              RECOMMENDED NEXT
+            </p>
+            <Target className="mt-6 size-6" />
+            <h2 className="mt-3 text-xl font-bold">
+              Practice {recommendation.label.toLowerCase()} —{" "}
+              {recommendation.practiceTitle[shortName]}
+            </h2>
+            <p className="mt-3 text-sm text-white/75">
+              {recommendation.label} is currently your weakest assessed exam
+              skill.
+            </p>
+            <Button asChild variant="secondary" className="mt-6">
+              <Link href={`/practice/session?skill=${weakest}`}>
+                Start 15-minute practice
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <h2 className="text-sm font-bold tracking-[0.14em]">THIS WEEK</h2>
+          </CardHeader>
+          <CardContent className="grid grid-cols-2 gap-x-5 gap-y-6">
+            <WeeklyStat
+              value={String(profile.weekly.practiceSessions)}
+              label="practice sessions"
+            />
+            <WeeklyStat
+              value={`${Math.floor(profile.weekly.minutesStudied / 60)}h ${profile.weekly.minutesStudied % 60}m`}
+              label="studied"
+            />
+            <WeeklyStat
+              value={String(profile.weekly.questionsReviewed)}
+              label="questions reviewed"
+            />
+            <WeeklyStat
+              value={`${profile.weekly.readinessChange >= 0 ? "+" : ""}${Math.round(profile.weekly.readinessChange)}%`}
+              label="readiness"
+            />
+          </CardContent>
+        </Card>
+      </div>
+    </>
+  );
+}
+
+function WeeklyStat({ value, label }: { value: string; label: string }) {
+  return (
+    <div>
+      <strong className="text-xl">{value}</strong>
+      <p className="mt-1 text-xs text-muted-foreground">{label}</p>
+    </div>
+  );
 }

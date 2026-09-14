@@ -50,9 +50,42 @@ describe("ResultsView", () => {
     expect(screen.getByText("Your priority")).toBeVisible();
     expect(screen.getAllByText("Listening").length).toBeGreaterThan(0);
     expect(
-      screen.getByRole("link", { name: /See my learning plan/ }),
-    ).toHaveAttribute("href", "/register");
+      screen.getByRole("link", { name: "Continue with Intensive" }),
+    ).toHaveAttribute("href", "/register?plan=intensive");
   });
+
+  it.each([
+    ["NCLC 5", "Essential", "essential"],
+    ["NCLC 7", "Complete", "complete"],
+    ["I'm not sure", "Complete", "complete"],
+    ["NCLC 9+", "Intensive", "intensive"],
+  ] as const)(
+    "continues target %s through registration with %s",
+    async (target, planName, planId) => {
+      saveState({
+        ...defaultState,
+        user: null,
+        diagnosticIntake: {
+          goal: "TEF Canada",
+          target,
+          frenchExperience: "I know some French",
+        },
+        diagnosticResult: scoreDiagnostic(diagnosticQuestions, {}),
+      });
+
+      render(
+        <AppProvider>
+          <ResultsView />
+        </AppProvider>,
+      );
+
+      expect(
+        await screen.findByRole("link", {
+          name: `Continue with ${planName}`,
+        }),
+      ).toHaveAttribute("href", `/register?plan=${planId}`);
+    },
+  );
 
   it("offers a path back when no result exists", async () => {
     render(

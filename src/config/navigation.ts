@@ -1,15 +1,55 @@
-import { BookOpen, ChartNoAxesColumnIncreasing, Gauge, GraduationCap, Settings, ShieldQuestion, Target } from "lucide-react";
+import {
+  BookOpen,
+  ChartNoAxesColumnIncreasing,
+  Gauge,
+  RotateCcw,
+  Settings,
+  ShieldQuestion,
+  Target,
+  UserRound,
+} from "lucide-react";
 
-export const studentNavigation = [
-  { href: "/dashboard", label: "Dashboard", labelFr: "Tableau de bord", icon: Gauge },
-  { href: "/learn", label: "Learn", labelFr: "Apprendre", icon: BookOpen },
-  { href: "/practice", label: "Practice", labelFr: "Pratiquer", icon: Target },
-  { href: "/exam", label: "Exam", labelFr: "Examen", icon: ShieldQuestion },
-  { href: "/weaknesses", label: "Weaknesses", labelFr: "Faiblesses", icon: ChartNoAxesColumnIncreasing },
-  { href: "/progress", label: "Progress", labelFr: "Progrès", icon: GraduationCap },
+export const overviewNavigation = [
+  {
+    href: "/dashboard",
+    label: "Dashboard",
+    labelFr: "Tableau de bord",
+    icon: Gauge,
+  },
 ] as const;
 
-export const secondaryNavigation = [
-  { href: "/certificate", label: "Certificate", labelFr: "Certificat", icon: GraduationCap },
-  { href: "/settings", label: "Settings", labelFr: "Paramètres", icon: Settings },
+export const prepareNavigation = [
+  { href: "/learn", label: "Learn", labelFr: "Apprendre", icon: BookOpen },
+  { href: "/practice", label: "Practice", labelFr: "Pratiquer", icon: Target },
+  {
+    href: "/exam",
+    label: "Mock Exams",
+    labelFr: "Examens blancs",
+    icon: ShieldQuestion,
+  },
+] as const;
+
+export const trackNavigation = [
+  {
+    href: "/progress",
+    label: "Progress",
+    labelFr: "Progrès",
+    icon: ChartNoAxesColumnIncreasing,
+  },
+  { href: "/mistakes", label: "Mistakes", labelFr: "Erreurs", icon: RotateCcw },
+] as const;
+
+export const accountNavigation = [
+  { href: "/profile", label: "Profile", labelFr: "Profil", icon: UserRound },
+  {
+    href: "/settings",
+    label: "Settings",
+    labelFr: "Paramètres",
+    icon: Settings,
+  },
+] as const;
+
+export const quickNavigation = [
+  ...overviewNavigation,
+  ...prepareNavigation,
 ] as const;

@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Check, Target } from "lucide-react";
+import { ArrowRight, Check, Sparkles, Target } from "lucide-react";
 import { useApp } from "@/components/providers/app-provider";
 import { MetricBar } from "@/components/shared";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -11,6 +12,11 @@ import {
   diagnosticSkillContent,
   diagnosticSkillOrder,
 } from "@/config/diagnostic";
+import {
+  formatPlanPrice,
+  getPaidPlan,
+  recommendedPaidPlanId,
+} from "@/config/product";
 
 function intakeSummary(goal?: string, target?: string, experience?: string) {
   const goalText =
@@ -59,6 +65,8 @@ export function ResultsView() {
   const strength = diagnosticSkillContent[result.strength];
   const priority = diagnosticSkillContent[result.priority];
   const intake = state.diagnosticIntake;
+  const recommendedPlan = getPaidPlan(recommendedPaidPlanId(intake?.target));
+  const recommendationHref = `/register?plan=${recommendedPlan.id}`;
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -159,12 +167,45 @@ export function ResultsView() {
         </Card>
       </div>
 
-      <div className="mt-8 flex flex-col items-center">
-        <Button asChild size="lg">
-          <Link href={state.user ? "/dashboard" : "/register"}>
-            See my learning plan <ArrowRight className="size-4" />
-          </Link>
-        </Button>
+      <Card
+        className="mt-8 overflow-hidden border-primary ring-1 ring-primary"
+        aria-label={`Recommended plan: ${recommendedPlan.name}`}
+      >
+        <CardContent className="grid gap-7 p-0 md:grid-cols-[1.35fr_.65fr]">
+          <div className="p-7 sm:p-9">
+            <Badge className="gap-1.5">
+              <Sparkles className="size-3.5" aria-hidden="true" />
+              Recommended for you
+            </Badge>
+            <h2 className="mt-5 text-3xl font-black">{recommendedPlan.name}</h2>
+            <p className="mt-4 leading-7 text-muted-foreground">
+              Based on your {intake?.target ?? "current"} goal, {result.level}{" "}
+              estimated level, and {priority.label.toLowerCase()} priority, this
+              plan gives you the right level of support for your next step.
+            </p>
+            <p className="mt-4 font-semibold">{recommendedPlan.purpose}</p>
+          </div>
+          <div className="flex flex-col justify-center bg-primary/5 p-7 sm:p-9">
+            <p className="text-4xl font-black">
+              {formatPlanPrice(recommendedPlan)}
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {recommendedPlan.paymentModel} · {recommendedPlan.access}
+            </p>
+            <Button asChild size="lg" className="mt-6 w-full">
+              <Link href={recommendationHref}>
+                Continue with {recommendedPlan.name}
+                <ArrowRight className="size-4" />
+              </Link>
+            </Button>
+            <Button asChild variant="ghost" className="mt-2 w-full">
+              <Link href="/pricing">Compare all plans</Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="mt-6 flex flex-col items-center">
         <p className="mt-4 text-center text-xs leading-5 text-muted-foreground">
           This MPK Academy estimate is a learning indicator, not an official
           TEF/TCF score.
