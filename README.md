@@ -6,7 +6,7 @@ This repository contains a complete navigable frontend with realistic mock conte
 
 ## MVP scope
 
-- Marketing, program, pricing, diagnostic, authentication, and simulated checkout
+- Marketing, pricing, diagnostic, authentication, and simulated checkout
 - Student dashboard, course and lessons, practice, mistake review, exam simulation, progress, certificate, and settings
 - English/French interface with configurable instructional support and French-first Exam Mode
 - Deterministic diagnostic, readiness, recommendation, access-control, and certificate rules
