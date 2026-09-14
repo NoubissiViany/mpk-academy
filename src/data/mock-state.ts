@@ -1,4 +1,9 @@
-import type { AppState, Competency, User } from "@/types/domain";
+import type {
+  AppState,
+  Competency,
+  ExamPreparationProfile,
+  User,
+} from "@/types/domain";
 
 export const competencies: Competency[] = [
   {
@@ -46,7 +51,11 @@ export const paidDemoUser: User = {
   tier: "paid_student",
   locale: "en",
   assistance: "full",
-  goal: { exam: "TEF Canada", target: "B2", targetDate: "2026-11-15" },
+  goal: {
+    exam: "TEF Canada",
+    target: "NCLC 7",
+    targetDate: "2026-11-15",
+  },
 };
 
 export const freeDemoUser: User = {
@@ -81,9 +90,31 @@ export const defaultProgress: AppState["progress"] = {
   },
 };
 
+export const seededTefProfile: ExamPreparationProfile = {
+  exam: "TEF Canada",
+  readinessBaseline30Days: 52,
+  readiness: 68,
+  skills: {
+    reading: { baseline30Days: 58, current: 72, attempts: 16 },
+    listening: { baseline30Days: 49, current: 54, attempts: 12 },
+    writing: { baseline30Days: 51, current: 63, attempts: 8 },
+    speaking: { baseline30Days: 39, current: 48, attempts: 6 },
+  },
+  weekly: {
+    weekStartedAt: "2026-09-14",
+    practiceSessions: 3,
+    minutesStudied: 102,
+    questionsReviewed: 12,
+    readinessChange: 4,
+  },
+  mockAverage: 68,
+  mockAttempts: 2,
+};
+
 export const defaultState: AppState = {
-  schemaVersion: 2,
+  schemaVersion: 3,
   user: paidDemoUser,
+  examProfiles: { "TEF Canada": seededTefProfile },
   diagnosticIntake: null,
   diagnosticAnswers: {},
   diagnosticResult: null,
@@ -91,7 +122,7 @@ export const defaultState: AppState = {
   mistakes: [
     {
       id: "m1",
-      questionId: "d4",
+      questionId: "tef-listening-detail",
       competencyId: "listening-detail",
       mistakeCategory: "Missed detail",
       learnerAnswer: "Elle travaille.",
@@ -100,21 +131,29 @@ export const defaultState: AppState = {
         "The cancellation is the reason; work is mentioned only as context.",
       timestamp: "2026-08-28T14:30:00Z",
       reviewStatus: "new",
+      exam: "TEF Canada",
+      examSkill: "listening",
+      pattern: "Understanding specific details",
+      count: 8,
     },
     {
       id: "m2",
-      questionId: "d1",
-      competencyId: "time-expressions",
-      mistakeCategory: "Time expression",
-      learnerAnswer: "pendant",
-      correctAnswer: "depuis",
-      explanation: "Depuis is used because the situation continues today.",
+      questionId: "tef-listening-numbers",
+      competencyId: "listening-detail",
+      mistakeCategory: "Missed detail",
+      learnerAnswer: "Incorrect detail",
+      correctAnswer: "Correct number or date",
+      explanation: "Review number and date cues in spoken French.",
       timestamp: "2026-08-27T15:00:00Z",
       reviewStatus: "reviewing",
+      exam: "TEF Canada",
+      examSkill: "listening",
+      pattern: "Numbers and dates",
+      count: 5,
     },
     {
       id: "m3",
-      questionId: "d6",
+      questionId: "tef-listening-inference",
       competencyId: "reading-inference",
       mistakeCategory: "Incorrect inference",
       learnerAnswer: "furieux",
@@ -122,6 +161,56 @@ export const defaultState: AppState = {
       explanation: "The qualifying language suggests caution, not anger.",
       timestamp: "2026-08-25T12:00:00Z",
       reviewStatus: "new",
+      exam: "TEF Canada",
+      examSkill: "listening",
+      pattern: "Inference",
+      count: 3,
+    },
+    {
+      id: "m4",
+      questionId: "tef-writing-agreement",
+      competencyId: "grammar-tense",
+      mistakeCategory: "Grammar rule",
+      learnerAnswer: "Self-review",
+      correctAnswer: "Consistent agreement",
+      explanation: "Review subject–verb and noun–adjective agreement.",
+      timestamp: "2026-08-24T12:00:00Z",
+      reviewStatus: "reviewing",
+      exam: "TEF Canada",
+      examSkill: "writing",
+      pattern: "Verb agreement",
+      count: 7,
+    },
+    {
+      id: "m5",
+      questionId: "tef-writing-connectors",
+      competencyId: "connectors",
+      mistakeCategory: "Vocabulary confusion",
+      learnerAnswer: "Self-review",
+      correctAnswer: "Varied connectors",
+      explanation:
+        "Use connectors to make the relationship between ideas explicit.",
+      timestamp: "2026-08-23T12:00:00Z",
+      reviewStatus: "new",
+      exam: "TEF Canada",
+      examSkill: "writing",
+      pattern: "Connectors",
+      count: 4,
+    },
+    {
+      id: "m6",
+      questionId: "tef-writing-register",
+      competencyId: "vocabulary-context",
+      mistakeCategory: "Question misunderstanding",
+      learnerAnswer: "Self-review",
+      correctAnswer: "Appropriate register",
+      explanation: "Match tone and formality to the reader and task.",
+      timestamp: "2026-08-22T12:00:00Z",
+      reviewStatus: "new",
+      exam: "TEF Canada",
+      examSkill: "writing",
+      pattern: "Register",
+      count: 3,
     },
   ],
   activities: [

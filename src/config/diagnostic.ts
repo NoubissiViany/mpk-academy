@@ -17,7 +17,7 @@ export const diagnosticSkillContent: Record<
     label: "Grammar",
     strength: "You apply common French grammar patterns accurately.",
     priority: "Grammar patterns are making some answers less reliable.",
-    moduleId: "core-grammar",
+    moduleId: "grammar",
   },
   vocabulary: {
     label: "Vocabulary",
@@ -32,21 +32,21 @@ export const diagnosticSkillContent: Record<
       "You identify important ideas and details in written French well.",
     priority:
       "You had more difficulty finding meaning and details in written French.",
-    moduleId: "reading",
+    moduleId: "reading-strategies",
   },
   listening: {
     label: "Listening",
     strength: "You identify spoken ideas and details in French well.",
     priority:
       "You had more difficulty identifying specific information in spoken French.",
-    moduleId: "listening",
+    moduleId: "listening-strategies",
   },
   "sentence-structure": {
     label: "Sentence structure",
     strength: "You connect and organize ideas in French sentences well.",
     priority:
       "Sentence order and connectors are making some ideas harder to express clearly.",
-    moduleId: "core-grammar",
+    moduleId: "grammar",
   },
   "exam-strategy": {
     label: "Exam strategy",

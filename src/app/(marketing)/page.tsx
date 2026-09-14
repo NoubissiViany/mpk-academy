@@ -1,31 +1,22 @@
 import Link from "next/link";
 import {
+  ArrowDown,
   ArrowRight,
+  BookOpen,
   BookOpenCheck,
   Brain,
-  ChartNoAxesColumnIncreasing,
-  Check,
-  CircleGauge,
   Headphones,
   Languages,
+  Mic2,
+  PenLine,
   ShieldCheck,
   Target,
 } from "lucide-react";
+import { PlanComparison } from "@/components/plan-comparison";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { formatPrice } from "@/config/product";
 
-const loop = [
-  "Set your goal",
-  "Diagnose",
-  "Learn",
-  "Practice",
-  "Simulate",
-  "Measure",
-  "Adapt",
-  "Repeat",
-];
 const differences = [
   {
     icon: Languages,
@@ -41,6 +32,28 @@ const differences = [
     icon: Target,
     title: "Always know what to do next",
     copy: "Recommendations connect your recent performance to one focused lesson, practice set, or simulation.",
+  },
+];
+const examSkills = [
+  {
+    icon: BookOpen,
+    title: "Reading",
+    copy: "Understand texts, identify details and infer meaning.",
+  },
+  {
+    icon: Headphones,
+    title: "Listening",
+    copy: "Follow conversations and identify key information.",
+  },
+  {
+    icon: PenLine,
+    title: "Writing",
+    copy: "Structure ideas and communicate clearly.",
+  },
+  {
+    icon: Mic2,
+    title: "Speaking",
+    copy: "Express, explain and defend ideas.",
   },
 ];
 const modes = [
@@ -61,6 +74,28 @@ const modes = [
     label: "Exam Mode",
     title: "Perform independently",
     copy: "Timed, French-first simulations without hints or in-attempt correction.",
+  },
+];
+const learningJourney = [
+  {
+    title: "Assess",
+    copy: "Understand where you are and identify the skills holding you back.",
+  },
+  {
+    title: "Learn",
+    copy: "Get clear explanations and targeted lessons for your weaknesses.",
+  },
+  {
+    title: "Practice",
+    copy: "Train Reading, Listening, Writing and Speaking with immediate feedback.",
+  },
+  {
+    title: "Simulate",
+    copy: "Practice under realistic TEF/TCF conditions without learning assistance.",
+  },
+  {
+    title: "Adapt",
+    copy: "MPK uses your results to recommend what you should work on next.",
   },
 ];
 
@@ -128,26 +163,6 @@ export default function HomePage() {
           </Card>
         </div>
       </section>
-      <section className="border-y bg-card py-12">
-        <div className="container-page">
-          <p className="text-center text-sm font-bold text-muted-foreground">
-            THE MPK LEARNING LOOP
-          </p>
-          <ol className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
-            {loop.map((item, index) => (
-              <li
-                key={item}
-                className="flex items-center gap-2 text-sm font-semibold"
-              >
-                <span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary/10 text-xs text-primary">
-                  {index + 1}
-                </span>
-                {item}
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
       <section className="container-page py-24">
         <div className="mx-auto max-w-2xl text-center">
           <p className="eyebrow">Why MPK is different</p>
@@ -169,6 +184,33 @@ export default function HomePage() {
               </CardContent>
             </Card>
           ))}
+        </div>
+      </section>
+      <section className="border-y bg-card py-24">
+        <div className="container-page">
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="eyebrow">Four exam skills</p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+              Prepare for every part of your exam
+            </h2>
+          </div>
+          <div className="mt-12 grid gap-5 sm:grid-cols-2">
+            {examSkills.map(({ icon: Icon, title, copy }) => (
+              <Card key={title}>
+                <CardContent className="flex gap-4 pt-6 sm:gap-5">
+                  <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+                    <Icon className="size-5" aria-hidden="true" />
+                  </span>
+                  <div>
+                    <h3 className="text-lg font-bold">{title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                      {copy}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       </section>
       <section className="bg-ink py-24 text-white">
@@ -202,96 +244,60 @@ export default function HomePage() {
         </div>
       </section>
       <section id="how-it-works" className="container-page py-24">
-        <div className="grid gap-12 lg:grid-cols-2">
-          <div>
-            <p className="eyebrow">How it works</p>
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="eyebrow">How it works</p>
+          <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+            One learning journey, built around your results.
+          </h2>
+          <p className="mt-5 leading-7 text-muted-foreground">
+            Move from assessment to focused learning, realistic practice, and a
+            clear next step.
+          </p>
+        </div>
+        <ol className="mx-auto mt-12 max-w-3xl">
+          {learningJourney.map(({ title, copy }, index) => (
+            <li key={title}>
+              <article className="grid gap-4 rounded-2xl border bg-card p-5 shadow-sm sm:grid-cols-[3rem_1fr] sm:items-center sm:p-6">
+                <span className="grid size-12 place-items-center rounded-full bg-primary text-lg font-black text-primary-foreground">
+                  {index + 1}
+                </span>
+                <div>
+                  <h3 className="text-xl font-bold">{title}</h3>
+                  <p className="mt-2 leading-7 text-muted-foreground">{copy}</p>
+                </div>
+              </article>
+              {index < learningJourney.length - 1 && (
+                <div
+                  className="flex h-14 items-center justify-center text-primary"
+                  aria-hidden="true"
+                >
+                  <ArrowDown className="size-6" />
+                </div>
+              )}
+            </li>
+          ))}
+        </ol>
+      </section>
+      <section id="plans" className="border-y bg-card py-24">
+        <div className="container-page">
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="eyebrow">The complete program</p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-              From uncertainty to a focused weekly plan.
+              Choose the support that fits your goal.
             </h2>
-            <p className="mt-5 max-w-xl leading-7 text-muted-foreground">
-              Start with a short diagnostic. MPK turns performance into a
-              competency profile, then connects each weak point to the right
-              learning activity.
+            <p className="mt-4 leading-7 text-muted-foreground">
+              Start with the free assessment, then continue with the plan that
+              matches your preparation needs.
             </p>
           </div>
-          <div className="space-y-7">
-            {[
-              [
-                CircleGauge,
-                "Diagnose your current level",
-                "See a six-competency breakdown—not just one number.",
-              ],
-              [
-                Brain,
-                "Work on the evidence",
-                "Learn and practice the patterns appearing in your mistakes.",
-              ],
-              [
-                ChartNoAxesColumnIncreasing,
-                "Measure readiness",
-                "Use activity and simulations to understand preparation trends.",
-              ],
-            ].map(([Icon, title, copy], i) => {
-              const I = Icon as typeof Brain;
-              return (
-                <div key={String(title)} className="flex gap-4">
-                  <span className="grid size-11 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground">
-                    <I className="size-5" />
-                  </span>
-                  <div>
-                    <h3 className="font-bold">
-                      {i + 1}. {String(title)}
-                    </h3>
-                    <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                      {String(copy)}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
+          <div className="mt-12">
+            <PlanComparison />
           </div>
-        </div>
-      </section>
-      <section className="border-y bg-card py-24">
-        <div className="container-page grid gap-12 lg:grid-cols-[1fr_.9fr]">
-          <div>
-            <p className="eyebrow">The complete program</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight">
-              Eight modules from foundation to simulation.
-            </h2>
-            <div className="mt-7 grid gap-3 sm:grid-cols-2">
-              {[
-                "Exam orientation",
-                "Core grammar",
-                "Exam vocabulary",
-                "Reading comprehension",
-                "Listening comprehension",
-                "Question strategies",
-                "Timed practice",
-                "Final preparation",
-              ].map((item) => (
-                <p key={item} className="flex gap-2 text-sm">
-                  <Check className="size-5 shrink-0 text-primary" />
-                  {item}
-                </p>
-              ))}
-            </div>
-          </div>
-          <Card>
-            <CardContent className="pt-6">
-              <Badge>One-time purchase</Badge>
-              <p className="mt-5 text-4xl font-black">{formatPrice()}</p>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Complete TEF/TCF preparation program
-              </p>
-              <Button asChild className="mt-7 w-full">
-                <Link href="/checkout">Get the full program</Link>
-              </Button>
-              <p className="mt-4 text-center text-xs text-muted-foreground">
-                Mock checkout · no real payment is collected
-              </p>
-            </CardContent>
-          </Card>
+          <p className="mx-auto mt-7 max-w-2xl text-center text-xs leading-5 text-muted-foreground">
+            Approximate prices in CAD. No real payment is collected in this
+            frontend MVP. Access periods and usage limits are not enforced in
+            the demo.
+          </p>
         </div>
       </section>
       <section className="container-page py-24">
@@ -316,7 +322,7 @@ export default function HomePage() {
               ],
               [
                 "Is this a subscription?",
-                "No. The MVP presents the complete program as a one-time purchase.",
+                "No. Essential, Complete, and Intensive are presented as one-time purchases in this MVP.",
               ],
             ].map(([q, a]) => (
               <details key={q} className="group py-5">

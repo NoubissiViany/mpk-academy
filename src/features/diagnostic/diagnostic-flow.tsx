@@ -10,13 +10,16 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { useApp } from "@/components/providers/app-provider";
 import { QuestionCard } from "@/features/assessment/question-card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { diagnosticSkillContent } from "@/config/diagnostic";
+import { recommendedPaidPlanId } from "@/config/product";
 import { diagnosticQuestions } from "@/data/questions";
 import { scoreDiagnostic } from "@/lib/domain/diagnostic";
+import { guestAssessmentRepository } from "@/repositories/guest-assessment";
 import type {
   DiagnosticIntake,
   DiagnosticTarget,
@@ -123,6 +126,7 @@ function DiagnosticExperience() {
   const { state, setState } = useApp();
   const [stage, setStage] = useState<"intro" | "questions">("intro");
   const [index, setIndex] = useState(0);
+  const [finishing, setFinishing] = useState(false);
   const [intake, setIntake] = useState<Partial<DiagnosticIntake>>(
     state.diagnosticIntake ?? {},
   );
@@ -149,21 +153,42 @@ function DiagnosticExperience() {
       ...current,
       diagnosticAnswers: { ...current.diagnosticAnswers, [question.id]: value },
     }));
-  const finish = () => {
+  const finish = async () => {
+    setFinishing(true);
     const result = scoreDiagnostic(diagnosticQuestions, answers);
+    const completedIntake =
+      state.diagnosticIntake ?? (intake as DiagnosticIntake);
+    const activity = {
+      id: crypto.randomUUID(),
+      label: "Assessment completed",
+      detail: `${result.level} estimated level`,
+      timestamp: new Date().toISOString(),
+    };
+    try {
+      await guestAssessmentRepository.create({
+        intake: completedIntake,
+        answers,
+        result,
+        activity,
+        recommendedPlanId: recommendedPaidPlanId(completedIntake.target),
+      });
+    } catch {
+      setFinishing(false);
+      toast.error("We could not save your assessment. Please try again.");
+      return;
+    }
     setState((current) => ({
       ...current,
       diagnosticResult: result,
-      progress: { ...current.progress, diagnosticScore: result.score },
-      activities: [
-        {
-          id: crypto.randomUUID(),
-          label: "Assessment completed",
-          detail: `${result.level} estimated level`,
-          timestamp: new Date().toISOString(),
+      progress: {
+        ...current.progress,
+        diagnosticScore: result.score,
+        competencyScores: {
+          ...current.progress.competencyScores,
+          ...result.competencyScores,
         },
-        ...current.activities,
-      ],
+      },
+      activities: [activity, ...current.activities],
     }));
     router.push("/diagnostic/results");
   };
@@ -342,8 +367,11 @@ function DiagnosticExperience() {
             Next <ArrowRight className="size-4" />
           </Button>
         ) : (
-          <Button disabled={!answers[question.id]} onClick={finish}>
-            Finish assessment
+          <Button
+            disabled={!answers[question.id] || finishing}
+            onClick={finish}
+          >
+            {finishing ? "Saving assessment…" : "Finish assessment"}
           </Button>
         )}
       </div>

@@ -1,7 +1,11 @@
 export type Locale = "en" | "fr";
 export type UserTier = "visitor" | "free_student" | "paid_student";
-export type ExamType = "TEF Canada" | "TCF Canada" | "Not sure yet";
-export type DiagnosticTarget = "NCLC 5" | "NCLC 7" | "NCLC 9+" | "I'm not sure";
+export type PaidPlanId = "essential" | "complete" | "intensive";
+export type ExamId = "TEF Canada" | "TCF Canada";
+export type ExamType = ExamId | "Not sure yet";
+export type NclcTarget = "NCLC 5" | "NCLC 7" | "NCLC 9+" | "I'm not sure";
+export type DiagnosticTarget = NclcTarget;
+export type ExamSkill = "reading" | "listening" | "writing" | "speaking";
 export type FrenchExperience =
   | "I'm just starting"
   | "I know some French"
@@ -31,8 +35,77 @@ export type CompetencyId =
 
 export interface Goal {
   exam: ExamType;
-  target: "B1" | "B2" | "C1";
+  target: NclcTarget;
   targetDate?: string;
+}
+
+export interface ExamSkillProgress {
+  baseline30Days: number | null;
+  current: number | null;
+  attempts: number;
+  lastPracticedAt?: string;
+}
+
+export interface WeeklyExamStats {
+  weekStartedAt: string;
+  practiceSessions: number;
+  minutesStudied: number;
+  questionsReviewed: number;
+  readinessChange: number;
+}
+
+export interface ExamPreparationProfile {
+  exam: ExamId;
+  readinessBaseline30Days: number | null;
+  readiness: number | null;
+  skills: Record<ExamSkill, ExamSkillProgress>;
+  weekly: WeeklyExamStats;
+  mockAverage: number | null;
+  mockAttempts: number;
+}
+
+export type RubricResponse = "yes" | "partly" | "not-yet";
+
+export interface RubricResult {
+  taskId: string;
+  exam: ExamId;
+  skill: "writing" | "speaking";
+  responses: Record<number, RubricResponse>;
+  score: number;
+  completedAt: string;
+  learnerSelfReview: true;
+}
+
+export interface ProductivePracticeTask {
+  id: string;
+  exam: ExamId;
+  skill: "writing" | "speaking";
+  title: string;
+  prompt: string;
+  guidance: string;
+  durationMinutes: number;
+  minimumWords?: number;
+  rubric: string[];
+}
+
+export interface ExamConfiguration {
+  id: ExamId;
+  shortName: "TEF" | "TCF";
+  officialUrl: string;
+  navigationRules: { listeningOneWay: boolean };
+  officialFormat: {
+    reading: string;
+    listening: string;
+    writing: string;
+    speaking: string;
+  };
+  scaledMock: {
+    readingQuestions: number;
+    listeningQuestions: number;
+    writingTasks: number;
+    speakingTasks: number;
+    durationMinutes: number;
+  };
 }
 
 export interface DiagnosticIntake {
@@ -147,6 +220,10 @@ export interface Mistake {
   explanation: string;
   timestamp: string;
   reviewStatus: "new" | "reviewing" | "resolved";
+  exam?: ExamId;
+  examSkill?: ExamSkill;
+  pattern?: string;
+  count?: number;
 }
 
 export interface DiagnosticResult {
@@ -187,6 +264,7 @@ export interface Recommendation {
   href: string;
   priority: number;
   competencyId?: CompetencyId;
+  examSkill?: ExamSkill;
 }
 
 export interface Activity {
@@ -196,9 +274,24 @@ export interface Activity {
   timestamp: string;
 }
 
+export interface GuestAssessmentSession {
+  id: string;
+  createdAt: string;
+  expiresAt: string;
+  intake: DiagnosticIntake;
+  answers: Record<string, string>;
+  result: DiagnosticResult;
+  activity: Activity;
+  recommendedPlanId: PaidPlanId;
+  status: "active" | "claimed";
+  claimedByUserId?: string;
+  claimedAt?: string;
+}
+
 export interface AppState {
-  schemaVersion: 2;
+  schemaVersion: 3;
   user: User | null;
+  examProfiles: Partial<Record<ExamId, ExamPreparationProfile>>;
   diagnosticIntake: DiagnosticIntake | null;
   diagnosticAnswers: Record<string, string>;
   diagnosticResult: DiagnosticResult | null;

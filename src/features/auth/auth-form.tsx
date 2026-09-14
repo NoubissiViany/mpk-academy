@@ -9,7 +9,12 @@ import { z } from "zod";
 import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import type { PaidPlanId } from "@/config/product";
+import { createEmptyExamProfile } from "@/lib/domain/exam-progress";
+import { saveState } from "@/lib/persistence";
+import { guestAssessmentRepository } from "@/repositories/guest-assessment";
 import { mockAuthRepository } from "@/repositories/mock";
+import type { AppState } from "@/types/domain";
 
 const loginSchema = z.object({
   email: z.email("Enter a valid email address"),
@@ -19,7 +24,8 @@ const registerSchema = loginSchema.extend({
   firstName: z.string().min(2, "Enter your first name"),
   lastName: z.string().min(2, "Enter your last name"),
   locale: z.enum(["en", "fr"]),
-  exam: z.enum(["TEF Canada", "TCF Canada", "Not sure yet"]),
+  exam: z.enum(["TEF Canada", "TCF Canada"]),
+  target: z.enum(["NCLC 5", "NCLC 7", "NCLC 9+", "I'm not sure"]),
 });
 type RegisterData = z.infer<typeof registerSchema>;
 
@@ -50,9 +56,15 @@ function Field({
 const selectClass =
   "mt-2 min-h-11 w-full rounded-xl border border-input bg-background px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15";
 
-export function AuthForm({ mode }: { mode: "login" | "register" }) {
+export function AuthForm({
+  mode,
+  planId,
+}: {
+  mode: "login" | "register";
+  planId?: PaidPlanId;
+}) {
   const router = useRouter();
-  const { state, hydrated, updateUser } = useApp();
+  const { state, hydrated, setState } = useApp();
   const registering = mode === "register";
   const form = useForm<RegisterData>({
     resolver: zodResolver(registerSchema),
@@ -62,30 +74,98 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
       email: "",
       password: "",
       locale: "en",
-      exam: state.diagnosticIntake?.goal ?? "TEF Canada",
+      exam:
+        state.diagnosticIntake?.goal === "TEF Canada" ||
+        state.diagnosticIntake?.goal === "TCF Canada"
+          ? state.diagnosticIntake.goal
+          : "TEF Canada",
+      target: state.diagnosticIntake?.target ?? "I'm not sure",
     },
   });
   useEffect(() => {
-    if (registering && hydrated && state.diagnosticIntake)
-      form.setValue("exam", state.diagnosticIntake.goal);
+    if (registering && hydrated && state.diagnosticIntake) {
+      if (
+        state.diagnosticIntake.goal === "TEF Canada" ||
+        state.diagnosticIntake.goal === "TCF Canada"
+      )
+        form.setValue("exam", state.diagnosticIntake.goal);
+      form.setValue("target", state.diagnosticIntake.target);
+    }
   }, [form, hydrated, registering, state.diagnosticIntake]);
   const submit = async (values: RegisterData) => {
-    const user = registering
-      ? await mockAuthRepository.register({
-          firstName: values.firstName,
-          lastName: values.lastName,
-          email: values.email,
-          password: values.password,
-          locale: values.locale,
-          assistance: "full",
-          goal: { exam: values.exam, target: "B2" },
-        })
-      : await mockAuthRepository.login(values.email, values.password);
-    updateUser(user);
-    toast.success(
-      registering ? "Your learning plan is ready." : "Welcome back.",
-    );
-    router.push("/dashboard");
+    try {
+      const guestSession = await guestAssessmentRepository.getActive();
+      const user = registering
+        ? await mockAuthRepository.register({
+            firstName: values.firstName,
+            lastName: values.lastName,
+            email: values.email,
+            password: values.password,
+            locale: values.locale,
+            assistance: "full",
+            goal: { exam: values.exam, target: values.target },
+          })
+        : await mockAuthRepository.login(values.email, values.password);
+      const claimedSession = guestSession
+        ? await guestAssessmentRepository.claim(guestSession.id, user.id)
+        : null;
+      const nextState: AppState = {
+        ...state,
+        user,
+        examProfiles:
+          user.goal.exam === "TEF Canada" || user.goal.exam === "TCF Canada"
+            ? {
+                ...state.examProfiles,
+                [user.goal.exam]:
+                  state.examProfiles[user.goal.exam] ??
+                  createEmptyExamProfile(user.goal.exam),
+              }
+            : state.examProfiles,
+        ...(claimedSession
+          ? {
+              diagnosticIntake: claimedSession.intake,
+              diagnosticAnswers: claimedSession.answers,
+              diagnosticResult: claimedSession.result,
+              progress: {
+                ...state.progress,
+                diagnosticScore: claimedSession.result.score,
+                competencyScores: {
+                  ...state.progress.competencyScores,
+                  ...claimedSession.result.competencyScores,
+                },
+              },
+              activities: [
+                claimedSession.activity,
+                ...state.activities.filter(
+                  (activity) => activity.id !== claimedSession.activity.id,
+                ),
+              ],
+            }
+          : {}),
+      };
+
+      saveState(nextState);
+      setState(nextState);
+      if (claimedSession)
+        await guestAssessmentRepository.clear(claimedSession.id);
+
+      toast.success(
+        registering ? "Your learning plan is ready." : "Welcome back.",
+      );
+      const checkoutPlanId =
+        planId ??
+        guestSession?.recommendedPlanId ??
+        (registering ? "complete" : undefined);
+      router.push(
+        checkoutPlanId ? `/checkout?plan=${checkoutPlanId}` : "/dashboard",
+      );
+    } catch {
+      toast.error(
+        registering
+          ? "We could not create your account. Your assessment is still saved."
+          : "We could not sign you in. Your assessment is still saved.",
+      );
+    }
   };
   return (
     <form onSubmit={form.handleSubmit(submit)} className="space-y-5" noValidate>
@@ -139,9 +219,27 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
           </Field>
           <Field label="What are you preparing for?">
             <select className={selectClass} {...form.register("exam")}>
+              <option value="" disabled>
+                Select TEF or TCF
+              </option>
               <option>TEF Canada</option>
               <option>TCF Canada</option>
-              <option>Not sure yet</option>
+            </select>
+            {form.formState.errors.exam && (
+              <span
+                className="mt-1.5 block text-xs font-medium text-danger"
+                role="alert"
+              >
+                Choose TEF Canada or TCF Canada to continue.
+              </span>
+            )}
+          </Field>
+          <Field label="What result are you aiming for?">
+            <select className={selectClass} {...form.register("target")}>
+              <option>NCLC 5</option>
+              <option>NCLC 7</option>
+              <option>NCLC 9+</option>
+              <option>{"I'm not sure"}</option>
             </select>
           </Field>
         </>
@@ -157,7 +255,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
         {registering ? "Already have an account?" : "New to MPK Academy?"}{" "}
         <Link
           className="font-bold text-primary hover:underline"
-          href={registering ? "/login" : "/register"}
+          href={`${registering ? "/login" : "/register"}${planId ? `?plan=${planId}` : ""}`}
         >
           {registering ? "Sign in" : "Create an account"}
         </Link>
