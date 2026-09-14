@@ -1,6 +1,20 @@
 export type Locale = "en" | "fr";
 export type UserTier = "visitor" | "free_student" | "paid_student";
 export type ExamType = "TEF Canada" | "TCF Canada" | "Not sure yet";
+export type DiagnosticTarget = "NCLC 5" | "NCLC 7" | "NCLC 9+" | "I'm not sure";
+export type FrenchExperience =
+  | "I'm just starting"
+  | "I know some French"
+  | "I can communicate in French"
+  | "I'm already comfortable in French"
+  | "I'm not sure";
+export type DiagnosticSkill =
+  | "grammar"
+  | "vocabulary"
+  | "reading"
+  | "listening"
+  | "sentence-structure"
+  | "exam-strategy";
 export type AssistanceLevel = "full" | "on_request" | "minimal";
 export type LessonStatus = "locked" | "available" | "in_progress" | "completed";
 export type CompetencyId =
@@ -19,6 +33,12 @@ export interface Goal {
   exam: ExamType;
   target: "B1" | "B2" | "C1";
   targetDate?: string;
+}
+
+export interface DiagnosticIntake {
+  goal: ExamType;
+  target: DiagnosticTarget;
+  frenchExperience: FrenchExperience;
 }
 
 export interface User {
@@ -80,6 +100,7 @@ interface QuestionBase {
   explanation: string;
   explanationFr: string;
   competencies: CompetencyId[];
+  diagnosticSkill: DiagnosticSkill;
   difficulty: "A2" | "B1" | "B2" | "C1";
   metadata?: { passage?: string; audioLabel?: string };
 }
@@ -132,8 +153,9 @@ export interface DiagnosticResult {
   score: number;
   level: "A2" | "B1" | "B2" | "C1";
   competencyScores: Partial<Record<CompetencyId, number>>;
-  strengths: CompetencyId[];
-  weaknesses: CompetencyId[];
+  skillScores: Record<DiagnosticSkill, number>;
+  strength: DiagnosticSkill;
+  priority: DiagnosticSkill;
   recommendedModuleId: string;
 }
 
@@ -175,8 +197,9 @@ export interface Activity {
 }
 
 export interface AppState {
-  schemaVersion: 1;
+  schemaVersion: 2;
   user: User | null;
+  diagnosticIntake: DiagnosticIntake | null;
   diagnosticAnswers: Record<string, string>;
   diagnosticResult: DiagnosticResult | null;
   progress: Progress;
