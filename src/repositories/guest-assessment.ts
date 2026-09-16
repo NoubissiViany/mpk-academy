@@ -4,8 +4,10 @@ import type {
   GuestAssessmentRepository,
   GuestAssessmentSessionInput,
 } from "@/repositories/contracts";
+import { ensureStorageNamespace } from "@/lib/persistence";
 
 function storage() {
+  ensureStorageNamespace();
   return typeof window === "undefined" ? null : window.localStorage;
 }
 

@@ -1,88 +1,58 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { productConfig } from "@/config/product";
 import { defaultState } from "@/data/mock-state";
-import { diagnosticQuestions } from "@/data/questions";
-import { loadState, persistenceMigration, saveState } from "./persistence";
-describe("versioned persistence", () => {
+import { demoState } from "@/test/fixtures";
+import {
+  ensureStorageNamespace,
+  loadState,
+  loadUserState,
+  saveState,
+} from "./persistence";
+
+describe("versioned, user-scoped persistence", () => {
   beforeEach(() => localStorage.clear());
-  it("falls back when stored data is invalid or obsolete", () => {
+
+  it("starts with a clean anonymous learner", () => {
+    expect(loadState()).toEqual(defaultState);
+    expect(loadState().user).toBeNull();
+    expect(loadState().activities).toEqual([]);
+  });
+
+  it("resets legacy version-4 browser data once", () => {
     localStorage.setItem(
       productConfig.storageKey,
-      JSON.stringify({ schemaVersion: 0 }),
+      JSON.stringify({ ...demoState, schemaVersion: 4 }),
     );
-    expect(loadState().schemaVersion).toBe(3);
-  });
-  it("migrates version 1 without discarding learner data", () => {
-    const versionOne = { ...defaultState, schemaVersion: 1 };
-    delete (versionOne as Partial<typeof versionOne>).diagnosticIntake;
-    localStorage.setItem(productConfig.storageKey, JSON.stringify(versionOne));
-    const result = loadState();
-    expect(result.schemaVersion).toBe(3);
-    expect(result.user?.firstName).toBe("Alex");
-    expect(result.progress.courseCompletion).toBe(
-      defaultState.progress.courseCompletion,
+    expect(loadState()).toEqual(defaultState);
+    expect(localStorage.getItem(productConfig.storageKey)).toBeNull();
+    expect(localStorage.getItem(productConfig.storageNamespaceVersionKey)).toBe(
+      productConfig.storageNamespaceVersion,
     );
-    expect(result.diagnosticIntake).toBeNull();
   });
-  it("migrates CEFR goals and creates an independent active-exam profile", () => {
-    const versionTwo = {
+
+  it("round-trips anonymous diagnostic state", () => {
+    const anonymous = {
       ...defaultState,
-      schemaVersion: 2,
-      examProfiles: undefined,
-      user: defaultState.user
-        ? {
-            ...defaultState.user,
-            goal: { ...defaultState.user.goal, target: "B2" },
-          }
-        : null,
+      diagnosticAnswers: { question: "answer" },
     };
-    localStorage.setItem(productConfig.storageKey, JSON.stringify(versionTwo));
-    const result = loadState();
-    expect(result.user?.goal.target).toBe("NCLC 7");
-    expect(result.examProfiles["TEF Canada"]?.exam).toBe("TEF Canada");
-    expect(result.progress.completedLessonIds).toEqual(
-      defaultState.progress.completedLessonIds,
-    );
+    saveState(anonymous);
+    expect(loadState().diagnosticAnswers).toEqual({ question: "answer" });
   });
-  it("maps every legacy CEFR target to its NCLC target", () => {
-    expect(["B1", "B2", "C1"].map(persistenceMigration.migrateTarget)).toEqual([
-      "NCLC 5",
-      "NCLC 7",
-      "NCLC 9+",
-    ]);
-  });
-  it("rebuilds a legacy result with the six-skill profile", () => {
-    const versionOne = { ...defaultState, schemaVersion: 1 };
-    delete (versionOne as Partial<typeof versionOne>).diagnosticIntake;
-    const diagnosticAnswers = Object.fromEntries(
-      diagnosticQuestions.map((question) => [
-        question.id,
-        question.correctAnswer,
-      ]),
-    );
+
+  it("stores signed-in learners under their own state keys", () => {
+    ensureStorageNamespace();
     localStorage.setItem(
-      productConfig.storageKey,
+      productConfig.sessionStorageKey,
       JSON.stringify({
-        ...versionOne,
-        diagnosticAnswers,
-        diagnosticResult: {
-          score: 100,
-          level: "C1",
-          competencyScores: {},
-          strengths: [],
-          weaknesses: [],
-          recommendedModuleId: "exam-strategies",
-        },
+        userId: demoState.user!.id,
+        createdAt: "2026-09-15T12:00:00.000Z",
       }),
     );
-    const result = loadState();
-    expect(result.diagnosticResult?.level).toBe("C1");
-    expect(Object.values(result.diagnosticResult?.skillScores ?? {})).toEqual([
-      100, 100, 100, 100, 100, 100,
-    ]);
-  });
-  it("round-trips valid state", () => {
-    saveState(defaultState);
-    expect(loadState().user?.firstName).toBe("Alex");
+    saveState(demoState);
+    expect(loadUserState(demoState.user!.id)?.user?.firstName).toBe("Alex");
+    expect(loadState().user?.id).toBe(demoState.user!.id);
+    expect(
+      localStorage.getItem(productConfig.anonymousStateStorageKey),
+    ).toBeNull();
   });
 });

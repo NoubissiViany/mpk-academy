@@ -38,7 +38,7 @@ export default function MistakesPage() {
       <PageHeader
         eyebrow={typeof exam === "string" ? exam : undefined}
         title="My Mistakes"
-        description="Patterns from your exam-specific practice and productive-task self-reviews."
+        description="Patterns from your assessed Reading and Listening practice."
       />
       <div
         className="flex gap-2 overflow-x-auto pb-2"
@@ -81,7 +81,7 @@ export default function MistakesPage() {
                   {items.map((mistake) => (
                     <Link
                       key={mistake.id}
-                      href={`/practice/session?skill=${skill}`}
+                      href={`/mistakes/${mistake.id}`}
                       className="flex min-h-14 items-center justify-between gap-4 py-3 hover:text-primary"
                     >
                       <span className="font-medium">

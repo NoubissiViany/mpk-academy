@@ -5,9 +5,13 @@ export const metadata = { title: "Create account" };
 export default async function RegisterPage({
   searchParams,
 }: {
-  searchParams: Promise<{ plan?: string | string[] }>;
+  searchParams: Promise<{
+    plan?: string | string[];
+    next?: string | string[];
+  }>;
 }) {
-  const rawPlan = (await searchParams).plan;
+  const resolved = await searchParams;
+  const rawPlan = resolved.plan;
   const candidate = Array.isArray(rawPlan) ? rawPlan[0] : rawPlan;
   const planId = isPaidPlanId(candidate) ? candidate : undefined;
   return (
@@ -19,10 +23,16 @@ export default async function RegisterPage({
             Turn your result into a focused next step.
           </h1>
           <p className="mt-3 mb-7 text-sm leading-6 text-muted-foreground">
-            Mock registration stores only local demo data in this browser. It is
-            not production authentication.
+            Your account and preparation data are stored locally in this browser
+            for this MVP. This is not production authentication.
           </p>
-          <AuthForm mode="register" planId={planId} />
+          <AuthForm
+            mode="register"
+            planId={planId}
+            nextPath={
+              Array.isArray(resolved.next) ? resolved.next[0] : resolved.next
+            }
+          />
         </CardContent>
       </Card>
     </div>

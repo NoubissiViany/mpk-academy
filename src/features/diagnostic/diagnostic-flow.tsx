@@ -19,6 +19,7 @@ import { diagnosticSkillContent } from "@/config/diagnostic";
 import { recommendedPaidPlanId } from "@/config/product";
 import { diagnosticQuestions } from "@/data/questions";
 import { scoreDiagnostic } from "@/lib/domain/diagnostic";
+import { applyDiagnosticResult } from "@/lib/domain/onboarding";
 import { guestAssessmentRepository } from "@/repositories/guest-assessment";
 import type {
   DiagnosticIntake,
@@ -164,32 +165,24 @@ function DiagnosticExperience() {
       detail: `${result.level} estimated level`,
       timestamp: new Date().toISOString(),
     };
-    try {
-      await guestAssessmentRepository.create({
-        intake: completedIntake,
-        answers,
-        result,
-        activity,
-        recommendedPlanId: recommendedPaidPlanId(completedIntake.target),
-      });
-    } catch {
-      setFinishing(false);
-      toast.error("We could not save your assessment. Please try again.");
-      return;
+    if (!state.user) {
+      try {
+        await guestAssessmentRepository.create({
+          intake: completedIntake,
+          answers,
+          result,
+          activity,
+          recommendedPlanId: recommendedPaidPlanId(completedIntake.target),
+        });
+      } catch {
+        setFinishing(false);
+        toast.error("We could not save your assessment. Please try again.");
+        return;
+      }
     }
-    setState((current) => ({
-      ...current,
-      diagnosticResult: result,
-      progress: {
-        ...current.progress,
-        diagnosticScore: result.score,
-        competencyScores: {
-          ...current.progress.competencyScores,
-          ...result.competencyScores,
-        },
-      },
-      activities: [activity, ...current.activities],
-    }));
+    setState((current) =>
+      applyDiagnosticResult(current, completedIntake, result, activity),
+    );
     router.push("/diagnostic/results");
   };
 

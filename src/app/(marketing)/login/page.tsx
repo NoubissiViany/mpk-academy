@@ -5,9 +5,13 @@ export const metadata = { title: "Sign in" };
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ plan?: string | string[] }>;
+  searchParams: Promise<{
+    plan?: string | string[];
+    next?: string | string[];
+  }>;
 }) {
-  const rawPlan = (await searchParams).plan;
+  const resolved = await searchParams;
+  const rawPlan = resolved.plan;
   const candidate = Array.isArray(rawPlan) ? rawPlan[0] : rawPlan;
   const planId =
     candidate === undefined ? undefined : getPaidPlan(candidate).id;
@@ -20,10 +24,16 @@ export default async function LoginPage({
             Continue your preparation.
           </h1>
           <p className="mt-3 mb-7 text-sm leading-6 text-muted-foreground">
-            Use any valid email and an 8-character password. Add “free” to the
-            email to test free access.
+            Enter the email and password you used when creating your account on
+            this browser. Local accounts are available only in this browser.
           </p>
-          <AuthForm mode="login" planId={planId} />
+          <AuthForm
+            mode="login"
+            planId={planId}
+            nextPath={
+              Array.isArray(resolved.next) ? resolved.next[0] : resolved.next
+            }
+          />
         </CardContent>
       </Card>
     </div>

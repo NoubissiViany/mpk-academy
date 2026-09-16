@@ -51,7 +51,7 @@ describe("DiagnosticFlow", () => {
       ),
     ).toBeVisible();
     const stored = JSON.parse(
-      localStorage.getItem(productConfig.storageKey) ?? "null",
+      localStorage.getItem(productConfig.anonymousStateStorageKey) ?? "null",
     );
     expect(stored.diagnosticIntake).toEqual({
       goal: "TEF Canada",

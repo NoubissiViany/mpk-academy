@@ -14,7 +14,12 @@ import { useState } from "react";
 import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { formatPlanPrice, getPaidPlan, productConfig } from "@/config/product";
+import {
+  calculatePlanAccessUntil,
+  formatPlanPrice,
+  getPaidPlan,
+  productConfig,
+} from "@/config/product";
 import { mockPaymentRepository } from "@/repositories/mock";
 
 type CheckoutPlan = ReturnType<typeof getPaidPlan>;
@@ -30,7 +35,7 @@ const included = [
 
 export function CheckoutView({ plan }: { plan: CheckoutPlan }) {
   const router = useRouter();
-  const { state: appState, hydrated, updateUser } = useApp();
+  const { state: appState, hydrated, setState } = useApp();
   const [status, setStatus] = useState<State>("idle");
 
   const checkout = async () => {
@@ -38,7 +43,20 @@ export function CheckoutView({ plan }: { plan: CheckoutPlan }) {
     setStatus("redirecting");
     const result = await mockPaymentRepository.checkout();
     if (result === "success") {
-      updateUser({ ...appState.user, tier: "paid_student" });
+      const purchasedAt = new Date();
+      setState((current) => ({
+        ...current,
+        user: current.user ? { ...current.user, tier: "paid_student" } : null,
+        planAccess: {
+          planId: plan.id,
+          purchasedAt: purchasedAt.toISOString(),
+          accessUntil: calculatePlanAccessUntil(
+            plan.id,
+            purchasedAt,
+          ).toISOString(),
+        },
+        postCheckoutWelcomePending: Boolean(current.diagnosticResult),
+      }));
       router.push(`/checkout/success?plan=${plan.id}`);
     } else {
       setStatus(result);
@@ -136,7 +154,7 @@ export function CheckoutView({ plan }: { plan: CheckoutPlan }) {
           </h2>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
             {!hydrated
-              ? "Checking your local demo account."
+              ? "Checking your local account."
               : !appState.user
                 ? "Your selected plan will be preserved while you register or sign in."
                 : status === "idle"

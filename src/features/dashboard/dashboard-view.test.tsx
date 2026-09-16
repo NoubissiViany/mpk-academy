@@ -1,8 +1,10 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { AppProvider } from "@/components/providers/app-provider";
-import { defaultState } from "@/data/mock-state";
-import { saveState } from "@/lib/persistence";
+import { demoState } from "@/test/fixtures";
+import { diagnosticQuestions } from "@/data/questions";
+import { scoreDiagnostic } from "@/lib/domain/diagnostic";
+import { loadState, saveState } from "@/lib/persistence";
 import { DashboardView } from "./dashboard-view";
 
 afterEach(() => {
@@ -12,7 +14,7 @@ afterEach(() => {
 
 describe("exam-centred dashboard", () => {
   it("shows the active exam, NCLC target, readiness, and four skills", async () => {
-    saveState(defaultState);
+    saveState(demoState);
     render(
       <AppProvider>
         <DashboardView />
@@ -29,11 +31,11 @@ describe("exam-centred dashboard", () => {
 
   it("requires an exam choice when the learner is unsure", async () => {
     saveState({
-      ...defaultState,
-      user: defaultState.user
+      ...demoState,
+      user: demoState.user
         ? {
-            ...defaultState.user,
-            goal: { ...defaultState.user.goal, exam: "Not sure yet" },
+            ...demoState.user,
+            goal: { ...demoState.user.goal, exam: "Not sure yet" },
           }
         : null,
     });
@@ -53,5 +55,50 @@ describe("exam-centred dashboard", () => {
     expect(
       screen.getByRole("button", { name: "Prepare for TCF" }),
     ).toBeVisible();
+  });
+
+  it("shows the assessment handoff once after checkout", async () => {
+    const result = scoreDiagnostic(diagnosticQuestions, {});
+    saveState({
+      ...demoState,
+      diagnosticResult: result,
+      postCheckoutWelcomePending: true,
+    });
+    const first = render(
+      <AppProvider>
+        <DashboardView />
+      </AppProvider>,
+    );
+    expect(
+      await screen.findByRole("heading", {
+        name: "Welcome to MPK Academy, Alex",
+      }),
+    ).toBeVisible();
+    expect(screen.getAllByText(`${result.score}%`).length).toBeGreaterThan(0);
+    expect(screen.getAllByText("RECOMMENDED NEXT")).toHaveLength(1);
+    expect(
+      screen.getByRole("heading", { name: "Start with grammar" }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("link", { name: "Start recommended activity" }),
+    ).toBeVisible();
+    await waitFor(() =>
+      expect(loadState().postCheckoutWelcomePending).toBe(false),
+    );
+
+    first.unmount();
+    render(
+      <AppProvider>
+        <DashboardView />
+      </AppProvider>,
+    );
+    expect(
+      await screen.findByRole("heading", { name: "Welcome back, Alex" }),
+    ).toBeVisible();
+    expect(
+      screen.queryByRole("heading", {
+        name: "Welcome to MPK Academy, Alex",
+      }),
+    ).not.toBeInTheDocument();
   });
 });

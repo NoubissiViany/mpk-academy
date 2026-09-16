@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { mockCourse } from "@/data/course";
-import { defaultProgress } from "@/data/mock-state";
+import { defaultProgress } from "@/test/fixtures";
 import { diagnosticQuestions } from "@/data/questions";
 import { diagnosticSkillOrder } from "@/config/diagnostic";
 import { canAccessCertificate, canAccessExam, canAccessLesson } from "./access";
@@ -9,18 +9,16 @@ import { scoreDiagnostic } from "./diagnostic";
 import { calculateReadiness, READINESS_ALGORITHM_VERSION } from "./readiness";
 import { generateRecommendations } from "./recommendations";
 
-describe("readiness v1", () => {
-  it("returns no score until minimum evidence exists", () => {
+describe("diagnostic readiness", () => {
+  it("returns no score until a diagnostic exists", () => {
     expect(
-      calculateReadiness({ ...defaultProgress, simulationsCompleted: 0 })
-        .overall,
+      calculateReadiness({ ...defaultProgress, diagnosticScore: null }).overall,
     ).toBeNull();
   });
-  it("returns an explainable bounded score", () => {
+  it("uses the diagnostic result without mock activity weighting", () => {
     const result = calculateReadiness(defaultProgress);
     expect(result.algorithmVersion).toBe(READINESS_ALGORITHM_VERSION);
-    expect(result.overall).toBeGreaterThan(0);
-    expect(result.overall).toBeLessThanOrEqual(100);
+    expect(result.overall).toBe(defaultProgress.diagnosticScore);
   });
 });
 describe("diagnostic scoring", () => {

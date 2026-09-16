@@ -4,17 +4,24 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import type { Resolver } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { PaidPlanId } from "@/config/product";
-import { createEmptyExamProfile } from "@/lib/domain/exam-progress";
-import { saveState } from "@/lib/persistence";
+import {
+  attachAssessmentToExistingState,
+  createRegisteredLearnerState,
+} from "@/lib/domain/onboarding";
+import {
+  clearAnonymousState,
+  loadUserState,
+  saveState,
+} from "@/lib/persistence";
 import { guestAssessmentRepository } from "@/repositories/guest-assessment";
-import { mockAuthRepository } from "@/repositories/mock";
-import type { AppState } from "@/types/domain";
+import { LocalAuthError, localAuthRepository } from "@/repositories/local-auth";
 
 const loginSchema = z.object({
   email: z.email("Enter a valid email address"),
@@ -59,18 +66,22 @@ const selectClass =
 export function AuthForm({
   mode,
   planId,
+  nextPath,
 }: {
   mode: "login" | "register";
   planId?: PaidPlanId;
+  nextPath?: string;
 }) {
   const router = useRouter();
   const { state, hydrated, setState } = useApp();
   const registering = mode === "register";
   const form = useForm<RegisterData>({
-    resolver: zodResolver(registerSchema),
+    resolver: zodResolver(
+      registering ? registerSchema : loginSchema,
+    ) as unknown as Resolver<RegisterData>,
     defaultValues: {
-      firstName: "Demo",
-      lastName: "Student",
+      firstName: "",
+      lastName: "",
       email: "",
       password: "",
       locale: "en",
@@ -96,7 +107,7 @@ export function AuthForm({
     try {
       const guestSession = await guestAssessmentRepository.getActive();
       const user = registering
-        ? await mockAuthRepository.register({
+        ? await localAuthRepository.register({
             firstName: values.firstName,
             lastName: values.lastName,
             email: values.email,
@@ -105,49 +116,26 @@ export function AuthForm({
             assistance: "full",
             goal: { exam: values.exam, target: values.target },
           })
-        : await mockAuthRepository.login(values.email, values.password);
+        : await localAuthRepository.login(values.email, values.password);
       const claimedSession = guestSession
         ? await guestAssessmentRepository.claim(guestSession.id, user.id)
         : null;
-      const nextState: AppState = {
-        ...state,
-        user,
-        examProfiles:
-          user.goal.exam === "TEF Canada" || user.goal.exam === "TCF Canada"
-            ? {
-                ...state.examProfiles,
-                [user.goal.exam]:
-                  state.examProfiles[user.goal.exam] ??
-                  createEmptyExamProfile(user.goal.exam),
-              }
-            : state.examProfiles,
-        ...(claimedSession
-          ? {
-              diagnosticIntake: claimedSession.intake,
-              diagnosticAnswers: claimedSession.answers,
-              diagnosticResult: claimedSession.result,
-              progress: {
-                ...state.progress,
-                diagnosticScore: claimedSession.result.score,
-                competencyScores: {
-                  ...state.progress.competencyScores,
-                  ...claimedSession.result.competencyScores,
-                },
-              },
-              activities: [
-                claimedSession.activity,
-                ...state.activities.filter(
-                  (activity) => activity.id !== claimedSession.activity.id,
-                ),
-              ],
-            }
-          : {}),
-      };
+      const storedState = registering ? null : loadUserState(user.id);
+      const restoredUser = storedState?.user ?? user;
+      const nextState = registering
+        ? createRegisteredLearnerState(user, claimedSession)
+        : attachAssessmentToExistingState(
+            storedState ?? createRegisteredLearnerState(restoredUser, null),
+            restoredUser,
+            claimedSession,
+          );
 
       saveState(nextState);
       setState(nextState);
-      if (claimedSession)
+      if (claimedSession) {
         await guestAssessmentRepository.clear(claimedSession.id);
+        clearAnonymousState();
+      }
 
       toast.success(
         registering ? "Your learning plan is ready." : "Welcome back.",
@@ -157,13 +145,19 @@ export function AuthForm({
         guestSession?.recommendedPlanId ??
         (registering ? "complete" : undefined);
       router.push(
-        checkoutPlanId ? `/checkout?plan=${checkoutPlanId}` : "/dashboard",
+        checkoutPlanId
+          ? `/checkout?plan=${checkoutPlanId}`
+          : nextPath && nextPath.startsWith("/") && !nextPath.startsWith("//")
+            ? nextPath
+            : "/dashboard",
       );
-    } catch {
+    } catch (error) {
       toast.error(
-        registering
-          ? "We could not create your account. Your assessment is still saved."
-          : "We could not sign you in. Your assessment is still saved.",
+        error instanceof LocalAuthError
+          ? error.message
+          : registering
+            ? "We could not create your account. Your assessment is still saved."
+            : "We could not sign you in. Your assessment is still saved.",
       );
     }
   };
@@ -244,18 +238,26 @@ export function AuthForm({
           </Field>
         </>
       )}
-      <Button className="w-full" disabled={form.formState.isSubmitting}>
-        {form.formState.isSubmitting
-          ? "Preparing…"
-          : registering
-            ? "Create my learning plan"
-            : "Sign in"}
+      <Button
+        className="w-full"
+        disabled={!hydrated || form.formState.isSubmitting}
+      >
+        {!hydrated
+          ? "Loading account…"
+          : form.formState.isSubmitting
+            ? "Preparing…"
+            : registering
+              ? "Create my learning plan"
+              : "Sign in"}
       </Button>
       <p className="text-center text-sm text-muted-foreground">
         {registering ? "Already have an account?" : "New to MPK Academy?"}{" "}
         <Link
           className="font-bold text-primary hover:underline"
-          href={`${registering ? "/login" : "/register"}${planId ? `?plan=${planId}` : ""}`}
+          href={`${registering ? "/login" : "/register"}?${new URLSearchParams({
+            ...(planId ? { plan: planId } : {}),
+            ...(nextPath ? { next: nextPath } : {}),
+          }).toString()}`}
         >
           {registering ? "Sign in" : "Create an account"}
         </Link>

@@ -46,11 +46,11 @@ export function ProgressView() {
       <PageHeader
         eyebrow={exam}
         title="Progress"
-        description="Your exam readiness and four-skill movement over the last 30 days."
+        description="Your diagnostic readiness and assessed-skill movement over the last 30 days."
       />
       <Card>
         <CardContent className="pt-6">
-          <p className="text-sm font-semibold">Overall readiness</p>
+          <p className="text-sm font-semibold">Diagnostic readiness</p>
           <div className="mt-4 flex items-baseline gap-3">
             <span className="text-muted-foreground">
               {readinessBaseline === null ? "—" : `${readinessBaseline}%`}
@@ -69,8 +69,12 @@ export function ProgressView() {
           <Progress
             className="mt-4"
             value={readiness ?? 0}
-            label="Overall readiness"
+            label="Diagnostic readiness"
           />
+          <p className="mt-3 text-xs text-muted-foreground">
+            This readiness comes from your latest diagnostic and is not changed
+            by practice or shortened mock results.
+          </p>
         </CardContent>
       </Card>
       <h2 className="mt-9 text-sm font-bold tracking-[0.14em]">

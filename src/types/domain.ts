@@ -56,24 +56,13 @@ export interface WeeklyExamStats {
 
 export interface ExamPreparationProfile {
   exam: ExamId;
+  readinessSource: "diagnostic" | null;
   readinessBaseline30Days: number | null;
   readiness: number | null;
   skills: Record<ExamSkill, ExamSkillProgress>;
   weekly: WeeklyExamStats;
   mockAverage: number | null;
   mockAttempts: number;
-}
-
-export type RubricResponse = "yes" | "partly" | "not-yet";
-
-export interface RubricResult {
-  taskId: string;
-  exam: ExamId;
-  skill: "writing" | "speaking";
-  responses: Record<number, RubricResponse>;
-  score: number;
-  completedAt: string;
-  learnerSelfReview: true;
 }
 
 export interface ProductivePracticeTask {
@@ -123,6 +112,12 @@ export interface User {
   locale: Locale;
   assistance: AssistanceLevel;
   goal: Goal;
+}
+
+export interface PlanAccess {
+  planId: PaidPlanId;
+  purchasedAt: string | null;
+  accessUntil: string | null;
 }
 
 export interface Competency {
@@ -289,8 +284,10 @@ export interface GuestAssessmentSession {
 }
 
 export interface AppState {
-  schemaVersion: 3;
+  schemaVersion: 5;
   user: User | null;
+  planAccess: PlanAccess | null;
+  postCheckoutWelcomePending: boolean;
   examProfiles: Partial<Record<ExamId, ExamPreparationProfile>>;
   diagnosticIntake: DiagnosticIntake | null;
   diagnosticAnswers: Record<string, string>;
@@ -300,4 +297,18 @@ export interface AppState {
   activities: Activity[];
   lastPracticeScore?: number;
   lastExamScore?: number;
+}
+
+export interface LocalAccount {
+  user: User;
+  normalizedEmail: string;
+  passwordHash: string;
+  passwordSalt: string;
+  passwordIterations: number;
+  createdAt: string;
+}
+
+export interface LocalSession {
+  userId: string;
+  createdAt: string;
 }
