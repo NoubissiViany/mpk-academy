@@ -192,13 +192,13 @@ export function ResultsView() {
             <p className="mt-2 text-sm text-muted-foreground">
               {recommendedPlan.paymentModel} · {recommendedPlan.access}
             </p>
-            <Button asChild size="lg" className="mt-6 w-full">
+            <Button asChild size="lg" className="mt-6 w-full lg:text-nowrap">
               <Link href={recommendationHref}>
                 Continue with {recommendedPlan.name}
                 <ArrowRight className="size-4" />
               </Link>
             </Button>
-            <Button asChild variant="ghost" className="mt-2 w-full">
+            <Button asChild variant="secondary" className="mt-2 w-full">
               <Link href="/pricing">Compare all plans</Link>
             </Button>
           </div>
