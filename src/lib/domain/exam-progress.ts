@@ -10,6 +10,31 @@ import type {
 } from "@/types/domain";
 
 export function activateExamProfile(state: AppState, exam: ExamId): AppState {
+  const existing = state.examProfiles[exam];
+  const empty = createEmptyExamProfile(exam);
+  const profile =
+    existing ??
+    (state.diagnosticResult
+      ? {
+          ...empty,
+          readinessSource: "diagnostic" as const,
+          readinessBaseline30Days: state.diagnosticResult.score,
+          readiness: state.diagnosticResult.score,
+          skills: {
+            ...empty.skills,
+            reading: {
+              baseline30Days: state.diagnosticResult.skillScores.reading,
+              current: state.diagnosticResult.skillScores.reading,
+              attempts: 1,
+            },
+            listening: {
+              baseline30Days: state.diagnosticResult.skillScores.listening,
+              current: state.diagnosticResult.skillScores.listening,
+              attempts: 1,
+            },
+          },
+        }
+      : empty);
   return {
     ...state,
     user: state.user
@@ -17,7 +42,7 @@ export function activateExamProfile(state: AppState, exam: ExamId): AppState {
       : null,
     examProfiles: {
       ...state.examProfiles,
-      [exam]: state.examProfiles[exam] ?? createEmptyExamProfile(exam),
+      [exam]: profile,
     },
   };
 }
@@ -47,6 +72,7 @@ export function createEmptyExamProfile(
 ): ExamPreparationProfile {
   return {
     exam,
+    readinessSource: null,
     readinessBaseline30Days: null,
     readiness: null,
     skills: {
@@ -136,27 +162,9 @@ export function updateExamSkill(
       lastPracticedAt: now.toISOString(),
     },
   };
-  const allScores = examSkillOrder.map((item) => skills[item].current);
-  const previousReadiness = profile.readiness;
-  let readiness = previousReadiness;
-  if (allScores.every((score): score is number => score !== null)) {
-    readiness =
-      previousReadiness === null
-        ? clamp(
-            allScores.reduce((sum, score) => sum + score, 0) / allScores.length,
-          )
-        : clamp(
-            previousReadiness + (current - (previous.current ?? current)) / 4,
-          );
-  }
-  const readinessDelta =
-    (readiness ?? 0) - (previousReadiness ?? readiness ?? 0);
   const weekly = currentWeeklyStats(profile.weekly, now);
   return {
     ...profile,
-    readiness,
-    readinessBaseline30Days:
-      profile.readinessBaseline30Days ?? previousReadiness,
     skills,
     weekly: {
       ...weekly,
@@ -164,7 +172,7 @@ export function updateExamSkill(
       minutesStudied: weekly.minutesStudied + (options.minutes ?? 0),
       questionsReviewed:
         weekly.questionsReviewed + (options.questionsReviewed ?? 0),
-      readinessChange: weekly.readinessChange + readinessDelta,
+      readinessChange: weekly.readinessChange,
     },
   } satisfies ExamPreparationProfile;
 }
@@ -176,10 +184,6 @@ export function updateMockReadiness(
   now = new Date(),
 ) {
   const normalizedScore = clamp(mockScore);
-  const readiness =
-    profile.readiness === null
-      ? normalizedScore
-      : clamp(profile.readiness * 0.7 + normalizedScore * 0.3);
   const mockAverage =
     profile.mockAverage === null
       ? normalizedScore
@@ -190,16 +194,12 @@ export function updateMockReadiness(
   const weekly = currentWeeklyStats(profile.weekly, now);
   return {
     ...profile,
-    readiness,
-    readinessBaseline30Days:
-      profile.readinessBaseline30Days ?? profile.readiness,
     mockAverage,
     mockAttempts: profile.mockAttempts + 1,
     weekly: {
       ...weekly,
       minutesStudied: weekly.minutesStudied + minutes,
-      readinessChange:
-        weekly.readinessChange + readiness - (profile.readiness ?? readiness),
+      readinessChange: weekly.readinessChange,
     },
   } satisfies ExamPreparationProfile;
 }

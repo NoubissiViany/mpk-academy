@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { examConfigurations, productiveTasks } from "@/config/exams";
-import { defaultState } from "@/data/mock-state";
+import { demoState } from "@/test/fixtures";
 import {
   activateExamProfile,
   createEmptyExamProfile,
@@ -23,10 +23,13 @@ describe("exam preparation profiles", () => {
   });
 
   it("switches exams without erasing the inactive profile", () => {
-    const tcf = activateExamProfile(defaultState, "TCF Canada");
+    const tcf = activateExamProfile(demoState, "TCF Canada");
     expect(tcf.user?.goal.exam).toBe("TCF Canada");
     expect(tcf.examProfiles["TEF Canada"]?.readiness).toBe(68);
-    expect(tcf.examProfiles["TCF Canada"]?.readiness).toBeNull();
+    expect(tcf.examProfiles["TCF Canada"]?.readiness).toBe(
+      demoState.diagnosticResult?.score,
+    );
+    expect(tcf.examProfiles["TCF Canada"]?.skills.writing.current).toBeNull();
     const tefAgain = activateExamProfile(tcf, "TEF Canada");
     expect(tefAgain.examProfiles["TEF Canada"]?.readiness).toBe(68);
     expect(tefAgain.examProfiles["TCF Canada"]).toBeDefined();
@@ -44,7 +47,7 @@ describe("exam preparation profiles", () => {
     expect(second.skills.reading.current).toBe(70);
   });
 
-  it("updates readiness by one quarter of the skill change", () => {
+  it("does not let practice overwrite diagnostic readiness", () => {
     const profile = createEmptyExamProfile(
       "TEF Canada",
       new Date("2026-09-14"),
@@ -58,10 +61,10 @@ describe("exam preparation profiles", () => {
       now: new Date("2026-09-14"),
     });
     expect(updated.skills.speaking.current).toBe(70);
-    expect(updated.readiness).toBe(63);
+    expect(updated.readiness).toBe(60);
   });
 
-  it("blends mock readiness at 70/30", () => {
+  it("does not let a shortened mock overwrite diagnostic readiness", () => {
     const profile = createEmptyExamProfile(
       "TCF Canada",
       new Date("2026-09-14"),
@@ -69,7 +72,7 @@ describe("exam preparation profiles", () => {
     profile.readiness = 60;
     expect(
       updateMockReadiness(profile, 80, 45, new Date("2026-09-14")).readiness,
-    ).toBe(66);
+    ).toBe(60);
   });
 
   it("resets weekly counters in a new ISO week", () => {

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  calculatePlanAccessUntil,
   formatPlanPrice,
   formatPrice,
   getPaidPlan,
@@ -47,6 +48,21 @@ describe("product plans", () => {
       "Basic weakness profile",
       "No payment required",
     ]);
+  });
+
+  it("calculates calendar-month access without overflowing short months", () => {
+    expect(
+      calculatePlanAccessUntil(
+        "essential",
+        new Date("2026-01-31T12:00:00.000Z"),
+      ).toISOString(),
+    ).toBe("2026-04-30T12:00:00.000Z");
+    expect(
+      calculatePlanAccessUntil(
+        "complete",
+        new Date("2026-09-15T12:00:00.000Z"),
+      ).toISOString(),
+    ).toBe("2027-03-15T12:00:00.000Z");
   });
 
   it.each([

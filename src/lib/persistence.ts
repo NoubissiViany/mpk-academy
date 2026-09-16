@@ -1,118 +1,146 @@
 import { productConfig } from "@/config/product";
 import { defaultState } from "@/data/mock-state";
-import { diagnosticQuestions } from "@/data/questions";
-import { scoreDiagnostic } from "@/lib/domain/diagnostic";
-import { createEmptyExamProfile } from "@/lib/domain/exam-progress";
-import type {
-  AppState,
-  ExamPreparationProfile,
-  NclcTarget,
-} from "@/types/domain";
+import type { AppState, LocalAccount, LocalSession } from "@/types/domain";
 
-function migrateTarget(value: unknown): NclcTarget {
-  if (value === "B1" || value === "NCLC 5") return "NCLC 5";
-  if (value === "C1" || value === "NCLC 9+") return "NCLC 9+";
-  if (value === "I'm not sure" || value === "Not sure") return "I'm not sure";
-  return "NCLC 7";
+function storage() {
+  return typeof window === "undefined" ? null : window.localStorage;
 }
 
-function migrateExamProfile(
-  value: Record<string, unknown>,
-): ExamPreparationProfile | null {
-  const user = value.user as AppState["user"] | null;
-  const exam = user?.goal.exam;
-  if (exam !== "TEF Canada" && exam !== "TCF Canada") return null;
+export function ensureStorageNamespace() {
+  const target = storage();
+  if (!target) return;
+  if (
+    target.getItem(productConfig.storageNamespaceVersionKey) ===
+    productConfig.storageNamespaceVersion
+  )
+    return;
 
-  const progress = value.progress as AppState["progress"];
-  const profile = createEmptyExamProfile(exam);
-  const reading = progress?.competencyScores?.["reading-main-idea"];
-  const listening = progress?.competencyScores?.["listening-detail"];
-  const readiness = progress?.simulationAverage || null;
-
-  return {
-    ...profile,
-    readinessBaseline30Days: readiness,
-    readiness,
-    skills: {
-      reading: {
-        baseline30Days: reading ?? null,
-        current: reading ?? null,
-        attempts: reading == null ? 0 : 1,
-      },
-      listening: {
-        baseline30Days: listening ?? null,
-        current: listening ?? null,
-        attempts: listening == null ? 0 : 1,
-      },
-      writing: profile.skills.writing,
-      speaking: profile.skills.speaking,
-    },
-    mockAverage: progress?.simulationAverage || null,
-    mockAttempts: progress?.simulationsCompleted ?? 0,
-  };
+  target.removeItem(productConfig.storageKey);
+  target.removeItem(productConfig.guestAssessmentStorageKey);
+  target.removeItem(productConfig.anonymousStateStorageKey);
+  target.removeItem(productConfig.accountsStorageKey);
+  target.removeItem(productConfig.sessionStorageKey);
+  for (let index = target.length - 1; index >= 0; index -= 1) {
+    const key = target.key(index);
+    if (key?.startsWith(productConfig.userStateStoragePrefix))
+      target.removeItem(key);
+  }
+  target.setItem(
+    productConfig.storageNamespaceVersionKey,
+    productConfig.storageNamespaceVersion,
+  );
 }
 
-function migrateToV3(value: Record<string, unknown>): AppState {
-  const schemaVersion = value.schemaVersion;
-  const user = value.user as AppState["user"] | null;
-  const migratedUser = user
-    ? {
-        ...user,
-        goal: { ...user.goal, target: migrateTarget(user.goal.target) },
-      }
-    : null;
-  const legacyProfile = migrateExamProfile({ ...value, user: migratedUser });
-  const diagnosticResult =
-    schemaVersion === 1 && value.diagnosticResult
-      ? scoreDiagnostic(
-          diagnosticQuestions,
-          (value.diagnosticAnswers as Record<string, string>) ?? {},
-        )
-      : (value.diagnosticResult as AppState["diagnosticResult"]);
+function parseState(value: string | null): AppState | null {
+  try {
+    const parsed: unknown = JSON.parse(value ?? "null");
+    if (
+      parsed &&
+      typeof parsed === "object" &&
+      (parsed as Partial<AppState>).schemaVersion === 5
+    )
+      return {
+        ...structuredClone(defaultState),
+        ...(parsed as AppState),
+        schemaVersion: 5,
+      };
+  } catch {
+    /* Invalid browser data falls back to a clean learner state. */
+  }
+  return null;
+}
 
-  return {
-    ...structuredClone(defaultState),
-    ...(value as unknown as Partial<AppState>),
-    schemaVersion: 3,
-    user: migratedUser,
-    examProfiles:
-      (value.examProfiles as AppState["examProfiles"] | undefined) ??
-      (legacyProfile ? { [legacyProfile.exam]: legacyProfile } : {}),
-    diagnosticIntake: value.diagnosticIntake
-      ? {
-          ...(value.diagnosticIntake as NonNullable<
-            AppState["diagnosticIntake"]
-          >),
-          target: migrateTarget(
-            (value.diagnosticIntake as { target?: unknown }).target,
-          ),
-        }
-      : null,
-    diagnosticResult: diagnosticResult ?? null,
-  };
+function readSession(): LocalSession | null {
+  const target = storage();
+  if (!target) return null;
+  try {
+    const value: unknown = JSON.parse(
+      target.getItem(productConfig.sessionStorageKey) ?? "null",
+    );
+    if (
+      value &&
+      typeof value === "object" &&
+      typeof (value as LocalSession).userId === "string" &&
+      typeof (value as LocalSession).createdAt === "string"
+    )
+      return value as LocalSession;
+  } catch {
+    /* Invalid sessions are cleared below. */
+  }
+  target.removeItem(productConfig.sessionStorageKey);
+  return null;
+}
+
+export function userStateStorageKey(userId: string) {
+  return `${productConfig.userStateStoragePrefix}${userId}`;
+}
+
+export function loadAnonymousState() {
+  ensureStorageNamespace();
+  const target = storage();
+  if (!target) return structuredClone(defaultState);
+  return (
+    parseState(target.getItem(productConfig.anonymousStateStorageKey)) ??
+    structuredClone(defaultState)
+  );
+}
+
+export function clearAnonymousState() {
+  ensureStorageNamespace();
+  storage()?.removeItem(productConfig.anonymousStateStorageKey);
+}
+
+export function loadUserState(userId: string) {
+  ensureStorageNamespace();
+  const target = storage();
+  if (!target) return null;
+  const state = parseState(target.getItem(userStateStorageKey(userId)));
+  return state?.user?.id === userId ? state : null;
 }
 
 export function loadState(): AppState {
-  if (typeof window === "undefined") return structuredClone(defaultState);
+  ensureStorageNamespace();
+  const session = readSession();
+  if (session) {
+    const state = loadUserState(session.userId);
+    if (state) return state;
+    storage()?.removeItem(productConfig.sessionStorageKey);
+  }
+  return loadAnonymousState();
+}
+
+export function saveUserState(state: AppState) {
+  ensureStorageNamespace();
+  const target = storage();
+  if (!target || !state.user) return;
+  target.setItem(userStateStorageKey(state.user.id), JSON.stringify(state));
   try {
-    const value: unknown = JSON.parse(
-      localStorage.getItem(productConfig.storageKey) ?? "null",
+    const accounts: unknown = JSON.parse(
+      target.getItem(productConfig.accountsStorageKey) ?? "[]",
     );
-    if (value && typeof value === "object" && "schemaVersion" in value) {
-      if (value.schemaVersion === 3)
-        return migrateToV3(value as Record<string, unknown>);
-      if (value.schemaVersion === 1 || value.schemaVersion === 2)
-        return migrateToV3(value as Record<string, unknown>);
+    if (Array.isArray(accounts)) {
+      const next = (accounts as LocalAccount[]).map((account) =>
+        account.user.id === state.user!.id
+          ? { ...account, user: state.user! }
+          : account,
+      );
+      target.setItem(productConfig.accountsStorageKey, JSON.stringify(next));
     }
   } catch {
-    /* Invalid mock data falls back to a safe seed. */
+    /* A malformed account registry is handled by the auth repository. */
   }
-  return structuredClone(defaultState);
 }
-
-export const persistenceMigration = { migrateTarget, migrateToV3 };
 
 export function saveState(state: AppState) {
-  if (typeof window !== "undefined")
-    localStorage.setItem(productConfig.storageKey, JSON.stringify(state));
+  ensureStorageNamespace();
+  const target = storage();
+  if (!target) return;
+  const session = readSession();
+  if (session && state.user?.id === session.userId) {
+    saveUserState(state);
+    return;
+  }
+  target.setItem(productConfig.anonymousStateStorageKey, JSON.stringify(state));
 }
+
+export const persistenceMigration = { ensureStorageNamespace };

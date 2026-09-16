@@ -22,8 +22,8 @@ export default async function CheckoutSuccessPage({
             Your {plan.name} plan is unlocked.
           </h1>
           <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-muted-foreground">
-            Your local demo account now has paid-student access. No real payment
-            was processed, and the displayed {plan.access.toLowerCase()} access
+            Your local account now has paid-student access. No real payment was
+            processed, and the displayed {plan.access.toLowerCase()} access
             period is not enforced in this MVP.
           </p>
           <Button asChild size="lg" className="mt-7">

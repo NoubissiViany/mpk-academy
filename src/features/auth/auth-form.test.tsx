@@ -6,9 +6,9 @@ import { productConfig } from "@/config/product";
 import { defaultState } from "@/data/mock-state";
 import { diagnosticQuestions } from "@/data/questions";
 import { scoreDiagnostic } from "@/lib/domain/diagnostic";
-import { saveState } from "@/lib/persistence";
+import { loadState, saveState } from "@/lib/persistence";
 import { guestAssessmentRepository } from "@/repositories/guest-assessment";
-import { mockAuthRepository } from "@/repositories/mock";
+import { localAuthRepository } from "@/repositories/local-auth";
 import { AuthForm } from "./auth-form";
 
 const { push } = vi.hoisted(() => ({ push: vi.fn() }));
@@ -80,10 +80,8 @@ describe("guest assessment registration handoff", () => {
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith("/checkout?plan=complete"),
     );
-    const persisted = JSON.parse(
-      localStorage.getItem(productConfig.storageKey) ?? "null",
-    );
-    expect(persisted.user.email).toBe("learner@example.com");
+    const persisted = loadState();
+    expect(persisted.user?.email).toBe("learner@example.com");
     expect(persisted.diagnosticIntake).toEqual(intake);
     expect(persisted.diagnosticAnswers).toEqual(answers);
     expect(persisted.diagnosticResult).toEqual(result);
@@ -99,7 +97,7 @@ describe("guest assessment registration handoff", () => {
 
   it("retains the guest assessment when registration fails", async () => {
     const session = await createGuestAssessment();
-    vi.spyOn(mockAuthRepository, "register").mockRejectedValueOnce(
+    vi.spyOn(localAuthRepository, "register").mockRejectedValueOnce(
       new Error("Registration failed"),
     );
     render(
@@ -119,5 +117,32 @@ describe("guest assessment registration handoff", () => {
     );
     expect(push).not.toHaveBeenCalled();
     expect(await guestAssessmentRepository.getActive()).toEqual(session);
+  });
+
+  it("validates a stored local account during sign-in", async () => {
+    const account = await localAuthRepository.register({
+      firstName: "Amina",
+      lastName: "Diallo",
+      email: "amina@example.com",
+      password: "password123",
+      locale: "en",
+      assistance: "full",
+      goal: { exam: "TEF Canada", target: "NCLC 7" },
+    });
+    saveState({ ...structuredClone(defaultState), user: account });
+    await localAuthRepository.logout();
+
+    render(
+      <AppProvider>
+        <AuthForm mode="login" />
+      </AppProvider>,
+    );
+    const user = userEvent.setup();
+    await user.type(await screen.findByLabelText("Email"), account.email);
+    await user.type(screen.getByLabelText("Password"), "password123");
+    await user.click(screen.getByRole("button", { name: "Sign in" }));
+
+    await waitFor(() => expect(push).toHaveBeenCalledWith("/dashboard"));
+    expect(loadState().user?.id).toBe(account.id);
   });
 });

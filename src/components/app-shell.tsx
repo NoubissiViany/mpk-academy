@@ -3,7 +3,7 @@ import Link from "next/link";
 import { LogOut, Menu, X } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useApp } from "@/components/providers/app-provider";
 import { Wordmark } from "@/components/shared";
@@ -15,15 +15,42 @@ import {
   quickNavigation,
   trackNavigation,
 } from "@/config/navigation";
+import { getPaidPlan } from "@/config/product";
+import { defaultState } from "@/data/mock-state";
 import { cn } from "@/lib/utils";
+import { localAuthRepository } from "@/repositories/local-auth";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { state, updateUser } = useApp();
+  const { state, hydrated, setState } = useApp();
   const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (!hydrated || state.user) return;
+    const destination = `${pathname}${window.location.search}`;
+    router.replace(`/login?next=${encodeURIComponent(destination)}`);
+  }, [hydrated, pathname, router, state.user]);
+
+  if (!hydrated || !state.user)
+    return (
+      <div
+        className="min-h-screen animate-pulse bg-muted"
+        aria-label="Checking local session"
+      />
+    );
   if (pathname === "/exam/session") return <>{children}</>;
   const locale = state.user?.locale ?? "en";
+  const activePlan = state.planAccess
+    ? getPaidPlan(state.planAccess.planId)
+    : null;
+  const accessUntil = state.planAccess?.accessUntil
+    ? new Intl.DateTimeFormat(locale === "fr" ? "fr-CA" : "en-CA", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+        timeZone: "UTC",
+      }).format(new Date(state.planAccess.accessUntil))
+    : null;
   type NavigationItem = {
     href: string;
     label: string;
@@ -87,8 +114,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <LanguageSwitcher />
       <button
         className="mt-3 flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-semibold text-muted-foreground hover:bg-muted"
-        onClick={() => {
-          updateUser(null);
+        onClick={async () => {
+          await localAuthRepository.logout();
+          setState(structuredClone(defaultState));
           router.push("/");
         }}
       >
@@ -97,15 +125,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </button>
       <div className="mt-4 flex items-center gap-3 border-t pt-5">
         <div className="grid size-9 place-items-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
-          {state.user?.firstName?.[0] ?? "A"}
+          {state.user?.firstName?.[0] ?? "L"}
         </div>
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold">
-            {state.user?.firstName ?? "Alex"} {state.user?.lastName ?? "Morgan"}
+            {state.user?.firstName ?? "Learner"} {state.user?.lastName ?? ""}
           </p>
           <p className="truncate text-xs text-muted-foreground">
-            {state.user?.tier === "paid_student" ? "Full program" : "Free plan"}
+            {state.user?.tier === "paid_student"
+              ? `${activePlan?.name ?? "Complete"} Plan`
+              : "Free plan"}
           </p>
+          {state.user?.tier === "paid_student" && accessUntil && (
+            <p className="truncate text-[11px] text-muted-foreground">
+              Access until {accessUntil}
+            </p>
+          )}
         </div>
       </div>
     </>

@@ -1,7 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen, Clock3, Headphones, Mic2, PenLine } from "lucide-react";
+import {
+  BookOpen,
+  Check,
+  Clock3,
+  Headphones,
+  Mic2,
+  PenLine,
+} from "lucide-react";
 import { useApp } from "@/components/providers/app-provider";
 import { LockedContent, ModeBadge, PageHeader } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -79,14 +86,17 @@ export function MockOverview() {
               5 Reading · 5 Listening · {config.scaledMock.writingTasks} Writing
               · {config.scaledMock.speakingTasks} Speaking
             </p>
-            <p className="mt-2 text-xs text-muted-foreground">
-              This independent simulation is shorter than the official exam and
-              does not produce an official score. Productive tasks receive
-              completion credit and are not automatically language-scored.
-            </p>
+            <ul className="mt-4 list-inside list-disc space-y-2 text-xs text-muted-foreground">
+              <li>This shortened MPK mock is not the official exam.</li>
+              <li>It does not produce an official score.</li>
+              <li>
+                Writing and speaking are included for rehearsal but are not
+                corrected or scored.
+              </li>
+            </ul>
           </div>
           <Button asChild>
-            <Link href="/exam/setup">Prepare mock</Link>
+            <Link href="/exam/setup">Start mock exam</Link>
           </Button>
         </CardContent>
       </Card>
@@ -135,6 +145,27 @@ export function MockSetup() {
               </strong>
             </div>
           </div>
+          <div className="mt-6 rounded-xl border border-exam/20 bg-exam/5 p-5">
+            <h2 className="font-bold">Independent exam environment</h2>
+            <ul className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+              {[
+                "French-only environment",
+                "No hints",
+                "No English explanations",
+                "Timed experience",
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-2">
+                  <Check className="size-4 text-exam" aria-hidden="true" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <p className="mt-4 rounded-xl border border-exam/20 bg-exam/5 p-4 text-sm font-semibold">
+            Only Reading and Listening contribute to the MPK comprehension
+            result. Writing and Speaking are rehearsal-only and are not
+            corrected or scored.
+          </p>
           <div className="mt-6 rounded-xl bg-exam/5 p-5">
             <h2 className="font-bold">
               {config.shortName}-specific rules apply.
@@ -150,7 +181,7 @@ export function MockSetup() {
             size="lg"
             className="mt-7 w-full bg-exam hover:bg-exam/90"
           >
-            <Link href="/exam/session">Start shortened mock</Link>
+            <Link href="/exam/session">Start mock exam</Link>
           </Button>
           <p className="mt-4 text-center text-xs text-muted-foreground">
             Need a different exam? Switch your active profile in{" "}

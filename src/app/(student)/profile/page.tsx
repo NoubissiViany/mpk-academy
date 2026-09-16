@@ -5,24 +5,40 @@ import { useApp } from "@/components/providers/app-provider";
 import { PageHeader } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { getPaidPlan } from "@/config/product";
 
 export default function ProfilePage() {
   const { state } = useApp();
   const user = state.user;
   const exam = user?.goal.exam;
-  const profile =
-    exam === "TEF Canada" || exam === "TCF Canada"
-      ? state.examProfiles[exam]
-      : null;
+  const paidPlan = state.planAccess
+    ? getPaidPlan(state.planAccess.planId)
+    : null;
+  const accessUntil = state.planAccess?.accessUntil
+    ? new Intl.DateTimeFormat(user?.locale === "fr" ? "fr-CA" : "en-CA", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+        timeZone: "UTC",
+      }).format(new Date(state.planAccess.accessUntil))
+    : null;
   const rows = [
     ["Name", `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim()],
     ["Email", user?.email ?? "—"],
-    ["Plan", user?.tier === "paid_student" ? "Full program" : "Free plan"],
+    [
+      "Plan",
+      user?.tier === "paid_student"
+        ? `${paidPlan?.name ?? "Complete"} Plan`
+        : "Free plan",
+    ],
+    ...(accessUntil ? [["Access until", accessUntil]] : []),
     ["Active exam", exam ?? "Not selected"],
     ["NCLC target", user?.goal.target ?? "I'm not sure"],
     [
-      "Exam readiness",
-      profile?.readiness == null ? "Not assessed yet" : `${profile.readiness}%`,
+      "Diagnostic readiness",
+      state.diagnosticResult == null
+        ? "Not assessed yet"
+        : `${state.diagnosticResult.score}%`,
     ],
   ];
   return (

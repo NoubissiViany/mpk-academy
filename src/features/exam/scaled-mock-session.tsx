@@ -23,6 +23,22 @@ type MockItem =
       task: ProductivePracticeTask;
     };
 
+export function scoreMockComprehension(
+  items: MockItem[],
+  answers: Record<string, string>,
+) {
+  const comprehension = items.filter(
+    (entry): entry is Extract<MockItem, { question: Question }> =>
+      "question" in entry,
+  );
+  const correct = comprehension.filter(
+    (entry) =>
+      answers[entry.key]?.trim().toLowerCase() ===
+      entry.question.correctAnswer.toLowerCase(),
+  ).length;
+  return Math.round((correct / Math.max(comprehension.length, 1)) * 100);
+}
+
 export function ScaledMockSession() {
   const router = useRouter();
   const { state, setState } = useApp();
@@ -46,25 +62,7 @@ export function ScaledMockSession() {
   }, []);
 
   const submit = () => {
-    const comprehension = items.filter(
-      (entry): entry is Extract<MockItem, { question: Question }> =>
-        "question" in entry,
-    );
-    const productive = items.filter(
-      (entry): entry is Extract<MockItem, { task: ProductivePracticeTask }> =>
-        "task" in entry,
-    );
-    const correct = comprehension.filter(
-      (entry) =>
-        answers[entry.key]?.trim().toLowerCase() ===
-        entry.question.correctAnswer.toLowerCase(),
-    ).length;
-    const productiveCompleted = productive.filter((entry) =>
-      answers[entry.key]?.trim(),
-    ).length;
-    const score = Math.round(
-      ((correct + productiveCompleted) / items.length) * 100,
-    );
+    const score = scoreMockComprehension(items, answers);
     setState((current) => {
       const profile =
         current.examProfiles[exam] ?? createEmptyExamProfile(exam);
@@ -83,14 +81,17 @@ export function ScaledMockSession() {
           ...current.progress,
           simulationsCompleted: current.progress.simulationsCompleted + 1,
           simulationAverage: Math.round(
-            (current.progress.simulationAverage + score) / 2,
+            (current.progress.simulationAverage *
+              current.progress.simulationsCompleted +
+              score) /
+              (current.progress.simulationsCompleted + 1),
           ),
         },
         activities: [
           {
             id: crypto.randomUUID(),
             label: `${exam} shortened mock`,
-            detail: `${score}% MPK simulation result`,
+            detail: `${score}% MPK comprehension result`,
             timestamp: new Date().toISOString(),
           },
           ...current.activities,
@@ -186,7 +187,7 @@ export function ScaledMockSession() {
         </div>
         <p className="mt-5 text-center text-xs text-muted-foreground">
           Simulation indépendante MPK raccourcie — aucun résultat officiel
-          TEF/TCF.
+          TEF/TCF. L’expression écrite et orale n’est ni corrigée ni notée.
         </p>
       </main>
     </div>
@@ -228,7 +229,8 @@ function ProductiveMockItem({
           <span>
             <strong>J’ai terminé ma réponse orale chronométrée</strong>
             <span className="mt-1 block text-sm text-muted-foreground">
-              Aucun audio n’est enregistré.
+              Aucun audio n’est enregistré. Cette réponse sert uniquement à la
+              répétition et ne sera ni corrigée ni notée.
             </span>
           </span>
         </label>

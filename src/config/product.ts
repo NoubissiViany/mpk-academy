@@ -12,6 +12,7 @@ export interface ProductPlan {
   approximate: boolean;
   paymentModel: string;
   access: string;
+  accessMonths: number | null;
   purpose: string;
   cta: string;
   featured: boolean;
@@ -25,11 +26,17 @@ export const productConfig = {
   freeLessonCount: 3,
   supportedLanguages: ["en", "fr"] satisfies Locale[],
   storageKey: "mpk-academy:v1",
+  storageNamespaceVersionKey: "mpk-academy:storage-version",
+  storageNamespaceVersion: "2",
+  anonymousStateStorageKey: "mpk-academy:anonymous-state:v2",
+  accountsStorageKey: "mpk-academy:accounts:v1",
+  sessionStorageKey: "mpk-academy:session:v1",
+  userStateStoragePrefix: "mpk-academy:user-state:v1:",
   guestAssessmentStorageKey: "mpk-academy:guest-assessment:v1",
   guestAssessmentTtlMs: 7 * 24 * 60 * 60 * 1000,
   localeCookie: "mpk_locale",
   readinessDisclaimer:
-    "MPK Readiness is a preparation indicator based on activity inside MPK Academy. It is not an official TEF/TCF score or immigration outcome.",
+    "MPK diagnostic readiness is a provisional learning indicator based on the latest assessment. It is not an official TEF/TCF score or immigration outcome.",
   certificateDisclaimer:
     "This is a course completion certificate, not an official TEF/TCF score or immigration credential.",
 } as const;
@@ -48,6 +55,7 @@ export const productPlans = [
     approximate: false,
     paymentModel: "No payment required",
     access: "Assessment and results",
+    accessMonths: null,
     purpose: "Discover your weaknesses",
     cta: "Start free assessment",
     featured: false,
@@ -65,6 +73,7 @@ export const productPlans = [
     approximate: true,
     paymentModel: "One-time purchase",
     access: "3 months",
+    accessMonths: 3,
     purpose: "Strengthen your French and all four skills",
     cta: "Choose Essential",
     featured: false,
@@ -82,6 +91,7 @@ export const productPlans = [
     approximate: true,
     paymentModel: "One-time purchase",
     access: "6 months",
+    accessMonths: 6,
     purpose: "Full personalized TEF/TCF preparation",
     cta: "Choose Complete",
     featured: true,
@@ -99,6 +109,7 @@ export const productPlans = [
     approximate: true,
     paymentModel: "One-time purchase",
     access: "6 months",
+    accessMonths: 6,
     purpose: "Full preparation with higher AI and mock-exam limits",
     cta: "Choose Intensive",
     featured: false,
@@ -150,3 +161,19 @@ export const formatPlanPrice = (
   plan: Pick<ProductPlan, "price" | "approximate">,
   locale: Locale = "en",
 ) => `${plan.approximate ? "~" : ""}${formatPrice(plan.price, locale)}`;
+
+export function calculatePlanAccessUntil(
+  planId: PaidPlanId,
+  purchasedAt = new Date(),
+) {
+  const months = getPaidPlan(planId).accessMonths;
+  const accessUntil = new Date(purchasedAt);
+  const originalDay = accessUntil.getUTCDate();
+  accessUntil.setUTCDate(1);
+  accessUntil.setUTCMonth(accessUntil.getUTCMonth() + (months ?? 0));
+  const lastDay = new Date(
+    Date.UTC(accessUntil.getUTCFullYear(), accessUntil.getUTCMonth() + 1, 0),
+  ).getUTCDate();
+  accessUntil.setUTCDate(Math.min(originalDay, lastDay));
+  return accessUntil;
+}

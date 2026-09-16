@@ -75,7 +75,11 @@ const moduleData: Array<[string, string, string, string[]]> = [
     "listening-strategies",
     "Listening strategies",
     "Stratégies d’écoute",
-    ["Hear the main idea", "Capture key details", "Recognize speaker intent"],
+    [
+      "Hear the main idea",
+      "Listening for specific information",
+      "Recognize speaker intent",
+    ],
   ],
   [
     "writing-techniques",
@@ -129,3 +133,26 @@ export const mockCourse: Course = {
 };
 
 export const allLessons = courseModules.flatMap((module) => module.lessons);
+
+export const learningCategories = [
+  {
+    id: "foundations",
+    title: "Foundations",
+    moduleIds: ["grammar", "vocabulary", "pronunciation"],
+  },
+  {
+    id: "exam-skills",
+    title: "Exam Skills",
+    moduleIds: [
+      "reading-strategies",
+      "listening-strategies",
+      "writing-techniques",
+      "speaking-techniques",
+    ],
+  },
+  {
+    id: "exam-strategy",
+    title: "Exam Strategy",
+    moduleIds: ["exam-strategies"],
+  },
+] as const;
