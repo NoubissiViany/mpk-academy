@@ -12,11 +12,13 @@ import {
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useApp } from "@/components/providers/app-provider";
+import { submitDiagnosticAction } from "@/app/actions/learner";
 import { QuestionCard } from "@/features/assessment/question-card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { diagnosticSkillContent } from "@/config/diagnostic";
 import { recommendedPaidPlanId } from "@/config/product";
+import { defaultState } from "@/data/mock-state";
 import { diagnosticQuestions } from "@/data/questions";
 import { scoreDiagnostic } from "@/lib/domain/diagnostic";
 import { applyDiagnosticResult } from "@/lib/domain/onboarding";
@@ -124,7 +126,7 @@ export function DiagnosticFlow() {
 
 function DiagnosticExperience() {
   const router = useRouter();
-  const { state, setState } = useApp();
+  const { state, setState, replaceState } = useApp();
   const [stage, setStage] = useState<"intro" | "questions">("intro");
   const [index, setIndex] = useState(0);
   const [finishing, setFinishing] = useState(false);
@@ -165,7 +167,52 @@ function DiagnosticExperience() {
       detail: `${result.level} estimated level`,
       timestamp: new Date().toISOString(),
     };
-    if (!state.user) {
+    if (state.user) {
+      const saved = await submitDiagnosticAction({
+        intake: completedIntake,
+        answers,
+      });
+      if (!saved.ok) {
+        if (saved.reason === "unauthenticated") {
+          try {
+            await guestAssessmentRepository.create({
+              intake: completedIntake,
+              answers,
+              result,
+              activity,
+              recommendedPlanId: recommendedPaidPlanId(completedIntake.target),
+            });
+          } catch {
+            setFinishing(false);
+            toast.error(
+              "Your session expired, and we could not preserve the assessment. Keep this page open and try again.",
+            );
+            return;
+          }
+          setState(
+            applyDiagnosticResult(
+              structuredClone(defaultState),
+              completedIntake,
+              result,
+              activity,
+            ),
+          );
+          setFinishing(false);
+          toast.error(
+            "Your session expired. Your assessment is saved on this device—sign in to continue.",
+          );
+          router.push("/login?next=%2Fdiagnostic%2Fresults");
+          return;
+        }
+        setFinishing(false);
+        toast.error(saved.message);
+        return;
+      }
+      replaceState(saved.snapshot);
+      router.push(`/diagnostic/results?assessment=${saved.data.id}`);
+      router.refresh();
+      return;
+    } else {
       try {
         await guestAssessmentRepository.create({
           intake: completedIntake,

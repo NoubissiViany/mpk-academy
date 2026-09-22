@@ -2,12 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { productConfig } from "@/config/product";
 import { defaultState } from "@/data/mock-state";
 import { demoState } from "@/test/fixtures";
-import {
-  ensureStorageNamespace,
-  loadState,
-  loadUserState,
-  saveState,
-} from "./persistence";
+import { ensureStorageNamespace, loadState, saveState } from "./persistence";
 
 describe("versioned, user-scoped persistence", () => {
   beforeEach(() => localStorage.clear());
@@ -39,7 +34,60 @@ describe("versioned, user-scoped persistence", () => {
     expect(loadState().diagnosticAnswers).toEqual({ question: "answer" });
   });
 
-  it("stores signed-in learners under their own state keys", () => {
+  it("never restores authenticated or learner-only fields from anonymous storage", () => {
+    localStorage.setItem(
+      productConfig.storageNamespaceVersionKey,
+      productConfig.storageNamespaceVersion,
+    );
+    localStorage.setItem(
+      productConfig.anonymousStateStorageKey,
+      JSON.stringify({
+        ...demoState,
+        schemaVersion: 5,
+        diagnosticAnswers: { d1: "a" },
+      }),
+    );
+
+    const loaded = loadState();
+
+    expect(loaded.user).toBeNull();
+    expect(loaded.planAccess).toBeNull();
+    expect(loaded.examProfiles).toEqual({});
+    expect(loaded.mistakes).toEqual([]);
+    expect(loaded.activities).toEqual([]);
+    expect(loaded.progress).toEqual(defaultState.progress);
+    expect(loaded.diagnosticAnswers).toEqual({ d1: "a" });
+  });
+
+  it("clears legacy auth keys without deleting a guest assessment", () => {
+    const guest = { id: "guest-1", expiresAt: "2099-01-01T00:00:00.000Z" };
+    localStorage.setItem(productConfig.storageNamespaceVersionKey, "3");
+    localStorage.setItem(productConfig.accountsStorageKey, "legacy accounts");
+    localStorage.setItem(productConfig.sessionStorageKey, "legacy session");
+    localStorage.setItem(
+      `${productConfig.userStateStoragePrefix}user-1`,
+      "legacy user state",
+    );
+    localStorage.setItem(
+      productConfig.guestAssessmentStorageKey,
+      JSON.stringify(guest),
+    );
+
+    ensureStorageNamespace();
+
+    expect(localStorage.getItem(productConfig.accountsStorageKey)).toBeNull();
+    expect(localStorage.getItem(productConfig.sessionStorageKey)).toBeNull();
+    expect(
+      localStorage.getItem(`${productConfig.userStateStoragePrefix}user-1`),
+    ).toBeNull();
+    expect(
+      JSON.parse(
+        localStorage.getItem(productConfig.guestAssessmentStorageKey) ?? "null",
+      ),
+    ).toEqual(guest);
+  });
+
+  it("never persists authenticated learner data in local storage", () => {
     ensureStorageNamespace();
     localStorage.setItem(
       productConfig.sessionStorageKey,
@@ -49,8 +97,7 @@ describe("versioned, user-scoped persistence", () => {
       }),
     );
     saveState(demoState);
-    expect(loadUserState(demoState.user!.id)?.user?.firstName).toBe("Alex");
-    expect(loadState().user?.id).toBe(demoState.user!.id);
+    expect(loadState().user).toBeNull();
     expect(
       localStorage.getItem(productConfig.anonymousStateStorageKey),
     ).toBeNull();

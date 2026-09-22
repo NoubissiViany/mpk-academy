@@ -1,10 +1,8 @@
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { AppProvider } from "@/components/providers/app-provider";
 import { demoState } from "@/test/fixtures";
-import { diagnosticQuestions } from "@/data/questions";
-import { scoreDiagnostic } from "@/lib/domain/diagnostic";
-import { loadState, saveState } from "@/lib/persistence";
+import type { AppState } from "@/types/domain";
 import { DashboardView } from "./dashboard-view";
 
 afterEach(() => {
@@ -13,10 +11,47 @@ afterEach(() => {
 });
 
 describe("exam-centred dashboard", () => {
-  it("shows the active exam, NCLC target, readiness, and four skills", async () => {
-    saveState(demoState);
+  it("shows only assessment access for a free account", async () => {
+    const initialState = {
+      ...demoState,
+      user: { ...demoState.user!, tier: "free_student" },
+      planAccess: null,
+    } satisfies AppState;
     render(
-      <AppProvider>
+      <AppProvider initialState={initialState}>
+        <DashboardView />
+      </AppProvider>,
+    );
+    expect(
+      await screen.findByRole("heading", { name: /estimated level/ }),
+    ).toBeVisible();
+    expect(screen.getByText(/main weakness/)).toBeVisible();
+    expect(screen.queryByText("YOUR 4 EXAM SKILLS")).not.toBeInTheDocument();
+  });
+
+  it("shows basic progress without personalization for Essential", async () => {
+    const initialState = {
+      ...demoState,
+      planAccess: { ...demoState.planAccess!, planId: "essential" },
+    } satisfies AppState;
+    render(
+      <AppProvider initialState={initialState}>
+        <DashboardView />
+      </AppProvider>,
+    );
+    expect(
+      await screen.findByRole("heading", {
+        name: "Continue your guided lessons",
+      }),
+    ).toBeVisible();
+    expect(screen.getByText("Practice accuracy")).toBeVisible();
+    expect(screen.queryByText("Diagnostic readiness")).not.toBeInTheDocument();
+    expect(screen.queryByText("Start with grammar")).not.toBeInTheDocument();
+  });
+
+  it("shows the active exam, NCLC target, readiness, and four skills", async () => {
+    render(
+      <AppProvider initialState={demoState}>
         <DashboardView />
       </AppProvider>,
     );
@@ -30,7 +65,7 @@ describe("exam-centred dashboard", () => {
   });
 
   it("requires an exam choice when the learner is unsure", async () => {
-    saveState({
+    const initialState = {
       ...demoState,
       user: demoState.user
         ? {
@@ -38,9 +73,9 @@ describe("exam-centred dashboard", () => {
             goal: { ...demoState.user.goal, exam: "Not sure yet" },
           }
         : null,
-    });
+    } satisfies AppState;
     render(
-      <AppProvider>
+      <AppProvider initialState={initialState}>
         <DashboardView />
       </AppProvider>,
     );
@@ -55,50 +90,5 @@ describe("exam-centred dashboard", () => {
     expect(
       screen.getByRole("button", { name: "Prepare for TCF" }),
     ).toBeVisible();
-  });
-
-  it("shows the assessment handoff once after checkout", async () => {
-    const result = scoreDiagnostic(diagnosticQuestions, {});
-    saveState({
-      ...demoState,
-      diagnosticResult: result,
-      postCheckoutWelcomePending: true,
-    });
-    const first = render(
-      <AppProvider>
-        <DashboardView />
-      </AppProvider>,
-    );
-    expect(
-      await screen.findByRole("heading", {
-        name: "Welcome to MPK Academy, Alex",
-      }),
-    ).toBeVisible();
-    expect(screen.getAllByText(`${result.score}%`).length).toBeGreaterThan(0);
-    expect(screen.getAllByText("RECOMMENDED NEXT")).toHaveLength(1);
-    expect(
-      screen.getByRole("heading", { name: "Start with grammar" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("link", { name: "Start recommended activity" }),
-    ).toBeVisible();
-    await waitFor(() =>
-      expect(loadState().postCheckoutWelcomePending).toBe(false),
-    );
-
-    first.unmount();
-    render(
-      <AppProvider>
-        <DashboardView />
-      </AppProvider>,
-    );
-    expect(
-      await screen.findByRole("heading", { name: "Welcome back, Alex" }),
-    ).toBeVisible();
-    expect(
-      screen.queryByRole("heading", {
-        name: "Welcome to MPK Academy, Alex",
-      }),
-    ).not.toBeInTheDocument();
   });
 });

@@ -13,13 +13,6 @@ export type GuestAssessmentSessionInput = Omit<
   "id" | "createdAt" | "expiresAt" | "status" | "claimedByUserId" | "claimedAt"
 >;
 
-export interface AuthRepository {
-  login(email: string, password: string): Promise<User>;
-  register(
-    input: Omit<User, "id" | "tier"> & { password: string },
-  ): Promise<User>;
-  logout(): Promise<void>;
-}
 export interface UserRepository {
   getCurrent(): Promise<User | null>;
   update(user: User): Promise<User>;
@@ -47,9 +40,6 @@ export interface GuestAssessmentRepository {
     userId: string,
   ): Promise<GuestAssessmentSession | null>;
   clear(sessionId?: string): Promise<void>;
-}
-export interface PaymentRepository {
-  checkout(): Promise<"success" | "failed" | "cancelled">;
 }
 export interface RecommendationRepository {
   getRecommendations(state: AppState): Promise<Recommendation[]>;

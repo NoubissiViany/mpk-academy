@@ -3,16 +3,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Clock3, Send } from "lucide-react";
+import { toast } from "sonner";
+import { submitMockExamAction } from "@/app/actions/learner";
 import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { examConfigurations, productiveTasks } from "@/config/exams";
 import { getExamQuestionPool } from "@/data/exam-question-pools";
 import { QuestionCard } from "@/features/assessment/question-card";
-import {
-  createEmptyExamProfile,
-  updateMockReadiness,
-} from "@/lib/domain/exam-progress";
 import type { ExamId, ProductivePracticeTask, Question } from "@/types/domain";
 
 type MockItem =
@@ -41,7 +39,7 @@ export function scoreMockComprehension(
 
 export function ScaledMockSession() {
   const router = useRouter();
-  const { state, setState } = useApp();
+  const { state, replaceState } = useApp();
   const exam: ExamId =
     state.user?.goal.exam === "TCF Canada" ? "TCF Canada" : "TEF Canada";
   const config = examConfigurations[exam];
@@ -51,6 +49,7 @@ export function ScaledMockSession() {
   const [seconds, setSeconds] = useState(
     config.scaledMock.durationMinutes * 60,
   );
+  const [saving, setSaving] = useState(false);
   const item = items[index];
 
   useEffect(() => {
@@ -61,44 +60,21 @@ export function ScaledMockSession() {
     return () => window.clearInterval(timer);
   }, []);
 
-  const submit = () => {
-    const score = scoreMockComprehension(items, answers);
-    setState((current) => {
-      const profile =
-        current.examProfiles[exam] ?? createEmptyExamProfile(exam);
-      return {
-        ...current,
-        lastExamScore: score,
-        examProfiles: {
-          ...current.examProfiles,
-          [exam]: updateMockReadiness(
-            profile,
-            score,
-            config.scaledMock.durationMinutes,
-          ),
-        },
-        progress: {
-          ...current.progress,
-          simulationsCompleted: current.progress.simulationsCompleted + 1,
-          simulationAverage: Math.round(
-            (current.progress.simulationAverage *
-              current.progress.simulationsCompleted +
-              score) /
-              (current.progress.simulationsCompleted + 1),
-          ),
-        },
-        activities: [
-          {
-            id: crypto.randomUUID(),
-            label: `${exam} shortened mock`,
-            detail: `${score}% MPK comprehension result`,
-            timestamp: new Date().toISOString(),
-          },
-          ...current.activities,
-        ],
-      };
+  const submit = async () => {
+    setSaving(true);
+    const result = await submitMockExamAction({
+      exam,
+      answers: items.map((entry, sequence) => ({
+        questionId: "question" in entry ? entry.question.id : entry.task.id,
+        sequence,
+        answer: answers[entry.key] ?? "",
+      })),
     });
-    router.push("/exam/results");
+    setSaving(false);
+    if (!result.ok) return toast.error(result.message);
+    replaceState(result.snapshot);
+    router.push(`/exam/results?assessment=${result.data.id}`);
+    router.refresh();
   };
 
   const oneWayListening =
@@ -179,9 +155,9 @@ export function ScaledMockSession() {
           {index < items.length - 1 ? (
             <Button onClick={() => setIndex(index + 1)}>Suivant</Button>
           ) : (
-            <Button onClick={submit}>
+            <Button disabled={saving} onClick={submit}>
               <Send className="size-4" />
-              Soumettre
+              {saving ? "Enregistrement…" : "Soumettre"}
             </Button>
           )}
         </div>

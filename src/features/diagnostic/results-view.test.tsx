@@ -5,6 +5,8 @@ import { defaultState } from "@/data/mock-state";
 import { diagnosticQuestions } from "@/data/questions";
 import { scoreDiagnostic } from "@/lib/domain/diagnostic";
 import { saveState } from "@/lib/persistence";
+import { demoState } from "@/test/fixtures";
+import type { AppState } from "@/types/domain";
 import { ResultsView } from "./results-view";
 
 afterEach(() => {
@@ -86,6 +88,51 @@ describe("ResultsView", () => {
       ).toHaveAttribute("href", `/register?plan=${planId}`);
     },
   );
+
+  it("hides plan recommendations from paid users", async () => {
+    const initialState = {
+      ...demoState,
+      planAccess: { ...demoState.planAccess!, planId: "essential" },
+    } satisfies AppState;
+
+    render(
+      <AppProvider initialState={initialState}>
+        <ResultsView />
+      </AppProvider>,
+    );
+
+    expect(
+      await screen.findByRole("heading", { name: "Your French Assessment" }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("link", { name: "Go to dashboard" }),
+    ).toHaveAttribute("href", "/dashboard");
+    expect(
+      screen.queryByLabelText(/Recommended plan:/),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Recommended for you")).not.toBeInTheDocument();
+    expect(screen.queryByText("Your plan")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Essential" }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("~$119")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Compare all plans" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("keeps the recommendation for an authenticated user without paid access", async () => {
+    render(
+      <AppProvider initialState={{ ...demoState, planAccess: null }}>
+        <ResultsView />
+      </AppProvider>,
+    );
+
+    expect(
+      await screen.findByRole("link", { name: "Continue with Complete" }),
+    ).toHaveAttribute("href", "/checkout?plan=complete");
+    expect(screen.getByText("Recommended for you")).toBeVisible();
+  });
 
   it("offers a path back when no result exists", async () => {
     render(

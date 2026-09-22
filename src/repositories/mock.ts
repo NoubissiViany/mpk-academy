@@ -11,7 +11,6 @@ import type { AppState } from "@/types/domain";
 import type {
   AssessmentRepository,
   CourseRepository,
-  PaymentRepository,
   ProgressRepository,
   QuestionRepository,
   RecommendationRepository,
@@ -56,13 +55,6 @@ export const mockProgressRepository: ProgressRepository = {
 export const mockAssessmentRepository: AssessmentRepository = {
   async scoreDiagnostic(answers) {
     return scoreDiagnostic(diagnosticQuestions, answers);
-  },
-};
-export const mockPaymentRepository: PaymentRepository = {
-  async checkout() {
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    const value = process.env.NEXT_PUBLIC_MOCK_CHECKOUT_OUTCOME;
-    return value === "failed" || value === "cancelled" ? value : "success";
   },
 };
 export const mockRecommendationRepository: RecommendationRepository = {

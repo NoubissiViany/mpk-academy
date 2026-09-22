@@ -4,10 +4,13 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  updateExamGoalAction,
+  updateProfileAction,
+} from "@/app/actions/learner";
 import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { createEmptyExamProfile } from "@/lib/domain/exam-progress";
 
 const schema = z.object({
   firstName: z.string().min(2),
@@ -37,7 +40,7 @@ function Field({
   );
 }
 export function SettingsForm() {
-  const { state, setState, setLocale } = useApp();
+  const { state, replaceState } = useApp();
   const user = state.user;
   const activeExam =
     user?.goal.exam === "TCF Canada" ? "TCF Canada" : "TEF Canada";
@@ -67,31 +70,28 @@ export function SettingsForm() {
         targetDate: user.goal.targetDate ?? "",
       });
   }, [user, form]);
-  const submit = (values: Values) => {
+  const submit = async (values: Values) => {
     if (!user) return;
-    setState((current) => ({
-      ...current,
-      user: {
-        ...user,
-        firstName: values.firstName,
-        lastName: values.lastName,
-        email: values.email,
-        locale: values.locale,
-        assistance: values.assistance,
-        goal: {
-          exam: values.exam,
-          target: values.target,
-          targetDate: values.targetDate || undefined,
-        },
-      },
-      examProfiles: {
-        ...current.examProfiles,
-        [values.exam]:
-          current.examProfiles[values.exam] ??
-          createEmptyExamProfile(values.exam),
-      },
-    }));
-    setLocale(values.locale);
+    const profileResult = await updateProfileAction({
+      firstName: values.firstName,
+      lastName: values.lastName,
+      locale: values.locale,
+      assistance: values.assistance,
+    });
+    if (!profileResult.ok) {
+      toast.error(profileResult.message);
+      return;
+    }
+    const goalResult = await updateExamGoalAction({
+      exam: values.exam,
+      target: values.target,
+      targetDate: values.targetDate,
+    });
+    if (!goalResult.ok) {
+      toast.error(goalResult.message);
+      return;
+    }
+    replaceState(goalResult.snapshot);
     toast.success(`${values.exam} dashboard activated`);
   };
   return (
@@ -106,7 +106,19 @@ export function SettingsForm() {
             <Input className="mt-2" {...form.register("lastName")} />
           </Field>
           <Field label="Email">
-            <Input className="mt-2" type="email" {...form.register("email")} />
+            <Input
+              className="mt-2"
+              type="email"
+              readOnly
+              aria-describedby="email-help"
+              {...form.register("email")}
+            />
+            <span
+              id="email-help"
+              className="mt-1 block text-xs font-normal text-muted-foreground"
+            >
+              Email changes are managed through account security.
+            </span>
           </Field>
         </div>
       </section>
@@ -165,12 +177,13 @@ export function SettingsForm() {
       <section className="rounded-2xl border bg-card p-5 sm:p-7">
         <h2 className="text-lg font-bold">Account & privacy</h2>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Mock data is stored only in this browser. Production account export,
-          deletion, consent, and privacy controls require a secure backend.
+          Your profile and learning progress are stored securely in your
+          account. Account export and deletion controls will be added before
+          general availability.
         </p>
       </section>
-      <Button type="submit" size="lg">
-        Save changes
+      <Button type="submit" size="lg" disabled={form.formState.isSubmitting}>
+        {form.formState.isSubmitting ? "Saving…" : "Save changes"}
       </Button>
     </form>
   );

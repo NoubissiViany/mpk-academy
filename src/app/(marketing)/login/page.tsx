@@ -1,6 +1,6 @@
 import { AuthForm } from "@/features/auth/auth-form";
 import { Card, CardContent } from "@/components/ui/card";
-import { getPaidPlan } from "@/config/product";
+import { isPaidPlanId } from "@/config/product";
 export const metadata = { title: "Sign in" };
 export default async function LoginPage({
   searchParams,
@@ -13,8 +13,7 @@ export default async function LoginPage({
   const resolved = await searchParams;
   const rawPlan = resolved.plan;
   const candidate = Array.isArray(rawPlan) ? rawPlan[0] : rawPlan;
-  const planId =
-    candidate === undefined ? undefined : getPaidPlan(candidate).id;
+  const planId = isPaidPlanId(candidate) ? candidate : undefined;
   return (
     <div className="container-page py-16">
       <Card className="mx-auto max-w-md">
@@ -24,8 +23,8 @@ export default async function LoginPage({
             Continue your preparation.
           </h1>
           <p className="mt-3 mb-7 text-sm leading-6 text-muted-foreground">
-            Enter the email and password you used when creating your account on
-            this browser. Local accounts are available only in this browser.
+            Enter your MPK Academy email and password. Your account and learning
+            progress are securely stored with Supabase.
           </p>
           <AuthForm
             mode="login"

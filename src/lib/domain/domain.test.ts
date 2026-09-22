@@ -65,13 +65,28 @@ describe("diagnostic scoring", () => {
   });
 });
 describe("access policies", () => {
-  const paidLesson = { isFree: false };
-  it("allows free preview and protects premium activities", () => {
-    expect(canAccessLesson("free_student", { isFree: true })).toBe(true);
-    expect(canAccessLesson("free_student", paidLesson)).toBe(false);
-    expect(canAccessExam("free_student")).toBe(false);
-    expect(canAccessExam("paid_student")).toBe(true);
-    expect(canAccessCertificate("paid_student", true)).toBe(true);
+  const essential = {
+    planId: "essential" as const,
+    purchasedAt: null,
+    accessUntil: null,
+  };
+  const complete = { ...essential, planId: "complete" as const };
+  it("enforces plan-specific learning, exam, and certificate access", () => {
+    expect(
+      canAccessLesson(essential, {
+        isFree: false,
+        moduleId: "grammar",
+      }),
+    ).toBe(true);
+    expect(
+      canAccessLesson(essential, {
+        isFree: false,
+        moduleId: "exam-strategies",
+      }),
+    ).toBe(false);
+    expect(canAccessExam(essential)).toBe(false);
+    expect(canAccessExam(complete)).toBe(true);
+    expect(canAccessCertificate(complete, true)).toBe(true);
   });
 });
 describe("recommendations and certificate", () => {

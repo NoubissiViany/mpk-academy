@@ -4,20 +4,17 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { toast } from "sonner";
+import { submitPracticeAction } from "@/app/actions/learner";
 import { useApp } from "@/components/providers/app-provider";
 import { ModeBadge } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { examSkillContent } from "@/config/exams";
 import { getExamQuestionPool } from "@/data/exam-question-pools";
-import { mistakeCategoryByQuestion } from "@/data/questions";
 import { QuestionCard } from "@/features/assessment/question-card";
-import {
-  createEmptyExamProfile,
-  updateExamSkill,
-} from "@/lib/domain/exam-progress";
 import { competencyFocusLabel } from "@/lib/domain/personalization";
-import type { CompetencyId, ExamId, ExamSkill, Mistake } from "@/types/domain";
+import type { CompetencyId, ExamId, ExamSkill } from "@/types/domain";
 
 function activeExam(value: string | undefined): ExamId {
   return value === "TCF Canada" ? "TCF Canada" : "TEF Canada";
@@ -26,7 +23,7 @@ function activeExam(value: string | undefined): ExamId {
 export function ExamPracticeSession() {
   const router = useRouter();
   const search = useSearchParams();
-  const { state, setState } = useApp();
+  const { state, replaceState } = useApp();
   const exam = activeExam(state.user?.goal.exam);
   const requested = search.get("skill");
   const requestedFocus = search.get("focus") as CompetencyId | null;
@@ -66,9 +63,21 @@ export function ExamPracticeSession() {
       skill={skill}
       focus={requestedFocus}
       questionCount={questionCount}
-      onSave={(score, reviewed, mistakes) => {
-        persistSession(setState, exam, skill, score, 15, reviewed, mistakes);
-        router.push("/practice/results");
+      onSave={async (answers) => {
+        const result = await submitPracticeAction({
+          exam,
+          skill,
+          focus: requestedFocus,
+          durationSeconds: 15 * 60,
+          answers,
+        });
+        if (!result.ok) {
+          toast.error(result.message);
+          return;
+        }
+        replaceState(result.snapshot);
+        router.push(`/practice/results?session=${result.data.id}`);
+        router.refresh();
       }}
     />
   );
@@ -85,7 +94,9 @@ function ComprehensionSession({
   skill: "reading" | "listening";
   focus: CompetencyId | null;
   questionCount: 5 | 10;
-  onSave: (score: number, reviewed: number, mistakes: Mistake[]) => void;
+  onSave: (
+    answers: Array<{ questionId: string; sequence: number; answer: string }>,
+  ) => Promise<void>;
 }) {
   const pool = useMemo(() => {
     const source = getExamQuestionPool(exam, skill);
@@ -101,41 +112,20 @@ function ComprehensionSession({
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [revealed, setRevealed] = useState(false);
+  const [saving, setSaving] = useState(false);
   const question = pool[index];
   const answerKey = `${index}-${question.id}`;
   const value = answers[answerKey];
-  const finish = () => {
-    const correct = pool.filter(
-      (item, itemIndex) =>
-        answers[`${itemIndex}-${item.id}`]?.trim().toLowerCase() ===
-        item.correctAnswer.toLowerCase(),
-    ).length;
-    const mistakes = pool.flatMap((item, itemIndex): Mistake[] => {
-      const learnerAnswer = answers[`${itemIndex}-${item.id}`];
-      if (
-        learnerAnswer?.trim().toLowerCase() === item.correctAnswer.toLowerCase()
-      )
-        return [];
-      return [
-        {
-          id: crypto.randomUUID(),
-          questionId: item.id,
-          competencyId: item.competencies[0],
-          mistakeCategory:
-            mistakeCategoryByQuestion[item.id] ?? "Question misunderstanding",
-          learnerAnswer: learnerAnswer ?? "No answer",
-          correctAnswer: item.correctAnswer,
-          explanation: item.explanation,
-          timestamp: new Date().toISOString(),
-          reviewStatus: "new",
-          exam,
-          examSkill: skill,
-          pattern: competencyFocusLabel(item.competencies[0]),
-          count: 1,
-        },
-      ];
-    });
-    onSave(Math.round((correct / pool.length) * 100), pool.length, mistakes);
+  const finish = async () => {
+    setSaving(true);
+    await onSave(
+      pool.map((item, sequence) => ({
+        questionId: item.id,
+        sequence,
+        answer: answers[`${sequence}-${item.id}`] ?? "",
+      })),
+    );
+    setSaving(false);
   };
   return (
     <div className="mx-auto max-w-3xl">
@@ -179,62 +169,22 @@ function ComprehensionSession({
           </Button>
         ) : (
           <Button
+            disabled={saving}
             onClick={() =>
               index === pool.length - 1
                 ? finish()
                 : (setIndex(index + 1), setRevealed(false))
             }
           >
-            {index === pool.length - 1 ? "See results" : "Next question"}
+            {saving
+              ? "Saving…"
+              : index === pool.length - 1
+                ? "See results"
+                : "Next question"}
             <ArrowRight className="size-4" />
           </Button>
         )}
       </div>
     </div>
   );
-}
-
-function persistSession(
-  setState: ReturnType<typeof useApp>["setState"],
-  exam: ExamId,
-  skill: ExamSkill,
-  score: number,
-  minutes: number,
-  reviewed: number,
-  mistakes: Mistake[],
-) {
-  setState((current) => {
-    const profile = current.examProfiles[exam] ?? createEmptyExamProfile(exam);
-    const updated = updateExamSkill(profile, skill, score, {
-      minutes,
-      questionsReviewed: reviewed,
-    });
-    const replacedIds = new Set(mistakes.map((item) => item.id));
-    return {
-      ...current,
-      lastPracticeScore: score,
-      examProfiles: { ...current.examProfiles, [exam]: updated },
-      mistakes: [
-        ...mistakes,
-        ...current.mistakes.filter((item) => !replacedIds.has(item.id)),
-      ],
-      progress: {
-        ...current.progress,
-        practiceAnswered:
-          current.progress.practiceAnswered + Math.max(reviewed, 1),
-        practiceAccuracy: Math.round(
-          (current.progress.practiceAccuracy + score) / 2,
-        ),
-      },
-      activities: [
-        {
-          id: crypto.randomUUID(),
-          label: `${exam} ${examSkillContent[skill].label} practice`,
-          detail: `${score}% accuracy`,
-          timestamp: new Date().toISOString(),
-        },
-        ...current.activities,
-      ],
-    };
-  });
 }

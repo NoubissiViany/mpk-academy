@@ -230,7 +230,7 @@ export function getRecommendedLessons(state: AppState) {
   const add = (lesson: Lesson | null, reason: string) => {
     if (
       lesson &&
-      canAccessLesson(state.user?.tier ?? "visitor", lesson) &&
+      canAccessLesson(state.planAccess, lesson) &&
       !recommendations.some((item) => item.lesson.id === lesson.id)
     )
       recommendations.push({ lesson, reason });
@@ -251,7 +251,7 @@ export function getRecommendedLessons(state: AppState) {
     add(
       allLessons.find(
         (lesson) =>
-          canAccessLesson(state.user?.tier ?? "visitor", lesson) &&
+          canAccessLesson(state.planAccess, lesson) &&
           !state.progress.completedLessonIds.includes(lesson.id),
       ) ?? null,
       "A useful next lesson for your preparation.",

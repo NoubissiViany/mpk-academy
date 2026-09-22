@@ -4,9 +4,10 @@ import { LogOut, Menu, X } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { signOutAction } from "@/app/actions/auth";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useApp } from "@/components/providers/app-provider";
-import { Wordmark } from "@/components/shared";
+import { LockedContent, PageHeader, Wordmark } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import {
   accountNavigation,
@@ -15,30 +16,30 @@ import {
   quickNavigation,
   trackNavigation,
 } from "@/config/navigation";
-import { getPaidPlan } from "@/config/product";
+import { getPaidPlan, hasPlanFeature } from "@/config/product";
 import { defaultState } from "@/data/mock-state";
+import { requiredFeatureForPath } from "@/lib/domain/access";
 import { cn } from "@/lib/utils";
-import { localAuthRepository } from "@/repositories/local-auth";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { state, hydrated, setState } = useApp();
+  const { state, hydrated, replaceState } = useApp();
   const [open, setOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   useEffect(() => {
-    if (!hydrated || state.user) return;
+    if (!hydrated || state.user || loggingOut) return;
     const destination = `${pathname}${window.location.search}`;
     router.replace(`/login?next=${encodeURIComponent(destination)}`);
-  }, [hydrated, pathname, router, state.user]);
+  }, [hydrated, loggingOut, pathname, router, state.user]);
 
   if (!hydrated || !state.user)
     return (
       <div
         className="min-h-screen animate-pulse bg-muted"
-        aria-label="Checking local session"
+        aria-label="Checking account session"
       />
     );
-  if (pathname === "/exam/session") return <>{children}</>;
   const locale = state.user?.locale ?? "en";
   const activePlan = state.planAccess
     ? getPaidPlan(state.planAccess.planId)
@@ -58,28 +59,33 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     icon: LucideIcon;
   };
   const nav = (items: readonly NavigationItem[]) =>
-    items.map((item) => {
-      const Icon = item.icon;
-      const active =
-        pathname === item.href || pathname.startsWith(`${item.href}/`);
-      return (
-        <Link
-          key={item.href}
-          href={item.href}
-          onClick={() => setOpen(false)}
-          aria-current={active ? "page" : undefined}
-          className={cn(
-            "flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-semibold",
-            active
-              ? "bg-primary text-primary-foreground"
-              : "text-muted-foreground hover:bg-muted hover:text-foreground",
-          )}
-        >
-          <Icon className="size-4" aria-hidden="true" />
-          {locale === "fr" ? item.labelFr : item.label}
-        </Link>
-      );
-    });
+    items
+      .filter((item) => {
+        const feature = requiredFeatureForPath(item.href);
+        return !feature || hasPlanFeature(state.planAccess, feature);
+      })
+      .map((item) => {
+        const Icon = item.icon;
+        const active =
+          pathname === item.href || pathname.startsWith(`${item.href}/`);
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            onClick={() => setOpen(false)}
+            aria-current={active ? "page" : undefined}
+            className={cn(
+              "flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-semibold",
+              active
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground",
+            )}
+          >
+            <Icon className="size-4" aria-hidden="true" />
+            {locale === "fr" ? item.labelFr : item.label}
+          </Link>
+        );
+      });
   const group = (label: string, items: readonly NavigationItem[]) => (
     <div className="mb-5">
       <p className="mb-2 px-3 text-[11px] font-bold tracking-[0.14em] text-muted-foreground">
@@ -115,9 +121,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <button
         className="mt-3 flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-semibold text-muted-foreground hover:bg-muted"
         onClick={async () => {
-          await localAuthRepository.logout();
-          setState(structuredClone(defaultState));
+          setLoggingOut(true);
+          await signOutAction();
+          replaceState(structuredClone(defaultState));
           router.push("/");
+          router.refresh();
         }}
       >
         <LogOut className="size-4" />
@@ -132,11 +140,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             {state.user?.firstName ?? "Learner"} {state.user?.lastName ?? ""}
           </p>
           <p className="truncate text-xs text-muted-foreground">
-            {state.user?.tier === "paid_student"
-              ? `${activePlan?.name ?? "Complete"} Plan`
+            {state.planAccess && activePlan
+              ? `${activePlan.name} Plan`
               : "Free plan"}
           </p>
-          {state.user?.tier === "paid_student" && accessUntil && (
+          {state.planAccess && accessUntil && (
             <p className="truncate text-[11px] text-muted-foreground">
               Access until {accessUntil}
             </p>
@@ -145,6 +153,27 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </div>
     </>
   );
+  const requiredFeature = requiredFeatureForPath(pathname);
+  const hasRequiredFeature =
+    !requiredFeature || hasPlanFeature(state.planAccess, requiredFeature);
+  const content = !hasRequiredFeature ? (
+    <>
+      <PageHeader
+        eyebrow="Plan access"
+        title="This feature is not included in your plan."
+        description="Your dashboard and navigation show the tools included with your current plan."
+      />
+      <LockedContent />
+    </>
+  ) : (
+    children
+  );
+  if (pathname === "/exam/session" && hasRequiredFeature)
+    return <>{children}</>;
+  const accessibleQuickNavigation = quickNavigation.filter((item) => {
+    const feature = requiredFeatureForPath(item.href);
+    return !feature || hasPlanFeature(state.planAccess, feature);
+  });
   return (
     <div className="min-h-screen bg-background">
       <aside className="fixed inset-y-0 left-0 z-50 hidden w-64 flex-col border-r bg-card px-4 pb-5 lg:flex">
@@ -175,14 +204,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </header>
       <main className="pb-20 lg:pl-64 lg:pb-0">
         <div className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-7 sm:py-10 lg:px-10">
-          {children}
+          {content}
         </div>
       </main>
       <nav
-        className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t bg-card px-2 py-1.5 lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-30 grid border-t bg-card px-2 py-1.5 lg:hidden"
+        style={{
+          gridTemplateColumns: `repeat(${accessibleQuickNavigation.length}, minmax(0, 1fr))`,
+        }}
         aria-label="Quick navigation"
       >
-        {quickNavigation.map((item) => {
+        {accessibleQuickNavigation.map((item) => {
           const Icon = item.icon;
           const active =
             pathname === item.href || pathname.startsWith(`${item.href}/`);

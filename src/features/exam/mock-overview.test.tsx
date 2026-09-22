@@ -2,7 +2,6 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { AppProvider } from "@/components/providers/app-provider";
 import { demoState } from "@/test/fixtures";
-import { saveState } from "@/lib/persistence";
 import { MockOverview, MockSetup } from "./mock-overview";
 
 afterEach(() => {
@@ -12,9 +11,8 @@ afterEach(() => {
 
 describe("mock exam disclosures", () => {
   it("states the shortened mock limitations", async () => {
-    saveState(demoState);
     render(
-      <AppProvider>
+      <AppProvider initialState={demoState}>
         <MockOverview />
       </AppProvider>,
     );
@@ -35,9 +33,8 @@ describe("mock exam disclosures", () => {
   });
 
   it("shows the independent environment before starting", async () => {
-    saveState(demoState);
     render(
-      <AppProvider>
+      <AppProvider initialState={demoState}>
         <MockSetup />
       </AppProvider>,
     );

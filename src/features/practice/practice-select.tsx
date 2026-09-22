@@ -7,6 +7,7 @@ import { ModeBadge, PageHeader } from "@/components/shared";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { examSkillContent, examSkillOrder } from "@/config/exams";
+import { hasPlanFeature } from "@/config/product";
 import {
   createEmptyExamProfile,
   getSkillStatus,
@@ -30,6 +31,10 @@ export function PracticeSelect() {
   const examId = exam === "TCF Canada" ? "TCF Canada" : "TEF Canada";
   const profile = state.examProfiles[examId] ?? createEmptyExamProfile(examId);
   const recommended = getRecommendedPractice(state);
+  const personalized = hasPlanFeature(
+    state.planAccess,
+    "personalizedRecommendations",
+  );
   return (
     <>
       <PageHeader
@@ -99,7 +104,7 @@ export function PracticeSelect() {
           );
         })}
       </div>
-      {recommended && (
+      {personalized && recommended && (
         <Card className="mt-6 border-practice/20 bg-practice/5">
           <CardContent className="flex flex-col gap-4 pt-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-3">

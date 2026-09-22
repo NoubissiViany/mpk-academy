@@ -298,17 +298,3 @@ export interface AppState {
   lastPracticeScore?: number;
   lastExamScore?: number;
 }
-
-export interface LocalAccount {
-  user: User;
-  normalizedEmail: string;
-  passwordHash: string;
-  passwordSalt: string;
-  passwordIterations: number;
-  createdAt: string;
-}
-
-export interface LocalSession {
-  userId: string;
-  createdAt: string;
-}

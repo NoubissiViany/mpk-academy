@@ -65,8 +65,11 @@ export function ResultsView() {
   const strength = diagnosticSkillContent[result.strength];
   const priority = diagnosticSkillContent[result.priority];
   const intake = state.diagnosticIntake;
-  const recommendedPlan = getPaidPlan(recommendedPaidPlanId(intake?.target));
-  const recommendationHref = `/register?plan=${recommendedPlan.id}`;
+  const hasPurchasedPlan = Boolean(state.user && state.planAccess);
+  const recommendedPlan = getPaidPlan(recommendedPaidPlanId(intake?.target))!;
+  const recommendationHref = state.user
+    ? `/checkout?plan=${recommendedPlan.id}`
+    : `/register?plan=${recommendedPlan.id}`;
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -167,43 +170,57 @@ export function ResultsView() {
         </Card>
       </div>
 
-      <Card
-        className="mt-8 overflow-hidden border-primary ring-1 ring-primary"
-        aria-label={`Recommended plan: ${recommendedPlan.name}`}
-      >
-        <CardContent className="grid gap-7 p-0 md:grid-cols-[1.35fr_.65fr]">
-          <div className="p-7 sm:p-9">
-            <Badge className="gap-1.5">
-              <Sparkles className="size-3.5" aria-hidden="true" />
-              Recommended for you
-            </Badge>
-            <h2 className="mt-5 text-3xl font-black">{recommendedPlan.name}</h2>
-            <p className="mt-4 leading-7 text-muted-foreground">
-              Based on your {intake?.target ?? "current"} goal, {result.level}{" "}
-              estimated level, and {priority.label.toLowerCase()} priority, this
-              plan gives you the right level of support for your next step.
-            </p>
-            <p className="mt-4 font-semibold">{recommendedPlan.purpose}</p>
-          </div>
-          <div className="flex flex-col justify-center bg-primary/5 p-7 sm:p-9">
-            <p className="text-4xl font-black">
-              {formatPlanPrice(recommendedPlan)}
-            </p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {recommendedPlan.paymentModel} · {recommendedPlan.access}
-            </p>
-            <Button asChild size="lg" className="mt-6 w-full lg:text-nowrap">
-              <Link href={recommendationHref}>
-                Continue with {recommendedPlan.name}
-                <ArrowRight className="size-4" />
-              </Link>
-            </Button>
-            <Button asChild variant="secondary" className="mt-2 w-full">
-              <Link href="/pricing">Compare all plans</Link>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      {hasPurchasedPlan ? (
+        <div className="mt-8 flex justify-center">
+          <Button asChild size="lg">
+            <Link href="/dashboard">
+              Go to dashboard
+              <ArrowRight className="size-4" />
+            </Link>
+          </Button>
+        </div>
+      ) : (
+        <Card
+          className="mt-8 overflow-hidden border-primary ring-1 ring-primary"
+          aria-label={`Recommended plan: ${recommendedPlan.name}`}
+        >
+          <CardContent className="grid gap-7 p-0 md:grid-cols-[1.35fr_.65fr]">
+            <div className="p-7 sm:p-9">
+              <Badge className="gap-1.5">
+                <Sparkles className="size-3.5" aria-hidden="true" />
+                Recommended for you
+              </Badge>
+              <h2 className="mt-5 text-3xl font-black">
+                {recommendedPlan.name}
+              </h2>
+              <p className="mt-4 leading-7 text-muted-foreground">
+                Based on your {intake?.target ?? "current"} goal, {result.level}{" "}
+                estimated level, and {priority.label.toLowerCase()} priority,
+                this plan gives you the right level of support for your next
+                step.
+              </p>
+              <p className="mt-4 font-semibold">{recommendedPlan.purpose}</p>
+            </div>
+            <div className="flex flex-col justify-center bg-primary/5 p-7 sm:p-9">
+              <p className="text-4xl font-black">
+                {formatPlanPrice(recommendedPlan)}
+              </p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                {recommendedPlan.paymentModel} · {recommendedPlan.access}
+              </p>
+              <Button asChild size="lg" className="mt-6 w-full lg:text-nowrap">
+                <Link href={recommendationHref}>
+                  Continue with {recommendedPlan.name}
+                  <ArrowRight className="size-4" />
+                </Link>
+              </Button>
+              <Button asChild variant="secondary" className="mt-2 w-full">
+                <Link href="/pricing">Compare all plans</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="mt-6 flex flex-col items-center">
         <p className="mt-4 text-center text-xs leading-5 text-muted-foreground">

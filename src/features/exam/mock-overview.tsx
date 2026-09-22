@@ -18,7 +18,7 @@ import { canAccessExam } from "@/lib/domain/access";
 
 export function MockOverview() {
   const { state } = useApp();
-  if (!canAccessExam(state.user?.tier ?? "visitor"))
+  if (!canAccessExam(state.planAccess))
     return (
       <>
         <PageHeader

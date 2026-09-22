@@ -23,6 +23,8 @@
     "@radix-ui/react-progress": "latest",
     "@radix-ui/react-slot": "latest",
     "@radix-ui/react-tabs": "latest",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.116.0",
     "class-variance-authority": "latest",
     "clsx": "latest",
     "lucide-react": "latest",
@@ -48,6 +50,7 @@
     "eslint-config-next": "latest",
     "jsdom": "^26.1.0",
     "prettier": "latest",
+    "supabase": "^2.117.0",
     "tailwindcss": "latest",
     "typescript": "^5.9.3",
     "vitest": "latest"

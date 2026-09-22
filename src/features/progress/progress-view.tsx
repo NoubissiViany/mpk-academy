@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/shared";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { examSkillContent, examSkillOrder } from "@/config/exams";
+import { hasPlanFeature } from "@/config/product";
 import {
   createEmptyExamProfile,
   getWeakestExamSkill,
@@ -22,6 +23,45 @@ export function ProgressView() {
     );
   }
   const profile = state.examProfiles[exam] ?? createEmptyExamProfile(exam);
+  if (!hasPlanFeature(state.planAccess, "detailedReadiness")) {
+    return (
+      <>
+        <PageHeader
+          eyebrow={exam}
+          title="Progress"
+          description="Your course and practice activity with the Essential plan."
+        />
+        <div className="grid gap-5 sm:grid-cols-3">
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-sm text-muted-foreground">Course completion</p>
+              <p className="mt-2 text-3xl font-bold">
+                {state.progress.courseCompletion}%
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-sm text-muted-foreground">
+                Practice questions
+              </p>
+              <p className="mt-2 text-3xl font-bold">
+                {state.progress.practiceAnswered}
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-sm text-muted-foreground">Practice accuracy</p>
+              <p className="mt-2 text-3xl font-bold">
+                {state.progress.practiceAccuracy}%
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </>
+    );
+  }
   const readinessBaseline = profile.readinessBaseline30Days;
   const readiness = profile.readiness;
   const changes = examSkillOrder.map((skill) => ({
