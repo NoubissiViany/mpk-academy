@@ -645,40 +645,52 @@ export type Database = {
       purchases: {
         Row: {
           amount_minor: number;
+          checkout_session_id: string | null;
           created_at: string;
           currency: string;
           external_purchase_id: string;
           id: string;
+          payment_intent_id: string | null;
           plan_id: string;
           provider: string;
           purchased_at: string | null;
           status: string;
+          subtotal_minor: number | null;
+          tax_minor: number;
           updated_at: string;
           user_id: string;
         };
         Insert: {
           amount_minor: number;
+          checkout_session_id?: string | null;
           created_at?: string;
           currency?: string;
           external_purchase_id: string;
           id?: string;
+          payment_intent_id?: string | null;
           plan_id: string;
           provider: string;
           purchased_at?: string | null;
           status: string;
+          subtotal_minor?: number | null;
+          tax_minor?: number;
           updated_at?: string;
           user_id: string;
         };
         Update: {
           amount_minor?: number;
+          checkout_session_id?: string | null;
           created_at?: string;
           currency?: string;
           external_purchase_id?: string;
           id?: string;
+          payment_intent_id?: string | null;
           plan_id?: string;
           provider?: string;
           purchased_at?: string | null;
           status?: string;
+          subtotal_minor?: number | null;
+          tax_minor?: number;
           updated_at?: string;
           user_id?: string;
         };
@@ -739,6 +751,24 @@ export type Database = {
     };
     Functions: {
       mpk_complete_lesson: { Args: { p_lesson_id: string }; Returns: Json };
+      mpk_fulfill_stripe_purchase: {
+        Args: {
+          p_checkout_session_id: string;
+          p_currency: string;
+          p_payment_intent_id: string;
+          p_plan_id: string;
+          p_purchased_at: string;
+          p_subtotal_minor: number;
+          p_tax_minor: number;
+          p_total_minor: number;
+          p_user_id: string;
+        };
+        Returns: string;
+      };
+      mpk_revoke_stripe_purchase: {
+        Args: { p_payment_intent_id: string };
+        Returns: undefined;
+      };
       mpk_submit_assessment: {
         Args: {
           p_answers: Json;

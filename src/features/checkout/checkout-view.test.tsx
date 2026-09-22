@@ -1,16 +1,22 @@
 import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AppProvider } from "@/components/providers/app-provider";
 import { getPaidPlan } from "@/config/product";
-import { defaultState } from "@/data/mock-state";
-import { saveState } from "@/lib/persistence";
+import { demoState } from "@/test/fixtures";
 import { CheckoutView } from "./checkout-view";
 
-describe("deferred checkout", () => {
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn() }),
+}));
+vi.mock("@/app/actions/checkout", () => ({
+  createCheckoutSessionAction: vi.fn(),
+}));
+
+describe("verified checkout", () => {
   beforeEach(() => localStorage.clear());
   afterEach(cleanup);
 
-  it("keeps paid plans visible without an entitlement-granting action", async () => {
+  it("asks a visitor to create an account", async () => {
     render(
       <AppProvider>
         <CheckoutView plan={getPaidPlan("complete")!} />
@@ -20,21 +26,36 @@ describe("deferred checkout", () => {
     expect(
       await screen.findByRole("link", { name: "Create account" }),
     ).toHaveAttribute("href", "/register");
-    expect(
-      screen.queryByRole("button", { name: /secure payment/i }),
-    ).not.toBeInTheDocument();
+    expect(screen.getByText(/plus applicable tax/i)).toBeVisible();
   });
 
-  it("does not store or grant a paid entitlement", async () => {
-    saveState(structuredClone(defaultState));
+  it("offers Stripe checkout only after an assessment", async () => {
     render(
-      <AppProvider>
+      <AppProvider initialState={{ ...demoState, planAccess: null }}>
         <CheckoutView plan={getPaidPlan("essential")!} />
       </AppProvider>,
     );
     expect(
-      await screen.findByText(/No entitlement will be granted/),
+      await screen.findByRole("button", {
+        name: "Pay securely for Essential",
+      }),
+    ).toBeEnabled();
+    expect(
+      screen.getByText("Access is granted only after verified payment"),
     ).toBeVisible();
-    expect(defaultState.planAccess).toBeNull();
+  });
+
+  it("blocks another purchase for an active paid learner", async () => {
+    render(
+      <AppProvider initialState={demoState}>
+        <CheckoutView plan={getPaidPlan("complete")!} />
+      </AppProvider>,
+    );
+    expect(
+      await screen.findByRole("link", { name: "Go to dashboard" }),
+    ).toHaveAttribute("href", "/dashboard");
+    expect(
+      screen.queryByRole("button", { name: /Pay securely/ }),
+    ).not.toBeInTheDocument();
   });
 });

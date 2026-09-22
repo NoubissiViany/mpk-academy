@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(18);
+select plan(26);
 
 select has_table('public', 'profiles', 'profiles table exists');
 select has_table('public', 'assessments', 'assessments table exists');
@@ -153,6 +153,72 @@ select throws_ok(
   '42501',
   'permission denied for function mpk_update_profile',
   'unauthenticated clients cannot call learner mutation functions'
+);
+
+select throws_ok(
+  $$select public.mpk_fulfill_stripe_purchase(
+    '10000000-0000-0000-0000-000000000001', 'cs_forbidden', 'pi_forbidden',
+    'complete', 24900, 0, 24900, 'CAD', now()
+  )$$,
+  '42501',
+  'permission denied for function mpk_fulfill_stripe_purchase',
+  'unauthenticated clients cannot fulfill Stripe purchases'
+);
+
+reset role;
+set local role service_role;
+
+select lives_ok(
+  $$select public.mpk_fulfill_stripe_purchase(
+    '10000000-0000-0000-0000-000000000001', 'cs_test_complete', 'pi_test_complete',
+    'complete', 24900, 3237, 28137, 'CAD', '2026-09-22T12:00:00Z'
+  )$$,
+  'service role can fulfill a verified Stripe purchase'
+);
+
+select lives_ok(
+  $$select public.mpk_fulfill_stripe_purchase(
+    '10000000-0000-0000-0000-000000000001', 'cs_test_complete', 'pi_test_complete',
+    'complete', 24900, 3237, 28137, 'CAD', '2026-09-22T12:00:00Z'
+  )$$,
+  'Stripe fulfillment is idempotent'
+);
+
+select is(
+  (select count(*)::integer from public.purchases where checkout_session_id = 'cs_test_complete'),
+  1,
+  'idempotent fulfillment creates one purchase'
+);
+
+select is(
+  (select count(*)::integer from public.entitlements where purchase_id = (
+    select id from public.purchases where checkout_session_id = 'cs_test_complete'
+  )),
+  1,
+  'idempotent fulfillment creates one entitlement'
+);
+
+select throws_ok(
+  $$select public.mpk_fulfill_stripe_purchase(
+    '10000000-0000-0000-0000-000000000001', 'cs_bad_amount', 'pi_bad_amount',
+    'complete', 100, 0, 100, 'CAD', now()
+  )$$,
+  '22023',
+  'Stripe purchase amount does not match the plan',
+  'fulfillment rejects a mismatched amount'
+);
+
+select lives_ok(
+  $$select public.mpk_revoke_stripe_purchase('pi_test_complete')$$,
+  'service role can revoke a fully refunded purchase'
+);
+
+select is(
+  (select status from public.entitlements where purchase_id = (
+    select id from public.purchases where checkout_session_id = 'cs_test_complete'
+  )),
+  'revoked',
+  'a refunded purchase revokes its entitlement'
 );
 
 select * from finish();

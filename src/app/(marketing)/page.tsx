@@ -294,9 +294,8 @@ export default function HomePage() {
             <PlanComparison />
           </div>
           <p className="mx-auto mt-7 max-w-2xl text-center text-xs leading-5 text-muted-foreground">
-            Approximate prices in CAD. No real payment is collected in this
-            frontend MVP. Access periods and usage limits are not enforced in
-            the demo.
+            Prices are in CAD before applicable tax. Secure one-time payment is
+            handled by Stripe.
           </p>
         </div>
       </section>

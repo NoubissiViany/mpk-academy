@@ -17,6 +17,8 @@ const mocks = vi.hoisted(() => ({
   signIn: vi.fn(),
   claimGuest: vi.fn(),
   getSnapshot: vi.fn(),
+  toastSuccess: vi.fn(),
+  toastError: vi.fn(),
 }));
 
 vi.mock("next/navigation", () => ({
@@ -30,6 +32,10 @@ vi.mock("@/app/actions/learner", () => ({
   claimGuestAssessmentAction: mocks.claimGuest,
   getLearnerSnapshotAction: mocks.getSnapshot,
   updateProfileAction: vi.fn(),
+}));
+vi.mock("sonner", () => ({
+  toast: { success: mocks.toastSuccess, error: mocks.toastError },
+  Toaster: () => null,
 }));
 
 const answers = Object.fromEntries(
@@ -72,7 +78,7 @@ describe("Supabase authentication handoff", () => {
     Object.values(mocks).forEach((mock) => mock.mockReset());
     mocks.signUp.mockResolvedValue({ ok: true, confirmationRequired: true });
     mocks.signIn.mockResolvedValue({ ok: true });
-    mocks.getSnapshot.mockResolvedValue(demoState);
+    mocks.getSnapshot.mockResolvedValue({ ok: true, snapshot: demoState });
     mocks.claimGuest.mockResolvedValue({
       ok: true,
       data: { id: "assessment-id" },
@@ -142,6 +148,36 @@ describe("Supabase authentication handoff", () => {
     });
   });
 
+  it("does not announce success or navigate when the profile cannot load", async () => {
+    mocks.getSnapshot.mockResolvedValue({
+      ok: false,
+      reason: "profile_unavailable",
+      message:
+        "Your account is signed in, but its learning profile could not be loaded.",
+      reference: "auth-profile-reference",
+    });
+    render(
+      <AppProvider>
+        <AuthForm mode="login" />
+      </AppProvider>,
+    );
+    const user = userEvent.setup();
+    await user.type(
+      await screen.findByLabelText("Email"),
+      "learner@example.com",
+    );
+    await user.type(screen.getByLabelText("Password"), "password123");
+    await user.click(screen.getByRole("button", { name: "Sign in" }));
+
+    await waitFor(() =>
+      expect(mocks.toastError).toHaveBeenCalledWith(
+        expect.stringContaining("Reference: auth-profile-reference"),
+      ),
+    );
+    expect(mocks.push).not.toHaveBeenCalled();
+    expect(mocks.toastSuccess).not.toHaveBeenCalled();
+  });
+
   it("retains the guest assessment when registration fails", async () => {
     const guest = await createGuestAssessment();
     mocks.signUp.mockResolvedValue({
@@ -154,7 +190,9 @@ describe("Supabase authentication handoff", () => {
       </AppProvider>,
     );
     await submitRegistration();
-    expect(await screen.findByText("Registration failed")).toBeVisible();
+    await waitFor(() =>
+      expect(mocks.toastError).toHaveBeenCalledWith("Registration failed"),
+    );
     expect(await guestAssessmentRepository.getActive()).toEqual(guest);
   });
 });

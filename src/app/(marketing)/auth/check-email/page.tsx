@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { ResendConfirmation } from "@/features/auth/resend-confirmation";
 
 export const metadata = { title: "Confirm your email" };
 
@@ -21,7 +22,12 @@ export default async function CheckEmailPage({
             this browser to activate your account and securely attach any saved
             assessment.
           </p>
-          <Button asChild className="mt-7 w-full" variant="secondary">
+          {email && <ResendConfirmation email={email} />}
+          <Button
+            asChild
+            className={email ? "mt-3 w-full" : "mt-7 w-full"}
+            variant="secondary"
+          >
             <Link href="/login">Back to sign in</Link>
           </Button>
         </CardContent>

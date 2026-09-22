@@ -8,12 +8,20 @@ export default async function LoginPage({
   searchParams: Promise<{
     plan?: string | string[];
     next?: string | string[];
+    error?: string | string[];
+    ref?: string | string[];
   }>;
 }) {
   const resolved = await searchParams;
   const rawPlan = resolved.plan;
   const candidate = Array.isArray(rawPlan) ? rawPlan[0] : rawPlan;
   const planId = isPaidPlanId(candidate) ? candidate : undefined;
+  const error = Array.isArray(resolved.error)
+    ? resolved.error[0]
+    : resolved.error;
+  const reference = Array.isArray(resolved.ref)
+    ? resolved.ref[0]
+    : resolved.ref;
   return (
     <div className="container-page py-16">
       <Card className="mx-auto max-w-md">
@@ -26,6 +34,20 @@ export default async function LoginPage({
             Enter your MPK Academy email and password. Your account and learning
             progress are securely stored with Supabase.
           </p>
+          {error === "confirmation" && (
+            <div
+              className="mb-6 rounded-xl border border-danger/25 bg-danger/5 px-4 py-3 text-sm text-danger"
+              role="alert"
+            >
+              This confirmation link is invalid or has expired. Request a new
+              confirmation email or create the account again.
+              {reference && (
+                <span className="mt-2 block font-mono text-xs">
+                  Reference: {reference}
+                </span>
+              )}
+            </div>
+          )}
           <AuthForm
             mode="login"
             planId={planId}

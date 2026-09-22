@@ -1,6 +1,8 @@
 "use server";
 
 import { z } from "zod";
+import { getAppUrl } from "@/lib/app-url";
+import { getErrorDetails, logServerError } from "@/lib/server/diagnostics";
 import { createClient } from "@/lib/supabase/server";
 
 const password = z
@@ -24,14 +26,59 @@ const signInSchema = z.object({
   password: z.string().min(8),
 });
 
-export type AuthActionResult =
-  { ok: true; confirmationRequired?: boolean } | { ok: false; message: string };
+export type AuthFailureReason =
+  | "invalid_submission"
+  | "email_not_confirmed"
+  | "invalid_credentials"
+  | "account_exists"
+  | "rate_limited"
+  | "service_unavailable";
 
-function appUrl() {
-  return (
-    process.env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/$/, "") ||
-    "http://localhost:3000"
-  );
+export type AuthActionResult =
+  | { ok: true; confirmationRequired?: boolean }
+  | {
+      ok: false;
+      reason: AuthFailureReason;
+      message: string;
+      reference?: string;
+    };
+
+function authFailure(
+  operation: string,
+  error: unknown,
+  fallbackReason: AuthFailureReason = "service_unavailable",
+): Extract<AuthActionResult, { ok: false }> {
+  const { code, status } = getErrorDetails(error);
+  const normalizedCode = code?.toLowerCase();
+  const reason: AuthFailureReason =
+    status === 429 ||
+    normalizedCode === "over_email_send_rate_limit" ||
+    normalizedCode === "over_request_rate_limit"
+      ? "rate_limited"
+      : normalizedCode === "email_not_confirmed"
+        ? "email_not_confirmed"
+        : normalizedCode === "invalid_credentials"
+          ? "invalid_credentials"
+          : normalizedCode === "user_already_exists"
+            ? "account_exists"
+            : fallbackReason;
+  const messages: Record<AuthFailureReason, string> = {
+    invalid_submission: "Check the information you entered and try again.",
+    email_not_confirmed:
+      "Confirm your email before signing in. Check your inbox and spam folder.",
+    invalid_credentials: "The email or password is incorrect.",
+    account_exists:
+      "An account already exists for this email. Sign in instead.",
+    rate_limited:
+      "Too many email or sign-in attempts were made. Wait a few minutes and try again.",
+    service_unavailable:
+      "Authentication is temporarily unavailable. Please try again.",
+  };
+  const reference = logServerError("Authentication operation failed", error, {
+    operation,
+    reason,
+  });
+  return { ok: false, reason, message: messages[reason], reference };
 }
 
 export async function signUpAction(
@@ -39,7 +86,11 @@ export async function signUpAction(
 ): Promise<AuthActionResult> {
   const parsed = signUpSchema.safeParse(input);
   if (!parsed.success)
-    return { ok: false, message: "Check your account details and password." };
+    return {
+      ok: false,
+      reason: "invalid_submission",
+      message: "Check your account details and password.",
+    };
 
   try {
     const supabase = await createClient();
@@ -47,7 +98,7 @@ export async function signUpAction(
       email: parsed.data.email,
       password: parsed.data.password,
       options: {
-        emailRedirectTo: `${appUrl()}/auth/confirm?next=/auth/complete`,
+        emailRedirectTo: `${getAppUrl()}/auth/confirm?next=/auth/complete`,
         data: {
           first_name: parsed.data.firstName,
           last_name: parsed.data.lastName,
@@ -58,13 +109,10 @@ export async function signUpAction(
         },
       },
     });
-    if (error) return { ok: false, message: error.message };
+    if (error) return authFailure("sign_up", error);
     return { ok: true, confirmationRequired: !data.session };
-  } catch {
-    return {
-      ok: false,
-      message: "Supabase is unavailable or has not been configured yet.",
-    };
+  } catch (error) {
+    return authFailure("sign_up", error);
   }
 }
 
@@ -73,19 +121,19 @@ export async function signInAction(
 ): Promise<AuthActionResult> {
   const parsed = signInSchema.safeParse(input);
   if (!parsed.success)
-    return { ok: false, message: "Enter a valid email and password." };
+    return {
+      ok: false,
+      reason: "invalid_submission",
+      message: "Enter a valid email and password.",
+    };
 
   try {
     const supabase = await createClient();
     const { error } = await supabase.auth.signInWithPassword(parsed.data);
-    if (error)
-      return { ok: false, message: "The email or password is incorrect." };
+    if (error) return authFailure("sign_in", error, "invalid_credentials");
     return { ok: true };
-  } catch {
-    return {
-      ok: false,
-      message: "Supabase is unavailable or has not been configured yet.",
-    };
+  } catch (error) {
+    return authFailure("sign_in", error);
   }
 }
 
@@ -103,16 +151,46 @@ export async function requestPasswordResetAction(
 ): Promise<AuthActionResult> {
   const parsed = z.email().trim().toLowerCase().safeParse(email);
   if (!parsed.success)
-    return { ok: false, message: "Enter a valid email address." };
+    return {
+      ok: false,
+      reason: "invalid_submission",
+      message: "Enter a valid email address.",
+    };
   try {
     const supabase = await createClient();
     const { error } = await supabase.auth.resetPasswordForEmail(parsed.data, {
-      redirectTo: `${appUrl()}/auth/confirm?next=/update-password`,
+      redirectTo: `${getAppUrl()}/auth/confirm?next=/update-password`,
     });
-    if (error) return { ok: false, message: error.message };
+    if (error) return authFailure("password_reset", error);
     return { ok: true };
-  } catch {
-    return { ok: false, message: "Password recovery is unavailable." };
+  } catch (error) {
+    return authFailure("password_reset", error);
+  }
+}
+
+export async function resendConfirmationAction(
+  email: string,
+): Promise<AuthActionResult> {
+  const parsed = z.email().trim().toLowerCase().safeParse(email);
+  if (!parsed.success)
+    return {
+      ok: false,
+      reason: "invalid_submission",
+      message: "Enter a valid email address.",
+    };
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: parsed.data,
+      options: {
+        emailRedirectTo: `${getAppUrl()}/auth/confirm?next=/auth/complete`,
+      },
+    });
+    if (error) return authFailure("resend_confirmation", error);
+    return { ok: true, confirmationRequired: true };
+  } catch (error) {
+    return authFailure("resend_confirmation", error);
   }
 }
 
@@ -123,14 +201,15 @@ export async function updatePasswordAction(
   if (!parsed.success)
     return {
       ok: false,
+      reason: "invalid_submission",
       message: "Use at least 8 characters with a letter and a number.",
     };
   try {
     const supabase = await createClient();
     const { error } = await supabase.auth.updateUser({ password: parsed.data });
-    if (error) return { ok: false, message: error.message };
+    if (error) return authFailure("update_password", error);
     return { ok: true };
-  } catch {
-    return { ok: false, message: "Your password could not be updated." };
+  } catch (error) {
+    return authFailure("update_password", error);
   }
 }

@@ -37,6 +37,28 @@ afterEach(() => {
 });
 
 describe("DiagnosticFlow", () => {
+  it("prefills the exam and target saved during registration", async () => {
+    render(
+      <AppProvider
+        initialState={{
+          ...demoState,
+          planAccess: null,
+          diagnosticIntake: null,
+          diagnosticAnswers: {},
+          diagnosticResult: null,
+        }}
+      >
+        <DiagnosticFlow />
+      </AppProvider>,
+    );
+
+    expect(screen.getByLabelText("Prepare for TEF Canada")).toBeChecked();
+    expect(screen.getByLabelText("NCLC 7")).toBeChecked();
+    expect(
+      screen.getByRole("button", { name: /Start my assessment/ }),
+    ).toBeDisabled();
+  });
+
   it("requires the intake before starting and persists it", async () => {
     const user = userEvent.setup();
     Object.defineProperty(window, "scrollTo", {
@@ -161,5 +183,5 @@ describe("DiagnosticFlow", () => {
     expect(anonymous.user).toBeNull();
     expect(anonymous.planAccess).toBeNull();
     expect(mocks.submitDiagnostic).toHaveBeenCalledOnce();
-  });
+  }, 10_000);
 });

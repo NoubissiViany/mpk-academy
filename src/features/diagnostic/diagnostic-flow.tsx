@@ -130,9 +130,11 @@ function DiagnosticExperience() {
   const [stage, setStage] = useState<"intro" | "questions">("intro");
   const [index, setIndex] = useState(0);
   const [finishing, setFinishing] = useState(false);
-  const [intake, setIntake] = useState<Partial<DiagnosticIntake>>(
-    state.diagnosticIntake ?? {},
-  );
+  const [intake, setIntake] = useState<Partial<DiagnosticIntake>>(() => ({
+    goal: state.diagnosticIntake?.goal ?? state.user?.goal.exam,
+    target: state.diagnosticIntake?.target ?? state.user?.goal.target,
+    frenchExperience: state.diagnosticIntake?.frenchExperience,
+  }));
   const question = diagnosticQuestions[index];
   const answers = state.diagnosticAnswers;
 

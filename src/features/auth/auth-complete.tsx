@@ -8,6 +8,7 @@ import {
 } from "@/app/actions/learner";
 import { useApp } from "@/components/providers/app-provider";
 import { clearAnonymousState } from "@/lib/persistence";
+import { withErrorReference } from "@/lib/public-error";
 import { guestAssessmentRepository } from "@/repositories/guest-assessment";
 
 export function AuthComplete() {
@@ -25,12 +26,19 @@ export function AuthComplete() {
         setError(result.message);
         return;
       }
-      const snapshot = result?.ok
-        ? result.snapshot
-        : await getLearnerSnapshotAction();
+      let snapshot = result?.ok ? result.snapshot : null;
       if (!snapshot) {
-        setError("Your session could not be loaded. Please sign in.");
-        return;
+        const snapshotResult = await getLearnerSnapshotAction();
+        if (!snapshotResult.ok) {
+          setError(
+            withErrorReference(
+              snapshotResult.message,
+              snapshotResult.reference,
+            ),
+          );
+          return;
+        }
+        snapshot = snapshotResult.snapshot;
       }
       replaceState(snapshot);
       if (guest) {
@@ -38,7 +46,7 @@ export function AuthComplete() {
         clearAnonymousState();
       }
       router.replace(
-        guest ? `/checkout?plan=${guest.recommendedPlanId}` : "/dashboard",
+        guest ? `/checkout?plan=${guest.recommendedPlanId}` : "/diagnostic",
       );
       router.refresh();
     })();
@@ -51,7 +59,9 @@ export function AuthComplete() {
     <div className="container-page py-20 text-center">
       <p className="eyebrow">Account confirmed</p>
       <h1 className="mt-3 text-3xl font-bold">
-        {error ?? "Preparing your learning profile…"}
+        {error
+          ? "We could not finish loading your account."
+          : "Preparing your learning profile…"}
       </h1>
       {error && <p className="mt-4 text-sm text-danger">{error}</p>}
     </div>

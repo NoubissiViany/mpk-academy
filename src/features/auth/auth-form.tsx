@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { PaidPlanId } from "@/config/product";
 import { clearAnonymousState } from "@/lib/persistence";
+import { withErrorReference } from "@/lib/public-error";
 import { guestAssessmentRepository } from "@/repositories/guest-assessment";
 
 const loginSchema = z.object({
@@ -112,7 +113,10 @@ export function AuthForm({
             email: values.email,
             password: values.password,
           });
-      if (!authResult.ok) throw new Error(authResult.message);
+      if (!authResult.ok)
+        throw new Error(
+          withErrorReference(authResult.message, authResult.reference),
+        );
 
       if (registering && authResult.confirmationRequired) {
         router.push(
@@ -129,9 +133,17 @@ export function AuthForm({
         await guestAssessmentRepository.clear(guestSession.id);
         clearAnonymousState();
       } else {
-        cloudState = await getLearnerSnapshotAction();
+        const snapshotResult = await getLearnerSnapshotAction();
+        if (!snapshotResult.ok)
+          throw new Error(
+            withErrorReference(
+              snapshotResult.message,
+              snapshotResult.reference,
+            ),
+          );
+        cloudState = snapshotResult.snapshot;
       }
-      if (cloudState) replaceState(cloudState);
+      replaceState(cloudState);
 
       toast.success(registering ? "Your account is ready." : "Welcome back.");
       const checkoutPlanId =

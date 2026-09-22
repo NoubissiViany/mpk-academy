@@ -8,7 +8,7 @@
 - Plan at creation: Free
 - Database password: GNOME Login keyring item `MPK Academy Supabase database`
 
-The repository stores only the public project URL and publishable key in the ignored `.env.local`. Never add a secret/service-role key to this application.
+The browser receives only the public project URL and publishable key. Stripe fulfillment also requires a service-role key in server-only deployment secrets; never commit it, prefix it with `NEXT_PUBLIC_`, or import the admin client into browser code.
 
 ## Safe change workflow
 
@@ -22,9 +22,23 @@ npx supabase config push
 npx supabase gen types typescript --linked
 ```
 
-Review every configuration diff. Set the production `site_url` and add exact production confirmation/recovery redirect URLs before deployment. The current values are intentionally localhost-only.
+Review every configuration diff. The versioned production `site_url` is `https://mpk-academy.vercel.app`; its confirmation and recovery paths are allow-listed alongside local development callbacks.
 
-Custom confirmation and recovery templates are versioned under `supabase/templates`, but Supabase's default email provider does not permit template customization on this Free project. The application therefore supports the default provider's PKCE `code` callback today. Configure custom SMTP before enabling the custom templates; do not upgrade solely to bypass this during development.
+Custom confirmation and recovery templates are versioned under `supabase/templates`, but Supabase's default email provider does not deliver production mail to arbitrary learner addresses. The application supports the default provider's PKCE `code` callback for development, but custom SMTP is required before a production signup test.
+
+## Production authentication email
+
+In Supabase Dashboard → Authentication → Email/SMTP, enable custom SMTP and provide the host, port, username, password, sender address, and sender name supplied by the selected transactional-email provider. The sender domain must have passing SPF and DKIM records; add DMARC before launch. Use a sender such as `auth@mpk-academy.ca`, not a personal mailbox.
+
+The versioned target rate is 30 authentication emails per hour. Increase it only after checking provider quotas and abuse protection. Keep **Confirm email** enabled, keep the production Site URL at `https://mpk-academy.vercel.app`, and retain these redirect URLs:
+
+- `https://mpk-academy.vercel.app/auth/confirm`
+- `https://mpk-academy.vercel.app/update-password`
+- the versioned localhost confirmation and password-reset URLs
+
+After saving SMTP settings, test with a brand-new external address. Confirm one message arrives, its link returns through `/auth/confirm`, and the browser receives a valid session. Auth failures are logged without email addresses, passwords, or tokens and include the same correlation reference shown in the UI.
+
+The commented `[auth.email.smtp]` block in `supabase/config.toml` documents the CLI equivalent. Do not enable it until `SMTP_HOST`, `SMTP_USER`, `SMTP_PASS`, and `SMTP_ADMIN_EMAIL` are available in the secure deployment environment.
 
 ## Free-plan monitoring and upgrade thresholds
 

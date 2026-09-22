@@ -25,7 +25,8 @@ export async function requireUserId() {
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getClaims();
   const userId = data?.claims?.sub;
-  if (error || typeof userId !== "string") throw new Error("Unauthorized");
+  if (error) throw error;
+  if (typeof userId !== "string") throw new Error("Unauthorized");
   return { supabase, userId };
 }
 
@@ -78,7 +79,8 @@ function activeEntitlement(rows: Tables<"entitlements">[]) {
 export async function getLearnerSnapshot(): Promise<AppState> {
   const { supabase, userId } = await requireUserId();
   const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) throw new Error("Unauthorized");
+  if (authError) throw authError;
+  if (!authData.user) throw new Error("Unauthorized");
 
   const [
     profileResponse,
@@ -152,7 +154,26 @@ export async function getLearnerSnapshot(): Promise<AppState> {
     !profileResponse.data ||
     !goalResponse.data
   )
-    throw new Error("Learner profile is unavailable.");
+    throw Object.assign(new Error("Learner profile is unavailable."), {
+      code: profileResponse.error?.code ?? goalResponse.error?.code,
+      status: profileResponse.error
+        ? profileResponse.status
+        : goalResponse.status,
+      name: "LearnerProfileError",
+    });
+
+  const relatedError = [
+    entitlementResponse,
+    progressResponse,
+    skillsResponse,
+    mistakesResponse,
+    historyResponse,
+    lessonsResponse,
+    diagnosticResponse,
+    practiceResponse,
+    mockResponse,
+  ].find((response) => response.error)?.error;
+  if (relatedError) throw relatedError;
 
   const diagnostic = diagnosticResponse.data;
   const [

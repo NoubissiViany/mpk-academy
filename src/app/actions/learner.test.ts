@@ -12,7 +12,7 @@ vi.mock("@/lib/supabase/learner", () => ({
   requireUserId: mocks.requireUser,
 }));
 
-import { submitDiagnosticAction } from "./learner";
+import { getLearnerSnapshotAction, submitDiagnosticAction } from "./learner";
 
 const submission = {
   intake: {
@@ -83,6 +83,21 @@ describe("learner action failures", () => {
       ok: true,
       data: { id: "assessment-1", score: 80, level: "B2" },
       snapshot: demoState,
+    });
+  });
+
+  it("returns a referenced learner-profile failure instead of null", async () => {
+    mocks.getSnapshot.mockRejectedValue(
+      Object.assign(new Error("Learner profile is unavailable."), {
+        code: "PGRST116",
+      }),
+    );
+
+    await expect(getLearnerSnapshotAction()).resolves.toMatchObject({
+      ok: false,
+      reason: "profile_unavailable",
+      message: expect.stringContaining("learning profile"),
+      reference: expect.any(String),
     });
   });
 });

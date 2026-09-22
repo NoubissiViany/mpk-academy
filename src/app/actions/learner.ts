@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { cookies } from "next/headers";
+import { getErrorDetails, logServerError } from "@/lib/server/diagnostics";
 import { getLearnerSnapshot, requireUserId } from "@/lib/supabase/learner";
 import type { AppState, GuestAssessmentSession } from "@/types/domain";
 
@@ -20,6 +21,18 @@ type LessonCompletion = { lessonId: string; courseCompletion: number };
 
 export type MutationFailureReason =
   "unauthenticated" | "invalid_submission" | "conflict" | "unavailable";
+
+export type SnapshotFailureReason =
+  "unauthenticated" | "profile_unavailable" | "service_unavailable";
+
+export type SnapshotActionResult =
+  | { ok: true; snapshot: AppState }
+  | {
+      ok: false;
+      reason: SnapshotFailureReason;
+      message: string;
+      reference: string;
+    };
 
 type MutationFailure = {
   ok: false;
@@ -114,11 +127,33 @@ function failure(operation: string, error: unknown): MutationFailure {
   return { ok: false, reason, message: publicMessage[reason] };
 }
 
-export async function getLearnerSnapshotAction() {
+export async function getLearnerSnapshotAction(): Promise<SnapshotActionResult> {
   try {
-    return await getLearnerSnapshot();
-  } catch {
-    return null;
+    return { ok: true, snapshot: await getLearnerSnapshot() };
+  } catch (error) {
+    const { code } = getErrorDetails(error);
+    const message = error instanceof Error ? error.message.toLowerCase() : "";
+    const reason: SnapshotFailureReason =
+      message.includes("unauthorized") ||
+      message.includes("authentication required") ||
+      message.includes("jwt expired") ||
+      code === "PGRST301"
+        ? "unauthenticated"
+        : message.includes("learner profile") || code === "PGRST116"
+          ? "profile_unavailable"
+          : "service_unavailable";
+    const publicMessage = {
+      unauthenticated: "Your session has expired. Sign in again.",
+      profile_unavailable:
+        "Your account is signed in, but its learning profile could not be loaded.",
+      service_unavailable:
+        "Your learning profile is temporarily unavailable. Please try again.",
+    } satisfies Record<SnapshotFailureReason, string>;
+    const reference = logServerError("Learner snapshot failed", error, {
+      operation: "load_learner_snapshot",
+      reason,
+    });
+    return { ok: false, reason, message: publicMessage[reason], reference };
   }
 }
 

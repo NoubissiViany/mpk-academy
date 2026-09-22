@@ -40,8 +40,12 @@ export function AppProvider({
       const localState = loadState();
       let nextState = localState;
       if (isSupabaseConfigured()) {
-        const cloudState = await getLearnerSnapshotAction();
-        nextState = cloudState ?? localState;
+        const snapshotResult = await getLearnerSnapshotAction();
+        nextState = snapshotResult.ok
+          ? snapshotResult.snapshot
+          : snapshotResult.reason === "unauthenticated"
+            ? { ...localState, user: null, planAccess: null }
+            : localState;
       }
       if (active) {
         setStateValue(nextState);

@@ -20,37 +20,48 @@ import { getPaidPlan, hasPlanFeature } from "@/config/product";
 import { defaultState } from "@/data/mock-state";
 import { requiredFeatureForPath } from "@/lib/domain/access";
 import { cn } from "@/lib/utils";
+import type { AppState } from "@/types/domain";
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({
+  children,
+  initialState,
+}: {
+  children: React.ReactNode;
+  initialState: AppState;
+}) {
   const pathname = usePathname();
   const router = useRouter();
   const { state, hydrated, replaceState } = useApp();
+  const resolvedState = hydrated && state.user ? state : initialState;
   const [open, setOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   useEffect(() => {
-    if (!hydrated || state.user || loggingOut) return;
+    replaceState(initialState);
+  }, [initialState, replaceState]);
+  useEffect(() => {
+    if (!hydrated || resolvedState.user || loggingOut) return;
     const destination = `${pathname}${window.location.search}`;
     router.replace(`/login?next=${encodeURIComponent(destination)}`);
-  }, [hydrated, loggingOut, pathname, router, state.user]);
+  }, [hydrated, loggingOut, pathname, resolvedState.user, router]);
 
-  if (!hydrated || !state.user)
+  if (!resolvedState.user)
     return (
       <div
         className="min-h-screen animate-pulse bg-muted"
         aria-label="Checking account session"
       />
     );
-  const locale = state.user?.locale ?? "en";
-  const activePlan = state.planAccess
-    ? getPaidPlan(state.planAccess.planId)
+  const locale = resolvedState.user?.locale ?? "en";
+  const activePlan = resolvedState.planAccess
+    ? getPaidPlan(resolvedState.planAccess.planId)
     : null;
-  const accessUntil = state.planAccess?.accessUntil
+  const accessUntil = resolvedState.planAccess?.accessUntil
     ? new Intl.DateTimeFormat(locale === "fr" ? "fr-CA" : "en-CA", {
         month: "long",
         day: "numeric",
         year: "numeric",
         timeZone: "UTC",
-      }).format(new Date(state.planAccess.accessUntil))
+      }).format(new Date(resolvedState.planAccess.accessUntil))
     : null;
   type NavigationItem = {
     href: string;
@@ -62,7 +73,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     items
       .filter((item) => {
         const feature = requiredFeatureForPath(item.href);
-        return !feature || hasPlanFeature(state.planAccess, feature);
+        return !feature || hasPlanFeature(resolvedState.planAccess, feature);
       })
       .map((item) => {
         const Icon = item.icon;
@@ -133,18 +144,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </button>
       <div className="mt-4 flex items-center gap-3 border-t pt-5">
         <div className="grid size-9 place-items-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
-          {state.user?.firstName?.[0] ?? "L"}
+          {resolvedState.user?.firstName?.[0] ?? "L"}
         </div>
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold">
-            {state.user?.firstName ?? "Learner"} {state.user?.lastName ?? ""}
+            {resolvedState.user?.firstName ?? "Learner"}{" "}
+            {resolvedState.user?.lastName ?? ""}
           </p>
           <p className="truncate text-xs text-muted-foreground">
-            {state.planAccess && activePlan
+            {resolvedState.planAccess && activePlan
               ? `${activePlan.name} Plan`
               : "Free plan"}
           </p>
-          {state.planAccess && accessUntil && (
+          {resolvedState.planAccess && accessUntil && (
             <p className="truncate text-[11px] text-muted-foreground">
               Access until {accessUntil}
             </p>
@@ -155,7 +167,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   );
   const requiredFeature = requiredFeatureForPath(pathname);
   const hasRequiredFeature =
-    !requiredFeature || hasPlanFeature(state.planAccess, requiredFeature);
+    !requiredFeature ||
+    hasPlanFeature(resolvedState.planAccess, requiredFeature);
   const content = !hasRequiredFeature ? (
     <>
       <PageHeader
@@ -172,7 +185,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   const accessibleQuickNavigation = quickNavigation.filter((item) => {
     const feature = requiredFeatureForPath(item.href);
-    return !feature || hasPlanFeature(state.planAccess, feature);
+    return !feature || hasPlanFeature(resolvedState.planAccess, feature);
   });
   return (
     <div className="min-h-screen bg-background">
