@@ -28,7 +28,16 @@ Custom confirmation and recovery templates are versioned under `supabase/templat
 
 ## Production authentication email
 
-In Supabase Dashboard → Authentication → Email/SMTP, enable custom SMTP and provide the host, port, username, password, sender address, and sender name supplied by the selected transactional-email provider. The sender domain must have passing SPF and DKIM records; add DMARC before launch. Use a sender such as `auth@mpk-academy.ca`, not a personal mailbox.
+Until MPK Academy owns a final domain, use Resend's test sender for Auth email. In Supabase Dashboard → Authentication → Email/SMTP, enable custom SMTP with:
+
+- Sender email: `onboarding@resend.dev`
+- Sender name: `MPK Academy`
+- Host: `smtp.resend.com`
+- Port: `465`
+- Username: `resend`
+- Password: the Resend API key entered directly in the Supabase dashboard
+
+Never place the Resend API key in this repository, application environment variables, Vercel, documentation, screenshots, or support logs. Supabase Auth connects to Resend over SMTP; the application does not use the Resend SDK or a custom email API route.
 
 The versioned target rate is 30 authentication emails per hour. Increase it only after checking provider quotas and abuse protection. Keep **Confirm email** enabled, keep the production Site URL at `https://mpk-academy.vercel.app`, and retain these redirect URLs:
 
@@ -36,9 +45,9 @@ The versioned target rate is 30 authentication emails per hour. Increase it only
 - `https://mpk-academy.vercel.app/update-password`
 - the versioned localhost confirmation and password-reset URLs
 
-After saving SMTP settings, test with a brand-new external address. Confirm one message arrives, its link returns through `/auth/confirm`, and the browser receives a valid session. Auth failures are logged without email addresses, passwords, or tokens and include the same correlation reference shown in the UI.
+After saving the SMTP settings, use Supabase's SMTP test and then register with a brand-new external inbox. Confirm exactly one message arrives from `MPK Academy <onboarding@resend.dev>`, its link returns through `/auth/confirm`, the browser receives a valid session, and a direct registration continues to `/diagnostic`. Test the one-minute resend throttle and password recovery, then compare failures in Resend delivery logs and Supabase Auth logs.
 
-The commented `[auth.email.smtp]` block in `supabase/config.toml` documents the CLI equivalent. Do not enable it until `SMTP_HOST`, `SMTP_USER`, `SMTP_PASS`, and `SMTP_ADMIN_EMAIL` are available in the secure deployment environment.
+The commented `[auth.email.smtp]` block in `supabase/config.toml` documents the Resend CLI equivalent without enabling or storing the secret. When a final domain is purchased, verify it in Resend, configure SPF and DKIM, add DMARC, and replace only the sender address with a dedicated Auth address such as `no-reply@auth.example.com`.
 
 ## Free-plan monitoring and upgrade thresholds
 
