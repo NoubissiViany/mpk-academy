@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { courseModules, learningCategories } from "@/data/course";
+import { hasPlanFeature } from "@/config/product";
 import { getRecommendedLessons } from "@/lib/domain/personalization";
 import type { CourseModule } from "@/types/domain";
 
@@ -22,6 +23,11 @@ export default function LearnPage() {
   const { state } = useApp();
   const activeExam = state.user?.goal.exam === "TCF Canada" ? "TCF" : "TEF";
   const recommendations = getRecommendedLessons(state);
+  const personalized = hasPlanFeature(
+    state.planAccess,
+    "personalizedRecommendations",
+  );
+  const examStrategies = hasPlanFeature(state.planAccess, "examStrategies");
 
   return (
     <>
@@ -50,33 +56,35 @@ export default function LearnPage() {
         </CardContent>
       </Card>
 
-      <section aria-labelledby="recommended-lessons">
-        <div className="flex items-center gap-2">
-          <Sparkles className="size-5 text-primary" aria-hidden="true" />
-          <h2 id="recommended-lessons" className="text-xl font-bold">
-            Recommended lessons
-          </h2>
-        </div>
-        <div className="mt-4 grid gap-4 lg:grid-cols-3">
-          {recommendations.map(({ lesson, reason }) => (
-            <Card key={lesson.id} className="border-primary/20">
-              <CardContent className="flex h-full flex-col pt-6">
-                <Badge className="w-fit">Recommended</Badge>
-                <h3 className="mt-4 text-lg font-bold">{lesson.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  {reason}
-                </p>
-                <Link
-                  href={`/learn/${lesson.moduleId}/${lesson.id}`}
-                  className="mt-auto inline-flex items-center gap-1 pt-5 text-sm font-bold text-primary hover:underline"
-                >
-                  Start lesson <ArrowRight className="size-4" />
-                </Link>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
+      {personalized && (
+        <section aria-labelledby="recommended-lessons">
+          <div className="flex items-center gap-2">
+            <Sparkles className="size-5 text-primary" aria-hidden="true" />
+            <h2 id="recommended-lessons" className="text-xl font-bold">
+              Recommended lessons
+            </h2>
+          </div>
+          <div className="mt-4 grid gap-4 lg:grid-cols-3">
+            {recommendations.map(({ lesson, reason }) => (
+              <Card key={lesson.id} className="border-primary/20">
+                <CardContent className="flex h-full flex-col pt-6">
+                  <Badge className="w-fit">Recommended</Badge>
+                  <h3 className="mt-4 text-lg font-bold">{lesson.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                    {reason}
+                  </p>
+                  <Link
+                    href={`/learn/${lesson.moduleId}/${lesson.id}`}
+                    className="mt-auto inline-flex items-center gap-1 pt-5 text-sm font-bold text-primary hover:underline"
+                  >
+                    Start lesson <ArrowRight className="size-4" />
+                  </Link>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
 
       <div className="mt-10 space-y-10">
         {learningCategories.map((category) => {
@@ -99,7 +107,7 @@ export default function LearnPage() {
                     key={module.id}
                     module={module}
                     activeExam={activeExam}
-                    paid={state.user?.tier === "paid_student"}
+                    examStrategies={examStrategies}
                     completedLessonIds={state.progress.completedLessonIds}
                   />
                 ))}
@@ -115,15 +123,15 @@ export default function LearnPage() {
 function ModuleCard({
   module,
   activeExam,
-  paid,
+  examStrategies,
   completedLessonIds,
 }: {
   module: CourseModule;
   activeExam: "TEF" | "TCF";
-  paid: boolean;
+  examStrategies: boolean;
   completedLessonIds: string[];
 }) {
-  const locked = module.sequence > 2 && !paid;
+  const locked = module.id === "exam-strategies" && !examStrategies;
   const title =
     module.id === "exam-strategies"
       ? `${activeExam} format and strategies`

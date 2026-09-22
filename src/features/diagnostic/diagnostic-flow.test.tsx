@@ -9,15 +9,31 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AppProvider } from "@/components/providers/app-provider";
 import { productConfig } from "@/config/product";
+import { diagnosticQuestions } from "@/data/questions";
+import { guestAssessmentRepository } from "@/repositories/guest-assessment";
+import { demoState } from "@/test/fixtures";
 import { DiagnosticFlow } from "./diagnostic-flow";
 
-const { push } = vi.hoisted(() => ({ push: vi.fn() }));
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
+const mocks = vi.hoisted(() => ({
+  push: vi.fn(),
+  refresh: vi.fn(),
+  getSnapshot: vi.fn(),
+  submitDiagnostic: vi.fn(),
+  updateProfile: vi.fn(),
+}));
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: mocks.push, refresh: mocks.refresh }),
+}));
+vi.mock("@/app/actions/learner", () => ({
+  getLearnerSnapshotAction: mocks.getSnapshot,
+  submitDiagnosticAction: mocks.submitDiagnostic,
+  updateProfileAction: mocks.updateProfile,
+}));
 
 afterEach(() => {
   cleanup();
   localStorage.clear();
-  push.mockClear();
+  Object.values(mocks).forEach((mock) => mock.mockReset());
 });
 
 describe("DiagnosticFlow", () => {
@@ -89,5 +105,61 @@ describe("DiagnosticFlow", () => {
     await waitFor(() =>
       expect(screen.getByLabelText("I'm not sure yet")).toBeChecked(),
     );
+  });
+
+  it("preserves a completed assessment when the authenticated session expires", async () => {
+    const user = userEvent.setup();
+    mocks.submitDiagnostic.mockResolvedValue({
+      ok: false,
+      reason: "unauthenticated",
+      message: "Your session has expired. Sign in again to save your progress.",
+    });
+    render(
+      <AppProvider
+        initialState={{
+          ...structuredClone(demoState),
+          diagnosticAnswers: {},
+          diagnosticResult: null,
+        }}
+      >
+        <DiagnosticFlow />
+      </AppProvider>,
+    );
+
+    await user.click(
+      screen.getByRole("button", { name: /Start my assessment/ }),
+    );
+    for (const [index, question] of diagnosticQuestions.entries()) {
+      if (question.type === "fill_blank") {
+        await user.type(screen.getByLabelText("Your answer"), "lirais");
+      } else {
+        const correct = question.options.find(
+          (option) => option.id === question.correctAnswer,
+        )!;
+        await user.click(screen.getByLabelText(correct.label));
+      }
+      await user.click(
+        screen.getByRole("button", {
+          name:
+            index === diagnosticQuestions.length - 1
+              ? /Finish assessment/
+              : /Next/,
+        }),
+      );
+    }
+
+    await waitFor(() =>
+      expect(mocks.push).toHaveBeenCalledWith(
+        "/login?next=%2Fdiagnostic%2Fresults",
+      ),
+    );
+    const guest = await guestAssessmentRepository.getActive();
+    expect(guest?.answers).toHaveProperty("d15", "c");
+    const anonymous = JSON.parse(
+      localStorage.getItem(productConfig.anonymousStateStorageKey) ?? "null",
+    );
+    expect(anonymous.user).toBeNull();
+    expect(anonymous.planAccess).toBeNull();
+    expect(mocks.submitDiagnostic).toHaveBeenCalledOnce();
   });
 });

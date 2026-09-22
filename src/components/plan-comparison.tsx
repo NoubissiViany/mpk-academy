@@ -13,14 +13,18 @@ function planHref(plan: ProductPlan) {
   return plan.id === "free" ? "/diagnostic" : `/checkout?plan=${plan.id}`;
 }
 
-export function PlanComparison() {
+export function PlanComparison({
+  plans = productPlans,
+}: {
+  plans?: readonly ProductPlan[];
+}) {
   return (
     <div
-      className="grid gap-5 md:grid-cols-2 xl:grid-cols-4"
+      className={`grid gap-5 md:grid-cols-2 ${plans.length === 3 ? "xl:grid-cols-3" : "xl:grid-cols-4"}`}
       role="region"
       aria-label="MPK Academy plans"
     >
-      {productPlans.map((plan) => (
+      {plans.map((plan) => (
         <Card
           key={plan.id}
           role="article"

@@ -1,33 +1,49 @@
-"use client";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ArrowRight, RotateCcw } from "lucide-react";
-import { useApp } from "@/components/providers/app-provider";
 import { PageHeader } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-export default function PracticeResultsPage() {
-  const { state } = useApp();
-  const score = state.lastPracticeScore ?? 0;
-  const exam =
-    state.user?.goal.exam === "TCF Canada" ? "TCF Canada" : "TEF Canada";
+import { hasPlanFeature } from "@/config/product";
+import { getLearnerSnapshot, getPracticeResult } from "@/lib/supabase/learner";
+
+export default async function PracticeResultsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ session?: string }>;
+}) {
+  const { session } = await searchParams;
+  if (!session) notFound();
+  const [result, snapshot] = await Promise.all([
+    getPracticeResult(session),
+    getLearnerSnapshot(),
+  ]);
+  if (!result) notFound();
+  const canReviewMistakes = hasPlanFeature(
+    snapshot.planAccess,
+    "mistakeReview",
+  );
   return (
     <>
       <PageHeader
-        eyebrow={`${exam} practice complete`}
+        eyebrow={`${result.exam} practice complete`}
         title="Good work. Now use the evidence."
-        description="This result has updated your active exam profile and relevant mistake patterns."
+        description="This saved result updated your active exam profile and relevant mistake patterns."
       />
       <div className="grid gap-5 sm:grid-cols-2">
         <Card className="bg-practice text-white">
           <CardContent className="pt-6">
             <p className="text-sm text-white/70">Session result</p>
-            <p className="mt-2 text-5xl font-black">{score}%</p>
+            <p className="mt-2 text-5xl font-black">{result.score}%</p>
+            <p className="mt-2 text-xs text-white/70">
+              {result.correct_count} of {result.question_count} correct
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
             <p className="text-sm text-muted-foreground">What changed</p>
-            <p className="mt-2 text-xl font-bold">Your exam skill trend</p>
+            <p className="mt-2 text-xl font-bold">Your {result.skill} trend</p>
             <p className="mt-2 text-xs text-primary">
               Recency-weighted practice evidence
             </p>
@@ -44,12 +60,14 @@ export default function PracticeResultsPage() {
             </p>
           </div>
           <div className="flex gap-3">
-            <Button asChild variant="secondary">
-              <Link href="/mistakes">
-                <RotateCcw className="size-4" />
-                Review mistakes
-              </Link>
-            </Button>
+            {canReviewMistakes && (
+              <Button asChild variant="secondary">
+                <Link href="/mistakes">
+                  <RotateCcw className="size-4" />
+                  Review mistakes
+                </Link>
+              </Button>
+            )}
             <Button asChild>
               <Link href="/dashboard">
                 Dashboard <ArrowRight className="size-4" />

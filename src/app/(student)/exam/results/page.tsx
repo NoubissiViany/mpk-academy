@@ -1,7 +1,6 @@
-"use client";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
-import { useApp } from "@/components/providers/app-provider";
 import { PageHeader } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,25 +9,39 @@ import {
   createEmptyExamProfile,
   getWeakestExamSkill,
 } from "@/lib/domain/exam-progress";
-export default function ExamResultsPage() {
-  const { state } = useApp();
-  const exam =
-    state.user?.goal.exam === "TCF Canada" ? "TCF Canada" : "TEF Canada";
-  const profile = state.examProfiles[exam] ?? createEmptyExamProfile(exam);
-  const score = state.lastExamScore ?? profile.mockAverage ?? 0;
+import {
+  getAssessmentResult,
+  getLearnerSnapshot,
+} from "@/lib/supabase/learner";
+import type { ExamId } from "@/types/domain";
+
+export default async function ExamResultsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ assessment?: string }>;
+}) {
+  const { assessment } = await searchParams;
+  if (!assessment) notFound();
+  const [result, snapshot] = await Promise.all([
+    getAssessmentResult(assessment),
+    getLearnerSnapshot(),
+  ]);
+  if (!result || result.kind !== "mock_exam") notFound();
+  const exam = result.exam as ExamId;
+  const profile = snapshot.examProfiles[exam] ?? createEmptyExamProfile(exam);
   const weakest = getWeakestExamSkill(profile) ?? "reading";
   return (
     <>
       <PageHeader
         eyebrow={`${exam} shortened mock`}
         title="Your independent performance"
-        description="Instructional support is available again. Use this practice evidence to choose what to strengthen next."
+        description="Instructional support is available again. Use this saved practice evidence to choose what to strengthen next."
       />
       <div className="grid gap-5 lg:grid-cols-[.7fr_1.3fr]">
         <Card className="bg-exam text-white">
           <CardContent className="pt-6">
             <p className="text-sm text-white/70">MPK comprehension result</p>
-            <p className="mt-3 text-6xl font-black">{score}%</p>
+            <p className="mt-3 text-6xl font-black">{result.score}%</p>
             <p className="mt-4 text-xs leading-5 text-white/60">
               Shortened independent simulation—not an official {exam} score,
               immigration result, or prediction. This percentage uses Reading

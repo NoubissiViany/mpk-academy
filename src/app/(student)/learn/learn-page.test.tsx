@@ -2,7 +2,6 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { AppProvider } from "@/components/providers/app-provider";
 import { demoState } from "@/test/fixtures";
-import { saveState } from "@/lib/persistence";
 import LearnPage from "./page";
 
 afterEach(() => {
@@ -12,9 +11,8 @@ afterEach(() => {
 
 describe("learning categories", () => {
   it("groups modules and provides recommended lessons", async () => {
-    saveState(demoState);
     render(
-      <AppProvider>
+      <AppProvider initialState={demoState}>
         <LearnPage />
       </AppProvider>,
     );

@@ -7,25 +7,25 @@ import { useForm } from "react-hook-form";
 import type { Resolver } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { signInAction, signUpAction } from "@/app/actions/auth";
+import {
+  claimGuestAssessmentAction,
+  getLearnerSnapshotAction,
+} from "@/app/actions/learner";
 import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { PaidPlanId } from "@/config/product";
-import {
-  attachAssessmentToExistingState,
-  createRegisteredLearnerState,
-} from "@/lib/domain/onboarding";
-import {
-  clearAnonymousState,
-  loadUserState,
-  saveState,
-} from "@/lib/persistence";
+import { clearAnonymousState } from "@/lib/persistence";
 import { guestAssessmentRepository } from "@/repositories/guest-assessment";
-import { LocalAuthError, localAuthRepository } from "@/repositories/local-auth";
 
 const loginSchema = z.object({
   email: z.email("Enter a valid email address"),
-  password: z.string().min(8, "Use at least 8 characters"),
+  password: z
+    .string()
+    .min(8, "Use at least 8 characters")
+    .regex(/[A-Za-z]/, "Include at least one letter")
+    .regex(/[0-9]/, "Include at least one number"),
 });
 const registerSchema = loginSchema.extend({
   firstName: z.string().min(2, "Enter your first name"),
@@ -73,7 +73,7 @@ export function AuthForm({
   nextPath?: string;
 }) {
   const router = useRouter();
-  const { state, hydrated, setState } = useApp();
+  const { state, hydrated, replaceState } = useApp();
   const registering = mode === "register";
   const form = useForm<RegisterData>({
     resolver: zodResolver(
@@ -106,54 +106,53 @@ export function AuthForm({
   const submit = async (values: RegisterData) => {
     try {
       const guestSession = await guestAssessmentRepository.getActive();
-      const user = registering
-        ? await localAuthRepository.register({
-            firstName: values.firstName,
-            lastName: values.lastName,
+      const authResult = registering
+        ? await signUpAction(values)
+        : await signInAction({
             email: values.email,
             password: values.password,
-            locale: values.locale,
-            assistance: "full",
-            goal: { exam: values.exam, target: values.target },
-          })
-        : await localAuthRepository.login(values.email, values.password);
-      const claimedSession = guestSession
-        ? await guestAssessmentRepository.claim(guestSession.id, user.id)
-        : null;
-      const storedState = registering ? null : loadUserState(user.id);
-      const restoredUser = storedState?.user ?? user;
-      const nextState = registering
-        ? createRegisteredLearnerState(user, claimedSession)
-        : attachAssessmentToExistingState(
-            storedState ?? createRegisteredLearnerState(restoredUser, null),
-            restoredUser,
-            claimedSession,
-          );
+          });
+      if (!authResult.ok) throw new Error(authResult.message);
 
-      saveState(nextState);
-      setState(nextState);
-      if (claimedSession) {
-        await guestAssessmentRepository.clear(claimedSession.id);
-        clearAnonymousState();
+      if (registering && authResult.confirmationRequired) {
+        router.push(
+          `/auth/check-email?email=${encodeURIComponent(values.email)}`,
+        );
+        return;
       }
 
-      toast.success(
-        registering ? "Your learning plan is ready." : "Welcome back.",
-      );
+      let cloudState = null;
+      if (guestSession) {
+        const claimed = await claimGuestAssessmentAction(guestSession);
+        if (!claimed.ok) throw new Error(claimed.message);
+        cloudState = claimed.snapshot;
+        await guestAssessmentRepository.clear(guestSession.id);
+        clearAnonymousState();
+      } else {
+        cloudState = await getLearnerSnapshotAction();
+      }
+      if (cloudState) replaceState(cloudState);
+
+      toast.success(registering ? "Your account is ready." : "Welcome back.");
       const checkoutPlanId =
-        planId ??
-        guestSession?.recommendedPlanId ??
-        (registering ? "complete" : undefined);
+        registering && !guestSession
+          ? undefined
+          : (planId ?? guestSession?.recommendedPlanId);
+      const safeNextPath =
+        nextPath && nextPath.startsWith("/") && !nextPath.startsWith("//")
+          ? nextPath
+          : undefined;
       router.push(
         checkoutPlanId
           ? `/checkout?plan=${checkoutPlanId}`
-          : nextPath && nextPath.startsWith("/") && !nextPath.startsWith("//")
-            ? nextPath
-            : "/dashboard",
+          : registering
+            ? "/diagnostic"
+            : (safeNextPath ?? "/dashboard"),
       );
+      router.refresh();
     } catch (error) {
       toast.error(
-        error instanceof LocalAuthError
+        error instanceof Error
           ? error.message
           : registering
             ? "We could not create your account. Your assessment is still saved."
@@ -247,9 +246,19 @@ export function AuthForm({
           : form.formState.isSubmitting
             ? "Preparing…"
             : registering
-              ? "Create my learning plan"
+              ? "Create my account"
               : "Sign in"}
       </Button>
+      {!registering && (
+        <p className="text-center text-sm">
+          <Link
+            className="font-semibold text-primary hover:underline"
+            href="/forgot-password"
+          >
+            Forgot your password?
+          </Link>
+        </p>
+      )}
       <p className="text-center text-sm text-muted-foreground">
         {registering ? "Already have an account?" : "New to MPK Academy?"}{" "}
         <Link

@@ -5,6 +5,7 @@ import {
   formatPrice,
   getPaidPlan,
   isPaidPlanId,
+  hasPlanFeature,
   productPlans,
   recommendedPaidPlanId,
 } from "@/config/product";
@@ -12,7 +13,7 @@ import {
 describe("product plans", () => {
   it("formats arbitrary CAD prices and approximate plan prices", () => {
     expect(formatPrice(119)).toBe("$119");
-    expect(formatPlanPrice(getPaidPlan("essential"))).toBe("~$119");
+    expect(formatPlanPrice(getPaidPlan("essential")!)).toBe("~$119");
   });
 
   it("validates paid plan identifiers", () => {
@@ -21,11 +22,11 @@ describe("product plans", () => {
     expect(isPaidPlanId("unknown")).toBe(false);
   });
 
-  it("selects a requested paid plan and defaults to Complete", () => {
-    expect(getPaidPlan("intensive").id).toBe("intensive");
-    expect(getPaidPlan(["essential", "complete"]).id).toBe("essential");
-    expect(getPaidPlan("unknown").id).toBe("complete");
-    expect(getPaidPlan().id).toBe("complete");
+  it("selects only valid requested paid plans without a fallback", () => {
+    expect(getPaidPlan("intensive")?.id).toBe("intensive");
+    expect(getPaidPlan(["essential", "complete"])?.id).toBe("essential");
+    expect(getPaidPlan("unknown")).toBeUndefined();
+    expect(getPaidPlan()).toBeUndefined();
   });
 
   it("defines concise positioning and three highlights for every plan", () => {
@@ -48,6 +49,22 @@ describe("product plans", () => {
       "Basic weakness profile",
       "No payment required",
     ]);
+  });
+
+  it("enforces the paid-plan feature matrix", () => {
+    const essential = {
+      planId: "essential" as const,
+      purchasedAt: null,
+      accessUntil: null,
+    };
+    const complete = { ...essential, planId: "complete" as const };
+    const intensive = { ...essential, planId: "intensive" as const };
+    expect(hasPlanFeature(null, "assessment")).toBe(true);
+    expect(hasPlanFeature(null, "learning")).toBe(false);
+    expect(hasPlanFeature(essential, "practice")).toBe(true);
+    expect(hasPlanFeature(essential, "mockExams")).toBe(false);
+    expect(hasPlanFeature(complete, "mockExams")).toBe(true);
+    expect(hasPlanFeature(intensive, "detailedReadiness")).toBe(true);
   });
 
   it("calculates calendar-month access without overflowing short months", () => {

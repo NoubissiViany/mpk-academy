@@ -2,7 +2,6 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { AppProvider } from "@/components/providers/app-provider";
 import { demoState } from "@/test/fixtures";
-import { saveState } from "@/lib/persistence";
 import { MistakeDetail } from "./mistake-detail";
 
 afterEach(() => {
@@ -12,9 +11,8 @@ afterEach(() => {
 
 describe("mistake detail", () => {
   it("connects a repeated pattern to a lesson and targeted practice", async () => {
-    saveState(demoState);
     render(
-      <AppProvider>
+      <AppProvider initialState={demoState}>
         <MistakeDetail mistakeId="m1" />
       </AppProvider>,
     );

@@ -3,7 +3,6 @@ import { afterEach, describe, expect, it } from "vitest";
 import { AppProvider } from "@/components/providers/app-provider";
 import { demoState } from "@/test/fixtures";
 import { createEmptyExamProfile } from "@/lib/domain/exam-progress";
-import { saveState } from "@/lib/persistence";
 import { PracticeSelect } from "./practice-select";
 
 afterEach(() => {
@@ -13,16 +12,15 @@ afterEach(() => {
 
 describe("personalized practice landing", () => {
   it("shows scores, focus areas, and the recommended weakness", async () => {
-    saveState(demoState);
     render(
-      <AppProvider>
+      <AppProvider initialState={demoState}>
         <PracticeSelect />
       </AppProvider>,
     );
 
     expect(await screen.findByText("54% · Needs attention")).toBeVisible();
-    expect(screen.getByText("Specific details")).toBeVisible();
-    expect(screen.getByText("Numbers and dates")).toBeVisible();
+    expect(screen.getByText(/Specific details/)).toBeVisible();
+    expect(screen.getByText(/Numbers and dates/)).toBeVisible();
     expect(
       screen.getByRole("link", { name: "Practice recommended weakness" }),
     ).toHaveAttribute("href", expect.stringContaining("skill=listening"));
@@ -32,13 +30,13 @@ describe("personalized practice landing", () => {
     const profile = createEmptyExamProfile("TEF Canada");
     profile.skills.reading.current = 70;
     profile.skills.listening.current = 54;
-    saveState({
+    const initialState = {
       ...demoState,
       examProfiles: { "TEF Canada": profile },
       mistakes: [],
-    });
+    };
     render(
-      <AppProvider>
+      <AppProvider initialState={initialState}>
         <PracticeSelect />
       </AppProvider>,
     );

@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import {
   ArrowRight,
   BookOpen,
@@ -11,18 +10,20 @@ import {
   Target,
 } from "lucide-react";
 import { useApp } from "@/components/providers/app-provider";
+import { updateExamGoalAction } from "@/app/actions/learner";
 import { PageHeader } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { diagnosticSkillContent } from "@/config/diagnostic";
 import {
   examConfigurations,
   examSkillContent,
   examSkillOrder,
 } from "@/config/exams";
+import { hasPlanFeature } from "@/config/product";
 import {
   createEmptyExamProfile,
-  activateExamProfile,
   getSkillStatus,
 } from "@/lib/domain/exam-progress";
 import { getDiagnosticNextActivity } from "@/lib/domain/personalization";
@@ -36,25 +37,12 @@ const skillIcons = {
 } satisfies Record<ExamSkill, typeof BookOpen>;
 
 export function DashboardView() {
-  const { state, hydrated, setState } = useApp();
-  const [showAssessmentWelcome, setShowAssessmentWelcome] = useState(false);
+  const { state, hydrated, replaceState } = useApp();
   const user = state.user;
   const activeExam =
     user?.goal.exam === "TEF Canada" || user?.goal.exam === "TCF Canada"
       ? user.goal.exam
       : null;
-
-  useEffect(() => {
-    if (!hydrated || !state.postCheckoutWelcomePending) return;
-    const timer = window.setTimeout(() => {
-      setShowAssessmentWelcome(true);
-      setState((current) => ({
-        ...current,
-        postCheckoutWelcomePending: false,
-      }));
-    }, 0);
-    return () => window.clearTimeout(timer);
-  }, [hydrated, setState, state.postCheckoutWelcomePending]);
 
   if (!hydrated)
     return (
@@ -64,8 +52,61 @@ export function DashboardView() {
       />
     );
 
-  const selectExam = (exam: ExamId) => {
-    setState((current) => activateExamProfile(current, exam));
+  if (!state.planAccess) {
+    const priority = state.diagnosticResult
+      ? diagnosticSkillContent[state.diagnosticResult.priority]
+      : null;
+    return (
+      <>
+        <PageHeader
+          eyebrow="Dashboard"
+          title={`Welcome, ${user?.firstName ?? "Learner"}`}
+          description="Your free account includes the assessment and a basic weakness profile."
+        />
+        <Card className="max-w-3xl border-primary/20">
+          <CardContent className="pt-6">
+            <p className="eyebrow">Assessment</p>
+            <h2 className="mt-3 text-2xl font-bold">
+              {state.diagnosticResult
+                ? `Your estimated level is ${state.diagnosticResult.level}`
+                : "Establish your starting point"}
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              {priority
+                ? `${priority.label} is the main weakness identified by your latest assessment.`
+                : "Complete the assessment to identify your current level, strengths, and priority weakness."}
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Button asChild>
+                <Link
+                  href={
+                    state.diagnosticResult
+                      ? "/diagnostic/results"
+                      : "/diagnostic"
+                  }
+                >
+                  {state.diagnosticResult
+                    ? "View assessment results"
+                    : "Start assessment"}
+                </Link>
+              </Button>
+              <Button asChild variant="secondary">
+                <Link href="/choose-plan">Compare paid plans</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </>
+    );
+  }
+
+  const selectExam = async (exam: ExamId) => {
+    const result = await updateExamGoalAction({
+      exam,
+      target: user?.goal.target ?? "I'm not sure",
+      targetDate: user?.goal.targetDate,
+    });
+    if (result.ok) replaceState(result.snapshot);
   };
 
   if (!activeExam) {
@@ -106,21 +147,21 @@ export function DashboardView() {
     : null;
   const shortName = examConfigurations[activeExam].shortName;
   const readiness = state.diagnosticResult?.score ?? null;
+  const personalized = hasPlanFeature(
+    state.planAccess,
+    "personalizedRecommendations",
+  );
+  const detailedReadiness = hasPlanFeature(
+    state.planAccess,
+    "detailedReadiness",
+  );
 
   return (
     <>
       <PageHeader
         eyebrow="Dashboard"
-        title={
-          showAssessmentWelcome
-            ? `Welcome to MPK Academy, ${user?.firstName ?? "Learner"}`
-            : `Welcome back, ${user?.firstName ?? "Learner"}`
-        }
-        description={
-          showAssessmentWelcome
-            ? `We've saved your ${activeExam.replace(" Canada", "")} assessment and prepared your starting point.`
-            : "Your exam, current progress, and clearest next step in one place."
-        }
+        title={`Welcome back, ${user?.firstName ?? "Learner"}`}
+        description="Your exam, current progress, and clearest next step in one place."
       />
 
       <div className="my-8 grid gap-5 lg:grid-cols-[1.2fr_.8fr]">
@@ -131,20 +172,26 @@ export function DashboardView() {
             </p>
             <Target className="mt-6 size-6" />
             <h2 className="mt-3 text-xl font-bold">
-              {diagnosticNext
+              {personalized && diagnosticNext
                 ? `Start with ${diagnosticNext.label.toLowerCase()}`
-                : "Establish your starting point"}
+                : "Continue your guided lessons"}
             </h2>
             <p className="mt-3 text-sm text-white/75">
-              {diagnosticNext
+              {personalized && diagnosticNext
                 ? `${diagnosticNext.label} is the priority identified by your latest diagnostic result.`
-                : "Complete the assessment so MPK can recommend the right activity."}
+                : "Build your French foundations and continue through the available skill lessons."}
             </p>
             <Button asChild variant="secondary" className="mt-6">
-              <Link href={diagnosticNext?.href ?? "/diagnostic"}>
-                {diagnosticNext
+              <Link
+                href={
+                  personalized
+                    ? (diagnosticNext?.href ?? "/diagnostic")
+                    : "/learn"
+                }
+              >
+                {personalized && diagnosticNext
                   ? "Start recommended activity"
-                  : "Complete assessment"}
+                  : "Continue learning"}
               </Link>
             </Button>
           </CardContent>
@@ -166,10 +213,17 @@ export function DashboardView() {
               value={String(profile.weekly.questionsReviewed)}
               label="questions reviewed"
             />
-            <WeeklyStat
-              value={`${profile.weekly.readinessChange >= 0 ? "+" : ""}${Math.round(profile.weekly.readinessChange)}%`}
-              label="readiness"
-            />
+            {detailedReadiness ? (
+              <WeeklyStat
+                value={`${profile.weekly.readinessChange >= 0 ? "+" : ""}${Math.round(profile.weekly.readinessChange)}%`}
+                label="readiness"
+              />
+            ) : (
+              <WeeklyStat
+                value={`${state.progress.courseCompletion}%`}
+                label="course complete"
+              />
+            )}
           </CardContent>
         </Card>
       </div>
@@ -184,24 +238,38 @@ export function DashboardView() {
             <p className="font-semibold">Target: {user?.goal.target}</p>
           </div>
           <div className="mt-7 flex items-end justify-between gap-4 text-sm">
-            <span className="font-semibold">Diagnostic readiness</span>
+            <span className="font-semibold">
+              {detailedReadiness ? "Diagnostic readiness" : "Practice accuracy"}
+            </span>
             <strong className="text-2xl">
-              {readiness === null ? "—" : `${readiness}%`}
+              {detailedReadiness
+                ? readiness === null
+                  ? "—"
+                  : `${readiness}%`
+                : `${state.progress.practiceAccuracy}%`}
             </strong>
           </div>
           <Progress
             className="mt-3"
-            value={readiness ?? 0}
+            value={
+              detailedReadiness
+                ? (readiness ?? 0)
+                : state.progress.practiceAccuracy
+            }
             label={
-              readiness === null
+              detailedReadiness && readiness === null
                 ? "Diagnostic readiness not available yet"
-                : `Diagnostic readiness ${readiness}%`
+                : detailedReadiness
+                  ? `Diagnostic readiness ${readiness}%`
+                  : `Practice accuracy ${state.progress.practiceAccuracy}%`
             }
           />
           <p className="mt-3 text-xs text-muted-foreground">
-            {readiness === null
-              ? "Complete your assessment to establish readiness."
-              : `This provisional result comes from your latest diagnostic. It is not an official ${shortName}, NCLC, or immigration score.`}
+            {detailedReadiness
+              ? readiness === null
+                ? "Complete your assessment to establish readiness."
+                : `This provisional result comes from your latest diagnostic. It is not an official ${shortName}, NCLC, or immigration score.`
+              : `${state.progress.practiceAnswered} practice questions completed. Detailed readiness is available with Complete and Intensive.`}
           </p>
         </CardContent>
       </Card>

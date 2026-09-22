@@ -1,8 +1,39 @@
-import type { Lesson, UserTier } from "@/types/domain";
+import { hasPlanFeature, type PlanFeature } from "@/config/product";
+import type { Lesson, PlanAccess } from "@/types/domain";
 
-export const canAccessLesson = (tier: UserTier, lesson: Pick<Lesson, "isFree">) =>
-  tier === "paid_student" || lesson.isFree;
-export const canAccessPractice = (tier: UserTier, premium = false) =>
-  tier === "paid_student" || (tier === "free_student" && !premium);
-export const canAccessExam = (tier: UserTier) => tier === "paid_student";
-export const canAccessCertificate = (tier: UserTier, eligible: boolean) => tier === "paid_student" && eligible;
+export const canAccessLesson = (
+  planAccess: PlanAccess | null,
+  lesson: Pick<Lesson, "isFree" | "moduleId">,
+) =>
+  hasPlanFeature(planAccess, "learning") &&
+  (lesson.moduleId !== "exam-strategies" ||
+    hasPlanFeature(planAccess, "examStrategies"));
+
+export const canAccessPractice = (planAccess: PlanAccess | null) =>
+  hasPlanFeature(planAccess, "practice");
+export const canAccessExam = (planAccess: PlanAccess | null) =>
+  hasPlanFeature(planAccess, "mockExams");
+export const canAccessCertificate = (
+  planAccess: PlanAccess | null,
+  eligible: boolean,
+) => hasPlanFeature(planAccess, "certificate") && eligible;
+
+export const requiredFeatureForPath = (
+  pathname: string,
+): PlanFeature | null => {
+  if (pathname.startsWith("/learn/exam-strategies")) return "examStrategies";
+  if (pathname === "/learn" || pathname.startsWith("/learn/"))
+    return "learning";
+  if (pathname === "/practice" || pathname.startsWith("/practice/"))
+    return "practice";
+  if (pathname === "/progress") return "basicProgress";
+  if (
+    pathname === "/mistakes" ||
+    pathname.startsWith("/mistakes/") ||
+    pathname === "/weaknesses"
+  )
+    return "mistakeReview";
+  if (pathname === "/exam" || pathname.startsWith("/exam/")) return "mockExams";
+  if (pathname === "/certificate") return "certificate";
+  return null;
+};

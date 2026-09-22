@@ -2,6 +2,18 @@ import type { DiagnosticTarget, Locale, PaidPlanId } from "@/types/domain";
 
 export type { PaidPlanId } from "@/types/domain";
 export type ProductPlanId = "free" | PaidPlanId;
+export type PlanFeature =
+  | "assessment"
+  | "learning"
+  | "practice"
+  | "basicProgress"
+  | "personalizedRecommendations"
+  | "mistakeReview"
+  | "examStrategies"
+  | "mockExams"
+  | "detailedReadiness"
+  | "certificate";
+export type PlanEntitlements = Readonly<Record<PlanFeature, boolean>>;
 
 export interface ProductPlan {
   id: ProductPlanId;
@@ -27,7 +39,7 @@ export const productConfig = {
   supportedLanguages: ["en", "fr"] satisfies Locale[],
   storageKey: "mpk-academy:v1",
   storageNamespaceVersionKey: "mpk-academy:storage-version",
-  storageNamespaceVersion: "2",
+  storageNamespaceVersion: "4",
   anonymousStateStorageKey: "mpk-academy:anonymous-state:v2",
   accountsStorageKey: "mpk-academy:accounts:v1",
   sessionStorageKey: "mpk-academy:session:v1",
@@ -65,7 +77,7 @@ export const productPlans = [
     name: "Essential",
     bestFor: "Build your French foundations across all four skills.",
     highlights: [
-      "Reading, listening, writing, and speaking practice",
+      "Reading and listening practice with four-skill lessons",
       "English explanations and guided lessons",
       "Basic tracking with limited feedback",
     ],
@@ -102,15 +114,15 @@ export const productPlans = [
     bestFor: "Candidates near exam day or preparing for a retake.",
     highlights: [
       "Everything in Complete",
-      "Higher writing and speaking feedback limits",
-      "Intensive plan with additional mock attempts",
+      "Higher writing and speaking feedback limits coming later",
+      "Additional mock-attempt capacity coming later",
     ],
     price: 349,
     approximate: true,
     paymentModel: "One-time purchase",
     access: "6 months",
     accessMonths: 6,
-    purpose: "Full preparation with higher AI and mock-exam limits",
+    purpose: "Full preparation with future higher feedback and mock limits",
     cta: "Choose Intensive",
     featured: false,
   },
@@ -121,16 +133,63 @@ export const paidPlans = productPlans.filter(
     plan.id !== "free",
 );
 
+const freeEntitlements: PlanEntitlements = {
+  assessment: true,
+  learning: false,
+  practice: false,
+  basicProgress: false,
+  personalizedRecommendations: false,
+  mistakeReview: false,
+  examStrategies: false,
+  mockExams: false,
+  detailedReadiness: false,
+  certificate: false,
+};
+
+const essentialEntitlements: PlanEntitlements = {
+  ...freeEntitlements,
+  learning: true,
+  practice: true,
+  basicProgress: true,
+};
+
+const completeEntitlements: PlanEntitlements = {
+  ...essentialEntitlements,
+  personalizedRecommendations: true,
+  mistakeReview: true,
+  examStrategies: true,
+  mockExams: true,
+  detailedReadiness: true,
+  certificate: true,
+};
+
+export const planEntitlements: Readonly<
+  Record<ProductPlanId, PlanEntitlements>
+> = {
+  free: freeEntitlements,
+  essential: essentialEntitlements,
+  complete: completeEntitlements,
+  intensive: completeEntitlements,
+};
+
 export const isPaidPlanId = (value: unknown): value is PaidPlanId =>
   value === "essential" || value === "complete" || value === "intensive";
 
 export const getPaidPlan = (value?: string | string[]) => {
   const planId = Array.isArray(value) ? value[0] : value;
-  return (
-    paidPlans.find((plan) => plan.id === planId) ??
-    paidPlans.find((plan) => plan.id === "complete")!
-  );
+  return paidPlans.find((plan) => plan.id === planId);
 };
+
+export const getActivePlanId = (
+  planAccess: {
+    planId: PaidPlanId;
+  } | null,
+): ProductPlanId => planAccess?.planId ?? "free";
+
+export const hasPlanFeature = (
+  planAccess: { planId: PaidPlanId } | null,
+  feature: PlanFeature,
+) => planEntitlements[getActivePlanId(planAccess)][feature];
 
 export const recommendedPaidPlanId = (
   target?: DiagnosticTarget,
@@ -166,7 +225,7 @@ export function calculatePlanAccessUntil(
   planId: PaidPlanId,
   purchasedAt = new Date(),
 ) {
-  const months = getPaidPlan(planId).accessMonths;
+  const months = paidPlans.find((plan) => plan.id === planId)!.accessMonths;
   const accessUntil = new Date(purchasedAt);
   const originalDay = accessUntil.getUTCDate();
   accessUntil.setUTCDate(1);

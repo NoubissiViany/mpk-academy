@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -9,6 +10,7 @@ import {
   Volume2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { completeLessonAction } from "@/app/actions/learner";
 import { useApp } from "@/components/providers/app-provider";
 import { LockedContent, ModeBadge } from "@/components/shared";
 import { Badge } from "@/components/ui/badge";
@@ -26,7 +28,8 @@ export function LessonView({
   moduleId: string;
   lessonId: string;
 }) {
-  const { state, setState } = useApp();
+  const { state, replaceState } = useApp();
+  const [saving, setSaving] = useState(false);
   const courseModule = courseModules.find((item) => item.id === moduleId);
   const lesson = allLessons.find(
     (item) => item.id === lessonId && item.moduleId === moduleId,
@@ -41,7 +44,7 @@ export function LessonView({
         </Button>
       </div>
     );
-  if (!canAccessLesson(user?.tier ?? "visitor", lesson))
+  if (!canAccessLesson(state.planAccess, lesson))
     return (
       <div>
         <ModeBadge mode="learn" />
@@ -61,25 +64,16 @@ export function LessonView({
   const index = allLessons.findIndex((item) => item.id === lesson.id);
   const next = allLessons[index + 1];
   const previous = allLessons[index - 1];
-  const markComplete = () => {
-    if (completed) return;
-    setState((current) => ({
-      ...current,
-      progress: {
-        ...current.progress,
-        completedLessonIds: [...current.progress.completedLessonIds, lesson.id],
-        courseCompletion: Math.min(100, current.progress.courseCompletion + 4),
-      },
-      activities: [
-        {
-          id: crypto.randomUUID(),
-          label: `Completed “${lesson.title}”`,
-          detail: "Lesson checkpoint · 100%",
-          timestamp: new Date().toISOString(),
-        },
-        ...current.activities,
-      ],
-    }));
+  const markComplete = async () => {
+    if (completed || saving) return;
+    setSaving(true);
+    const result = await completeLessonAction(lesson.id);
+    setSaving(false);
+    if (!result.ok) {
+      toast.error(result.message);
+      return;
+    }
+    replaceState(result.snapshot);
     toast.success("Lesson progress saved");
   };
   return (
@@ -220,8 +214,16 @@ export function LessonView({
                 </button>
               ))}
             </div>
-            <Button className="mt-6" onClick={markComplete}>
-              {completed ? "Lesson completed" : "Complete lesson"}
+            <Button
+              className="mt-6"
+              onClick={markComplete}
+              disabled={completed || saving}
+            >
+              {completed
+                ? "Lesson completed"
+                : saving
+                  ? "Saving…"
+                  : "Complete lesson"}
             </Button>
           </section>
           <nav className="mt-9 flex justify-between gap-3">

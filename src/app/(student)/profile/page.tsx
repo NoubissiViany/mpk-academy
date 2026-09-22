@@ -27,9 +27,7 @@ export default function ProfilePage() {
     ["Email", user?.email ?? "—"],
     [
       "Plan",
-      user?.tier === "paid_student"
-        ? `${paidPlan?.name ?? "Complete"} Plan`
-        : "Free plan",
+      state.planAccess && paidPlan ? `${paidPlan.name} Plan` : "Free plan",
     ],
     ...(accessUntil ? [["Access until", accessUntil]] : []),
     ["Active exam", exam ?? "Not selected"],

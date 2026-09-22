@@ -185,6 +185,7 @@ export function applyDiagnosticResult(
       : null;
   return {
     ...state,
+    postCheckoutWelcomePending: Boolean(state.planAccess),
     diagnosticIntake: intake,
     diagnosticResult: result,
     examProfiles:
