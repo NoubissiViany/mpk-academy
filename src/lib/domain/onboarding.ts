@@ -11,6 +11,89 @@ import type {
   User,
 } from "@/types/domain";
 
+export type OnboardingStage =
+  "authentication" | "assessment" | "results_checkout" | "complete";
+
+type StudentRoute =
+  | "certificate"
+  | "dashboard"
+  | "exam"
+  | "learn"
+  | "mistakes"
+  | "practice"
+  | "profile"
+  | "progress"
+  | "settings"
+  | "weaknesses";
+
+export type OnboardingDestination =
+  | "/login"
+  | "/diagnostic"
+  | "/diagnostic/results"
+  | `/${StudentRoute}${string}`;
+
+type OnboardingState = Pick<
+  AppState,
+  "user" | "diagnosticResult" | "planAccess"
+>;
+
+const studentRoutes = new Set<StudentRoute>([
+  "certificate",
+  "dashboard",
+  "exam",
+  "learn",
+  "mistakes",
+  "practice",
+  "profile",
+  "progress",
+  "settings",
+  "weaknesses",
+]);
+
+function activePlanAccess(state: OnboardingState, now: number) {
+  if (!state.planAccess) return false;
+  if (!state.planAccess.accessUntil) return true;
+  const expiresAt = Date.parse(state.planAccess.accessUntil);
+  return Number.isFinite(expiresAt) && expiresAt > now;
+}
+
+function requestedStudentDestination(path?: string): OnboardingDestination {
+  if (!path || !path.startsWith("/") || path.startsWith("//"))
+    return "/dashboard";
+  try {
+    const url = new URL(path, "https://mpk.invalid");
+    if (url.origin !== "https://mpk.invalid") return "/dashboard";
+    const root = url.pathname.split("/")[1] as StudentRoute;
+    return studentRoutes.has(root)
+      ? (path as OnboardingDestination)
+      : "/dashboard";
+  } catch {
+    return "/dashboard";
+  }
+}
+
+export function getOnboardingStage(
+  state: OnboardingState,
+  now = Date.now(),
+): OnboardingStage {
+  if (!state.user) return "authentication";
+  if (!state.diagnosticResult) return "assessment";
+  if (!activePlanAccess(state, now)) return "results_checkout";
+  return "complete";
+}
+
+export function resolveOnboardingDestination(
+  state: OnboardingState,
+  requestedPath?: string,
+  now = Date.now(),
+): OnboardingDestination {
+  const stage = getOnboardingStage(state, now);
+  if (stage === "authentication") return "/login";
+  if (stage === "assessment") return "/diagnostic";
+  if (stage === "results_checkout") return "/diagnostic/results";
+  return requestedStudentDestination(requestedPath);
+}
+
 export function createDiagnosticExamProfile(
   exam: ExamId,
   result: DiagnosticResult,
@@ -59,6 +142,7 @@ export function createRegisteredLearnerState(
     schemaVersion: 5,
     user,
     planAccess: null,
+    checkoutIntentPlanId: null,
     postCheckoutWelcomePending: false,
     examProfiles: exam && profile ? { [exam]: profile } : {},
     diagnosticIntake: session?.intake ?? null,

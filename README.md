@@ -2,7 +2,7 @@
 
 MPK Academy is a Next.js 16 application for French for Canadian Immigration — TEF/TCF Preparation. Its product loop is **Goal → Diagnose → Learn → Practice → Simulate → Measure → Adapt → Repeat**.
 
-Supabase provides PostgreSQL persistence and email/password authentication. Learner data is protected by Row Level Security; browser clients have read-only access to their own rows and write through restricted database functions invoked by validated server actions. Paid checkout is intentionally unavailable and cannot grant an entitlement.
+Supabase provides PostgreSQL persistence and email/password authentication. Learner data is protected by Row Level Security; browser clients have read-only access to their own rows and write through restricted database functions invoked by validated server actions. Stripe Checkout grants time-limited plan access only after a signed webhook or authenticated server-side reconciliation verifies payment.
 
 ## Local setup
 
@@ -38,7 +38,7 @@ For hosted changes, always run `npx supabase db push --dry-run` before `npx supa
 - `auth.users` is the identity source; a tested trigger creates the initial profile, exam goal, progress, and skill rows.
 - Every exposed learner table has RLS and explicit grants. Authenticated users can read only their own records.
 - Profiles, goals, submissions, answers, scores, mistakes, and progress are written atomically through server-owned functions deriving identity from `auth.uid()`.
-- Purchases and entitlements have no learner write path. No service-role key is present in the application.
+- Purchases and entitlements have no learner write path. The server-only service-role key is isolated to verified Stripe fulfillment and is never exposed to browser code.
 - Authenticated learner data is loaded from Supabase and never persisted in browser storage. A signed-out assessment is kept in the same browser for at most seven days and claimed idempotently after authentication.
 - Assessment and practice scores are recomputed from the private question bank; client-submitted scores are ignored.
 
@@ -54,4 +54,4 @@ For hosted changes, always run `npx supabase db push --dry-run` before `npx supa
 
 Question content remains MPK-owned mock content and the displayed readiness result is an internal learning indicator, not an official TEF/TCF score or immigration outcome.
 
-See [Supabase operations](docs/SUPABASE_OPERATIONS.md), [Architecture](docs/ARCHITECTURE.md), [Domain model](docs/DOMAIN_MODEL.md), and [MVP status](docs/MVP_STATUS.md).
+See [Supabase operations](docs/SUPABASE_OPERATIONS.md), [Stripe operations](docs/STRIPE_OPERATIONS.md), [Architecture](docs/ARCHITECTURE.md), [Domain model](docs/DOMAIN_MODEL.md), and [MVP status](docs/MVP_STATUS.md).

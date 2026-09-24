@@ -67,9 +67,15 @@ export function ResultsView() {
   const intake = state.diagnosticIntake;
   const hasPurchasedPlan = Boolean(state.user && state.planAccess);
   const recommendedPlan = getPaidPlan(recommendedPaidPlanId(intake?.target))!;
+  const selectedPlan = state.checkoutIntentPlanId
+    ? getPaidPlan(state.checkoutIntentPlanId)
+    : undefined;
+  const checkoutPlan = selectedPlan ?? recommendedPlan;
+  const selectionDiffersFromRecommendation =
+    Boolean(selectedPlan) && selectedPlan?.id !== recommendedPlan.id;
   const recommendationHref = state.user
-    ? `/checkout?plan=${recommendedPlan.id}`
-    : `/register?plan=${recommendedPlan.id}`;
+    ? `/checkout?plan=${checkoutPlan.id}`
+    : `/register?plan=${checkoutPlan.id}`;
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -182,35 +188,48 @@ export function ResultsView() {
       ) : (
         <Card
           className="mt-8 overflow-hidden border-primary ring-1 ring-primary"
-          aria-label={`Recommended plan: ${recommendedPlan.name}`}
+          aria-label={`${selectedPlan ? "Selected" : "Recommended"} plan: ${checkoutPlan.name}`}
         >
           <CardContent className="grid gap-7 p-0 md:grid-cols-[1.35fr_.65fr]">
             <div className="p-7 sm:p-9">
               <Badge className="gap-1.5">
                 <Sparkles className="size-3.5" aria-hidden="true" />
-                Recommended for you
+                {selectedPlan ? "Your selected plan" : "Recommended for you"}
               </Badge>
-              <h2 className="mt-5 text-3xl font-black">
-                {recommendedPlan.name}
-              </h2>
-              <p className="mt-4 leading-7 text-muted-foreground">
-                Based on your {intake?.target ?? "current"} goal, {result.level}{" "}
-                estimated level, and {priority.label.toLowerCase()} priority,
-                this plan gives you the right level of support for your next
-                step.
-              </p>
-              <p className="mt-4 font-semibold">{recommendedPlan.purpose}</p>
+              <h2 className="mt-5 text-3xl font-black">{checkoutPlan.name}</h2>
+              {selectionDiffersFromRecommendation ? (
+                <div className="mt-4 space-y-3 leading-7 text-muted-foreground">
+                  <p>
+                    You selected {checkoutPlan.name} before your assessment.
+                    Your selection remains ready for checkout.
+                  </p>
+                  <p>
+                    Based on your {intake?.target ?? "current"} goal,{" "}
+                    {result.level} estimated level, and{" "}
+                    {priority.label.toLowerCase()} priority, your assessment
+                    recommends {recommendedPlan.name}.
+                  </p>
+                </div>
+              ) : (
+                <p className="mt-4 leading-7 text-muted-foreground">
+                  Based on your {intake?.target ?? "current"} goal,{" "}
+                  {result.level} estimated level, and{" "}
+                  {priority.label.toLowerCase()} priority, this plan gives you
+                  the right level of support for your next step.
+                </p>
+              )}
+              <p className="mt-4 font-semibold">{checkoutPlan.purpose}</p>
             </div>
             <div className="flex flex-col justify-center bg-primary/5 p-7 sm:p-9">
               <p className="text-4xl font-black">
-                {formatPlanPrice(recommendedPlan)}
+                {formatPlanPrice(checkoutPlan)}
               </p>
               <p className="mt-2 text-sm text-muted-foreground">
-                {recommendedPlan.paymentModel} · {recommendedPlan.access}
+                {checkoutPlan.paymentModel} · {checkoutPlan.access}
               </p>
               <Button asChild size="lg" className="mt-6 w-full lg:text-nowrap">
                 <Link href={recommendationHref}>
-                  Continue with {recommendedPlan.name}
+                  Continue with {checkoutPlan.name}
                   <ArrowRight className="size-4" />
                 </Link>
               </Button>

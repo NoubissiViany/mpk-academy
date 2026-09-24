@@ -69,6 +69,7 @@ export const demoState: AppState = {
     purchasedAt: "2026-09-14T12:00:00.000Z",
     accessUntil: "2027-03-14T12:00:00.000Z",
   },
+  checkoutIntentPlanId: null,
   postCheckoutWelcomePending: false,
   examProfiles: { "TEF Canada": seededTefProfile },
   diagnosticIntake: {

@@ -5,7 +5,7 @@
 </p>
 <p>
   <a
-    href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next=/auth/complete"
+    href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=email&next=/auth/complete"
     >Confirm email address</a
   >
 </p>

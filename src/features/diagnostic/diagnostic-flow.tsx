@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -23,6 +23,7 @@ import { diagnosticQuestions } from "@/data/questions";
 import { scoreDiagnostic } from "@/lib/domain/diagnostic";
 import { applyDiagnosticResult } from "@/lib/domain/onboarding";
 import { guestAssessmentRepository } from "@/repositories/guest-assessment";
+import { withErrorReference } from "@/lib/public-error";
 import type {
   DiagnosticIntake,
   DiagnosticTarget,
@@ -126,13 +127,16 @@ export function DiagnosticFlow() {
 
 function DiagnosticExperience() {
   const router = useRouter();
-  const { state, setState, replaceState } = useApp();
+  const { state, setState } = useApp();
+  const submissionId = useRef<string | null>(null);
   const [stage, setStage] = useState<"intro" | "questions">("intro");
   const [index, setIndex] = useState(0);
   const [finishing, setFinishing] = useState(false);
-  const [intake, setIntake] = useState<Partial<DiagnosticIntake>>(
-    state.diagnosticIntake ?? {},
-  );
+  const [intake, setIntake] = useState<Partial<DiagnosticIntake>>(() => ({
+    goal: state.diagnosticIntake?.goal ?? state.user?.goal.exam,
+    target: state.diagnosticIntake?.target ?? state.user?.goal.target,
+    frenchExperience: state.diagnosticIntake?.frenchExperience,
+  }));
   const question = diagnosticQuestions[index];
   const answers = state.diagnosticAnswers;
 
@@ -141,6 +145,7 @@ function DiagnosticExperience() {
   );
   const start = () => {
     if (!intakeComplete) return;
+    submissionId.current = crypto.randomUUID();
     setState((current) => ({
       ...current,
       diagnosticIntake: intake as DiagnosticIntake,
@@ -169,6 +174,7 @@ function DiagnosticExperience() {
     };
     if (state.user) {
       const saved = await submitDiagnosticAction({
+        submissionId: (submissionId.current ??= crypto.randomUUID()),
         intake: completedIntake,
         answers,
       });
@@ -199,16 +205,25 @@ function DiagnosticExperience() {
           );
           setFinishing(false);
           toast.error(
-            "Your session expired. Your assessment is saved on this device—sign in to continue.",
+            withErrorReference(
+              "Your session expired. Your assessment is saved on this device—sign in to continue.",
+              saved.reference,
+            ),
           );
           router.push("/login?next=%2Fdiagnostic%2Fresults");
           return;
         }
         setFinishing(false);
-        toast.error(saved.message);
+        toast.error(withErrorReference(saved.message, saved.reference));
         return;
       }
-      replaceState(saved.snapshot);
+      const authoritativeResult = saved.data.result;
+      setState((current) =>
+        applyDiagnosticResult(current, completedIntake, authoritativeResult, {
+          ...activity,
+          detail: `${authoritativeResult.level} estimated level`,
+        }),
+      );
       router.push(`/diagnostic/results?assessment=${saved.data.id}`);
       router.refresh();
       return;

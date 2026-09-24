@@ -33,6 +33,7 @@ export function ensureStorageNamespace() {
 function anonymousState(state: Partial<AppState>): AppState {
   return {
     ...structuredClone(defaultState),
+    checkoutIntentPlanId: null,
     diagnosticIntake: state.diagnosticIntake ?? null,
     diagnosticAnswers:
       state.diagnosticAnswers && typeof state.diagnosticAnswers === "object"

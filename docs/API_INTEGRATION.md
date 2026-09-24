@@ -18,7 +18,7 @@ Implement an adapter that maps provider-specific question, media, and competency
 
 ## Payments
 
-Replace `PaymentRepository.checkout` with creation of a hosted PCI-compliant checkout session. Entitlement changes must happen only after server-side signature or webhook verification, never from the success URL or client state.
+Stripe-hosted Checkout creates one-time payment sessions on the server. A signed webhook is the primary fulfillment path; the authenticated success route retrieves the session from Stripe as an idempotent fallback. Restricted database functions atomically create purchases and entitlements. Never grant access from URL parameters or client state.
 
 ## Progress and analytics
 

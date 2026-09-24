@@ -23,9 +23,9 @@ export default function PricingPage() {
         <PlanComparison />
       </div>
       <p className="mx-auto mt-7 max-w-2xl text-center text-xs leading-5 text-muted-foreground">
-        Approximate prices in CAD. No real payment is collected in this frontend
-        MVP. Access periods and usage limits are not enforced in the demo. MPK
-        Academy does not guarantee an exam score or immigration outcome.
+        Prices are in CAD before applicable tax. Secure one-time payment is
+        handled by Stripe. MPK Academy does not guarantee an exam score or
+        immigration outcome.
       </p>
     </div>
   );

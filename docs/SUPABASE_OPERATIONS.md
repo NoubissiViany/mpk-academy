@@ -8,7 +8,7 @@
 - Plan at creation: Free
 - Database password: GNOME Login keyring item `MPK Academy Supabase database`
 
-The repository stores only the public project URL and publishable key in the ignored `.env.local`. Never add a secret/service-role key to this application.
+The browser receives only the public project URL and publishable key. Stripe fulfillment also requires a service-role key in server-only deployment secrets; never commit it, prefix it with `NEXT_PUBLIC_`, or import the admin client into browser code.
 
 ## Safe change workflow
 
@@ -22,9 +22,32 @@ npx supabase config push
 npx supabase gen types typescript --linked
 ```
 
-Review every configuration diff. Set the production `site_url` and add exact production confirmation/recovery redirect URLs before deployment. The current values are intentionally localhost-only.
+Review every configuration diff. The versioned production `site_url` is `https://mpk-academy.vercel.app`; its confirmation and recovery paths are allow-listed alongside local development callbacks.
 
-Custom confirmation and recovery templates are versioned under `supabase/templates`, but Supabase's default email provider does not permit template customization on this Free project. The application therefore supports the default provider's PKCE `code` callback today. Configure custom SMTP before enabling the custom templates; do not upgrade solely to bypass this during development.
+Custom confirmation and recovery templates are versioned under `supabase/templates`, but Supabase's default email provider does not deliver production mail to arbitrary learner addresses. The application supports the default provider's PKCE `code` callback for development, but custom SMTP is required before a production signup test.
+
+## Production authentication email
+
+Until MPK Academy owns a final domain, use Resend's test sender for Auth email. In Supabase Dashboard → Authentication → Email/SMTP, enable custom SMTP with:
+
+- Sender email: `onboarding@resend.dev`
+- Sender name: `MPK Academy`
+- Host: `smtp.resend.com`
+- Port: `465`
+- Username: `resend`
+- Password: the Resend API key entered directly in the Supabase dashboard
+
+Never place the Resend API key in this repository, application environment variables, Vercel, documentation, screenshots, or support logs. Supabase Auth connects to Resend over SMTP; the application does not use the Resend SDK or a custom email API route.
+
+The versioned target rate is 30 authentication emails per hour. Increase it only after checking provider quotas and abuse protection. Keep **Confirm email** enabled, keep the production Site URL at `https://mpk-academy.vercel.app`, and retain these redirect URLs:
+
+- `https://mpk-academy.vercel.app/auth/confirm`
+- `https://mpk-academy.vercel.app/update-password`
+- the versioned localhost confirmation and password-reset URLs
+
+After saving the SMTP settings, use Supabase's SMTP test and then register with a brand-new external inbox. Confirm exactly one message arrives from `MPK Academy <onboarding@resend.dev>`, its link returns through `/auth/confirm`, the browser receives a valid session, and a direct registration continues to `/diagnostic`. Test the one-minute resend throttle and password recovery, then compare failures in Resend delivery logs and Supabase Auth logs.
+
+The commented `[auth.email.smtp]` block in `supabase/config.toml` documents the Resend CLI equivalent without enabling or storing the secret. When a final domain is purchased, verify it in Resend, configure SPF and DKIM, add DMARC, and replace only the sender address with a dedicated Auth address such as `no-reply@auth.example.com`.
 
 ## Free-plan monitoring and upgrade thresholds
 

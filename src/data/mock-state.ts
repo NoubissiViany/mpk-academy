@@ -16,6 +16,7 @@ export const defaultState: AppState = {
   schemaVersion: 5,
   user: null,
   planAccess: null,
+  checkoutIntentPlanId: null,
   postCheckoutWelcomePending: false,
   examProfiles: {},
   diagnosticIntake: null,

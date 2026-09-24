@@ -42,7 +42,12 @@ describe("AppProvider session hydration", () => {
       productConfig.anonymousStateStorageKey,
       JSON.stringify(demoState),
     );
-    mocks.getSnapshot.mockResolvedValue(null);
+    mocks.getSnapshot.mockResolvedValue({
+      ok: false,
+      reason: "unauthenticated",
+      message: "Your session has expired. Sign in again.",
+      reference: "signed-out-reference",
+    });
 
     render(
       <AppProvider>

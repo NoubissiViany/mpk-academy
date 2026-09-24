@@ -2,8 +2,13 @@
 
 import { z } from "zod";
 import { cookies } from "next/headers";
+import { getErrorDetails, logServerError } from "@/lib/server/diagnostics";
 import { getLearnerSnapshot, requireUserId } from "@/lib/supabase/learner";
-import type { AppState, GuestAssessmentSession } from "@/types/domain";
+import type {
+  AppState,
+  DiagnosticResult,
+  GuestAssessmentSession,
+} from "@/types/domain";
 
 type AssessmentSubmission = {
   id: string;
@@ -21,11 +26,32 @@ type LessonCompletion = { lessonId: string; courseCompletion: number };
 export type MutationFailureReason =
   "unauthenticated" | "invalid_submission" | "conflict" | "unavailable";
 
+export type SnapshotFailureReason =
+  "unauthenticated" | "profile_unavailable" | "service_unavailable";
+
+export type SnapshotActionResult =
+  | { ok: true; snapshot: AppState }
+  | {
+      ok: false;
+      reason: SnapshotFailureReason;
+      message: string;
+      reference: string;
+    };
+
 type MutationFailure = {
   ok: false;
   reason: MutationFailureReason;
   message: string;
 };
+
+type DiagnosticMutationFailure = MutationFailure & { reference: string };
+
+export type DiagnosticSubmissionResult =
+  | {
+      ok: true;
+      data: { id: string; result: DiagnosticResult };
+    }
+  | DiagnosticMutationFailure;
 
 export type MutationResult<T = undefined> =
   { ok: true; data: T; snapshot: AppState } | MutationFailure;
@@ -49,6 +75,44 @@ const intakeSchema = z.object({
     "I'm already comfortable in French",
     "I'm not sure",
   ]),
+});
+const diagnosticSkillSchema = z.enum([
+  "grammar",
+  "vocabulary",
+  "reading",
+  "listening",
+  "sentence-structure",
+  "exam-strategy",
+]);
+const diagnosticResultSchema = z.object({
+  id: z.string().uuid(),
+  score: z.number().int().min(0).max(100),
+  level: z.enum(["A2", "B1", "B2", "C1"]),
+  competencyScores: z
+    .object({
+      "reading-main-idea": z.number(),
+      "reading-detail": z.number(),
+      "reading-inference": z.number(),
+      "listening-main-idea": z.number(),
+      "listening-detail": z.number(),
+      "grammar-tense": z.number(),
+      "grammar-prepositions": z.number(),
+      "vocabulary-context": z.number(),
+      connectors: z.number(),
+      "time-expressions": z.number(),
+    })
+    .partial(),
+  skillScores: z.object({
+    grammar: z.number(),
+    vocabulary: z.number(),
+    reading: z.number(),
+    listening: z.number(),
+    "sentence-structure": z.number(),
+    "exam-strategy": z.number(),
+  }),
+  strength: diagnosticSkillSchema,
+  priority: diagnosticSkillSchema,
+  recommendedModuleId: z.string().min(1),
 });
 
 function answerRows(answers: Record<string, string>) {
@@ -114,11 +178,66 @@ function failure(operation: string, error: unknown): MutationFailure {
   return { ok: false, reason, message: publicMessage[reason] };
 }
 
-export async function getLearnerSnapshotAction() {
+function diagnosticFailure(
+  operation: "persist_assessment" | "load_assessment_result",
+  error: unknown,
+): DiagnosticMutationFailure {
+  const { code, message } = errorFields(error);
+  const normalizedMessage = message.toLowerCase();
+  const unauthenticated =
+    normalizedMessage === "unauthorized" ||
+    normalizedMessage.includes("authentication required") ||
+    normalizedMessage.includes("jwt expired") ||
+    code === "PGRST301";
+  const reason: MutationFailureReason = unauthenticated
+    ? "unauthenticated"
+    : code === "22023"
+      ? "invalid_submission"
+      : code === "23505"
+        ? "conflict"
+        : "unavailable";
+  const publicMessage = {
+    unauthenticated:
+      "Your session has expired. Sign in again to save your progress.",
+    invalid_submission:
+      "The submitted information is invalid. Review it and try again.",
+    conflict: "This update was already processed. Refresh and try again.",
+    unavailable: "We could not save this update. Please try again.",
+  } satisfies Record<MutationFailureReason, string>;
+  const reference = logServerError("Diagnostic submission failed", error, {
+    operation,
+    reason,
+  });
+  return { ok: false, reason, message: publicMessage[reason], reference };
+}
+
+export async function getLearnerSnapshotAction(): Promise<SnapshotActionResult> {
   try {
-    return await getLearnerSnapshot();
-  } catch {
-    return null;
+    return { ok: true, snapshot: await getLearnerSnapshot() };
+  } catch (error) {
+    const { code } = getErrorDetails(error);
+    const message = error instanceof Error ? error.message.toLowerCase() : "";
+    const reason: SnapshotFailureReason =
+      message.includes("unauthorized") ||
+      message.includes("authentication required") ||
+      message.includes("jwt expired") ||
+      code === "PGRST301"
+        ? "unauthenticated"
+        : message.includes("learner profile") || code === "PGRST116"
+          ? "profile_unavailable"
+          : "service_unavailable";
+    const publicMessage = {
+      unauthenticated: "Your session has expired. Sign in again.",
+      profile_unavailable:
+        "Your account is signed in, but its learning profile could not be loaded.",
+      service_unavailable:
+        "Your learning profile is temporarily unavailable. Please try again.",
+    } satisfies Record<SnapshotFailureReason, string>;
+    const reference = logServerError("Learner snapshot failed", error, {
+      operation: "load_learner_snapshot",
+      reason,
+    });
+    return { ok: false, reason, message: publicMessage[reason], reference };
   }
 }
 
@@ -153,29 +272,52 @@ export async function claimGuestAssessmentAction(
 }
 
 export async function submitDiagnosticAction(input: {
+  submissionId: string;
   intake: unknown;
   answers: Record<string, string>;
-}): Promise<MutationResult<AssessmentSubmission>> {
+}): Promise<DiagnosticSubmissionResult> {
   const parsed = z
-    .object({ intake: intakeSchema, answers: answersSchema })
+    .object({
+      submissionId: z.string().uuid(),
+      intake: intakeSchema,
+      answers: answersSchema,
+    })
     .safeParse(input);
-  if (!parsed.success)
-    return invalidSubmission("Complete every assessment question.");
+  if (!parsed.success) {
+    const reference = logServerError(
+      "Diagnostic submission failed",
+      new Error("Diagnostic input validation failed"),
+      { operation: "persist_assessment", reason: "invalid_submission" },
+    );
+    return {
+      ok: false,
+      reason: "invalid_submission",
+      message: "Complete every assessment question.",
+      reference,
+    };
+  }
   try {
     const { supabase } = await requireUserId();
     const exam =
       parsed.data.intake.goal === "TCF Canada" ? "TCF Canada" : "TEF Canada";
     const { data, error } = await supabase.rpc("mpk_submit_assessment", {
-      p_guest_session_id: "",
+      p_guest_session_id: parsed.data.submissionId,
       p_kind: "diagnostic",
       p_exam: exam,
       p_intake: parsed.data.intake,
       p_answers: answerRows(parsed.data.answers),
     });
-    if (error) throw error;
-    return await snapshotResult(data as unknown as AssessmentSubmission);
+    if (error) return diagnosticFailure("persist_assessment", error);
+    const saved = diagnosticResultSchema.safeParse(data);
+    if (!saved.success)
+      return diagnosticFailure(
+        "load_assessment_result",
+        new Error("The assessment RPC returned an invalid result."),
+      );
+    const { id, ...result } = saved.data;
+    return { ok: true, data: { id, result } };
   } catch (error) {
-    return failure("submit_diagnostic", error);
+    return diagnosticFailure("persist_assessment", error);
   }
 }
 

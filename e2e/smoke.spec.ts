@@ -29,7 +29,7 @@ test("guest assessment is retained for the registration handoff", async ({
   test.setTimeout(90_000);
   await page.goto("/diagnostic");
   await completeGuestAssessment(page);
-  await expect(page).toHaveURL(/diagnostic\/results/);
+  await expect(page).toHaveURL(/diagnostic\/results/, { timeout: 15_000 });
   await expect(
     page.getByRole("heading", { name: "Your French Assessment" }),
   ).toBeVisible();
@@ -63,25 +63,35 @@ test("guest assessment is retained for the registration handoff", async ({
 test("student routes require a verified Supabase session", async ({ page }) => {
   test.setTimeout(60_000);
   await page.goto("/practice/session?skill=listening&count=10");
-  await expect(page).toHaveURL(/\/login/);
+  await expect(page).toHaveURL(/\/login/, { timeout: 15_000 });
   await expect(
     page.getByRole("heading", { name: "Continue your preparation." }),
   ).toBeVisible();
 });
 
-test("paid plans remain visible while checkout cannot grant access", async ({
+test("paid plans remain visible while checkout requires an account", async ({
   page,
 }) => {
   await page.goto("/checkout?plan=complete");
   await expect(
     page.getByRole("heading", { name: "Complete plan" }),
   ).toBeVisible();
-  await expect(page.getByText("~$249", { exact: true }).first()).toBeVisible();
-  await expect(page.getByText(/Payments are not enabled yet/)).toBeVisible();
+  await expect(page.getByText("$249", { exact: true }).first()).toBeVisible();
   await expect(
-    page.getByRole("button", { name: /secure payment/i }),
-  ).toHaveCount(0);
+    page.getByText(/Secure payment is handled by Stripe/),
+  ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "Create account" }),
-  ).toHaveAttribute("href", "/register");
+  ).toHaveAttribute("href", "/register?plan=complete");
+});
+
+test("choosing a paid plan carries it directly into registration", async ({
+  page,
+}) => {
+  await page.goto("/choose-plan");
+  await page.getByRole("link", { name: "Choose Intensive" }).click();
+  await expect(page).toHaveURL(/\/register\?plan=intensive/);
+  await expect(
+    page.getByRole("heading", { name: "Start with your free assessment." }),
+  ).toBeVisible();
 });

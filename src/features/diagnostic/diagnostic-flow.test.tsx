@@ -10,6 +10,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { AppProvider } from "@/components/providers/app-provider";
 import { productConfig } from "@/config/product";
 import { diagnosticQuestions } from "@/data/questions";
+import { scoreDiagnostic } from "@/lib/domain/diagnostic";
 import { guestAssessmentRepository } from "@/repositories/guest-assessment";
 import { demoState } from "@/test/fixtures";
 import { DiagnosticFlow } from "./diagnostic-flow";
@@ -20,6 +21,7 @@ const mocks = vi.hoisted(() => ({
   getSnapshot: vi.fn(),
   submitDiagnostic: vi.fn(),
   updateProfile: vi.fn(),
+  toastError: vi.fn(),
 }));
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mocks.push, refresh: mocks.refresh }),
@@ -29,6 +31,32 @@ vi.mock("@/app/actions/learner", () => ({
   submitDiagnosticAction: mocks.submitDiagnostic,
   updateProfileAction: mocks.updateProfile,
 }));
+vi.mock("sonner", () => ({
+  toast: { error: mocks.toastError },
+  Toaster: () => null,
+}));
+
+async function completeAssessment(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(screen.getByRole("button", { name: /Start my assessment/ }));
+  for (const [index, question] of diagnosticQuestions.entries()) {
+    if (question.type === "fill_blank") {
+      await user.type(screen.getByLabelText("Your answer"), "lirais");
+    } else {
+      const correct = question.options.find(
+        (option) => option.id === question.correctAnswer,
+      )!;
+      await user.click(screen.getByLabelText(correct.label));
+    }
+    await user.click(
+      screen.getByRole("button", {
+        name:
+          index === diagnosticQuestions.length - 1
+            ? /Finish assessment/
+            : /Next/,
+      }),
+    );
+  }
+}
 
 afterEach(() => {
   cleanup();
@@ -37,6 +65,28 @@ afterEach(() => {
 });
 
 describe("DiagnosticFlow", () => {
+  it("prefills the exam and target saved during registration", async () => {
+    render(
+      <AppProvider
+        initialState={{
+          ...demoState,
+          planAccess: null,
+          diagnosticIntake: null,
+          diagnosticAnswers: {},
+          diagnosticResult: null,
+        }}
+      >
+        <DiagnosticFlow />
+      </AppProvider>,
+    );
+
+    expect(screen.getByLabelText("Prepare for TEF Canada")).toBeChecked();
+    expect(screen.getByLabelText("NCLC 7")).toBeChecked();
+    expect(
+      screen.getByRole("button", { name: /Start my assessment/ }),
+    ).toBeDisabled();
+  });
+
   it("requires the intake before starting and persists it", async () => {
     const user = userEvent.setup();
     Object.defineProperty(window, "scrollTo", {
@@ -126,27 +176,7 @@ describe("DiagnosticFlow", () => {
       </AppProvider>,
     );
 
-    await user.click(
-      screen.getByRole("button", { name: /Start my assessment/ }),
-    );
-    for (const [index, question] of diagnosticQuestions.entries()) {
-      if (question.type === "fill_blank") {
-        await user.type(screen.getByLabelText("Your answer"), "lirais");
-      } else {
-        const correct = question.options.find(
-          (option) => option.id === question.correctAnswer,
-        )!;
-        await user.click(screen.getByLabelText(correct.label));
-      }
-      await user.click(
-        screen.getByRole("button", {
-          name:
-            index === diagnosticQuestions.length - 1
-              ? /Finish assessment/
-              : /Next/,
-        }),
-      );
-    }
+    await completeAssessment(user);
 
     await waitFor(() =>
       expect(mocks.push).toHaveBeenCalledWith(
@@ -161,5 +191,84 @@ describe("DiagnosticFlow", () => {
     expect(anonymous.user).toBeNull();
     expect(anonymous.planAccess).toBeNull();
     expect(mocks.submitDiagnostic).toHaveBeenCalledOnce();
-  });
+  }, 10_000);
+
+  it("uses the authoritative RPC result and routes to results", async () => {
+    const user = userEvent.setup();
+    const authoritative = scoreDiagnostic(
+      diagnosticQuestions,
+      Object.fromEntries(
+        diagnosticQuestions.map((question) => [
+          question.id,
+          question.correctAnswer,
+        ]),
+      ),
+    );
+    mocks.submitDiagnostic.mockResolvedValue({
+      ok: true,
+      data: {
+        id: "40000000-0000-4000-8000-000000000004",
+        result: authoritative,
+      },
+    });
+    render(
+      <AppProvider
+        initialState={{
+          ...structuredClone(demoState),
+          diagnosticAnswers: {},
+          diagnosticResult: null,
+        }}
+      >
+        <DiagnosticFlow />
+      </AppProvider>,
+    );
+
+    await completeAssessment(user);
+
+    await waitFor(() =>
+      expect(mocks.push).toHaveBeenCalledWith(
+        "/diagnostic/results?assessment=40000000-0000-4000-8000-000000000004",
+      ),
+    );
+    expect(mocks.submitDiagnostic).toHaveBeenCalledWith(
+      expect.objectContaining({ submissionId: expect.any(String) }),
+    );
+  }, 10_000);
+
+  it("shows the diagnostic reference and keeps its submission id for retries", async () => {
+    const user = userEvent.setup();
+    mocks.submitDiagnostic.mockResolvedValue({
+      ok: false,
+      reason: "unavailable",
+      message: "We could not save this update. Please try again.",
+      reference: "assessment-reference",
+    });
+    render(
+      <AppProvider
+        initialState={{
+          ...structuredClone(demoState),
+          diagnosticAnswers: {},
+          diagnosticResult: null,
+        }}
+      >
+        <DiagnosticFlow />
+      </AppProvider>,
+    );
+
+    await completeAssessment(user);
+    await waitFor(() =>
+      expect(mocks.toastError).toHaveBeenCalledWith(
+        expect.stringContaining("Reference: assessment-reference"),
+      ),
+    );
+    const firstSubmissionId = mocks.submitDiagnostic.mock.calls[0][0]
+      .submissionId as string;
+    await user.click(screen.getByRole("button", { name: /Finish assessment/ }));
+    await waitFor(() =>
+      expect(mocks.submitDiagnostic).toHaveBeenCalledTimes(2),
+    );
+    expect(mocks.submitDiagnostic.mock.calls[1][0].submissionId).toBe(
+      firstSubmissionId,
+    );
+  }, 10_000);
 });

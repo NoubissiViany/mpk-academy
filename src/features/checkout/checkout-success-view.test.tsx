@@ -1,57 +1,33 @@
 import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { AppProvider } from "@/components/providers/app-provider";
-import { demoState } from "@/test/fixtures";
-import type { AppState } from "@/types/domain";
+import { afterEach, describe, expect, it } from "vitest";
 import { CheckoutSuccessView } from "./checkout-success-view";
 
-describe("checkout success verification", () => {
-  beforeEach(() => localStorage.clear());
-  afterEach(() => cleanup());
+afterEach(cleanup);
 
-  it("starts the assessment after a verified purchase without results", async () => {
-    const initialState = {
-      ...demoState,
-      planAccess: { ...demoState.planAccess!, planId: "essential" },
-      diagnosticResult: null,
-    } satisfies AppState;
+describe("checkout status", () => {
+  it("offers a retry while payment confirmation is pending", () => {
     render(
-      <AppProvider initialState={initialState}>
-        <CheckoutSuccessView />
-      </AppProvider>,
+      <CheckoutSuccessView
+        status="pending"
+        retryHref="/checkout/success?session_id=cs_test_123"
+      />,
     );
-
     expect(
-      await screen.findByRole("heading", {
-        name: "Your Essential plan is unlocked.",
-      }),
+      screen.getByRole("heading", { name: "Payment confirmation pending" }),
     ).toBeVisible();
     expect(
-      screen.getByRole("link", { name: "Start my assessment" }),
-    ).toHaveAttribute("href", "/diagnostic");
+      screen.getByRole("link", { name: "Check payment again" }),
+    ).toHaveAttribute("href", "/checkout/success?session_id=cs_test_123");
   });
 
-  it("continues directly to the dashboard when results already exist", async () => {
-    render(
-      <AppProvider initialState={demoState}>
-        <CheckoutSuccessView />
-      </AppProvider>,
-    );
-
+  it("does not present an invalid session as a successful payment", () => {
+    render(<CheckoutSuccessView status="invalid" />);
     expect(
-      await screen.findByRole("link", { name: "Go to dashboard" }),
-    ).toHaveAttribute("href", "/dashboard");
-  });
-
-  it("does not trust the success URL when no purchase is persisted", async () => {
-    render(
-      <AppProvider initialState={{ ...demoState, planAccess: null }}>
-        <CheckoutSuccessView />
-      </AppProvider>,
-    );
-
-    expect(
-      await screen.findByRole("heading", { name: "Payment not confirmed" }),
+      screen.getByRole("heading", { name: "Payment not confirmed" }),
     ).toBeVisible();
+    expect(screen.getByRole("link", { name: "Choose a plan" })).toHaveAttribute(
+      "href",
+      "/choose-plan",
+    );
   });
 });

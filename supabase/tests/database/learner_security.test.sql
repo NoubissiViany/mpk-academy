@@ -2,11 +2,29 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(18);
+select plan(30);
 
 select has_table('public', 'profiles', 'profiles table exists');
 select has_table('public', 'assessments', 'assessments table exists');
 select has_table('public', 'entitlements', 'entitlements table exists');
+
+select ok(
+  has_function_privilege(
+    'authenticated',
+    'public.mpk_submit_assessment(text,text,text,jsonb,jsonb)',
+    'EXECUTE'
+  ),
+  'authenticated clients can execute the assessment RPC'
+);
+
+select ok(
+  not has_function_privilege(
+    'anon',
+    'public.mpk_submit_assessment(text,text,text,jsonb,jsonb)',
+    'EXECUTE'
+  ),
+  'anonymous clients cannot execute the assessment RPC'
+);
 
 insert into auth.users (
   instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
@@ -50,6 +68,14 @@ set local role authenticated;
 
 select is((select count(*)::integer from public.profiles), 1, 'RLS exposes only the current profile');
 select is((select first_name from public.profiles), 'Alpha', 'RLS does not expose the second learner');
+
+select throws_ok(
+  $$insert into public.assessments (user_id, kind, exam, status, intake, completed_at)
+    values ('10000000-0000-0000-0000-000000000001', 'diagnostic', 'TEF Canada', 'completed', '{}'::jsonb, now())$$,
+  '42501',
+  'permission denied for table assessments',
+  'browser role cannot write directly to assessments'
+);
 
 select throws_ok(
   $$insert into public.entitlements (user_id, plan_id, status, starts_at)
@@ -101,8 +127,8 @@ select lives_ok(
 
 select is((select count(*)::integer from public.assessments), 1, 'the current learner sees the saved assessment');
 
-select lives_ok(
-  $$select public.mpk_submit_assessment(
+select ok(
+  public.mpk_submit_assessment(
     '30000000-0000-0000-0000-000000000003', 'diagnostic', 'TEF Canada', '{}'::jsonb,
     '[
       {"question_id":"d1","sequence":0,"answer":"wrong"},
@@ -121,8 +147,11 @@ select lives_ok(
       {"question_id":"d14","sequence":13,"answer":"wrong"},
       {"question_id":"d15","sequence":14,"answer":"wrong"}
     ]'::jsonb
-  )$$,
-  'claiming the same guest assessment is idempotent'
+  ) ?& array[
+    'id', 'score', 'level', 'competencyScores', 'skillScores',
+    'strength', 'priority', 'recommendedModuleId'
+  ]::text[],
+  'an idempotent retry returns the complete authoritative result'
 );
 
 select is((select count(*)::integer from public.assessments), 1, 'idempotent claim does not duplicate the assessment');
@@ -142,6 +171,16 @@ reset request.jwt.claim.sub;
 set local role anon;
 
 select throws_ok(
+  $$select public.mpk_submit_assessment(
+    '40000000-0000-0000-0000-000000000004', 'diagnostic', 'TEF Canada',
+    '{}'::jsonb, '[]'::jsonb
+  )$$,
+  '42501',
+  'permission denied for function mpk_submit_assessment',
+  'anonymous clients cannot submit assessments'
+);
+
+select throws_ok(
   $$select * from public.profiles$$,
   '42501',
   'permission denied for table profiles',
@@ -153,6 +192,72 @@ select throws_ok(
   '42501',
   'permission denied for function mpk_update_profile',
   'unauthenticated clients cannot call learner mutation functions'
+);
+
+select throws_ok(
+  $$select public.mpk_fulfill_stripe_purchase(
+    '10000000-0000-0000-0000-000000000001', 'cs_forbidden', 'pi_forbidden',
+    'complete', 24900, 0, 24900, 'CAD', now()
+  )$$,
+  '42501',
+  'permission denied for function mpk_fulfill_stripe_purchase',
+  'unauthenticated clients cannot fulfill Stripe purchases'
+);
+
+reset role;
+set local role service_role;
+
+select lives_ok(
+  $$select public.mpk_fulfill_stripe_purchase(
+    '10000000-0000-0000-0000-000000000001', 'cs_test_complete', 'pi_test_complete',
+    'complete', 24900, 3237, 28137, 'CAD', '2026-09-22T12:00:00Z'
+  )$$,
+  'service role can fulfill a verified Stripe purchase'
+);
+
+select lives_ok(
+  $$select public.mpk_fulfill_stripe_purchase(
+    '10000000-0000-0000-0000-000000000001', 'cs_test_complete', 'pi_test_complete',
+    'complete', 24900, 3237, 28137, 'CAD', '2026-09-22T12:00:00Z'
+  )$$,
+  'Stripe fulfillment is idempotent'
+);
+
+select is(
+  (select count(*)::integer from public.purchases where checkout_session_id = 'cs_test_complete'),
+  1,
+  'idempotent fulfillment creates one purchase'
+);
+
+select is(
+  (select count(*)::integer from public.entitlements where purchase_id = (
+    select id from public.purchases where checkout_session_id = 'cs_test_complete'
+  )),
+  1,
+  'idempotent fulfillment creates one entitlement'
+);
+
+select throws_ok(
+  $$select public.mpk_fulfill_stripe_purchase(
+    '10000000-0000-0000-0000-000000000001', 'cs_bad_amount', 'pi_bad_amount',
+    'complete', 100, 0, 100, 'CAD', now()
+  )$$,
+  '22023',
+  'Stripe purchase amount does not match the plan',
+  'fulfillment rejects a mismatched amount'
+);
+
+select lives_ok(
+  $$select public.mpk_revoke_stripe_purchase('pi_test_complete')$$,
+  'service role can revoke a fully refunded purchase'
+);
+
+select is(
+  (select status from public.entitlements where purchase_id = (
+    select id from public.purchases where checkout_session_id = 'cs_test_complete'
+  )),
+  'revoked',
+  'a refunded purchase revokes its entitlement'
 );
 
 select * from finish();

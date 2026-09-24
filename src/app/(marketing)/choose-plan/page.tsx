@@ -15,16 +15,16 @@ export default function ChoosePlanPage() {
           Select the support that fits your goal.
         </h1>
         <p className="mt-4 leading-7 text-muted-foreground">
-          After payment, you will complete your assessment so MPK Academy can
-          prepare your starting point.
+          Complete your assessment first so MPK Academy can recommend the plan
+          that fits your starting point.
         </p>
       </div>
       <div className="mt-12">
         <PlanComparison plans={paidPlans} />
       </div>
       <p className="mx-auto mt-7 max-w-2xl text-center text-xs leading-5 text-muted-foreground">
-        Approximate prices in CAD. This frontend MVP simulates payment and does
-        not collect card details.
+        Prices are in CAD before applicable tax. Secure one-time payment is
+        handled by Stripe.
       </p>
     </div>
   );

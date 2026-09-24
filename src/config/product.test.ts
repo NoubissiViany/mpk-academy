@@ -11,9 +11,9 @@ import {
 } from "@/config/product";
 
 describe("product plans", () => {
-  it("formats arbitrary CAD prices and approximate plan prices", () => {
+  it("formats arbitrary CAD prices and exact plan prices", () => {
     expect(formatPrice(119)).toBe("$119");
-    expect(formatPlanPrice(getPaidPlan("essential")!)).toBe("~$119");
+    expect(formatPlanPrice(getPaidPlan("essential")!)).toBe("$119");
   });
 
   it("validates paid plan identifiers", () => {

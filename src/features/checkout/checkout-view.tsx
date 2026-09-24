@@ -2,6 +2,10 @@
 
 import Link from "next/link";
 import { Check, LoaderCircle, LockKeyhole, ShieldCheck } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
+import { createCheckoutSessionAction } from "@/app/actions/checkout";
 import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,6 +14,37 @@ import { formatPlanPrice, getPaidPlan, productConfig } from "@/config/product";
 type CheckoutPlan = NonNullable<ReturnType<typeof getPaidPlan>>;
 export function CheckoutView({ plan }: { plan: CheckoutPlan }) {
   const { state: appState, hydrated } = useApp();
+  const router = useRouter();
+  const [submitting, setSubmitting] = useState(false);
+  const hasAssessment = Boolean(appState.diagnosticResult);
+
+  const checkout = async () => {
+    setSubmitting(true);
+    const result = await createCheckoutSessionAction(plan.id);
+    if (result.ok) {
+      window.location.assign(result.url);
+      return;
+    }
+    setSubmitting(false);
+    if (result.reason === "assessment_required") {
+      toast.error(result.message);
+      router.push("/diagnostic");
+      return;
+    }
+    if (result.reason === "active_entitlement") {
+      toast.success(result.message);
+      router.push("/dashboard");
+      return;
+    }
+    if (result.reason === "unauthenticated") {
+      toast.error(result.message);
+      router.push(
+        `/login?next=${encodeURIComponent(`/checkout?plan=${plan.id}`)}`,
+      );
+      return;
+    }
+    toast.error(result.message);
+  };
 
   return (
     <div className="grid gap-7 lg:grid-cols-[1fr_.7fr]">
@@ -23,7 +58,7 @@ export function CheckoutView({ plan }: { plan: CheckoutPlan }) {
             </div>
             <p className="mt-3 text-sm leading-6 text-muted-foreground">
               {plan.purpose}. One-time purchase with {plan.access.toLowerCase()}{" "}
-              of access.
+              of access. Applicable tax is calculated at checkout.
             </p>
 
             <div className="mt-7 rounded-xl border bg-muted/40 p-4">
@@ -48,7 +83,9 @@ export function CheckoutView({ plan }: { plan: CheckoutPlan }) {
             <div className="mt-8 flex items-center justify-between border-t pt-6">
               <div>
                 <span className="font-bold">Estimated total</span>
-                <p className="text-xs text-muted-foreground">CAD · one time</p>
+                <p className="text-xs text-muted-foreground">
+                  CAD · one time · plus applicable tax
+                </p>
               </div>
               <strong className="text-2xl">{formatPlanPrice(plan)}</strong>
             </div>
@@ -60,8 +97,8 @@ export function CheckoutView({ plan }: { plan: CheckoutPlan }) {
             aria-hidden="true"
           />
           <p className="text-xs leading-5 text-muted-foreground">
-            Payments are not enabled yet. No card details are collected and this
-            page cannot grant account access.
+            Secure payment is handled by Stripe. MPK Academy grants access only
+            after Stripe verifies the payment.
           </p>
         </div>
       </div>
@@ -76,14 +113,22 @@ export function CheckoutView({ plan }: { plan: CheckoutPlan }) {
               ? "Preparing checkout…"
               : !appState.user
                 ? "Create an account to continue"
-                : `${plan.name} checkout coming soon`}
+                : appState.planAccess
+                  ? "Your paid plan is already active"
+                  : !hasAssessment
+                    ? "Complete your assessment first"
+                    : `Continue with ${plan.name}`}
           </h2>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
             {!hydrated
               ? "Checking your local account."
               : !appState.user
                 ? "New learners complete the free assessment before checkout. Existing learners can sign in to continue with this plan."
-                : "Payments are still being prepared. Your account will remain on its current entitlement until a verified payment provider is connected."}
+                : appState.planAccess
+                  ? "You cannot purchase another plan while your current access is active."
+                  : !hasAssessment
+                    ? "Your result is required so MPK Academy can recommend the right preparation plan."
+                    : "You will continue to Stripe to complete a secure one-time payment."}
           </p>
 
           {!hydrated ? (
@@ -93,20 +138,39 @@ export function CheckoutView({ plan }: { plan: CheckoutPlan }) {
           ) : !appState.user ? (
             <>
               <Button asChild className="mt-6 w-full" size="lg">
-                <Link href="/register">Create account</Link>
+                <Link href={`/register?plan=${plan.id}`}>Create account</Link>
               </Button>
               <Button asChild className="mt-2 w-full" variant="ghost">
                 <Link href={`/login?plan=${plan.id}`}>Sign in</Link>
               </Button>
             </>
+          ) : appState.planAccess ? (
+            <Button asChild className="mt-6 w-full" size="lg">
+              <Link href="/dashboard">Go to dashboard</Link>
+            </Button>
+          ) : !hasAssessment ? (
+            <Button asChild className="mt-6 w-full" size="lg">
+              <Link href="/diagnostic">Start my assessment</Link>
+            </Button>
           ) : (
-            <Button className="mt-6 w-full" size="lg" disabled>
-              Checkout coming soon
+            <Button
+              className="mt-6 w-full"
+              size="lg"
+              disabled={submitting}
+              onClick={checkout}
+            >
+              {submitting ? (
+                <>
+                  <LoaderCircle className="size-4 animate-spin" /> Preparing…
+                </>
+              ) : (
+                `Pay securely for ${plan.name}`
+              )}
             </Button>
           )}
 
           <p className="mt-4 text-center text-xs text-muted-foreground">
-            No entitlement will be granted from this page
+            Access is granted only after verified payment
           </p>
         </CardContent>
       </Card>

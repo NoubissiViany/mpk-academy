@@ -36,7 +36,16 @@ begin
   end if;
 
   if p_guest_session_id is not null then
-    select jsonb_build_object('id', a.id, 'score', r.score, 'level', r.level)
+    select jsonb_build_object(
+      'id', a.id,
+      'score', r.score,
+      'level', r.level,
+      'competencyScores', r.competency_scores,
+      'skillScores', r.skill_scores,
+      'strength', r.strength,
+      'priority', r.priority,
+      'recommendedModuleId', r.recommended_module_id
+    )
     into existing_result
     from public.assessments a
     join public.assessment_results r on r.assessment_id = a.id
