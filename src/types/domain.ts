@@ -287,6 +287,7 @@ export interface AppState {
   schemaVersion: 5;
   user: User | null;
   planAccess: PlanAccess | null;
+  checkoutIntentPlanId: PaidPlanId | null;
   postCheckoutWelcomePending: boolean;
   examProfiles: Partial<Record<ExamId, ExamPreparationProfile>>;
   diagnosticIntake: DiagnosticIntake | null;

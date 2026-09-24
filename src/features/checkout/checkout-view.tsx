@@ -138,7 +138,7 @@ export function CheckoutView({ plan }: { plan: CheckoutPlan }) {
           ) : !appState.user ? (
             <>
               <Button asChild className="mt-6 w-full" size="lg">
-                <Link href="/register">Create account</Link>
+                <Link href={`/register?plan=${plan.id}`}>Create account</Link>
               </Button>
               <Button asChild className="mt-2 w-full" variant="ghost">
                 <Link href={`/login?plan=${plan.id}`}>Sign in</Link>

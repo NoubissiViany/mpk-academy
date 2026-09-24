@@ -29,17 +29,48 @@ describe("confirmed registration handoff", () => {
     Object.values(mocks).forEach((mock) => mock.mockReset());
     mocks.getSnapshot.mockResolvedValue({
       ok: true,
-      snapshot: { ...demoState, planAccess: null },
+      snapshot: {
+        ...demoState,
+        diagnosticResult: null,
+        planAccess: null,
+      },
     });
   });
   afterEach(cleanup);
 
   it("starts the assessment after a direct registration", async () => {
     render(
-      <AppProvider initialState={{ ...demoState, planAccess: null }}>
+      <AppProvider
+        initialState={{
+          ...demoState,
+          diagnosticResult: null,
+          planAccess: null,
+        }}
+      >
         <AuthComplete />
       </AppProvider>,
     );
+    await waitFor(() =>
+      expect(mocks.replace).toHaveBeenCalledWith("/diagnostic"),
+    );
+  });
+
+  it("keeps a server-backed plan intent but still starts the assessment", async () => {
+    mocks.getSnapshot.mockResolvedValue({
+      ok: true,
+      snapshot: {
+        ...demoState,
+        checkoutIntentPlanId: "intensive",
+        diagnosticResult: null,
+        planAccess: null,
+      },
+    });
+    render(
+      <AppProvider>
+        <AuthComplete />
+      </AppProvider>,
+    );
+
     await waitFor(() =>
       expect(mocks.replace).toHaveBeenCalledWith("/diagnostic"),
     );
@@ -82,6 +113,51 @@ describe("confirmed registration handoff", () => {
     );
     await waitFor(() =>
       expect(mocks.replace).toHaveBeenCalledWith("/checkout?plan=complete"),
+    );
+  });
+
+  it("uses an explicit selected plan instead of the guest recommendation", async () => {
+    const answers = Object.fromEntries(
+      diagnosticQuestions.map((question) => [
+        question.id,
+        question.correctAnswer,
+      ]),
+    );
+    const result = scoreDiagnostic(diagnosticQuestions, answers);
+    await guestAssessmentRepository.create({
+      intake: {
+        goal: "TEF Canada",
+        target: "NCLC 7",
+        frenchExperience: "I know some French",
+      },
+      answers,
+      result,
+      activity: {
+        id: "guest-selected-plan",
+        label: "Assessment completed",
+        detail: `${result.level} estimated level`,
+        timestamp: "2026-09-22T12:00:00.000Z",
+      },
+      recommendedPlanId: "complete",
+    });
+    mocks.claimGuest.mockResolvedValue({
+      ok: true,
+      data: { id: "assessment-id" },
+      snapshot: {
+        ...demoState,
+        checkoutIntentPlanId: "essential",
+        planAccess: null,
+      },
+    });
+
+    render(
+      <AppProvider>
+        <AuthComplete />
+      </AppProvider>,
+    );
+
+    await waitFor(() =>
+      expect(mocks.replace).toHaveBeenCalledWith("/checkout?plan=essential"),
     );
   });
 

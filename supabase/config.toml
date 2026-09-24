@@ -225,15 +225,13 @@ otp_expiry = 3600
 # admin_email = "onboarding@resend.dev"
 # sender_name = "MPK Academy"
 
-# Uncomment to customize email template
-# [auth.email.template.invite]
-# subject = "You have been invited"
-# content_path = "./supabase/templates/invite.html"
+[auth.email.template.confirmation]
+subject = "Confirm your MPK Academy account"
+content_path = "./supabase/templates/confirmation.html"
 
-# Free-tier projects using Supabase's default mail provider cannot push custom
-# email templates. The versioned templates in supabase/templates are ready for
-# use after custom SMTP is configured; the app currently accepts the default
-# provider's PKCE code callback as well as token_hash callbacks.
+[auth.email.template.recovery]
+subject = "Reset your MPK Academy password"
+content_path = "./supabase/templates/recovery.html"
 
 # Uncomment to customize notification email template
 # [auth.email.notification.password_changed]

@@ -134,6 +134,45 @@ describe("ResultsView", () => {
     expect(screen.getByText("Recommended for you")).toBeVisible();
   });
 
+  it("keeps an explicit plan selected while showing the assessment recommendation", async () => {
+    render(
+      <AppProvider
+        initialState={{
+          ...demoState,
+          checkoutIntentPlanId: "essential",
+          planAccess: null,
+        }}
+      >
+        <ResultsView />
+      </AppProvider>,
+    );
+
+    expect(
+      await screen.findByRole("link", { name: "Continue with Essential" }),
+    ).toHaveAttribute("href", "/checkout?plan=essential");
+    expect(screen.getByText("Your selected plan")).toBeVisible();
+    expect(
+      screen.getByText(/your assessment recommends Complete/i),
+    ).toBeVisible();
+  });
+
+  it("falls back to the recommendation for an invalid stored plan", async () => {
+    const invalidState = {
+      ...demoState,
+      checkoutIntentPlanId: "unsupported",
+      planAccess: null,
+    } as unknown as AppState;
+    render(
+      <AppProvider initialState={invalidState}>
+        <ResultsView />
+      </AppProvider>,
+    );
+
+    expect(
+      await screen.findByRole("link", { name: "Continue with Complete" }),
+    ).toHaveAttribute("href", "/checkout?plan=complete");
+  });
+
   it("offers a path back when no result exists", async () => {
     render(
       <AppProvider>

@@ -1,6 +1,7 @@
 import "server-only";
 
 import { defaultState, emptyProgress } from "@/data/mock-state";
+import { isPaidPlanId } from "@/config/product";
 import { createEmptyExamProfile } from "@/lib/domain/exam-progress";
 import { createClient } from "@/lib/supabase/server";
 import type {
@@ -207,6 +208,11 @@ export async function getLearnerSnapshot(): Promise<AppState> {
   const goal = goalResponse.data;
   const entitlements = entitlementResponse.data ?? [];
   const entitlement = activeEntitlement(entitlements);
+  const checkoutIntentCandidate =
+    authData.user.user_metadata.checkout_intent_plan_id;
+  const checkoutIntentPlanId = isPaidPlanId(checkoutIntentCandidate)
+    ? checkoutIntentCandidate
+    : null;
   const progressRows = progressResponse.data ?? [];
   const skillRows = skillsResponse.data ?? [];
   const examProfiles: Partial<Record<ExamId, ExamPreparationProfile>> = {};
@@ -283,6 +289,7 @@ export async function getLearnerSnapshot(): Promise<AppState> {
           accessUntil: entitlement.ends_at,
         }
       : null,
+    checkoutIntentPlanId: entitlement ? null : checkoutIntentPlanId,
     postCheckoutWelcomePending: false,
     examProfiles,
     diagnosticIntake:

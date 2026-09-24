@@ -10,6 +10,7 @@ import { useApp } from "@/components/providers/app-provider";
 import { clearAnonymousState } from "@/lib/persistence";
 import { withErrorReference } from "@/lib/public-error";
 import { guestAssessmentRepository } from "@/repositories/guest-assessment";
+import { resolveOnboardingDestination } from "@/lib/domain/onboarding";
 
 export function AuthComplete() {
   const router = useRouter();
@@ -46,7 +47,9 @@ export function AuthComplete() {
         clearAnonymousState();
       }
       router.replace(
-        guest ? `/checkout?plan=${guest.recommendedPlanId}` : "/diagnostic",
+        guest
+          ? `/checkout?plan=${snapshot.checkoutIntentPlanId ?? guest.recommendedPlanId}`
+          : resolveOnboardingDestination(snapshot),
       );
       router.refresh();
     })();

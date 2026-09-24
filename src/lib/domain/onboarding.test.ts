@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { paidDemoUser } from "@/test/fixtures";
+import { demoState, paidDemoUser } from "@/test/fixtures";
 import { diagnosticQuestions } from "@/data/questions";
 import { scoreDiagnostic } from "@/lib/domain/diagnostic";
 import {
   applyDiagnosticResult,
   createRegisteredLearnerState,
+  getOnboardingStage,
+  resolveOnboardingDestination,
 } from "@/lib/domain/onboarding";
 import type { GuestAssessmentSession } from "@/types/domain";
 
@@ -93,5 +95,67 @@ describe("new learner onboarding", () => {
     expect(
       updated.examProfiles["TEF Canada"]?.skills.speaking.current,
     ).toBeNull();
+  });
+});
+
+describe("onboarding route resolution", () => {
+  it("requires authentication first", () => {
+    expect(
+      resolveOnboardingDestination({
+        ...demoState,
+        user: null,
+        diagnosticResult: null,
+        planAccess: null,
+      }),
+    ).toBe("/login");
+  });
+
+  it("requires the assessment before payment or student routes", () => {
+    expect(
+      resolveOnboardingDestination(
+        {
+          ...demoState,
+          diagnosticResult: null,
+        },
+        "/dashboard",
+      ),
+    ).toBe("/diagnostic");
+  });
+
+  it("requires results and checkout after the assessment", () => {
+    expect(
+      resolveOnboardingDestination(
+        { ...demoState, planAccess: null },
+        "/learn",
+      ),
+    ).toBe("/diagnostic/results");
+  });
+
+  it("treats an expired entitlement as unpaid", () => {
+    const expiredState = {
+      ...demoState,
+      planAccess: {
+        ...demoState.planAccess!,
+        accessUntil: "2026-09-23T00:00:00.000Z",
+      },
+    };
+    const now = Date.parse("2026-09-24T00:00:00.000Z");
+
+    expect(getOnboardingStage(expiredState, now)).toBe("results_checkout");
+    expect(resolveOnboardingDestination(expiredState, "/dashboard", now)).toBe(
+      "/diagnostic/results",
+    );
+  });
+
+  it("honors only student destinations after onboarding is complete", () => {
+    expect(
+      resolveOnboardingDestination(demoState, "/progress?view=skills"),
+    ).toBe("/progress?view=skills");
+    expect(resolveOnboardingDestination(demoState, "//attacker.example")).toBe(
+      "/dashboard",
+    );
+    expect(resolveOnboardingDestination(demoState, "/checkout")).toBe(
+      "/dashboard",
+    );
   });
 });

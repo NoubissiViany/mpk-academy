@@ -23,7 +23,13 @@ vi.mock("@/lib/supabase/server", () => ({
   }),
 }));
 
-import { signInAction, signUpAction } from "./auth";
+import {
+  requestPasswordResetAction,
+  resendConfirmationAction,
+  setCheckoutIntentAction,
+  signInAction,
+  signUpAction,
+} from "./auth";
 
 const registration = {
   firstName: "Amina",
@@ -113,5 +119,70 @@ describe("authentication action failures", () => {
     const serializedLog = JSON.stringify(vi.mocked(console.error).mock.calls);
     expect(serializedLog).not.toContain(registration.email);
     expect(serializedLog).not.toContain(registration.password);
+  });
+
+  it("uses the trusted app callback for signup, resend, and recovery", async () => {
+    mocks.signUp.mockResolvedValue({ data: { session: null }, error: null });
+    mocks.resend.mockResolvedValue({ error: null });
+    mocks.resetPassword.mockResolvedValue({ error: null });
+
+    await signUpAction(registration);
+    await resendConfirmationAction(registration.email);
+    await requestPasswordResetAction(registration.email);
+
+    expect(mocks.signUp).toHaveBeenCalledWith(
+      expect.objectContaining({
+        options: expect.objectContaining({
+          emailRedirectTo: "https://mpk-academy.vercel.app/auth/confirm",
+        }),
+      }),
+    );
+    expect(mocks.resend).toHaveBeenCalledWith(
+      expect.objectContaining({
+        options: {
+          emailRedirectTo: "https://mpk-academy.vercel.app/auth/confirm",
+        },
+      }),
+    );
+    expect(mocks.resetPassword).toHaveBeenCalledWith(registration.email, {
+      redirectTo: "https://mpk-academy.vercel.app/auth/confirm",
+    });
+  });
+
+  it("stores a validated selected plan in signup metadata", async () => {
+    mocks.signUp.mockResolvedValue({ data: { session: null }, error: null });
+
+    await signUpAction({ ...registration, planId: "intensive" });
+
+    expect(mocks.signUp).toHaveBeenCalledWith(
+      expect.objectContaining({
+        options: expect.objectContaining({
+          data: expect.objectContaining({
+            checkout_intent_plan_id: "intensive",
+          }),
+        }),
+      }),
+    );
+  });
+
+  it("updates an authenticated learner's checkout intent", async () => {
+    mocks.updateUser.mockResolvedValue({ error: null });
+
+    await expect(setCheckoutIntentAction("essential")).resolves.toEqual({
+      ok: true,
+      planId: "essential",
+    });
+    expect(mocks.updateUser).toHaveBeenCalledWith({
+      data: { checkout_intent_plan_id: "essential" },
+    });
+  });
+
+  it("rejects an invalid checkout intent with a support reference", async () => {
+    await expect(setCheckoutIntentAction("free")).resolves.toMatchObject({
+      ok: false,
+      reason: "invalid_plan",
+      reference: expect.any(String),
+    });
+    expect(mocks.updateUser).not.toHaveBeenCalled();
   });
 });

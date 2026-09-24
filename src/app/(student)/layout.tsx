@@ -5,6 +5,7 @@ import { getLearnerSnapshotAction } from "@/app/actions/learner";
 import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { getOnboardingStage } from "@/lib/domain/onboarding";
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 export default async function StudentLayout({
   children,
@@ -42,6 +43,10 @@ export default async function StudentLayout({
         </Card>
       </div>
     );
+
+  const onboardingStage = getOnboardingStage(result.snapshot);
+  if (onboardingStage === "assessment") redirect("/diagnostic");
+  if (onboardingStage === "results_checkout") redirect("/diagnostic/results");
 
   return <AppShell initialState={result.snapshot}>{children}</AppShell>;
 }

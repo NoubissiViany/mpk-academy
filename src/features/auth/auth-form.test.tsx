@@ -15,6 +15,7 @@ const mocks = vi.hoisted(() => ({
   refresh: vi.fn(),
   signUp: vi.fn(),
   signIn: vi.fn(),
+  setCheckoutIntent: vi.fn(),
   claimGuest: vi.fn(),
   getSnapshot: vi.fn(),
   toastSuccess: vi.fn(),
@@ -27,6 +28,7 @@ vi.mock("next/navigation", () => ({
 vi.mock("@/app/actions/auth", () => ({
   signUpAction: mocks.signUp,
   signInAction: mocks.signIn,
+  setCheckoutIntentAction: mocks.setCheckoutIntent,
 }));
 vi.mock("@/app/actions/learner", () => ({
   claimGuestAssessmentAction: mocks.claimGuest,
@@ -78,6 +80,10 @@ describe("Supabase authentication handoff", () => {
     Object.values(mocks).forEach((mock) => mock.mockReset());
     mocks.signUp.mockResolvedValue({ ok: true, confirmationRequired: true });
     mocks.signIn.mockResolvedValue({ ok: true });
+    mocks.setCheckoutIntent.mockImplementation(async (planId: string) => ({
+      ok: true,
+      planId,
+    }));
     mocks.getSnapshot.mockResolvedValue({ ok: true, snapshot: demoState });
     mocks.claimGuest.mockResolvedValue({
       ok: true,
@@ -128,6 +134,21 @@ describe("Supabase authentication handoff", () => {
     expect(await guestAssessmentRepository.getActive()).toEqual(guest);
   });
 
+  it("includes a chosen plan in registration for confirmation metadata", async () => {
+    render(
+      <AppProvider>
+        <AuthForm mode="register" planId="intensive" />
+      </AppProvider>,
+    );
+    await submitRegistration();
+
+    await waitFor(() =>
+      expect(mocks.signUp).toHaveBeenCalledWith(
+        expect.objectContaining({ planId: "intensive" }),
+      ),
+    );
+  });
+
   it("loads the server snapshot after sign-in", async () => {
     render(
       <AppProvider>
@@ -146,6 +167,105 @@ describe("Supabase authentication handoff", () => {
       email: "learner@example.com",
       password: "password123",
     });
+  });
+
+  it("does not honor a student next path before the assessment", async () => {
+    mocks.getSnapshot.mockResolvedValue({
+      ok: true,
+      snapshot: {
+        ...demoState,
+        diagnosticResult: null,
+        planAccess: null,
+      },
+    });
+    render(
+      <AppProvider>
+        <AuthForm mode="login" nextPath="/dashboard" />
+      </AppProvider>,
+    );
+    const user = userEvent.setup();
+    await user.type(
+      await screen.findByLabelText("Email"),
+      "learner@example.com",
+    );
+    await user.type(screen.getByLabelText("Password"), "password123");
+    await user.click(screen.getByRole("button", { name: "Sign in" }));
+
+    await waitFor(() => expect(mocks.push).toHaveBeenCalledWith("/diagnostic"));
+  });
+
+  it("does not honor a student next path before checkout", async () => {
+    mocks.getSnapshot.mockResolvedValue({
+      ok: true,
+      snapshot: { ...demoState, planAccess: null },
+    });
+    render(
+      <AppProvider>
+        <AuthForm mode="login" nextPath="/learn" />
+      </AppProvider>,
+    );
+    const user = userEvent.setup();
+    await user.type(
+      await screen.findByLabelText("Email"),
+      "learner@example.com",
+    );
+    await user.type(screen.getByLabelText("Password"), "password123");
+    await user.click(screen.getByRole("button", { name: "Sign in" }));
+
+    await waitFor(() =>
+      expect(mocks.push).toHaveBeenCalledWith("/diagnostic/results"),
+    );
+  });
+
+  it("saves a chosen plan but still requires assessment after sign-in", async () => {
+    mocks.getSnapshot.mockResolvedValue({
+      ok: true,
+      snapshot: {
+        ...demoState,
+        diagnosticResult: null,
+        planAccess: null,
+      },
+    });
+    render(
+      <AppProvider>
+        <AuthForm mode="login" planId="essential" />
+      </AppProvider>,
+    );
+    const user = userEvent.setup();
+    await user.type(
+      await screen.findByLabelText("Email"),
+      "learner@example.com",
+    );
+    await user.type(screen.getByLabelText("Password"), "password123");
+    await user.click(screen.getByRole("button", { name: "Sign in" }));
+
+    await waitFor(() =>
+      expect(mocks.setCheckoutIntent).toHaveBeenCalledWith("essential"),
+    );
+    expect(mocks.push).toHaveBeenCalledWith("/diagnostic");
+  });
+
+  it("continues an assessed learner to checkout with the chosen plan", async () => {
+    mocks.getSnapshot.mockResolvedValue({
+      ok: true,
+      snapshot: { ...demoState, planAccess: null },
+    });
+    render(
+      <AppProvider>
+        <AuthForm mode="login" planId="intensive" />
+      </AppProvider>,
+    );
+    const user = userEvent.setup();
+    await user.type(
+      await screen.findByLabelText("Email"),
+      "learner@example.com",
+    );
+    await user.type(screen.getByLabelText("Password"), "password123");
+    await user.click(screen.getByRole("button", { name: "Sign in" }));
+
+    await waitFor(() =>
+      expect(mocks.push).toHaveBeenCalledWith("/checkout?plan=intensive"),
+    );
   });
 
   it("does not announce success or navigate when the profile cannot load", async () => {

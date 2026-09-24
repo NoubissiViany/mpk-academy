@@ -7,7 +7,11 @@ import { useForm } from "react-hook-form";
 import type { Resolver } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { signInAction, signUpAction } from "@/app/actions/auth";
+import {
+  setCheckoutIntentAction,
+  signInAction,
+  signUpAction,
+} from "@/app/actions/auth";
 import {
   claimGuestAssessmentAction,
   getLearnerSnapshotAction,
@@ -16,6 +20,7 @@ import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { PaidPlanId } from "@/config/product";
+import { resolveOnboardingDestination } from "@/lib/domain/onboarding";
 import { clearAnonymousState } from "@/lib/persistence";
 import { withErrorReference } from "@/lib/public-error";
 import { guestAssessmentRepository } from "@/repositories/guest-assessment";
@@ -108,7 +113,7 @@ export function AuthForm({
     try {
       const guestSession = await guestAssessmentRepository.getActive();
       const authResult = registering
-        ? await signUpAction(values)
+        ? await signUpAction({ ...values, ...(planId ? { planId } : {}) })
         : await signInAction({
             email: values.email,
             password: values.password,
@@ -143,13 +148,31 @@ export function AuthForm({
           );
         cloudState = snapshotResult.snapshot;
       }
+
+      if (!registering && planId && !cloudState.planAccess) {
+        const intentResult = await setCheckoutIntentAction(planId);
+        if (!intentResult.ok)
+          throw new Error(
+            withErrorReference(intentResult.message, intentResult.reference),
+          );
+        cloudState = {
+          ...cloudState,
+          checkoutIntentPlanId: intentResult.planId,
+        };
+      }
       replaceState(cloudState);
 
       toast.success(registering ? "Your account is ready." : "Welcome back.");
-      const checkoutPlanId =
-        registering && !guestSession
-          ? undefined
-          : (planId ?? guestSession?.recommendedPlanId);
+      const checkoutPlanId = guestSession
+        ? (cloudState.checkoutIntentPlanId ??
+          planId ??
+          guestSession.recommendedPlanId)
+        : !registering &&
+            planId &&
+            cloudState.diagnosticResult &&
+            !cloudState.planAccess
+          ? planId
+          : undefined;
       const safeNextPath =
         nextPath && nextPath.startsWith("/") && !nextPath.startsWith("//")
           ? nextPath
@@ -157,9 +180,10 @@ export function AuthForm({
       router.push(
         checkoutPlanId
           ? `/checkout?plan=${checkoutPlanId}`
-          : registering
-            ? "/diagnostic"
-            : (safeNextPath ?? "/dashboard"),
+          : resolveOnboardingDestination(
+              cloudState,
+              registering ? undefined : safeNextPath,
+            ),
       );
       router.refresh();
     } catch (error) {

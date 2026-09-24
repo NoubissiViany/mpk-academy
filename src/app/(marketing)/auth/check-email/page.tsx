@@ -19,8 +19,9 @@ export default async function CheckEmailPage({
           <h1 className="mt-3 text-3xl font-bold">Check your email.</h1>
           <p className="mt-4 text-sm leading-6 text-muted-foreground">
             We sent a confirmation link{email ? ` to ${email}` : ""}. Open it in
-            this browser to activate your account and securely attach any saved
-            assessment.
+            this browser to activate your account. If you completed the free
+            assessment first, using this browser is required to attach its saved
+            result and continue to checkout.
           </p>
           {email && <ResendConfirmation email={email} />}
           <Button

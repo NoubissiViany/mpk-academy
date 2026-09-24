@@ -82,5 +82,16 @@ test("paid plans remain visible while checkout requires an account", async ({
   ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "Create account" }),
-  ).toHaveAttribute("href", "/register");
+  ).toHaveAttribute("href", "/register?plan=complete");
+});
+
+test("choosing a paid plan carries it directly into registration", async ({
+  page,
+}) => {
+  await page.goto("/choose-plan");
+  await page.getByRole("link", { name: "Choose Intensive" }).click();
+  await expect(page).toHaveURL(/\/register\?plan=intensive/);
+  await expect(
+    page.getByRole("heading", { name: "Start with your free assessment." }),
+  ).toBeVisible();
 });

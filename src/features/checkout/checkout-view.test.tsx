@@ -25,7 +25,7 @@ describe("verified checkout", () => {
     expect(await screen.findByText("Complete plan")).toBeVisible();
     expect(
       await screen.findByRole("link", { name: "Create account" }),
-    ).toHaveAttribute("href", "/register");
+    ).toHaveAttribute("href", "/register?plan=complete");
     expect(screen.getByText(/plus applicable tax/i)).toBeVisible();
   });
 
