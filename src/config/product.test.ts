@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   calculatePlanAccessUntil,
+  estimatedStripeFeeMinor,
   formatPlanPrice,
   formatPrice,
   getPaidPlan,
@@ -12,10 +13,26 @@ import {
 
 describe("product plans", () => {
   it("formats arbitrary CAD prices and exact plan prices", () => {
-    expect(formatPrice(119)).toBe("$119");
-    expect(formatPlanPrice(getPaidPlan("essential")!)).toBe("$119");
+    expect(formatPrice(11_900)).toBe("$119");
+    expect(formatPlanPrice(getPaidPlan("essential")!)).toBe("$122.86");
+    expect(formatPlanPrice(getPaidPlan("complete")!, "fr")).toMatch(/256,75/);
   });
 
+  it.each([
+    ["essential", 12_286, 11_900],
+    ["complete", 25_675, 24_900],
+    ["intensive", 35_973, 34_900],
+  ] as const)(
+    "grosses up %s for the standard domestic Stripe fee",
+    (planId, priceMinor, targetNetMinor) => {
+      const plan = getPaidPlan(planId)!;
+      expect(plan.priceMinor).toBe(priceMinor);
+      expect(plan.targetNetMinor).toBe(targetNetMinor);
+      expect(priceMinor - estimatedStripeFeeMinor(priceMinor)).toBe(
+        targetNetMinor,
+      );
+    },
+  );
   it("validates paid plan identifiers", () => {
     expect(isPaidPlanId("essential")).toBe(true);
     expect(isPaidPlanId("free")).toBe(false);

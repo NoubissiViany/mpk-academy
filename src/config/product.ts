@@ -20,7 +20,8 @@ export interface ProductPlan {
   name: string;
   bestFor: string;
   highlights: readonly [string, string, string];
-  price: number;
+  priceMinor: number;
+  targetNetMinor: number;
   approximate: boolean;
   paymentModel: string;
   access: string;
@@ -33,8 +34,12 @@ export interface ProductPlan {
 export const productConfig = {
   name: "MPK Academy",
   courseName: "French for Canadian Immigration — TEF/TCF Preparation",
-  price: 249,
+  priceMinor: 25_675,
   currency: "CAD",
+  stripeFeeAssumption: {
+    percentageBps: 290,
+    fixedMinor: 30,
+  },
   freeLessonCount: 3,
   supportedLanguages: ["en", "fr"] satisfies Locale[],
   storageKey: "mpk-academy:v1",
@@ -63,7 +68,8 @@ export const productPlans = [
       "Basic weakness profile",
       "No payment required",
     ],
-    price: 0,
+    priceMinor: 0,
+    targetNetMinor: 0,
     approximate: false,
     paymentModel: "No payment required",
     access: "Assessment and results",
@@ -81,7 +87,8 @@ export const productPlans = [
       "English explanations and guided lessons",
       "Basic tracking with limited feedback",
     ],
-    price: 119,
+    priceMinor: 12_286,
+    targetNetMinor: 11_900,
     approximate: false,
     paymentModel: "One-time purchase",
     access: "3 months",
@@ -99,7 +106,8 @@ export const productPlans = [
       "TEF/TCF strategies and timed practice",
       "Mock exams and detailed readiness tracking",
     ],
-    price: 249,
+    priceMinor: 25_675,
+    targetNetMinor: 24_900,
     approximate: false,
     paymentModel: "One-time purchase",
     access: "6 months",
@@ -117,7 +125,8 @@ export const productPlans = [
       "Higher writing and speaking feedback limits coming later",
       "Additional mock-attempt capacity coming later",
     ],
-    price: 349,
+    priceMinor: 35_973,
+    targetNetMinor: 34_900,
     approximate: false,
     paymentModel: "One-time purchase",
     access: "6 months",
@@ -207,19 +216,25 @@ export const featureFlags = {
 } as const;
 
 export const formatPrice = (
-  amount: number = productConfig.price,
+  amountMinor: number = productConfig.priceMinor,
   locale: Locale = "en",
 ) =>
   new Intl.NumberFormat(locale === "fr" ? "fr-CA" : "en-CA", {
     style: "currency",
     currency: productConfig.currency,
-    maximumFractionDigits: 0,
-  }).format(amount);
+    minimumFractionDigits: amountMinor % 100 === 0 ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(amountMinor / 100);
 
 export const formatPlanPrice = (
-  plan: Pick<ProductPlan, "price" | "approximate">,
+  plan: Pick<ProductPlan, "priceMinor" | "approximate">,
   locale: Locale = "en",
-) => `${plan.approximate ? "~" : ""}${formatPrice(plan.price, locale)}`;
+) => `${plan.approximate ? "~" : ""}${formatPrice(plan.priceMinor, locale)}`;
+
+export const estimatedStripeFeeMinor = (amountMinor: number) =>
+  Math.round(
+    (amountMinor * productConfig.stripeFeeAssumption.percentageBps) / 10_000,
+  ) + productConfig.stripeFeeAssumption.fixedMinor;
 
 export function calculatePlanAccessUntil(
   planId: PaidPlanId,

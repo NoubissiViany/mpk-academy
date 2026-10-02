@@ -58,7 +58,8 @@ export function CheckoutView({ plan }: { plan: CheckoutPlan }) {
             </div>
             <p className="mt-3 text-sm leading-6 text-muted-foreground">
               {plan.purpose}. One-time purchase with {plan.access.toLowerCase()}{" "}
-              of access. Applicable tax is calculated at checkout.
+              of access. Stripe processing is included in the plan price;
+              applicable tax is calculated at checkout.
             </p>
 
             <div className="mt-7 rounded-xl border bg-muted/40 p-4">
