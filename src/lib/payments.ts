@@ -12,8 +12,11 @@ function paidSessionDetails(
   session: StripeCheckoutSession,
   expectedUserId?: string,
 ) {
-  const planId = session.metadata.plan_id;
-  const userId = session.metadata.user_id;
+  if (session.mode !== "payment" || session.status !== "complete")
+    throw new Error("Checkout session is not a completed one-time payment.");
+
+  const planId = session.metadata?.plan_id;
+  const userId = session.metadata?.user_id;
   if (!isPaidPlanId(planId) || !userId)
     throw new Error("Checkout metadata is invalid.");
   if (
@@ -37,19 +40,28 @@ function paidSessionDetails(
     throw new Error("Checkout line item does not match the selected plan.");
   if (
     session.currency?.toLowerCase() !== "cad" ||
-    session.amount_subtotal !== plan.price * 100 ||
+    session.amount_subtotal !== plan.priceMinor ||
     session.amount_total === null ||
     session.amount_total < session.amount_subtotal
   )
     throw new Error("Checkout amount does not match the selected plan.");
 
-  const paymentId = paymentIntentId(session.payment_intent);
-  if (!paymentId) throw new Error("Checkout payment identifier is missing.");
+  const paymentIntent =
+    session.payment_intent && typeof session.payment_intent === "object"
+      ? session.payment_intent
+      : null;
+  const paymentId = paymentIntentId(paymentIntent);
+  if (
+    !paymentIntent ||
+    !paymentId ||
+    !Number.isInteger(paymentIntent.created) ||
+    paymentIntent.metadata.user_id !== userId ||
+    paymentIntent.metadata.plan_id !== planId
+  )
+    throw new Error("Checkout payment identifier or metadata is invalid.");
   const latestCharge =
-    session.payment_intent &&
-    typeof session.payment_intent === "object" &&
-    typeof session.payment_intent.latest_charge === "object"
-      ? session.payment_intent.latest_charge
+    typeof paymentIntent.latest_charge === "object"
+      ? paymentIntent.latest_charge
       : null;
   const fullyRefunded = Boolean(
     latestCharge?.refunded &&
@@ -66,6 +78,7 @@ function paidSessionDetails(
     subtotalMinor: session.amount_subtotal,
     taxMinor,
     totalMinor: session.amount_total,
+    purchasedAt: new Date(paymentIntent.created * 1000).toISOString(),
     fullyRefunded,
   };
 }
@@ -85,7 +98,7 @@ export async function fulfillStripeCheckout(
     p_tax_minor: details.taxMinor,
     p_total_minor: details.totalMinor,
     p_currency: "CAD",
-    p_purchased_at: new Date(session.created * 1000).toISOString(),
+    p_purchased_at: details.purchasedAt,
   });
   if (error) throw error;
   if (details.fullyRefunded)

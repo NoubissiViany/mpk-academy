@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(30);
+select plan(35);
 
 select has_table('public', 'profiles', 'profiles table exists');
 select has_table('public', 'assessments', 'assessments table exists');
@@ -197,7 +197,7 @@ select throws_ok(
 select throws_ok(
   $$select public.mpk_fulfill_stripe_purchase(
     '10000000-0000-0000-0000-000000000001', 'cs_forbidden', 'pi_forbidden',
-    'complete', 24900, 0, 24900, 'CAD', now()
+    'complete', 25675, 0, 25675, 'CAD', now()
   )$$,
   '42501',
   'permission denied for function mpk_fulfill_stripe_purchase',
@@ -210,7 +210,7 @@ set local role service_role;
 select lives_ok(
   $$select public.mpk_fulfill_stripe_purchase(
     '10000000-0000-0000-0000-000000000001', 'cs_test_complete', 'pi_test_complete',
-    'complete', 24900, 3237, 28137, 'CAD', '2026-09-22T12:00:00Z'
+    'complete', 25675, 3338, 29013, 'CAD', '2026-09-22T12:00:00Z'
   )$$,
   'service role can fulfill a verified Stripe purchase'
 );
@@ -218,7 +218,7 @@ select lives_ok(
 select lives_ok(
   $$select public.mpk_fulfill_stripe_purchase(
     '10000000-0000-0000-0000-000000000001', 'cs_test_complete', 'pi_test_complete',
-    'complete', 24900, 3237, 28137, 'CAD', '2026-09-22T12:00:00Z'
+    'complete', 25675, 3338, 29013, 'CAD', '2026-09-22T12:00:00Z'
   )$$,
   'Stripe fulfillment is idempotent'
 );
@@ -235,6 +235,46 @@ select is(
   )),
   1,
   'idempotent fulfillment creates one entitlement'
+);
+
+select is(
+  (select ends_at from public.entitlements where purchase_id = (
+    select id from public.purchases where checkout_session_id = 'cs_test_complete'
+  )),
+  '2027-03-22T12:00:00Z'::timestamptz,
+  'Complete access lasts six calendar months from verified payment'
+);
+
+select lives_ok(
+  $$select public.mpk_fulfill_stripe_purchase(
+    '10000000-0000-0000-0000-000000000001', 'cs_test_essential', 'pi_test_essential',
+    'essential', 12286, 0, 12286, 'CAD', '2026-01-31T12:00:00Z'
+  )$$,
+  'Essential purchase is fulfilled'
+);
+
+select is(
+  (select ends_at from public.entitlements where purchase_id = (
+    select id from public.purchases where checkout_session_id = 'cs_test_essential'
+  )),
+  '2026-04-30T12:00:00Z'::timestamptz,
+  'Essential access lasts three calendar months without overflowing April'
+);
+
+select lives_ok(
+  $$select public.mpk_fulfill_stripe_purchase(
+    '10000000-0000-0000-0000-000000000001', 'cs_test_intensive', 'pi_test_intensive',
+    'intensive', 35973, 0, 35973, 'CAD', '2026-08-31T12:00:00Z'
+  )$$,
+  'Intensive purchase is fulfilled'
+);
+
+select is(
+  (select ends_at from public.entitlements where purchase_id = (
+    select id from public.purchases where checkout_session_id = 'cs_test_intensive'
+  )),
+  '2027-02-28T12:00:00Z'::timestamptz,
+  'Intensive access lasts six calendar months without overflowing February'
 );
 
 select throws_ok(

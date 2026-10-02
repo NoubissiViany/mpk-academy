@@ -38,7 +38,7 @@ export default async function CheckoutSuccessPage({
     const session = await retrieveStripeCheckoutSession(sessionId);
     const belongsToUser =
       session.client_reference_id === userId &&
-      session.metadata.user_id === userId;
+      session.metadata?.user_id === userId;
     if (!belongsToUser) throw new Error("Checkout owner mismatch.");
     if (session.payment_status === "paid") {
       await fulfillStripeCheckout(session, userId);
