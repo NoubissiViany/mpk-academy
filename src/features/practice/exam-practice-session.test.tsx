@@ -23,12 +23,15 @@ describe("productive practice availability", () => {
 
     expect(
       await screen.findByRole("heading", {
-        name: /Corrected writing practice is not available yet/,
+        name: /writing self-practice/,
       }),
     ).toBeVisible();
     expect(
-      screen.getByRole("link", { name: "Explore lessons" }),
-    ).toHaveAttribute("href", "/learn");
+      screen.getByRole("button", { name: "Start timed practice" }),
+    ).toBeVisible();
+    expect(
+      screen.getByText(/No recording, AI evaluation, or official grading/),
+    ).toBeVisible();
     expect(screen.queryByText(/Save self-review/)).not.toBeInTheDocument();
   });
 });

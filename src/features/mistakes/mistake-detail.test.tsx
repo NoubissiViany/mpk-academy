@@ -27,7 +27,7 @@ describe("mistake detail", () => {
     ).toBeVisible();
     expect(
       screen.getByRole("heading", {
-        name: "Listening for specific information",
+        name: "Listen for intention and correction",
       }),
     ).toBeVisible();
     expect(

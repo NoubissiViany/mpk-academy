@@ -1,4 +1,5 @@
 import "server-only";
+import { getCourseModules } from "@/data/course";
 
 import { defaultState, emptyProgress } from "@/data/mock-state";
 import { isPaidPlanId } from "@/config/product";
@@ -36,7 +37,7 @@ export async function getPracticeResult(sessionId: string) {
   const { data, error } = await supabase
     .from("practice_sessions")
     .select(
-      "id, exam, skill, score, correct_count, question_count, completed_at",
+      "id, exam, skill, score, correct_count, question_count, completed_at, evidence_mode",
     )
     .eq("id", sessionId)
     .eq("user_id", userId)
@@ -252,10 +253,19 @@ export async function getLearnerSnapshot(): Promise<AppState> {
   const activeExam: ExamId =
     goal.exam === "TCF Canada" ? "TCF Canada" : "TEF Canada";
   const activeProgress = progressRows.find((row) => row.exam === activeExam);
+  const activeLessons = getCourseModules(
+    activeExam === "TCF Canada" ? "TCF" : "TEF",
+  ).flatMap((module) => module.lessons);
+  const completedCurrentLessons = activeLessons.filter((lesson) =>
+    (lessonsResponse.data ?? []).some((saved) => saved.lesson_id === lesson.id),
+  );
   const resultRow = diagnosticResultResponse.data;
   const diagnosticResult: DiagnosticResult | null = resultRow
     ? {
         score: resultRow.score,
+        algorithmVersion: resultRow.algorithm_version,
+        assessedItemCount: resultRow.assessed_item_count ?? undefined,
+        languageFoundation: resultRow.language_foundation ?? undefined,
         level: resultRow.level as DiagnosticResult["level"],
         competencyScores:
           resultRow.competency_scores as DiagnosticResult["competencyScores"],
@@ -312,7 +322,10 @@ export async function getLearnerSnapshot(): Promise<AppState> {
           simulationsCompleted: activeProgress.simulations_completed,
           simulationAverage: activeProgress.simulation_average,
           diagnosticScore: activeProgress.diagnostic_score,
-          courseCompletion: activeProgress.course_completion,
+          courseCompletion: Math.round(
+            (100 * completedCurrentLessons.length) /
+              Math.max(activeLessons.length, 1),
+          ),
           competencyScores: activeProgress.competency_scores as Partial<
             Record<CompetencyId, number>
           >,
@@ -340,10 +353,25 @@ export async function getLearnerSnapshot(): Promise<AppState> {
       timestamp: event.created_at,
     })),
     ...(practiceResponse.data
-      ? { lastPracticeScore: practiceResponse.data.score }
+      ? { lastPracticeScore: practiceResponse.data.score ?? undefined }
       : {}),
     ...(mockResultResponse.data
       ? { lastExamScore: mockResultResponse.data.score }
       : {}),
   };
+}
+
+/** Only completed, owned assessments expose their answers for correction. */
+export async function getCompletedAssessmentAnswers(assessmentId: string) {
+  const result = await getAssessmentResult(assessmentId);
+  if (!result) return [];
+  const { supabase, userId } = await requireUserId();
+  const { data, error } = await supabase
+    .from("assessment_answers")
+    .select("question_id, answer, is_correct, sequence")
+    .eq("assessment_id", assessmentId)
+    .eq("user_id", userId)
+    .order("sequence");
+  if (error) throw error;
+  return data ?? [];
 }

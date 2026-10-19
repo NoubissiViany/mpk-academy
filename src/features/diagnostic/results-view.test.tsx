@@ -44,13 +44,15 @@ describe("ResultsView", () => {
     expect(
       await screen.findByRole("heading", { name: "Your French Assessment" }),
     ).toBeVisible();
-    expect(screen.getByText("B2")).toBeVisible();
-    expect(screen.getByText("Upper-intermediate French")).toBeVisible();
+    expect(screen.getByText("C1")).toBeVisible();
+    expect(screen.getByText("Advanced French")).toBeVisible();
     expect(
       screen.getByText(/preparing for TCF Canada and aiming for NCLC 9\+/),
     ).toBeVisible();
     expect(screen.getByText("Your priority")).toBeVisible();
-    expect(screen.getAllByText("Listening").length).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText(/Listening — Not assessed yet/).length,
+    ).toBeGreaterThan(0);
     expect(
       screen.getByRole("link", { name: "Continue with Intensive" }),
     ).toHaveAttribute("href", "/register?plan=intensive");

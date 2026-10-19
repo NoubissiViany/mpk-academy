@@ -25,12 +25,14 @@ export function activateExamProfile(state: AppState, exam: ExamId): AppState {
             reading: {
               baseline30Days: state.diagnosticResult.skillScores.reading,
               current: state.diagnosticResult.skillScores.reading,
-              attempts: 1,
+              attempts:
+                state.diagnosticResult.skillScores.reading === null ? 0 : 1,
             },
             listening: {
               baseline30Days: state.diagnosticResult.skillScores.listening,
               current: state.diagnosticResult.skillScores.listening,
-              attempts: 1,
+              attempts:
+                state.diagnosticResult.skillScores.listening === null ? 0 : 1,
             },
           },
         }

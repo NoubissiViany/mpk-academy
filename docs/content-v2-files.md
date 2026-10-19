@@ -1,0 +1,106 @@
+# Content v2 file inventory
+
+See [implementation and validation report](content-v2-report.md) for behavior, counts, release steps, and limitations.
+
+## Modified files (40)
+
+- `e2e/smoke.spec.ts`
+- `package.json`
+- `src/app/(marketing)/page.tsx`
+- `src/app/(student)/exam/results/page.tsx`
+- `src/app/(student)/learn/[moduleId]/page.tsx`
+- `src/app/(student)/learn/page.tsx`
+- `src/app/(student)/practice/results/page.tsx`
+- `src/app/actions/learner.ts`
+- `src/config/exams.ts`
+- `src/config/product.ts`
+- `src/data/course.ts`
+- `src/data/exam-question-pools.ts`
+- `src/data/questions.ts`
+- `src/features/assessment/question-card.test.tsx`
+- `src/features/assessment/question-card.tsx`
+- `src/features/diagnostic/diagnostic-flow.test.tsx`
+- `src/features/diagnostic/diagnostic-flow.tsx`
+- `src/features/diagnostic/results-view.test.tsx`
+- `src/features/diagnostic/results-view.tsx`
+- `src/features/exam/mock-overview.test.tsx`
+- `src/features/exam/mock-overview.tsx`
+- `src/features/exam/scaled-mock-session.tsx`
+- `src/features/learn/lesson-view.tsx`
+- `src/features/mistakes/mistake-detail.test.tsx`
+- `src/features/practice/exam-practice-session.test.tsx`
+- `src/features/practice/exam-practice-session.tsx`
+- `src/features/practice/practice-select.test.tsx`
+- `src/features/practice/practice-select.tsx`
+- `src/features/progress/progress-view.tsx`
+- `src/lib/domain/diagnostic.ts`
+- `src/lib/domain/domain.test.ts`
+- `src/lib/domain/exam-progress.test.ts`
+- `src/lib/domain/exam-progress.ts`
+- `src/lib/domain/onboarding.ts`
+- `src/lib/domain/personalization.ts`
+- `src/lib/supabase/learner.ts`
+- `src/repositories/guest-assessment.ts`
+- `src/types/database.ts`
+- `src/types/domain.ts`
+- `supabase/tests/database/learner_security.test.sql`
+
+## Created files (57)
+
+- `docs/content-v2-files.md`
+- `docs/content-v2-report.md`
+- `scripts/content/diagnostic-parity.cjs`
+- `scripts/content/generate-sql.cjs`
+- `scripts/content/register.cjs`
+- `scripts/content/validate.cjs`
+- `src/app/actions/mock-session.test.ts`
+- `src/app/actions/mock-session.ts`
+- `src/content/adapters.ts`
+- `src/content/catalog.ts`
+- `src/content/content.test.ts`
+- `src/content/diagnostic/grammar.ts`
+- `src/content/diagnostic/listening.ts`
+- `src/content/diagnostic/questions.ts`
+- `src/content/diagnostic/reading.ts`
+- `src/content/diagnostic/vocabulary.ts`
+- `src/content/legacy/course.ts`
+- `src/content/legacy/exam-question-pools.ts`
+- `src/content/legacy/exams.ts`
+- `src/content/legacy/questions.ts`
+- `src/content/mock-catalog.ts`
+- `src/content/mock-summaries.ts`
+- `src/content/shared/builders.ts`
+- `src/content/shared/competencies.ts`
+- `src/content/shared/foundations.ts`
+- `src/content/shared/levels.ts`
+- `src/content/shared/types.ts`
+- `src/content/tcf/learn/lessons.ts`
+- `src/content/tcf/mock-exams/listening.ts`
+- `src/content/tcf/mock-exams/mock-01.ts`
+- `src/content/tcf/mock-exams/reading.ts`
+- `src/content/tcf/mock-exams/speaking.ts`
+- `src/content/tcf/mock-exams/writing.ts`
+- `src/content/tcf/practice/listening.ts`
+- `src/content/tcf/practice/reading.ts`
+- `src/content/tcf/practice/speaking.ts`
+- `src/content/tcf/practice/writing.ts`
+- `src/content/tef/learn/lessons.ts`
+- `src/content/tef/mock-exams/listening.ts`
+- `src/content/tef/mock-exams/mock-01.ts`
+- `src/content/tef/mock-exams/reading.ts`
+- `src/content/tef/mock-exams/speaking.ts`
+- `src/content/tef/mock-exams/writing.ts`
+- `src/content/tef/practice/listening.ts`
+- `src/content/tef/practice/reading.ts`
+- `src/content/tef/practice/speaking.ts`
+- `src/content/tef/practice/writing.ts`
+- `src/content/validate.ts`
+- `src/features/exam/mock-types.ts`
+- `src/features/exam/timed-session.test.tsx`
+- `src/features/practice/productive-session.tsx`
+- `src/test/audio/one-shot.wav`
+- `supabase/migrations/20261002000100_content_v2_schema.sql`
+- `supabase/migrations/20261002000200_content_v2_catalog.sql`
+- `supabase/migrations/20261002000300_content_v2_scoring.sql`
+- `supabase/migrations/20261002000400_timed_mock_sessions.sql`
+- `supabase/tests/database/content_v2.assert.sql`

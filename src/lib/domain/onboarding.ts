@@ -111,12 +111,12 @@ export function createDiagnosticExamProfile(
       reading: {
         baseline30Days: reading,
         current: reading,
-        attempts: 1,
+        attempts: reading === null ? 0 : 1,
       },
       listening: {
         baseline30Days: listening,
         current: listening,
-        attempts: 1,
+        attempts: listening === null ? 0 : 1,
       },
     },
   };
@@ -248,22 +248,28 @@ export function applyDiagnosticResult(
           readiness: result.score,
           skills: {
             ...currentProfile.skills,
-            reading: {
-              ...currentProfile.skills.reading,
-              baseline30Days:
-                currentProfile.skills.reading.baseline30Days ??
-                diagnosticProfile.skills.reading.current,
-              current: diagnosticProfile.skills.reading.current,
-              attempts: currentProfile.skills.reading.attempts + 1,
-            },
-            listening: {
-              ...currentProfile.skills.listening,
-              baseline30Days:
-                currentProfile.skills.listening.baseline30Days ??
-                diagnosticProfile.skills.listening.current,
-              current: diagnosticProfile.skills.listening.current,
-              attempts: currentProfile.skills.listening.attempts + 1,
-            },
+            reading:
+              diagnosticProfile.skills.reading.current === null
+                ? currentProfile.skills.reading
+                : {
+                    ...currentProfile.skills.reading,
+                    baseline30Days:
+                      currentProfile.skills.reading.baseline30Days ??
+                      diagnosticProfile.skills.reading.current,
+                    current: diagnosticProfile.skills.reading.current,
+                    attempts: currentProfile.skills.reading.attempts + 1,
+                  },
+            listening:
+              diagnosticProfile.skills.listening.current === null
+                ? currentProfile.skills.listening
+                : {
+                    ...currentProfile.skills.listening,
+                    baseline30Days:
+                      currentProfile.skills.listening.baseline30Days ??
+                      diagnosticProfile.skills.listening.current,
+                    current: diagnosticProfile.skills.listening.current,
+                    attempts: currentProfile.skills.listening.attempts + 1,
+                  },
           },
         }
       : null;

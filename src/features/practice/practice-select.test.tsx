@@ -41,11 +41,14 @@ describe("personalized practice landing", () => {
       </AppProvider>,
     );
 
-    expect(await screen.findAllByText("Coming soon")).toHaveLength(2);
-    expect(screen.getAllByText(/Correction is not available yet/)).toHaveLength(
+    expect(await screen.findAllByText("Timed self-practice")).toHaveLength(2);
+    expect(screen.getAllByText(/Practise and review the rubric/)).toHaveLength(
       2,
     );
-    expect(screen.queryByRole("link", { name: /Writing/ })).toBeNull();
+    expect(screen.getByRole("link", { name: /Writing/ })).toHaveAttribute(
+      "href",
+      "/practice/session?skill=writing",
+    );
     expect(screen.queryByText("63% · Improving")).not.toBeInTheDocument();
     expect(screen.queryByText("48% · Priority")).not.toBeInTheDocument();
   });

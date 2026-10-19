@@ -145,6 +145,17 @@ function DiagnosticExperience() {
   );
   const start = () => {
     if (!intakeComplete) return;
+    if (
+      localStorage.getItem("mpk-assessment-restart") ||
+      Object.keys(state.diagnosticAnswers).some(
+        (id) => !diagnosticQuestions.some((q) => q.id === id),
+      )
+    ) {
+      toast.info(
+        "The assessment has been updated. Start the new 20-question version; saved historical results remain available.",
+      );
+      localStorage.removeItem("mpk-assessment-restart");
+    }
     submissionId.current = crypto.randomUUID();
     setState((current) => ({
       ...current,
@@ -267,8 +278,8 @@ function DiagnosticExperience() {
             </p>
             <ul className="mt-7 grid gap-3 text-sm font-semibold sm:grid-cols-2 lg:grid-cols-1">
               {[
-                "About 10 minutes",
-                "15 questions",
+                "About 12–15 minutes",
+                "20 questions · updated MPK assessment",
                 "Free",
                 "No payment required",
               ].map((item) => (

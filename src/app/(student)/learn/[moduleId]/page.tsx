@@ -1,15 +1,20 @@
+import { getLearnerSnapshot } from "@/lib/supabase/learner";
 import Link from "next/link";
 import { ChevronRight, Clock3 } from "lucide-react";
 import { PageHeader } from "@/components/shared";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { courseModules } from "@/data/course";
+import { getCourseModules } from "@/data/course";
 export default async function ModulePage({
   params,
 }: {
   params: Promise<{ moduleId: string }>;
 }) {
   const { moduleId } = await params;
+  const snapshot = await getLearnerSnapshot();
+  const courseModules = getCourseModules(
+    snapshot.user?.goal.exam === "TCF Canada" ? "TCF" : "TEF",
+  );
   const courseModule = courseModules.find((item) => item.id === moduleId);
   if (!courseModule) return <p>Module not found.</p>;
   return (

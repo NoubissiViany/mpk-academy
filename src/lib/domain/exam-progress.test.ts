@@ -130,19 +130,19 @@ describe("distinct exam configuration fixtures", () => {
     expect(examConfigurations["TEF Canada"].scaledMock).toMatchObject({
       writingTasks: 2,
       speakingTasks: 2,
-      durationMinutes: 40,
+      durationMinutes: 175,
     });
     expect(examConfigurations["TCF Canada"].scaledMock).toMatchObject({
       writingTasks: 3,
       speakingTasks: 3,
-      durationMinutes: 45,
+      durationMinutes: 167,
     });
     expect(
       productiveTasks["TEF Canada"].filter((task) => task.skill === "writing"),
-    ).toHaveLength(2);
+    ).toHaveLength(4);
     expect(
       productiveTasks["TCF Canada"].filter((task) => task.skill === "writing"),
-    ).toHaveLength(3);
+    ).toHaveLength(6);
     expect(examConfigurations["TEF Canada"].officialFormat.listening).toContain(
       "one-way",
     );
@@ -151,6 +151,6 @@ describe("distinct exam configuration fixtures", () => {
     ).toBe(true);
     expect(
       examConfigurations["TCF Canada"].navigationRules.listeningOneWay,
-    ).toBe(false);
+    ).toBe(true);
   });
 });

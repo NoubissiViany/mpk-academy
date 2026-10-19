@@ -129,7 +129,7 @@ export default function HomePage() {
               </Button>
             </div>
             <p className="mt-4 text-xs text-muted-foreground">
-              Free · 15 questions · About 10 minutes · No card required
+              Free · 20 questions · About 12–15 minutes · No card required
             </p>
           </div>
           <Card className="relative overflow-hidden border-primary/15 bg-card/90 p-2">

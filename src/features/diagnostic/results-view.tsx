@@ -10,7 +10,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   diagnosticLevelContent,
   diagnosticSkillContent,
-  diagnosticSkillOrder,
 } from "@/config/diagnostic";
 import {
   formatPlanPrice,
@@ -51,7 +50,7 @@ export function ResultsView() {
           <h1 className="text-2xl font-bold">No assessment result yet</h1>
           <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-muted-foreground">
             Complete the French assessment to see your estimated level and
-            six-skill profile.
+            starting skill profile.
           </p>
           <Button asChild className="mt-6">
             <Link href="/diagnostic">Start my assessment</Link>
@@ -99,7 +98,7 @@ export function ResultsView() {
         <CardContent className="grid gap-8 p-0 md:grid-cols-[.7fr_1.3fr]">
           <div className="bg-ink p-7 text-white sm:p-9">
             <p className="text-xs font-bold uppercase tracking-[.16em] text-white/55">
-              Estimated level
+              Provisional MPK level
             </p>
             <p className="mt-4 text-7xl font-black text-[#74dab8]">
               {result.level}
@@ -127,13 +126,37 @@ export function ResultsView() {
         </h2>
         <Card className="mt-4">
           <CardContent className="grid gap-x-10 gap-y-6 pt-6 md:grid-cols-2">
-            {diagnosticSkillOrder.map((skill) => (
+            <MetricBar
+              label="Reading"
+              value={result.skillScores.reading ?? 0}
+            />
+            <MetricBar
+              label="Language foundation"
+              value={
+                result.languageFoundation ??
+                Math.round(
+                  ((result.skillScores.grammar ?? 0) +
+                    (result.skillScores.vocabulary ?? 0)) /
+                    2,
+                )
+              }
+            />
+            {result.skillScores.listening === null ? (
+              <p>Listening — Not assessed yet (audio pending)</p>
+            ) : (
               <MetricBar
-                key={skill}
-                label={diagnosticSkillContent[skill].label}
-                value={result.skillScores[skill]}
+                label="Listening"
+                value={result.skillScores.listening}
               />
-            ))}
+            )}
+            <p>Writing — Not assessed yet</p>
+            <p>Speaking — Not assessed yet</p>
+            <p className="text-sm text-muted-foreground md:col-span-2">
+              Provisional MPK estimate based on{" "}
+              {result.assessedItemCount ?? "historical"} assessed items.
+              Transcript exercises do not measure listening. This is not a
+              certified CEFR level, NCLC result, or official TEF/TCF score.
+            </p>
           </CardContent>
         </Card>
       </section>

@@ -1,26 +1,14 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Check,
-  Lightbulb,
-  Play,
-  Volume2,
-} from "lucide-react";
 import { toast } from "sonner";
 import { completeLessonAction } from "@/app/actions/learner";
 import { useApp } from "@/components/providers/app-provider";
 import { LockedContent, ModeBadge } from "@/components/shared";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { allLessons, courseModules } from "@/data/course";
-import { examStrategyContent } from "@/config/exams";
+import { allLessons, getCourseModules } from "@/data/course";
+import { allLessons as archivedLessons } from "@/content/legacy/course";
 import { canAccessLesson } from "@/lib/domain/access";
-
 export function LessonView({
   moduleId,
   lessonId,
@@ -29,224 +17,142 @@ export function LessonView({
   lessonId: string;
 }) {
   const { state, replaceState } = useApp();
+  const [answer, setAnswer] = useState<number | null>(null);
+  const [checked, setChecked] = useState(false);
   const [saving, setSaving] = useState(false);
-  const courseModule = courseModules.find((item) => item.id === moduleId);
   const lesson = allLessons.find(
-    (item) => item.id === lessonId && item.moduleId === moduleId,
+    (l) => l.id === lessonId && l.moduleId === moduleId,
   );
-  const user = state.user;
-  if (!courseModule || !lesson)
+  const archived = archivedLessons.find(
+    (l) => l.id === lessonId && l.moduleId === moduleId,
+  );
+  if (!lesson)
     return (
       <div>
-        <h1 className="text-3xl font-bold">Lesson not found</h1>
-        <Button asChild className="mt-5">
-          <Link href="/learn">Return to course</Link>
-        </Button>
+        <h1>
+          {archived
+            ? `${archived.title} — Archived lesson`
+            : "Lesson not found"}
+        </h1>
+        {archived && (
+          <p>
+            Your historical completion is preserved. Study the updated lessons
+            in Learn.
+          </p>
+        )}
+        <Link href="/learn">Return to course</Link>
       </div>
     );
   if (!canAccessLesson(state.planAccess, lesson))
+    return <LockedContent title="Unlock this lesson" />;
+  const content = lesson.content!;
+  const exam = state.user?.goal.exam === "TCF Canada" ? "TCF" : "TEF";
+  if (content.exam !== "shared" && content.exam !== exam)
     return (
       <div>
-        <ModeBadge mode="learn" />
-        <h1 className="mt-4 text-3xl font-bold">{lesson.title}</h1>
-        <div className="mt-8">
-          <LockedContent title="Unlock this lesson" />
-        </div>
+        <p>
+          This lesson belongs to {content.exam}. Switch your active exam in
+          Settings to study it.
+        </p>
+        <Link href="/learn">Return to Learn</Link>
       </div>
     );
+  const available = getCourseModules(exam).flatMap((m) => m.lessons);
+  const next = available[available.findIndex((l) => l.id === lesson.id) + 1];
   const completed = state.progress.completedLessonIds.includes(lesson.id);
-  const activeExam =
-    user?.goal.exam === "TCF Canada" ? "TCF Canada" : "TEF Canada";
-  const strategy =
-    moduleId === "exam-strategies"
-      ? examStrategyContent[activeExam][lesson.sequence - 1]
-      : null;
-  const index = allLessons.findIndex((item) => item.id === lesson.id);
-  const next = allLessons[index + 1];
-  const previous = allLessons[index - 1];
-  const markComplete = async () => {
-    if (completed || saving) return;
+  const save = async () => {
     setSaving(true);
     const result = await completeLessonAction(lesson.id);
     setSaving(false);
-    if (!result.ok) {
-      toast.error(result.message);
-      return;
-    }
+    if (!result.ok) return toast.error(result.message);
     replaceState(result.snapshot);
     toast.success("Lesson progress saved");
   };
   return (
-    <div>
-      <div className="mb-5 flex flex-wrap items-center gap-3">
-        <ModeBadge mode="learn" />
-        <Badge>{lesson.duration} min</Badge>
-        {completed && (
-          <Badge className="border-primary/20 bg-primary/10 text-primary">
-            <Check className="mr-1 size-3" />
-            Completed
-          </Badge>
-        )}
-      </div>
-      <div className="grid gap-7 xl:grid-cols-[15rem_1fr]">
-        <aside className="hidden xl:block">
-          <p className="mb-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            {courseModule.title}
+    <article className="mx-auto max-w-3xl space-y-7">
+      <ModeBadge mode="learn" />
+      <header>
+        <p>
+          {lesson.duration} min ·{" "}
+          {content.exam === "shared"
+            ? "Shared French foundations"
+            : content.exam}
+        </p>
+        <h1 className="mt-3 text-3xl font-bold">{lesson.title}</h1>
+        <p className="mt-3">{lesson.description}</p>
+      </header>
+      <section>
+        <h2 className="text-xl font-bold">Understand</h2>
+        <p className="mt-3 leading-8">{content.explanation}</p>
+      </section>
+      <section className="rounded-xl border bg-learn/5 p-6">
+        <h2 className="font-bold">French examples</h2>
+        {content.examples.map((example) => (
+          <p key={example} lang="fr" className="mt-3 text-lg">
+            {example}
           </p>
-          <nav className="space-y-1">
-            {courseModule.lessons.map((item) => (
-              <Link
-                key={item.id}
-                href={`/learn/${courseModule.id}/${item.id}`}
-                aria-current={item.id === lesson.id ? "page" : undefined}
-                className={`block rounded-xl px-3 py-3 text-sm font-semibold ${item.id === lesson.id ? "bg-learn text-white" : "text-muted-foreground hover:bg-muted"}`}
-              >
-                {item.sequence}. {item.title}
-              </Link>
-            ))}
-          </nav>
-        </aside>
-        <article className="min-w-0">
-          <header>
-            <p className="eyebrow text-learn">
-              Lesson {lesson.sequence} of {courseModule.lessons.length}
-            </p>
-            <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-              {strategy?.title ?? lesson.title}
-            </h1>
-            <p className="mt-3 leading-7 text-muted-foreground">
-              {lesson.description}
-            </p>
-            <Progress
-              value={(lesson.sequence / courseModule.lessons.length) * 100}
-              label="Lesson module progress"
-              className="mt-6"
-            />
-          </header>
-          <div className="mt-8 aspect-video rounded-2xl bg-ink p-6 text-white">
-            <div className="flex h-full flex-col items-center justify-center text-center">
-              <button
-                aria-label="Play lesson video placeholder"
-                className="grid size-14 place-items-center rounded-full bg-white text-ink focus-visible:ring-2 focus-visible:ring-accent"
-              >
-                <Play className="ml-1 size-5 fill-current" />
-              </button>
-              <p className="mt-4 font-bold">Lesson video placeholder</p>
-              <p className="mt-1 text-xs text-white/55">
-                Content delivery adapter ready
-              </p>
-            </div>
-          </div>
-          <section className="mt-8">
-            <h2 className="text-2xl font-bold">Key idea</h2>
-            <p className="mt-4 leading-8">
-              {strategy?.keyIdea ??
-                "Time and linking expressions help the reader understand when an action happens and how ideas relate. In exam questions, these small words often carry the decisive detail."}
-            </p>
-            <Card className="mt-6 border-learn/20 bg-learn/5">
-              <CardContent className="pt-6">
-                <div className="flex items-start gap-3">
-                  <Volume2 className="mt-1 size-5 shrink-0 text-learn" />
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-learn">
-                      French example
-                    </p>
-                    <p className="mt-2 text-xl font-bold">
-                      {strategy?.example ?? lesson.example}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="mt-4 border-primary/20">
-              <CardContent className="pt-6">
-                <div className="flex items-start gap-3">
-                  <Lightbulb className="mt-1 size-5 shrink-0 text-primary" />
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-primary">
-                      {user?.locale === "fr"
-                        ? "Explication en français"
-                        : "English explanation"}
-                    </p>
-                    <p className="mt-2 leading-7">
-                      {user?.locale === "fr"
-                        ? lesson.explanationFr
-                        : lesson.explanation}
-                    </p>
-                    <button className="mt-3 text-sm font-bold text-primary hover:underline">
-                      {user?.locale === "fr"
-                        ? "See the explanation in English"
-                        : "Voir l’explication en français"}
-                    </button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </section>
-          <section className="mt-10">
-            <h2 className="text-2xl font-bold">Vocabulary to notice</h2>
-            <div className="mt-5 grid gap-3 sm:grid-cols-3">
-              {lesson.vocabulary?.map((item) => (
-                <div
-                  key={item.french}
-                  className="rounded-xl border bg-card p-4"
-                >
-                  <strong>{item.french}</strong>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {item.english}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </section>
-          <section className="mt-10 rounded-2xl border bg-card p-5 sm:p-7">
-            <p className="eyebrow">Checkpoint</p>
-            <h2 className="mt-2 text-xl font-bold">
-              Choose the expression that signals contrast.
-            </h2>
-            <div className="mt-5 grid gap-3 sm:grid-cols-3">
-              {["donc", "pourtant", "ensuite"].map((item) => (
-                <button
-                  key={item}
-                  className="rounded-xl border p-4 text-left font-semibold hover:border-primary hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary"
-                >
-                  {item}
-                </button>
-              ))}
-            </div>
-            <Button
-              className="mt-6"
-              onClick={markComplete}
-              disabled={completed || saving}
-            >
-              {completed
-                ? "Lesson completed"
-                : saving
-                  ? "Saving…"
-                  : "Complete lesson"}
-            </Button>
-          </section>
-          <nav className="mt-9 flex justify-between gap-3">
-            {previous ? (
-              <Button asChild variant="ghost">
-                <Link href={`/learn/${previous.moduleId}/${previous.id}`}>
-                  <ArrowLeft className="size-4" />
-                  Previous
-                </Link>
-              </Button>
-            ) : (
-              <span />
-            )}
-            {next && (
-              <Button asChild>
-                <Link href={`/learn/${next.moduleId}/${next.id}`}>
-                  Next lesson <ArrowRight className="size-4" />
-                </Link>
-              </Button>
-            )}
-          </nav>
-        </article>
-      </div>
-    </div>
+        ))}
+      </section>
+      <section>
+        <h2 className="text-xl font-bold">Try it</h2>
+        <p className="mt-3">{content.guidedApplication}</p>
+      </section>
+      <section>
+        <h2 className="text-xl font-bold">Common errors</h2>
+        {content.commonErrors.map((error) => (
+          <p key={error} className="mt-3">
+            {error}
+          </p>
+        ))}
+      </section>
+      <section className="rounded-xl border p-6">
+        <h2 className="text-xl font-bold">Checkpoint</h2>
+        <p className="mt-3">{content.checkpoint.prompt}</p>
+        <fieldset className="my-5 space-y-3">
+          <legend className="sr-only">Choose an answer</legend>
+          {content.checkpoint.options.map((option, index) => (
+            <label key={option} className="block">
+              <input
+                type="radio"
+                name={lesson.id}
+                checked={answer === index}
+                onChange={() => {
+                  setAnswer(index);
+                  setChecked(false);
+                }}
+              />{" "}
+              {option}
+            </label>
+          ))}
+        </fieldset>
+        <Button disabled={answer === null} onClick={() => setChecked(true)}>
+          Check understanding
+        </Button>
+        {checked && (
+          <p role="status" className="mt-4">
+            {answer === content.checkpoint.answer
+              ? "Correct. "
+              : "Review this point. "}
+            {content.checkpoint.explanation}
+          </p>
+        )}
+        <Button
+          className="mt-6 ml-3"
+          disabled={!checked || completed || saving}
+          onClick={save}
+        >
+          {completed
+            ? "Lesson completed"
+            : saving
+              ? "Saving…"
+              : "Complete lesson"}
+        </Button>
+      </section>
+      {next && (
+        <Button asChild>
+          <Link href={`/learn/${next.moduleId}/${next.id}`}>Next lesson</Link>
+        </Button>
+      )}
+    </article>
   );
 }

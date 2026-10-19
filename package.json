@@ -14,7 +14,10 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit",
+    "validate:content": "node scripts/content/validate.cjs && node scripts/content/generate-sql.cjs --check",
+    "content:sql": "node scripts/content/generate-sql.cjs"
   },
   "dependencies": {
     "@fontsource-variable/manrope": "latest",

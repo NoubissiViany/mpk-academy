@@ -1,5 +1,4 @@
 "use client";
-import { Headphones, Volume2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Question } from "@/types/domain";
 
@@ -26,25 +25,27 @@ export function QuestionCard({
             {question.metadata.passage}
           </blockquote>
         )}
-        {question.metadata?.audioLabel && (
-          <button
-            type="button"
-            className="mb-6 flex w-full items-center gap-4 rounded-xl border bg-muted/50 p-4 text-left focus-visible:ring-2 focus-visible:ring-primary"
-          >
-            <span className="grid size-10 place-items-center rounded-full bg-primary text-primary-foreground">
-              <Volume2 className="size-5" />
-            </span>
-            <span>
-              <strong className="block text-sm">
-                {question.metadata.audioLabel}
-              </strong>
-              <span className="text-xs text-muted-foreground">
-                Mock audio placeholder · 0:24
-              </span>
-            </span>
-            <Headphones className="ml-auto size-5 text-muted-foreground" />
-          </button>
-        )}
+        {question.metadata?.audio &&
+          !exam &&
+          (question.metadata.audio.status === "ready" ? (
+            <audio
+              controls
+              src={question.metadata.audio.path}
+              aria-label={question.metadata.audioLabel}
+            />
+          ) : (
+            <section className="mb-6 rounded-xl border bg-muted/50 p-4">
+              <p className="font-bold">
+                Audio pending · Transcript-based exercise
+              </p>
+              <p className="text-sm text-muted-foreground">
+                This exercise does not measure listening performance.
+              </p>
+              <p className="mt-3 whitespace-pre-line" lang="fr">
+                {question.metadata.audio.transcript}
+              </p>
+            </section>
+          ))}
         <h2 className="text-xl font-bold leading-8 sm:text-2xl">
           {question.prompt}
         </h2>
@@ -73,8 +74,15 @@ export function QuestionCard({
                 className={cn(
                   "flex min-h-14 cursor-pointer items-center gap-4 rounded-xl border p-4 transition-colors focus-within:ring-2 focus-within:ring-primary",
                   selected && !reveal && "border-primary bg-primary/5",
-                  reveal && isCorrect && "border-primary bg-primary/10",
-                  reveal && selected && !correct && "border-danger bg-danger/5",
+                  reveal &&
+                    !exam &&
+                    isCorrect &&
+                    "border-primary bg-primary/10",
+                  reveal &&
+                    !exam &&
+                    selected &&
+                    !correct &&
+                    "border-danger bg-danger/5",
                 )}
               >
                 <input
@@ -100,7 +108,7 @@ export function QuestionCard({
                 <span className="text-sm font-medium sm:text-base">
                   {option.label}
                 </span>
-                {reveal && isCorrect && (
+                {reveal && !exam && isCorrect && (
                   <span className="ml-auto text-xs font-bold text-primary">
                     Correct
                   </span>

@@ -90,6 +90,8 @@ export type Database = {
       assessment_results: {
         Row: {
           algorithm_version: string;
+          assessed_item_count: number | null;
+          language_foundation: number | null;
           assessment_id: string;
           competency_scores: Json;
           created_at: string;
@@ -514,6 +516,7 @@ export type Database = {
       };
       practice_sessions: {
         Row: {
+          evidence_mode: string;
           completed_at: string | null;
           correct_count: number;
           created_at: string;
@@ -522,7 +525,7 @@ export type Database = {
           focus_competency: string | null;
           id: string;
           question_count: number;
-          score: number;
+          score: number | null;
           skill: string;
           started_at: string;
           status: string;
@@ -537,7 +540,7 @@ export type Database = {
           focus_competency?: string | null;
           id?: string;
           question_count?: number;
-          score?: number;
+          score?: number | null;
           skill: string;
           started_at?: string;
           status?: string;
@@ -552,7 +555,7 @@ export type Database = {
           focus_competency?: string | null;
           id?: string;
           question_count?: number;
-          score?: number;
+          score?: number | null;
           skill?: string;
           started_at?: string;
           status?: string;
@@ -768,6 +771,14 @@ export type Database = {
       mpk_revoke_stripe_purchase: {
         Args: { p_payment_intent_id: string };
         Returns: undefined;
+      };
+      mpk_mock_event: {
+        Args: {
+          p_session_id: string | null;
+          p_manifest_id: string;
+          p_event: Json;
+        };
+        Returns: Json;
       };
       mpk_submit_assessment: {
         Args: {

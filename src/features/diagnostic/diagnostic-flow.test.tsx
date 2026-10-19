@@ -109,8 +109,8 @@ describe("DiagnosticFlow", () => {
     expect(start).toBeEnabled();
     await user.click(start);
 
-    expect(screen.getByText("Question 1 of 15")).toBeVisible();
-    expect(screen.getByText("Competency · Grammar")).toBeVisible();
+    expect(screen.getByText("Question 1 of 20")).toBeVisible();
+    expect(screen.getByText("Competency · Reading")).toBeVisible();
     expect(
       screen.getByText(
         "Don't worry if you're unsure. Choose the answer that seems best.",
@@ -144,10 +144,12 @@ describe("DiagnosticFlow", () => {
     await user.click(
       screen.getByRole("button", { name: /Start my assessment/ }),
     );
-    fireEvent.click(screen.getByText("depuis"));
+    fireEvent.click(screen.getByText(diagnosticQuestions[0].options![0].label));
     await user.click(screen.getByRole("button", { name: /Next/ }));
     await user.click(screen.getByRole("button", { name: /Previous/ }));
-    expect(screen.getByLabelText("depuis")).toBeChecked();
+    expect(
+      screen.getByLabelText(diagnosticQuestions[0].options![0].label),
+    ).toBeChecked();
     await user.click(screen.getByRole("button", { name: /Previous/ }));
     expect(
       screen.getByRole("heading", { name: "Check your French level" }),
@@ -184,7 +186,10 @@ describe("DiagnosticFlow", () => {
       ),
     );
     const guest = await guestAssessmentRepository.getActive();
-    expect(guest?.answers).toHaveProperty("d15", "c");
+    expect(guest?.answers).toHaveProperty(
+      diagnosticQuestions[19].id,
+      diagnosticQuestions[19].correctAnswer,
+    );
     const anonymous = JSON.parse(
       localStorage.getItem(productConfig.anonymousStateStorageKey) ?? "null",
     );

@@ -49,7 +49,7 @@ export const productConfig = {
   accountsStorageKey: "mpk-academy:accounts:v1",
   sessionStorageKey: "mpk-academy:session:v1",
   userStateStoragePrefix: "mpk-academy:user-state:v1:",
-  guestAssessmentStorageKey: "mpk-academy:guest-assessment:v1",
+  guestAssessmentStorageKey: "mpk-academy:guest-assessment:v2",
   guestAssessmentTtlMs: 7 * 24 * 60 * 60 * 1000,
   localeCookie: "mpk_locale",
   readinessDisclaimer:

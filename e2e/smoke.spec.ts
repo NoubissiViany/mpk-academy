@@ -8,15 +8,15 @@ async function completeGuestAssessment(page: import("@playwright/test").Page) {
   await page.getByLabel("I know some French").check();
   await start.click();
 
-  for (let index = 1; index <= 15; index += 1) {
-    await expect(page.getByText(`Question ${index} of 15`)).toBeVisible();
-    const radio = page.locator(`input[type="radio"][name="d${index}"]`).first();
+  for (let index = 1; index <= 20; index += 1) {
+    await expect(page.getByText(`Question ${index} of 20`)).toBeVisible();
+    const radio = page.locator('input[type="radio"]').first();
     if (await radio.count())
       await radio.evaluate((element: HTMLInputElement) => element.click());
     else await page.getByPlaceholder("Votre réponse").fill("lirais");
     await page
       .getByRole("button", {
-        name: index === 15 ? "Finish assessment" : "Next",
+        name: index === 20 ? "Finish assessment" : "Next",
         exact: true,
       })
       .click();
@@ -34,6 +34,11 @@ test("guest assessment is retained for the registration handoff", async ({
     page.getByRole("heading", { name: "Your French Assessment" }),
   ).toBeVisible();
 
+  await expect(page.getByText(/Listening — Not assessed yet/)).toBeVisible();
+  await expect(page.getByText("Writing — Not assessed yet")).toBeVisible();
+  await expect(
+    page.getByText(/Provisional MPK estimate based on 16/),
+  ).toBeVisible();
   const recommendation = page.getByLabel("Recommended plan: Complete");
   await expect(recommendation).toBeVisible();
   await recommendation
@@ -49,14 +54,14 @@ test("guest assessment is retained for the registration handoff", async ({
 
   const storedGuest = await page.evaluate(() =>
     JSON.parse(
-      localStorage.getItem("mpk-academy:guest-assessment:v1") ?? "null",
+      localStorage.getItem("mpk-academy:guest-assessment:v2") ?? "null",
     ),
   );
   expect(storedGuest).toMatchObject({
     status: "active",
     intake: { goal: "TEF Canada", target: "NCLC 7" },
   });
-  expect(Object.keys(storedGuest.answers)).toHaveLength(15);
+  expect(Object.keys(storedGuest.answers)).toHaveLength(20);
   expect(Date.parse(storedGuest.expiresAt)).toBeGreaterThan(Date.now());
 });
 
@@ -76,7 +81,7 @@ test("paid plans remain visible while checkout requires an account", async ({
   await expect(
     page.getByRole("heading", { name: "Complete plan" }),
   ).toBeVisible();
-  await expect(page.getByText("$249", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("$256.75", { exact: true }).first()).toBeVisible();
   await expect(
     page.getByText(/Secure payment is handled by Stripe/),
   ).toBeVisible();

@@ -1,3 +1,4 @@
+import { mockItems } from "@/content/mock-catalog";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
@@ -11,6 +12,7 @@ import {
 } from "@/lib/domain/exam-progress";
 import {
   getAssessmentResult,
+  getCompletedAssessmentAnswers,
   getLearnerSnapshot,
 } from "@/lib/supabase/learner";
 import type { ExamId } from "@/types/domain";
@@ -27,13 +29,14 @@ export default async function ExamResultsPage({
     getLearnerSnapshot(),
   ]);
   if (!result || result.kind !== "mock_exam") notFound();
+  const answers = await getCompletedAssessmentAnswers(assessment);
   const exam = result.exam as ExamId;
   const profile = snapshot.examProfiles[exam] ?? createEmptyExamProfile(exam);
   const weakest = getWeakestExamSkill(profile) ?? "reading";
   return (
     <>
       <PageHeader
-        eyebrow={`${exam} shortened mock`}
+        eyebrow={`${exam} MPK practice simulation`}
         title="Your independent performance"
         description="Instructional support is available again. Use this saved practice evidence to choose what to strengthen next."
       />
@@ -43,10 +46,10 @@ export default async function ExamResultsPage({
             <p className="text-sm text-white/70">MPK comprehension result</p>
             <p className="mt-3 text-6xl font-black">{result.score}%</p>
             <p className="mt-4 text-xs leading-5 text-white/60">
-              Shortened independent simulation—not an official {exam} score,
-              immigration result, or prediction. This percentage uses Reading
-              and Listening only. Writing and Speaking are rehearsal tasks and
-              are not corrected or scored.
+              Independent practice simulation. This is not an official {exam}{" "}
+              score, immigration result, or prediction. This percentage uses
+              Reading and Listening only. Writing and Speaking are rehearsal
+              tasks and are not corrected or scored.
             </p>
           </CardContent>
         </Card>
@@ -62,9 +65,17 @@ export default async function ExamResultsPage({
                 >
                   <span>{examSkillContent[skill].label}</span>
                   <strong>
-                    {productive || profile.skills[skill].current === null
-                      ? "Not assessed yet"
-                      : `${profile.skills[skill].current}%`}
+                    {(() => {
+                      const entries = answers.filter(
+                        (a) =>
+                          mockItems.find((i) => i.id === a.question_id)
+                            ?.skill === skill,
+                      );
+                      if (!entries.length) return "Historical result";
+                      if (productive)
+                        return `${entries.filter((a) => a.answer.trim()).length}/${entries.length} completed · not scored`;
+                      return `${Math.round((100 * entries.filter((a) => a.is_correct).length) / entries.length)}% practice accuracy`;
+                    })()}
                   </strong>
                 </div>
               );
@@ -72,6 +83,58 @@ export default async function ExamResultsPage({
           </CardContent>
         </Card>
       </div>
+      <section className="mt-8 space-y-4">
+        <h2 className="text-2xl font-bold">Corrections and self-review</h2>
+        {answers.map((answer) => {
+          const item = mockItems.find((i) => i.id === answer.question_id);
+          if (!item) return null;
+          return (
+            <details key={item.id} className="rounded-xl border p-5">
+              <summary>
+                {item.kind === "mcq" ? item.prompt : item.title}
+              </summary>
+              <p className="mt-3">
+                Your response:{" "}
+                {item.kind === "mcq"
+                  ? (item.options.find((o) => o.id === answer.answer)?.label ??
+                    "Unanswered")
+                  : answer.answer || "Not completed"}
+              </p>
+              {item.kind === "mcq" ? (
+                <>
+                  <p className="mt-3">
+                    Correct answer:{" "}
+                    {
+                      item.options.find((o) => o.id === item.correction.answer)
+                        ?.label
+                    }
+                  </p>
+                  <p className="mt-3">{item.correction.explanation}</p>
+                  {item.audio && (
+                    <p className="mt-3 whitespace-pre-line" lang="fr">
+                      {item.audio.transcript}
+                    </p>
+                  )}
+                </>
+              ) : (
+                <>
+                  <p className="mt-3">{item.correction.guidance}</p>
+                  <ul className="my-3 list-inside list-disc">
+                    {item.correction.rubric.map((r) => (
+                      <li key={r}>{r}</li>
+                    ))}
+                  </ul>
+                  {item.correction.modelResponse && (
+                    <p lang="fr" className="whitespace-pre-line">
+                      {item.correction.modelResponse}
+                    </p>
+                  )}
+                </>
+              )}
+            </details>
+          );
+        })}
+      </section>
       <Card className="mt-5">
         <CardContent className="flex flex-col gap-5 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <div>

@@ -1,236 +1,314 @@
 "use client";
-
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Clock3, Send } from "lucide-react";
-import { toast } from "sonner";
-import { submitMockExamAction } from "@/app/actions/learner";
 import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { examConfigurations, productiveTasks } from "@/config/exams";
-import { getExamQuestionPool } from "@/data/exam-question-pools";
-import { QuestionCard } from "@/features/assessment/question-card";
-import type { ExamId, ProductivePracticeTask, Question } from "@/types/domain";
-
-type MockItem =
-  | { key: string; section: "reading" | "listening"; question: Question }
-  | {
-      key: string;
-      section: "writing" | "speaking";
-      task: ProductivePracticeTask;
-    };
-
+import { mockSummaries } from "@/content/mock-summaries";
+import { mockSessionEvent } from "@/app/actions/mock-session";
+import type { MockSessionPayload } from "./mock-types";
+import type { Question, ProductivePracticeTask } from "@/types/domain";
+// Historical unit-test/API compatibility. Current scoring is authoritative in Supabase.
 export function scoreMockComprehension(
-  items: MockItem[],
+  items: (
+    | { key: string; question: Question }
+    | { key: string; task: ProductivePracticeTask }
+  )[],
   answers: Record<string, string>,
 ) {
-  const comprehension = items.filter(
-    (entry): entry is Extract<MockItem, { question: Question }> =>
-      "question" in entry,
+  const q = items.filter(
+    (i): i is { key: string; question: Question } => "question" in i,
   );
-  const correct = comprehension.filter(
-    (entry) =>
-      answers[entry.key]?.trim().toLowerCase() ===
-      entry.question.correctAnswer.toLowerCase(),
-  ).length;
-  return Math.round((correct / Math.max(comprehension.length, 1)) * 100);
+  return Math.round(
+    (100 *
+      q.filter((i) => answers[i.key] === i.question.correctAnswer).length) /
+      Math.max(q.length, 1),
+  );
 }
-
 export function ScaledMockSession() {
-  const router = useRouter();
-  const { state, replaceState } = useApp();
-  const exam: ExamId =
-    state.user?.goal.exam === "TCF Canada" ? "TCF Canada" : "TEF Canada";
-  const config = examConfigurations[exam];
-  const items = useMemo(() => buildItems(exam), [exam]);
-  const [index, setIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [seconds, setSeconds] = useState(
-    config.scaledMock.durationMinutes * 60,
-  );
-  const [saving, setSaving] = useState(false);
-  const item = items[index];
-
-  useEffect(() => {
-    const timer = window.setInterval(
-      () => setSeconds((value) => Math.max(0, value - 1)),
-      1000,
+  const { state } = useApp();
+  const exam = state.user?.goal.exam === "TCF Canada" ? "TCF" : "TEF";
+  const summary = mockSummaries.find((m) => m.exam === exam)!;
+  if (!summary.ready)
+    return (
+      <div className="mx-auto max-w-3xl space-y-4">
+        <h1 className="text-3xl font-bold">Simulation MPK · {exam} Canada</h1>
+        <p>
+          Audio pending — full mock unavailable. No transcript substitution is
+          permitted in a mock.
+        </p>
+        <p>Cette simulation d’entraînement n’est pas un examen officiel.</p>
+      </div>
     );
-    return () => window.clearInterval(timer);
-  }, []);
-
-  const submit = async () => {
-    setSaving(true);
-    const result = await submitMockExamAction({
-      exam,
-      answers: items.map((entry, sequence) => ({
-        questionId: "question" in entry ? entry.question.id : entry.task.id,
-        sequence,
-        answer: answers[entry.key] ?? "",
-      })),
-    });
-    setSaving(false);
-    if (!result.ok) return toast.error(result.message);
-    replaceState(result.snapshot);
-    router.push(`/exam/results?assessment=${result.data.id}`);
-    router.refresh();
-  };
-
-  const oneWayListening =
-    config.navigationRules.listeningOneWay && item.section === "listening";
-  const previousIsLocked =
-    config.navigationRules.listeningOneWay &&
-    index > 0 &&
-    items[index - 1].section === "listening";
-  const minutes = Math.floor(seconds / 60)
-    .toString()
-    .padStart(2, "0");
-  const secs = (seconds % 60).toString().padStart(2, "0");
+  return <TimedSession manifestId={summary.id} />;
+}
+function TimedSession({ manifestId }: { manifestId: string }) {
+  const { state } = useApp();
+  const router = useRouter();
+  const [session, setSession] = useState<MockSessionPayload | null>(null);
+  const [message, setMessage] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [answer, setAnswer] = useState("");
+  const [clock, setClock] = useState(0);
+  const [audioPath, setAudioPath] = useState<string | undefined>();
+  const sessionRef = useRef(session);
+  const offset = useRef(0);
+  const pending = useRef(false);
+  const draft = useRef("");
+  const key = `mpk-mock-v2:${state.user?.id}:${manifestId}`;
+  const send = useCallback(
+    async (
+      type:
+        "start" | "resume" | "answer" | "next" | "previous" | "play" | "tick",
+      value?: string,
+    ) => {
+      if (pending.current) return false;
+      pending.current = true;
+      setBusy(true);
+      try {
+        const current = sessionRef.current;
+        const id = current?.id ?? localStorage.getItem(key);
+        const result = await mockSessionEvent(id, manifestId, {
+          type: id && type === "start" ? "resume" : type,
+          itemId: current?.item?.id,
+          ...(value !== undefined ? { answer: value } : {}),
+        });
+        if (!result.ok) {
+          setMessage(result.message);
+          return false;
+        }
+        const next = result.data;
+        offset.current = next.serverNow - Date.now();
+        setClock(next.serverNow);
+        setSession(next);
+        sessionRef.current = next;
+        setMessage("");
+        localStorage.setItem(key, next.id);
+        if (
+          next.item?.id !== current?.item?.id ||
+          type === "resume" ||
+          type === "start"
+        ) {
+          const restored =
+            next.item?.kind === "writing"
+              ? (localStorage.getItem(`${key}:draft:${next.item.id}`) ??
+                next.state.answers[next.item.id] ??
+                "")
+              : (next.state.answers[next.item?.id ?? ""] ?? "");
+          draft.current = restored;
+          setAnswer(restored);
+        }
+        if (current?.item && next.item?.id !== current.item.id)
+          localStorage.removeItem(`${key}:draft:${current.item.id}`);
+        if (type === "play" && next.item?.audio?.path)
+          setAudioPath(next.item.audio.path);
+        else if (next.item?.id !== current?.item?.id) setAudioPath(undefined);
+        if (next.state.status === "completed") {
+          localStorage.removeItem(key);
+          router.push(`/exam/results?assessment=${next.assessmentId}`);
+        }
+        return true;
+      } catch {
+        setMessage(
+          "Connection interrupted. Resume to recover the saved session.",
+        );
+        return false;
+      } finally {
+        pending.current = false;
+        setBusy(false);
+      }
+    },
+    [key, manifestId, router],
+  );
+  useEffect(() => {
+    void send("start");
+  }, [send]);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = Date.now() + offset.current;
+      setClock(now);
+      const current = sessionRef.current;
+      if (!current || current.state.status !== "in_progress") return;
+      const deadline = Math.min(
+        current.state.deadline,
+        current.state.taskDeadline ?? Infinity,
+      );
+      if (
+        current.item?.kind === "writing" &&
+        now < deadline &&
+        draft.current !== (current.state.answers[current.item.id] ?? "")
+      ) {
+        void send("answer", draft.current);
+      } else if (
+        now >= deadline ||
+        (current.item?.audio &&
+          !current.item.options &&
+          current.state.audioUntil !== null &&
+          now >= current.state.audioUntil)
+      )
+        void send("tick");
+    }, 500);
+    return () => clearInterval(timer);
+  }, [send]);
+  if (!session?.item)
+    return (
+      <div>
+        <p>{message || "Chargement de la simulation…"}</p>
+        <Button onClick={() => send("resume")}>Reprendre</Button>
+      </div>
+    );
+  const item = session.item;
+  const section = session.manifest.sections[session.state.sectionIndex];
+  const remaining = Math.max(
+    0,
+    Math.ceil(
+      (Math.min(
+        session.state.deadline,
+        session.state.taskDeadline ?? Infinity,
+      ) -
+        clock) /
+        1000,
+    ),
+  );
+  const preparing =
+    clock < session.state.taskStartedAt + (item.preparationSeconds ?? 0) * 1000;
   return (
-    <div className="min-h-screen bg-[#f5f3ed] text-[#17251f] dark:bg-[#0d1411] dark:text-white">
-      <header className="sticky top-0 z-20 border-b bg-inherit">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-[#8d3438] dark:text-[#ef989b]">
-              {exam} · simulation MPK raccourcie
-            </p>
-            <p className="text-sm font-semibold capitalize">{item.section}</p>
-          </div>
-          <div
-            className="flex items-center gap-2 rounded-lg border px-3 py-2 font-mono font-bold"
-            aria-live="polite"
-          >
-            <Clock3 className="size-4" />
-            {minutes}:{secs}
-          </div>
-        </div>
-      </header>
-      <main className="mx-auto max-w-4xl px-4 py-7">
-        <div className="flex justify-between text-sm">
-          <span>
-            Étape {index + 1} sur {items.length}
-          </span>
-          <span>{Object.values(answers).filter(Boolean).length} réponses</span>
-        </div>
-        <Progress
-          value={((index + 1) / items.length) * 100}
-          label="Progression de l’examen"
-          className="mt-3"
-        />
-        {oneWayListening && (
-          <p className="mt-4 rounded-xl bg-exam/10 p-3 text-sm font-semibold">
-            Écoute TEF à sens unique : après Suivant, cette question ne sera
-            plus accessible.
-          </p>
-        )}
-        <div className="mt-7 rounded-2xl border bg-card p-5 sm:p-8">
-          {"question" in item ? (
-            <QuestionCard
-              exam
-              question={item.question}
-              value={answers[item.key]}
-              onChange={(value) =>
-                setAnswers({ ...answers, [item.key]: value })
-              }
-            />
-          ) : (
-            <ProductiveMockItem
-              item={item}
-              value={answers[item.key] ?? ""}
-              onChange={(value) =>
-                setAnswers({ ...answers, [item.key]: value })
-              }
-            />
-          )}
-        </div>
-        <div className="mt-6 flex justify-between">
-          <Button
-            variant="secondary"
-            disabled={index === 0 || oneWayListening || previousIsLocked}
-            onClick={() => setIndex(index - 1)}
-          >
-            Précédent
+    <div className="mx-auto max-w-3xl space-y-6" lang="fr">
+      <h1 className="text-2xl font-bold">
+        {session.manifest.exam} Canada · Simulation MPK
+      </h1>
+      <p>{session.manifest.disclaimer}</p>
+      <p>
+        {section.skill} · {session.state.itemIndex + 1}/{section.itemIds.length}{" "}
+        ·{" "}
+        <span role="timer">
+          {Math.floor(remaining / 60)}:{String(remaining % 60).padStart(2, "0")}
+        </span>{" "}
+        {preparing ? "Préparation" : ""}
+      </p>
+      {message && (
+        <div role="alert">
+          <p>{message}</p>
+          <Button disabled={busy} onClick={() => send("resume")}>
+            Reprendre
           </Button>
-          {index < items.length - 1 ? (
-            <Button onClick={() => setIndex(index + 1)}>Suivant</Button>
-          ) : (
-            <Button disabled={saving} onClick={submit}>
-              <Send className="size-4" />
-              {saving ? "Enregistrement…" : "Soumettre"}
+        </div>
+      )}
+      {item.passage && (
+        <blockquote className="rounded border p-5">{item.passage}</blockquote>
+      )}
+      {item.audio && (
+        <div>
+          {!session.state.consumedAudio.includes(item.id) && (
+            <Button disabled={busy} onClick={() => send("play")}>
+              Écouter une fois
             </Button>
           )}
+          {audioPath && (
+            <audio
+              autoPlay
+              src={audioPath}
+              onError={() =>
+                setMessage(
+                  "Lecture interrompue. Le son ne peut pas être rejoué ; poursuivez après le temps prévu.",
+                )
+              }
+              aria-label="Document sonore"
+            />
+          )}
+          <p>
+            Aucune répétition. Une actualisation ne réinitialise pas l’écoute.
+          </p>
         </div>
-        <p className="mt-5 text-center text-xs text-muted-foreground">
-          Simulation indépendante MPK raccourcie — aucun résultat officiel
-          TEF/TCF. L’expression écrite et orale n’est ni corrigée ni notée.
-        </p>
-      </main>
+      )}
+      <h2 className="text-xl whitespace-pre-line">{item.prompt}</h2>
+      {item.options && (
+        <fieldset disabled={busy}>
+          <legend className="sr-only">Réponse</legend>
+          {item.options.map((o) => (
+            <label key={o.id} className="my-3 block rounded border p-3">
+              <input
+                type="radio"
+                name={item.id}
+                checked={answer === o.id}
+                onChange={() => {
+                  setAnswer(o.id);
+                  void send("answer", o.id);
+                }}
+              />{" "}
+              {o.label}
+            </label>
+          ))}
+        </fieldset>
+      )}
+      {item.kind === "writing" && (
+        <>
+          <p>
+            {item.wordCount?.min}
+            {item.wordCount?.max ? `–${item.wordCount.max}` : " minimum"} mots
+          </p>
+          <textarea
+            aria-label="Votre réponse"
+            className="min-h-64 w-full rounded border bg-background p-4"
+            value={answer}
+            onChange={(e) => {
+              const value = e.target.value;
+              draft.current = value;
+              setAnswer(value);
+              localStorage.setItem(`${key}:draft:${item.id}`, value);
+            }}
+          />
+          <Button disabled={busy} onClick={() => send("answer", answer)}>
+            Enregistrer la réponse
+          </Button>
+        </>
+      )}
+      {item.kind === "speaking" && (
+        <>
+          <p>
+            Entraînement oral autonome, sans interlocuteur en direct ni
+            enregistrement.
+          </p>
+          <Button
+            disabled={busy || preparing}
+            onClick={() => send("answer", "self_practice_completed")}
+          >
+            Marquer la réponse orale terminée
+          </Button>
+        </>
+      )}
+      <div className="flex justify-between">
+        <Button
+          variant="secondary"
+          disabled={
+            busy ||
+            section.navigation !== "free" ||
+            session.state.itemIndex === 0
+          }
+          onClick={async () => {
+            if (item.kind === "writing" && !(await send("answer", answer)))
+              return;
+            await send("previous");
+          }}
+        >
+          Précédent
+        </Button>
+        <Button
+          disabled={busy || preparing}
+          onClick={async () => {
+            if (item.kind === "writing" && !(await send("answer", answer)))
+              return;
+            await send("next");
+          }}
+        >
+          {session.state.itemIndex === section.itemIds.length - 1
+            ? "Terminer cette section"
+            : "Suivant"}
+        </Button>
+      </div>
+      <p className="text-sm">
+        Les réponses écrites sont enregistrées automatiquement. Terminer une
+        section la verrouille définitivement.
+      </p>
     </div>
   );
-}
-
-function ProductiveMockItem({
-  item,
-  value,
-  onChange,
-}: {
-  item: Extract<MockItem, { task: ProductivePracticeTask }>;
-  value: string;
-  onChange: (value: string) => void;
-}) {
-  return (
-    <>
-      <p className="text-xs font-bold uppercase tracking-[0.14em] text-exam">
-        {item.task.title}
-      </p>
-      <h1 className="mt-4 text-2xl font-bold leading-9">{item.task.prompt}</h1>
-      <p className="mt-4 text-sm text-muted-foreground">{item.task.guidance}</p>
-      {item.section === "writing" ? (
-        <textarea
-          className="mt-6 min-h-56 w-full rounded-xl border bg-background p-4"
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          placeholder="Rédigez en français…"
-        />
-      ) : (
-        <label className="mt-6 flex gap-3 rounded-xl border p-4">
-          <input
-            type="checkbox"
-            checked={value === "completed"}
-            onChange={(event) =>
-              onChange(event.target.checked ? "completed" : "")
-            }
-          />
-          <span>
-            <strong>J’ai terminé ma réponse orale chronométrée</strong>
-            <span className="mt-1 block text-sm text-muted-foreground">
-              Aucun audio n’est enregistré. Cette réponse sert uniquement à la
-              répétition et ne sera ni corrigée ni notée.
-            </span>
-          </span>
-        </label>
-      )}
-    </>
-  );
-}
-
-function buildItems(exam: ExamId): MockItem[] {
-  const comprehension = (skill: "reading" | "listening") => {
-    const pool = getExamQuestionPool(exam, skill);
-    return Array.from({ length: 5 }, (_, index): MockItem => ({
-      key: `${skill}-${index}`,
-      section: skill,
-      question: pool[index % pool.length],
-    }));
-  };
-  return [
-    ...comprehension("reading"),
-    ...comprehension("listening"),
-    ...productiveTasks[exam].map((task): MockItem => ({
-      key: task.id,
-      section: task.skill,
-      task,
-    })),
-  ];
 }

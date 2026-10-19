@@ -17,7 +17,7 @@ type AssessmentSubmission = {
 };
 type PracticeSubmission = {
   id: string;
-  score: number;
+  score: number | null;
   questionCount: number;
   correctCount: number;
 };
@@ -88,27 +88,17 @@ const diagnosticResultSchema = z.object({
   id: z.string().uuid(),
   score: z.number().int().min(0).max(100),
   level: z.enum(["A2", "B1", "B2", "C1"]),
-  competencyScores: z
-    .object({
-      "reading-main-idea": z.number(),
-      "reading-detail": z.number(),
-      "reading-inference": z.number(),
-      "listening-main-idea": z.number(),
-      "listening-detail": z.number(),
-      "grammar-tense": z.number(),
-      "grammar-prepositions": z.number(),
-      "vocabulary-context": z.number(),
-      connectors: z.number(),
-      "time-expressions": z.number(),
-    })
-    .partial(),
+  algorithmVersion: z.string().optional(),
+  assessedItemCount: z.number().optional(),
+  languageFoundation: z.number().optional(),
+  competencyScores: z.record(z.string(), z.number()),
   skillScores: z.object({
-    grammar: z.number(),
-    vocabulary: z.number(),
-    reading: z.number(),
-    listening: z.number(),
-    "sentence-structure": z.number(),
-    "exam-strategy": z.number(),
+    grammar: z.number().nullable(),
+    vocabulary: z.number().nullable(),
+    reading: z.number().nullable(),
+    listening: z.number().nullable(),
+    "sentence-structure": z.number().nullable(),
+    "exam-strategy": z.number().nullable(),
   }),
   strength: diagnosticSkillSchema,
   priority: diagnosticSkillSchema,
@@ -322,6 +312,7 @@ export async function submitDiagnosticAction(input: {
 }
 
 export async function submitPracticeAction(input: {
+  submissionId?: string;
   exam: unknown;
   skill: unknown;
   focus?: string | null;
@@ -333,6 +324,7 @@ export async function submitPracticeAction(input: {
       exam: examSchema,
       skill: z.enum(["reading", "listening", "writing", "speaking"]),
       focus: z.string().nullable().optional(),
+      submissionId: z.string().uuid().optional(),
       durationSeconds: z
         .number()
         .int()
@@ -343,6 +335,7 @@ export async function submitPracticeAction(input: {
     .safeParse(input);
   if (!parsed.success)
     return invalidSubmission("The practice submission is invalid.");
+  const submissionId = parsed.data.submissionId ?? crypto.randomUUID();
   try {
     const { supabase } = await requireUserId();
     const { data, error } = await supabase.rpc("mpk_submit_practice", {
@@ -351,6 +344,7 @@ export async function submitPracticeAction(input: {
       p_focus_competency: parsed.data.focus ?? "",
       p_duration_seconds: parsed.data.durationSeconds,
       p_answers: parsed.data.answers.map((answer) => ({
+        submission_id: submissionId,
         question_id: answer.questionId,
         sequence: answer.sequence,
         answer: answer.answer,

@@ -63,6 +63,11 @@ select is(
   'signup trigger creates four initial skill rows'
 );
 
+select set_config('mpk.test_diagnostic_answers',(
+ select jsonb_agg(jsonb_build_object('question_id',id,'sequence',seq-1,'answer',correct_answer))::text
+ from (select *,row_number() over(order by id) seq from private.question_bank where is_diagnostic) q
+),true);
+
 set local request.jwt.claim.sub = '10000000-0000-0000-0000-000000000001';
 set local role authenticated;
 
@@ -104,23 +109,7 @@ select lives_ok(
   $$select public.mpk_submit_assessment(
     '30000000-0000-0000-0000-000000000003', 'diagnostic', 'TEF Canada',
     '{"goal":"TEF Canada","target":"NCLC 7","frenchExperience":"I know some French"}'::jsonb,
-    '[
-      {"question_id":"d1","sequence":0,"answer":"a"},
-      {"question_id":"d2","sequence":1,"answer":"b"},
-      {"question_id":"d3","sequence":2,"answer":"b"},
-      {"question_id":"d4","sequence":3,"answer":"b"},
-      {"question_id":"d5","sequence":4,"answer":"lirais"},
-      {"question_id":"d6","sequence":5,"answer":"b"},
-      {"question_id":"d7","sequence":6,"answer":"b"},
-      {"question_id":"d8","sequence":7,"answer":"b"},
-      {"question_id":"d9","sequence":8,"answer":"b"},
-      {"question_id":"d10","sequence":9,"answer":"b"},
-      {"question_id":"d11","sequence":10,"answer":"a"},
-      {"question_id":"d12","sequence":11,"answer":"b"},
-      {"question_id":"d13","sequence":12,"answer":"b"},
-      {"question_id":"d14","sequence":13,"answer":"b"},
-      {"question_id":"d15","sequence":14,"answer":"c"}
-    ]'::jsonb
+    current_setting('mpk.test_diagnostic_answers')::jsonb
   )$$,
   'a diagnostic is saved atomically through the restricted function'
 );
@@ -160,7 +149,7 @@ select throws_ok(
   $$select public.mpk_submit_assessment('', 'diagnostic', 'TEF Canada', '{}'::jsonb,
     '[{"question_id":"d1","sequence":0,"answer":"a"}]'::jsonb)$$,
   '22023',
-  'Assessment question set is incomplete or invalid',
+  'Invalid content answers',
   'invalid submissions roll back instead of partially saving'
 );
 

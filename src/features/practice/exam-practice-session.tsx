@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { ProductiveSession } from "./productive-session";
 import { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
@@ -21,6 +21,8 @@ function activeExam(value: string | undefined): ExamId {
 }
 
 export function ExamPracticeSession() {
+  const [submissionId] = useState(() => crypto.randomUUID());
+  const [startedAt] = useState(() => Date.now());
   const router = useRouter();
   const search = useSearchParams();
   const { state, replaceState } = useApp();
@@ -36,27 +38,7 @@ export function ExamPracticeSession() {
       : "reading";
 
   if (skill === "writing" || skill === "speaking")
-    return (
-      <div className="mx-auto max-w-2xl rounded-2xl border bg-card p-7 text-center sm:p-10">
-        <p className="eyebrow">Coming soon</p>
-        <h1 className="mt-3 text-3xl font-bold">
-          Corrected {examSkillContent[skill].label.toLowerCase()} practice is
-          not available yet.
-        </h1>
-        <p className="mx-auto mt-4 max-w-lg text-sm leading-6 text-muted-foreground">
-          You can continue learning this skill in Lessons. MPK will not create a
-          score until a supported correction experience is available.
-        </p>
-        <div className="mt-7 flex flex-wrap justify-center gap-3">
-          <Button asChild>
-            <Link href="/learn">Explore lessons</Link>
-          </Button>
-          <Button asChild variant="secondary">
-            <Link href="/practice">Back to practice</Link>
-          </Button>
-        </div>
-      </div>
-    );
+    return <ProductiveSession exam={exam} skill={skill} />;
   return (
     <ComprehensionSession
       exam={exam}
@@ -68,7 +50,8 @@ export function ExamPracticeSession() {
           exam,
           skill,
           focus: requestedFocus,
-          durationSeconds: 15 * 60,
+          durationSeconds: Math.floor((Date.now() - startedAt) / 1000),
+          submissionId,
           answers,
         });
         if (!result.ok) {
@@ -99,22 +82,25 @@ function ComprehensionSession({
   ) => Promise<void>;
 }) {
   const pool = useMemo(() => {
-    const source = getExamQuestionPool(exam, skill);
+    const source = getExamQuestionPool(exam, skill, focus);
     const focused = focus
       ? source.filter((question) => question.competencies.includes(focus))
       : source;
     const available = focused.length ? focused : source;
-    return Array.from(
-      { length: questionCount },
-      (_, index) => available[index % available.length],
-    );
+    return available.slice(0, questionCount);
   }, [exam, focus, questionCount, skill]);
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [revealed, setRevealed] = useState(false);
   const [saving, setSaving] = useState(false);
   const question = pool[index];
-  const answerKey = `${index}-${question.id}`;
+  if (!question)
+    return (
+      <p>
+        No exercises match this competency. Choose another focus in Practice.
+      </p>
+    );
+  const answerKey = question.id;
   const value = answers[answerKey];
   const finish = async () => {
     setSaving(true);
@@ -122,7 +108,7 @@ function ComprehensionSession({
       pool.map((item, sequence) => ({
         questionId: item.id,
         sequence,
-        answer: answers[`${sequence}-${item.id}`] ?? "",
+        answer: answers[item.id] ?? "",
       })),
     );
     setSaving(false);

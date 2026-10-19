@@ -113,7 +113,7 @@ export function ProgressView() {
           />
           <p className="mt-3 text-xs text-muted-foreground">
             This readiness comes from your latest diagnostic and is not changed
-            by practice or shortened mock results.
+            by practice or MPK mock results.
           </p>
         </CardContent>
       </Card>

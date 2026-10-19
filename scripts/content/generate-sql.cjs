@@ -1,0 +1,84 @@
+/* eslint-disable @typescript-eslint/no-require-imports -- CommonJS bootstrap loads typed content without another runtime dependency. */
+require("./register.cjs");
+const fs = require("node:fs");
+const {
+  diagnosticItems,
+  practiceItems,
+  lessons,
+} = require("../../src/content/catalog.ts");
+const { mockItems, manifests } = require("../../src/content/mock-catalog.ts");
+const { validateContent } = require("../../src/content/validate.ts");
+const items = [...diagnosticItems, ...practiceItems, ...mockItems];
+validateContent(
+  items,
+  lessons,
+  manifests,
+  practiceItems.map((i) => i.id),
+);
+const q = (v) =>
+  v === null || v === undefined
+    ? "null"
+    : "'" + String(v).replaceAll("'", "''") + "'";
+const arr = (v) => `array[${v.map(q).join(",")}]::text[]`;
+let sql =
+  "-- Generated from src/content by npm run content:sql. Do not edit by hand.\n";
+sql +=
+  "update private.question_bank set is_diagnostic=false where content_version='legacy';\n";
+sql +=
+  "insert into private.question_bank (id,correct_answer,diagnostic_skill,competencies,explanation,mistake_category,is_diagnostic,exam,skill,kind,purpose,option_ids,audio_status,content_version,duration_seconds,preparation_seconds,audio_duration) values\n";
+sql +=
+  items
+    .map(
+      (i) =>
+        `(${[q(i.id), q(i.kind === "mcq" ? i.correction.answer : null), q(i.skill), arr(i.competencies), q(i.kind === "mcq" ? i.correction.explanation : i.correction.guidance), q(i.skill === "grammar" ? "Grammar rule" : i.skill === "vocabulary" ? "Vocabulary confusion" : "Missed detail"), diagnosticItems.includes(i) ? "true" : "false", q(i.exam), q(i.skill), q(i.kind), q(diagnosticItems.includes(i) ? "diagnostic" : practiceItems.includes(i) ? "practice" : "mock"), arr(i.kind === "mcq" ? i.options.map((o) => o.id) : []), q(i.audio?.status), q("mpk-content-v2"), i.durationSeconds ?? "null", i.preparationSeconds ?? 0, i.audio?.intendedDuration ?? "null"].join(",")})`,
+    )
+    .join(",\n") + ";\n";
+sql +=
+  "insert into private.lesson_catalog (id,module_id,is_free,exam,active) values\n" +
+  lessons
+    .map((l) => `(${q(l.id)},${q(l.moduleId)},${l.isFree},${q(l.exam)},true)`)
+    .join(",\n") +
+  ";\n";
+sql +=
+  "insert into private.content_manifests (id,exam,version,manifest) values\n" +
+  manifests
+    .map(
+      (m) =>
+        `(${q(m.id)},${q(m.exam)},${q(m.version)},${q(JSON.stringify(m))}::jsonb)`,
+    )
+    .join(",\n") +
+  ";\n";
+const path = "supabase/migrations/20261002000200_content_v2_catalog.sql";
+if (process.argv.includes("--check")) {
+  if (!fs.existsSync(path) || fs.readFileSync(path, "utf8") !== sql)
+    throw Error("Content SQL drift: run npm run content:sql");
+  console.log("Content SQL matches typed source.");
+} else fs.writeFileSync(path, sql);
+const summaries = manifests.map((m) => ({
+  id: m.id,
+  exam: m.exam,
+  ready: m.sections
+    .flatMap((s) => s.itemIds)
+    .every((id) => {
+      const i = mockItems.find((x) => x.id === id);
+      return (
+        i.kind !== "mcq" ||
+        i.skill !== "listening" ||
+        i.audio?.status === "ready"
+      );
+    }),
+  sections: m.sections.map((s) => ({
+    skill: s.skill,
+    count: s.itemIds.length,
+    durationSeconds: s.durationSeconds,
+  })),
+}));
+const summaryPath = "src/content/mock-summaries.ts";
+const summaryText =
+  "// Generated public metadata only. No mock questions or corrections.\nexport const mockSummaries = " +
+  JSON.stringify(summaries, null, 2) +
+  " as const;\n";
+if (process.argv.includes("--check")) {
+  if (fs.readFileSync(summaryPath, "utf8") !== summaryText)
+    throw Error("Mock summary drift");
+} else fs.writeFileSync(summaryPath, summaryText);

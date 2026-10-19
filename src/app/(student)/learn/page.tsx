@@ -14,7 +14,7 @@ import { ModeBadge, PageHeader } from "@/components/shared";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { courseModules, learningCategories } from "@/data/course";
+import { getCourseModules, learningCategories } from "@/data/course";
 import { hasPlanFeature } from "@/config/product";
 import { getRecommendedLessons } from "@/lib/domain/personalization";
 import type { CourseModule } from "@/types/domain";
@@ -22,6 +22,7 @@ import type { CourseModule } from "@/types/domain";
 export default function LearnPage() {
   const { state } = useApp();
   const activeExam = state.user?.goal.exam === "TCF Canada" ? "TCF" : "TEF";
+  const courseModules = getCourseModules(activeExam);
   const recommendations = getRecommendedLessons(state);
   const personalized = hasPlanFeature(
     state.planAccess,
@@ -51,7 +52,13 @@ export default function LearnPage() {
             />
           </div>
           <Badge>
-            {state.progress.completedLessonIds.length} lessons completed
+            {
+              courseModules
+                .flatMap((m) => m.lessons)
+                .filter((l) => state.progress.completedLessonIds.includes(l.id))
+                .length
+            }{" "}
+            current lessons completed
           </Badge>
         </CardContent>
       </Card>

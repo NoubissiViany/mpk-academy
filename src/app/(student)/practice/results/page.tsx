@@ -28,24 +28,40 @@ export default async function PracticeResultsPage({
       <PageHeader
         eyebrow={`${result.exam} practice complete`}
         title="Good work. Now use the evidence."
-        description="This saved result updated your active exam profile and relevant mistake patterns."
+        description={
+          result.score === null
+            ? "Your practice completion was saved without creating a skill score."
+            : "This saved result updated your active exam profile and relevant mistake patterns."
+        }
       />
       <div className="grid gap-5 sm:grid-cols-2">
         <Card className="bg-practice text-white">
           <CardContent className="pt-6">
             <p className="text-sm text-white/70">Session result</p>
-            <p className="mt-2 text-5xl font-black">{result.score}%</p>
+            <p className="mt-2 text-5xl font-black">
+              {result.score === null ? "Completed" : `${result.score}%`}
+            </p>
             <p className="mt-2 text-xs text-white/70">
-              {result.correct_count} of {result.question_count} correct
+              {result.score === null
+                ? result.evidence_mode === "transcript"
+                  ? "Transcript-based exercise · listening not assessed"
+                  : "Self-practice completed · not scored"
+                : `${result.correct_count} of ${result.question_count} correct`}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
             <p className="text-sm text-muted-foreground">What changed</p>
-            <p className="mt-2 text-xl font-bold">Your {result.skill} trend</p>
+            <p className="mt-2 text-xl font-bold">
+              {result.score === null
+                ? "Practice completion saved"
+                : `Your ${result.skill} trend`}
+            </p>
             <p className="mt-2 text-xs text-primary">
-              Recency-weighted practice evidence
+              {result.score === null
+                ? "No skill percentage was created"
+                : "Recency-weighted practice evidence"}
             </p>
           </CardContent>
         </Card>

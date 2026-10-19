@@ -1,6 +1,7 @@
+import { canonicalCompetency } from "@/content/shared/competencies";
 import { diagnosticSkillContent } from "@/config/diagnostic";
 import { examSkillContent } from "@/config/exams";
-import { allLessons, courseModules } from "@/data/course";
+import { allLessons, courseModules, getCourseModules } from "@/data/course";
 import { canAccessLesson } from "@/lib/domain/access";
 import {
   aggregateMistakePatterns,
@@ -72,9 +73,16 @@ function patternKey(mistake: Mistake) {
 }
 
 export function focusAreaLabel(mistake: Mistake) {
+  if (patternKey(mistake) === mistake.competencyId)
+    return competencyFocusLabel(mistake.competencyId);
+  if (patternKey(mistake).startsWith("Transcript exercise"))
+    return patternKey(mistake).replaceAll("_", " ");
   if (patternKey(mistake) === "Understanding specific details")
     return "Specific details";
-  if (patternKey(mistake) === mistake.competencyId.replaceAll("-", " "))
+  if (
+    patternKey(mistake) ===
+    mistake.competencyId.replaceAll("-", " ").replaceAll("_", " ")
+  )
     return competencyFocusLabel(mistake.competencyId);
   return (
     patternKey(mistake) || competencyLabels[mistake.competencyId] || "Review"
@@ -82,7 +90,10 @@ export function focusAreaLabel(mistake: Mistake) {
 }
 
 export function competencyFocusLabel(competencyId: CompetencyId) {
-  return competencyLabels[competencyId] ?? competencyId.replaceAll("-", " ");
+  return (
+    competencyLabels[competencyId] ??
+    competencyId.replaceAll("-", " ").replaceAll("_", " ")
+  );
 }
 
 function lessonFromReference(reference?: {
@@ -99,6 +110,17 @@ function lessonFromReference(reference?: {
 }
 
 export function getWeaknessLesson(mistake: Mistake): Lesson | null {
+  const match = allLessons.find(
+    (l) =>
+      (!mistake.examSkill || l.content?.skill === mistake.examSkill) &&
+      l.competencies.some(
+        (c) =>
+          canonicalCompetency(c) === canonicalCompetency(mistake.competencyId),
+      ) &&
+      (l.content?.exam === "shared" ||
+        l.content?.exam === (mistake.exam === "TCF Canada" ? "TCF" : "TEF")),
+  );
+  if (match) return match;
   const pattern = patternKey(mistake).toLowerCase();
   if (pattern.includes("number"))
     return lessonFromReference(lessonByCompetency["listening-detail"]);
@@ -128,7 +150,14 @@ export function getWeaknessLesson(mistake: Mistake): Lesson | null {
 }
 
 const competenciesBySkill: Partial<Record<ExamSkill, CompetencyId[]>> = {
-  reading: ["reading-main-idea", "reading-detail", "reading-inference"],
+  reading: [
+    "main_idea",
+    "specific_detail",
+    "inference",
+    "reading-main-idea",
+    "reading-detail",
+    "reading-inference",
+  ],
   listening: ["listening-main-idea", "listening-detail"],
 };
 
@@ -216,7 +245,9 @@ export function getRecommendedPractice(state: AppState) {
 }
 
 function firstIncompleteLesson(state: AppState, moduleId: string) {
-  const courseModule = courseModules.find((item) => item.id === moduleId);
+  const courseModule = getCourseModules(
+    state.user?.goal.exam === "TCF Canada" ? "TCF" : "TEF",
+  ).find((item) => item.id === moduleId);
   if (!courseModule) return null;
   return (
     courseModule.lessons.find(
@@ -230,6 +261,10 @@ export function getRecommendedLessons(state: AppState) {
   const add = (lesson: Lesson | null, reason: string) => {
     if (
       lesson &&
+      (!lesson.content ||
+        lesson.content.exam === "shared" ||
+        lesson.content.exam ===
+          (state.user?.goal.exam === "TCF Canada" ? "TCF" : "TEF")) &&
       canAccessLesson(state.planAccess, lesson) &&
       !recommendations.some((item) => item.lesson.id === lesson.id)
     )

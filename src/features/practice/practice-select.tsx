@@ -62,7 +62,7 @@ export function PracticeSelect() {
                 <p className="mt-1 text-muted-foreground">{item.labelFr}</p>
                 <p className="mt-5 font-bold">
                   {productive
-                    ? "Coming soon"
+                    ? "Timed self-practice"
                     : score === null
                       ? "Not assessed yet"
                       : `${score}% · ${getSkillStatus(score)}`}
@@ -83,17 +83,13 @@ export function PracticeSelect() {
                   className={`mt-5 text-sm font-semibold ${productive ? "text-muted-foreground" : "text-primary"}`}
                 >
                   {productive
-                    ? "Correction is not available yet"
+                    ? "Practise and review the rubric →"
                     : "Practice →"}
                 </p>
               </CardContent>
             </Card>
           );
-          return productive ? (
-            <div key={skill} aria-disabled="true">
-              {card}
-            </div>
-          ) : (
+          return (
             <Link
               key={skill}
               href={`/practice/session?skill=${skill}`}
@@ -124,8 +120,8 @@ export function PracticeSelect() {
         </Card>
       )}
       <p className="mt-7 text-xs leading-5 text-muted-foreground">
-        Writing and speaking lessons remain available, but corrected practice
-        for those skills is coming soon.
+        Writing and speaking offer guided self-practice. AI evaluation and
+        official scores are not provided.
       </p>
     </>
   );

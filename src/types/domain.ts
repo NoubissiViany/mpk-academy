@@ -1,3 +1,5 @@
+import type { ContentCompetency } from "@/content/shared/competencies";
+import type { AudioAsset } from "@/content/shared/types";
 export type Locale = "en" | "fr";
 export type UserTier = "visitor" | "free_student" | "paid_student";
 export type PaidPlanId = "essential" | "complete" | "intensive";
@@ -22,6 +24,7 @@ export type DiagnosticSkill =
 export type AssistanceLevel = "full" | "on_request" | "minimal";
 export type LessonStatus = "locked" | "available" | "in_progress" | "completed";
 export type CompetencyId =
+  | ContentCompetency
   | "reading-main-idea"
   | "reading-detail"
   | "reading-inference"
@@ -129,6 +132,7 @@ export interface Competency {
 }
 
 export interface Lesson {
+  content?: import("@/content/shared/types").LearningLesson;
   id: string;
   moduleId: string;
   sequence: number;
@@ -170,7 +174,7 @@ interface QuestionBase {
   competencies: CompetencyId[];
   diagnosticSkill: DiagnosticSkill;
   difficulty: "A2" | "B1" | "B2" | "C1";
-  metadata?: { passage?: string; audioLabel?: string };
+  metadata?: { passage?: string; audioLabel?: string; audio?: AudioAsset };
 }
 
 export interface MultipleChoiceQuestion extends QuestionBase {
@@ -225,7 +229,10 @@ export interface DiagnosticResult {
   score: number;
   level: "A2" | "B1" | "B2" | "C1";
   competencyScores: Partial<Record<CompetencyId, number>>;
-  skillScores: Record<DiagnosticSkill, number>;
+  skillScores: Record<DiagnosticSkill, number | null>;
+  algorithmVersion?: string;
+  assessedItemCount?: number;
+  languageFoundation?: number;
   strength: DiagnosticSkill;
   priority: DiagnosticSkill;
   recommendedModuleId: string;
