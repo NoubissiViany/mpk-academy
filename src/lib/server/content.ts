@@ -17,6 +17,10 @@ import type {
   PublicProductiveTask,
 } from "@/content/shared/types";
 import { scoreDiagnostic } from "@/lib/domain/diagnostic";
+import {
+  selectPracticeItems,
+  type PracticeAnswerRecord,
+} from "@/lib/domain/practice-selection";
 import type {
   AnswerFeedback,
   ExamId,
@@ -69,19 +73,37 @@ export const getPublicDiagnosticQuestions = () =>
 export const scoreGuestDiagnostic = (answers: Record<string, string>) =>
   scoreDiagnostic(diagnosticQuestions, answers);
 
+const practiceMcqs = (exam: ExamId, skill: "reading" | "listening") =>
+  findPractice(examCode(exam), skill).filter(isMcq);
+
+/** Ids the selection draws from, used to load only the relevant history. */
+export const getPracticeItemIds = (
+  exam: ExamId,
+  skill: "reading" | "listening",
+) => practiceMcqs(exam, skill).map((item) => item.id);
+
 export function getPracticePool(
   exam: ExamId,
   skill: "reading" | "listening",
-  focus: string | null,
-  count: number,
-): PublicQuestion[] {
-  const all = findPractice(examCode(exam), skill).filter(isMcq);
-  const focused = focus
-    ? findPractice(examCode(exam), skill, focus).filter(isMcq)
-    : [];
-  return (focused.length ? focused : all)
-    .slice(0, count)
-    .map((item) => toPublicQuestion(toQuestion(item)));
+  options: {
+    count: number;
+    focus?: string | null;
+    answers?: PracticeAnswerRecord[];
+    dueIds?: string[];
+    reviewOnly?: boolean;
+    random?: () => number;
+  },
+): { questions: PublicQuestion[]; reviewIds: string[] } {
+  const selection = selectPracticeItems({
+    ...options,
+    items: practiceMcqs(exam, skill),
+  });
+  return {
+    questions: selection.items.map((item) =>
+      toPublicQuestion(toQuestion(item)),
+    ),
+    reviewIds: selection.reviewIds,
+  };
 }
 
 export function checkPracticeAnswer(

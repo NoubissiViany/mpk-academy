@@ -5,8 +5,10 @@ import { getCourseModules } from "@/data/course";
 import { defaultState, emptyProgress } from "@/data/mock-state";
 import { isPaidPlanId } from "@/config/product";
 import { createEmptyExamProfile } from "@/lib/domain/exam-progress";
+import type { PracticeAnswerRecord } from "@/lib/domain/practice-selection";
 import { createClient } from "@/lib/supabase/server";
 import type {
+  Activity,
   AppState,
   AssistanceLevel,
   CompetencyId,
@@ -21,6 +23,7 @@ import type {
   MistakeCategory,
   NclcTarget,
   PaidPlanId,
+  ReviewItem,
 } from "@/types/domain";
 import type { Tables } from "@/types/database";
 
@@ -32,6 +35,48 @@ export async function requireUserId() {
   if (error) throw error;
   if (!claims || typeof userId !== "string") throw new Error("Unauthorized");
   return { supabase, userId, claims };
+}
+
+/** Past answers to these practice items and the reviews due now, oldest first. */
+export async function getPracticeHistory(
+  exam: ExamId,
+  skill: "reading" | "listening",
+  questionIds: string[],
+): Promise<{ answers: PracticeAnswerRecord[]; dueIds: string[] }> {
+  const { supabase, userId } = await requireUserId();
+  const [answers, due] = await Promise.all([
+    supabase
+      .from("practice_answers")
+      .select("question_id, is_correct, answered_at")
+      .eq("user_id", userId)
+      .in("question_id", questionIds)
+      .order("answered_at", { ascending: false })
+      .limit(2000),
+    supabase
+      .from("review_items")
+      .select("question_id")
+      .eq("user_id", userId)
+      .eq("exam", exam)
+      .eq("skill", skill)
+      .lte("due_at", new Date().toISOString())
+      .order("due_at"),
+  ]);
+  if (answers.error) throw answers.error;
+  if (due.error) throw due.error;
+  return {
+    answers: answers.data.flatMap((row) =>
+      row.is_correct === null
+        ? []
+        : [
+            {
+              questionId: row.question_id,
+              correct: row.is_correct,
+              answeredAt: row.answered_at,
+            },
+          ],
+    ),
+    dueIds: due.data.map((row) => row.question_id),
+  };
 }
 
 export async function getPracticeResult(sessionId: string) {
@@ -127,6 +172,7 @@ async function loadLearnerSnapshot(): Promise<AppState> {
     diagnosticResponse,
     practiceResponse,
     mockResponse,
+    reviewsResponse,
   ] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", userId).single(),
     supabase.from("exam_goals").select("*").eq("user_id", userId).single(),
@@ -179,6 +225,11 @@ async function loadLearnerSnapshot(): Promise<AppState> {
       .order("completed_at", { ascending: false })
       .limit(1)
       .maybeSingle(),
+    supabase
+      .from("review_items")
+      .select("question_id, exam, skill, step, due_at")
+      .eq("user_id", userId)
+      .order("due_at"),
   ]);
 
   if (
@@ -205,6 +256,7 @@ async function loadLearnerSnapshot(): Promise<AppState> {
     diagnosticResponse,
     practiceResponse,
     mockResponse,
+    reviewsResponse,
   ].find((response) => response.error)?.error;
   if (relatedError) throw relatedError;
 
@@ -377,11 +429,19 @@ async function loadLearnerSnapshot(): Promise<AppState> {
       pattern: mistake.pattern ?? undefined,
       count: mistake.occurrence_count,
     })),
+    reviews: (reviewsResponse.data ?? []).map((review) => ({
+      questionId: review.question_id,
+      exam: review.exam as ExamId,
+      skill: review.skill as ReviewItem["skill"],
+      step: review.step,
+      dueAt: review.due_at,
+    })),
     activities: (historyResponse.data ?? []).map((event) => ({
       id: event.id,
       label: event.label,
       detail: event.detail,
       timestamp: event.created_at,
+      kind: event.event_type as Activity["kind"],
     })),
     ...(practiceResponse.data
       ? { lastPracticeScore: practiceResponse.data.score ?? undefined }

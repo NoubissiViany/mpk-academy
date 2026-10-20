@@ -39,6 +39,12 @@ const en = {
     recommendedCta: "Practice recommended weakness",
     productiveNote:
       "Writing and speaking offer guided self-practice. AI evaluation and official scores are not provided yet.",
+    reviewTitle: (count: number) =>
+      `${count} missed ${count === 1 ? "question is" : "questions are"} due for review`,
+    reviewBody:
+      "Missed questions come back after 1, 3 and 7 days. Reviewing them on time is the quickest way to stop repeating a mistake.",
+    reviewCta: (skill: string, count: number) =>
+      `Review ${skill.toLowerCase()} (${count})`,
   },
   session: {
     focus: (label: string) => `Focus: ${label}`,
@@ -49,6 +55,15 @@ const en = {
     next: "Next question",
     results: "See results",
     saving: "Saving…",
+    reviewBadge: "Review",
+    reviewHint:
+      "You missed this before. Getting it right now moves it further out.",
+    reviewTitle: (skill: string) => `${skill} review`,
+    reviewIntro:
+      "Questions you missed come back after 1, 3 and 7 days. Answer them right at each step and they leave your review list.",
+    reviewEmpty:
+      "No reviews are due right now. Missed questions come back here the day after you miss them.",
+    backToPractice: "Back to Practice",
   },
   productive: {
     title: (exam: string, skill: string) => `${exam} · ${skill} self-practice`,
@@ -133,6 +148,14 @@ const fr: typeof en = {
     recommendedCta: "Travailler la faiblesse recommandée",
     productiveNote:
       "L’expression écrite et orale proposent un auto-entraînement guidé. L’évaluation par IA et les résultats officiels ne sont pas encore offerts.",
+    reviewTitle: (count: number) =>
+      count === 1
+        ? "1 question manquée est à revoir"
+        : `${count} questions manquées sont à revoir`,
+    reviewBody:
+      "Les questions manquées reviennent après 1, 3 puis 7 jours. Les revoir à temps est le moyen le plus rapide de ne plus refaire l’erreur.",
+    reviewCta: (skill: string, count: number) =>
+      `Revoir : ${skill.toLowerCase()} (${count})`,
   },
   session: {
     focus: (label: string) => `Priorité : ${label}`,
@@ -143,6 +166,15 @@ const fr: typeof en = {
     next: "Question suivante",
     results: "Voir les résultats",
     saving: "Enregistrement…",
+    reviewBadge: "Révision",
+    reviewHint:
+      "Vous avez manqué cette question. Une bonne réponse maintenant l’espace davantage.",
+    reviewTitle: (skill: string) => `Révision : ${skill.toLowerCase()}`,
+    reviewIntro:
+      "Les questions manquées reviennent après 1, 3 puis 7 jours. Répondez juste à chaque étape et elles quittent votre liste de révision.",
+    reviewEmpty:
+      "Aucune révision n’est prévue pour l’instant. Une question manquée revient ici dès le lendemain.",
+    backToPractice: "Retour à Pratiquer",
   },
   productive: {
     title: (exam: string, skill: string) =>

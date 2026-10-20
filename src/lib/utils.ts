@@ -16,3 +16,16 @@ export function formatDate(value: string, locale = "en-CA") {
     year: "numeric",
   }).format(new Date(value));
 }
+
+/** Fisher–Yates shuffle; returns a new array. */
+export function shuffle<T>(
+  items: readonly T[],
+  random: () => number = Math.random,
+) {
+  const result = [...items];
+  for (let index = result.length - 1; index > 0; index -= 1) {
+    const swap = Math.floor(random() * (index + 1));
+    [result[index], result[swap]] = [result[swap], result[index]];
+  }
+  return result;
+}

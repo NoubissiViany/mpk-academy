@@ -168,6 +168,7 @@ export function createRegisteredLearnerState(
       competencyScores: session?.result.competencyScores ?? {},
     },
     mistakes: [],
+    reviews: [],
     activities: session ? [session.activity] : [],
   };
 }

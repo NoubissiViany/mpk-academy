@@ -29,7 +29,9 @@ afterEach(() => {
 });
 
 describe("comprehension practice", () => {
-  const pool = getPracticePool("TEF Canada", "reading", null, 5);
+  const { questions: pool } = getPracticePool("TEF Canada", "reading", {
+    count: 5,
+  });
 
   it("receives questions without answer keys", () => {
     expect(pool).toHaveLength(5);
@@ -67,6 +69,60 @@ describe("comprehension practice", () => {
       pool[0].options![0].id,
     );
     expect(await screen.findByText("Server explanation")).toBeVisible();
+  });
+});
+
+describe("spaced review", () => {
+  const { questions: pool, reviewIds } = getPracticePool(
+    "TEF Canada",
+    "reading",
+    { count: 5, dueIds: ["missing-id"], random: () => 0.5 },
+  );
+
+  it("draws due reviews from the learner's queue", () => {
+    const due = getPracticePool("TEF Canada", "reading", {
+      count: 5,
+      dueIds: [pool[2].id],
+    });
+    expect(due.reviewIds).toEqual([pool[2].id]);
+    expect(due.questions.map((question) => question.id)).toContain(pool[2].id);
+    expect(reviewIds).toEqual([]);
+  });
+
+  it("labels a question the learner missed before", async () => {
+    render(
+      <AppProvider>
+        <ExamPracticeSession
+          exam="TEF Canada"
+          skill="reading"
+          focus={null}
+          pool={pool}
+          reviewIds={[pool[0].id]}
+        />
+      </AppProvider>,
+    );
+    expect(await screen.findByText("Review")).toBeVisible();
+    expect(screen.getByText(/You missed this before/)).toBeVisible();
+  });
+
+  it("explains when no review is due", async () => {
+    render(
+      <AppProvider>
+        <ExamPracticeSession
+          exam="TEF Canada"
+          skill="reading"
+          focus={null}
+          pool={[]}
+          mode="review"
+        />
+      </AppProvider>,
+    );
+    expect(
+      await screen.findByText(/No reviews are due right now/),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("link", { name: "Back to Practice" }),
+    ).toHaveAttribute("href", "/practice");
   });
 });
 

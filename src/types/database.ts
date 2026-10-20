@@ -710,6 +710,50 @@ export type Database = {
           },
         ];
       };
+      review_items: {
+        Row: {
+          created_at: string;
+          due_at: string;
+          exam: string;
+          lapses: number;
+          last_answered_at: string;
+          question_id: string;
+          skill: string;
+          step: number;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          due_at: string;
+          exam: string;
+          lapses?: number;
+          last_answered_at?: string;
+          question_id: string;
+          skill: string;
+          step?: number;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          due_at?: string;
+          exam?: string;
+          lapses?: number;
+          last_answered_at?: string;
+          question_id?: string;
+          skill?: string;
+          step?: number;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "review_items_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       skill_scores: {
         Row: {
           attempts: number;
