@@ -1,3 +1,5 @@
+// Contains answer keys and model responses: never import from client code.
+import "server-only";
 import {
   items as tefItems,
   manifest as tefManifest,

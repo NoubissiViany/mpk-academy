@@ -126,7 +126,7 @@ describe("mock candidate boundary", () => {
     mocks.rpc.mockResolvedValue({ data: null, error: { code: "55000" } });
     expect(await mockSessionEvent(null, "fixture", { type: "start" })).toEqual({
       ok: false,
-      message: "Audio pending: full mock unavailable.",
+      message: "Audio en préparation : examen blanc complet indisponible.",
     });
   });
 });

@@ -6,23 +6,28 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 import { Wordmark } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { useApp } from "@/components/providers/app-provider";
-import { getDictionary } from "@/i18n/dictionaries";
+import { isBetaMode } from "@/config/product";
+import { useI18n } from "@/i18n/client";
 
 export function PublicHeader() {
   const [open, setOpen] = useState(false);
   const { state } = useApp();
-  const dictionary = getDictionary(state.user?.locale ?? "en");
+  const { t } = useI18n();
+  const nav = t.common.nav;
   const links = [
-    { href: "/#how-it-works", label: dictionary.nav.how },
-    { href: "/pricing", label: dictionary.nav.pricing },
+    { href: "/#how-it-works", label: nav.how },
+    ...(isBetaMode() ? [] : [{ href: "/pricing", label: nav.pricing }]),
   ];
+  const account = state.user
+    ? { href: "/dashboard", label: nav.dashboard }
+    : { href: "/login", label: nav.signIn };
   return (
     <header className="sticky top-0 z-40 border-b border-border/80 bg-background/90 backdrop-blur-xl">
       <div className="container-page flex h-16 items-center justify-between">
         <Wordmark />
         <nav
           className="hidden items-center gap-7 lg:flex"
-          aria-label="Main navigation"
+          aria-label={nav.main}
         >
           {links.map((link) => (
             <Link
@@ -37,15 +42,15 @@ export function PublicHeader() {
         <div className="hidden items-center gap-3 lg:flex">
           <LanguageSwitcher compact />
           <Button asChild variant="ghost">
-            <Link href="/login">{dictionary.nav.signIn}</Link>
+            <Link href={account.href}>{account.label}</Link>
           </Button>
           <Button asChild>
-            <Link href="/diagnostic">{dictionary.nav.diagnostic}</Link>
+            <Link href="/diagnostic">{nav.startAssessment}</Link>
           </Button>
         </div>
         <button
           className="rounded-lg p-2 lg:hidden"
-          aria-label={open ? "Close navigation" : "Open navigation"}
+          aria-label={open ? nav.closeMenu : nav.openMenu}
           aria-expanded={open}
           onClick={() => setOpen(!open)}
         >
@@ -55,7 +60,7 @@ export function PublicHeader() {
       {open && (
         <nav
           className="container-page flex flex-col gap-2 border-t py-4 lg:hidden"
-          aria-label="Mobile navigation"
+          aria-label={nav.mobile}
         >
           {links.map((link) => (
             <Link
@@ -71,10 +76,10 @@ export function PublicHeader() {
             <LanguageSwitcher />
           </div>
           <Button asChild variant="secondary">
-            <Link href="/login">{dictionary.nav.signIn}</Link>
+            <Link href={account.href}>{account.label}</Link>
           </Button>
           <Button asChild>
-            <Link href="/diagnostic">{dictionary.nav.diagnostic}</Link>
+            <Link href="/diagnostic">{nav.startAssessment}</Link>
           </Button>
         </nav>
       )}

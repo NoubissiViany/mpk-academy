@@ -2,23 +2,32 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { findPractice } from "@/content/catalog";
-import { wordCount } from "@/content/validate";
+import { getModelResponseAction } from "@/app/actions/content";
+import { submitPracticeAction } from "@/app/actions/learner";
 import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
-import { submitPracticeAction } from "@/app/actions/learner";
+import type { PublicProductiveTask } from "@/content/shared/types";
+import { useI18n } from "@/i18n/client";
 import type { ExamId } from "@/types/domain";
-export function ProductiveSession({
-  exam,
-  skill,
-}: {
+
+const wordCount = (value: string) =>
+  value.trim() ? value.trim().split(/\s+/).length : 0;
+
+type SessionProps = {
   exam: ExamId;
   skill: "writing" | "speaking";
-}) {
-  const tasks = findPractice(
-    exam === "TEF Canada" ? "TEF" : "TCF",
-    skill,
-  ).filter((i) => i.kind !== "mcq");
+  tasks: PublicProductiveTask[];
+};
+
+export function ProductiveSession(props: SessionProps) {
+  const { t } = useI18n();
+  if (!props.tasks.length) return <p>{t.common.errors.notFound}</p>;
+  return <TaskSession {...props} />;
+}
+
+function TaskSession({ exam, skill, tasks }: SessionProps) {
+  const { t } = useI18n();
+  const copy = t.practice.productive;
   const [submissionId] = useState(() => crypto.randomUUID());
   const [index, setIndex] = useState(0);
   const [response, setResponse] = useState("");
@@ -26,6 +35,8 @@ export function ProductiveSession({
   const [now, setNow] = useState(0);
   const [review, setReview] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [modelResponse, setModelResponse] = useState<string | null>(null);
+  const [loadingModel, setLoadingModel] = useState(false);
   const task = tasks[index];
   const router = useRouter();
   const { replaceState } = useApp();
@@ -39,10 +50,21 @@ export function ProductiveSession({
       ? task.durationSeconds
       : Math.max(0, task.durationSeconds - Math.floor((now - started) / 1000));
   const expired = started !== null && remaining === 0;
+  const reviewing = review || expired;
   const preparing =
     started !== null &&
     task.preparationSeconds > 0 &&
     now - started < task.preparationSeconds * 1000;
+
+  // The model answer is fetched only when the learner opens it after reviewing.
+  const loadModelResponse = async () => {
+    if (modelResponse || loadingModel) return;
+    setLoadingModel(true);
+    const result = await getModelResponseAction(task.id);
+    setLoadingModel(false);
+    if (result.ok) setModelResponse(result.modelResponse);
+  };
+
   const finish = async () => {
     setSaving(true);
     const result = await submitPracticeAction({
@@ -69,14 +91,11 @@ export function ProductiveSession({
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <h1 className="text-3xl font-bold">
-        {exam} · {skill} self-practice
+        {copy.title(exam, t.practice.skills[skill])}
       </h1>
-      <p>
-        MPK practice feedback only. No recording, AI evaluation, or official
-        grading. Speaking requires you to imagine or arrange an interlocutor.
-      </p>
+      <p>{copy.note}</p>
       <label className="block">
-        Choose a task
+        {copy.chooseTask}
         <select
           className="ml-3 rounded border bg-background p-2"
           value={index}
@@ -85,11 +104,12 @@ export function ProductiveSession({
             setIndex(Number(e.target.value));
             setResponse("");
             setReview(false);
+            setModelResponse(null);
           }}
         >
-          {tasks.map((t, i) => (
-            <option key={t.id} value={i}>
-              {t.title}
+          {tasks.map((item, i) => (
+            <option key={item.id} value={i} lang="fr">
+              {item.title}
             </option>
           ))}
         </select>
@@ -100,61 +120,65 @@ export function ProductiveSession({
         <p className="mt-4">{task.instructions}</p>
         {task.wordCount && (
           <p className="mt-4">
-            {task.wordCount.min}
-            {task.wordCount.max ? `–${task.wordCount.max}` : " minimum"} mots
+            {copy.wordRange(task.wordCount.min, task.wordCount.max)}
           </p>
         )}
       </div>
       <p role="timer">
-        {preparing ? "Preparation" : "Response"} · {Math.floor(remaining / 60)}:
-        {String(remaining % 60).padStart(2, "0")}
+        {preparing ? copy.preparation : copy.response} ·{" "}
+        {Math.floor(remaining / 60)}:{String(remaining % 60).padStart(2, "0")}
       </p>
       {started === null ? (
         <Button
           onClick={() => {
-            const t = Date.now();
-            setStarted(t);
-            setNow(t);
+            const startedAt = Date.now();
+            setStarted(startedAt);
+            setNow(startedAt);
           }}
         >
-          Start timed practice
+          {copy.start}
         </Button>
       ) : null}
       {skill === "writing" && (
         <>
           <textarea
-            aria-label="Votre réponse"
+            aria-label={copy.responseLabel}
             lang="fr"
             className="min-h-64 w-full rounded border bg-background p-4"
             value={response}
-            disabled={started === null || expired || review}
+            disabled={started === null || reviewing}
             onChange={(e) => setResponse(e.target.value)}
           />
-          <p>{wordCount(response)} words</p>
+          <p>{copy.words(wordCount(response))}</p>
         </>
       )}
       <details>
-        <summary>Planning guidance</summary>
+        <summary>{copy.guidance}</summary>
         <p className="mt-3">{task.correction.guidance}</p>
       </details>
-      <Button disabled={started === null} onClick={() => setReview(true)}>
-        Finish and review
+      <Button
+        disabled={started === null || reviewing}
+        onClick={() => setReview(true)}
+      >
+        {copy.finish}
       </Button>
-      {(review || expired) && (
+      {reviewing && (
         <section className="space-y-4 rounded-xl border p-6">
-          <h2 className="text-xl font-bold">
-            Self-review · MPK practice feedback
-          </h2>
-          <ul className="list-inside list-disc">
-            {task.correction.rubric.map((r) => (
-              <li key={r}>{r}</li>
+          <h2 className="text-xl font-bold">{copy.reviewTitle}</h2>
+          <ul className="list-inside list-disc" lang="fr">
+            {task.correction.rubric.map((item) => (
+              <li key={item}>{item}</li>
             ))}
           </ul>
-          {task.correction.modelResponse && (
-            <details>
-              <summary>Original MPK model response</summary>
+          {task.correction.hasModelResponse && (
+            <details
+              onToggle={(event) => {
+                if (event.currentTarget.open) void loadModelResponse();
+              }}
+            >
+              <summary>{copy.modelResponse}</summary>
               <p lang="fr" className="mt-4 whitespace-pre-line">
-                {task.correction.modelResponse}
+                {loadingModel ? copy.loadingModel : modelResponse}
               </p>
             </details>
           )}
@@ -162,7 +186,7 @@ export function ProductiveSession({
             disabled={saving || (skill === "writing" && !response.trim())}
             onClick={finish}
           >
-            {saving ? "Saving…" : "Save practice completion"}
+            {saving ? t.common.saving : copy.save}
           </Button>
         </section>
       )}

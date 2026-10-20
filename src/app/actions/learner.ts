@@ -2,6 +2,8 @@
 
 import { z } from "zod";
 import { cookies } from "next/headers";
+import { unstable_rethrow } from "next/navigation";
+import { getMessages } from "@/i18n/server";
 import { getErrorDetails, logServerError } from "@/lib/server/diagnostics";
 import { getLearnerSnapshot, requireUserId } from "@/lib/supabase/learner";
 import type {
@@ -42,7 +44,10 @@ type MutationFailure = {
   ok: false;
   reason: MutationFailureReason;
   message: string;
+  reference?: string;
 };
+
+const actionMessages = async () => (await getMessages()).common.actions;
 
 type DiagnosticMutationFailure = MutationFailure & { reference: string };
 
@@ -117,8 +122,14 @@ async function snapshotResult<T>(data: T): Promise<MutationResult<T>> {
   return { ok: true, data, snapshot: await getLearnerSnapshot() };
 }
 
-function invalidSubmission(message: string): MutationFailure {
-  return { ok: false, reason: "invalid_submission", message };
+async function invalidSubmission(
+  key: keyof Awaited<ReturnType<typeof actionMessages>>["invalid"],
+): Promise<MutationFailure> {
+  return {
+    ok: false,
+    reason: "invalid_submission",
+    message: (await actionMessages()).invalid[key],
+  };
 }
 
 function errorFields(error: unknown) {
@@ -133,7 +144,10 @@ function errorFields(error: unknown) {
   };
 }
 
-function failure(operation: string, error: unknown): MutationFailure {
+async function failure(
+  operation: string,
+  error: unknown,
+): Promise<MutationFailure> {
   const { code, message } = errorFields(error);
   const normalizedMessage = message.toLowerCase();
   const unauthenticated =
@@ -148,30 +162,22 @@ function failure(operation: string, error: unknown): MutationFailure {
       : code === "23505"
         ? "conflict"
         : "unavailable";
-
-  console.error("Learner mutation failed", {
+  const reference = logServerError("Learner mutation failed", error, {
     operation,
     reason,
-    code: code ?? "unknown",
-    source: error instanceof Error ? error.name : "structured_server_error",
   });
-
-  const publicMessage = {
-    unauthenticated:
-      "Your session has expired. Sign in again to save your progress.",
-    invalid_submission:
-      "The submitted information is invalid. Review it and try again.",
-    conflict: "This update was already processed. Refresh and try again.",
-    unavailable: "We could not save this update. Please try again.",
-  } satisfies Record<MutationFailureReason, string>;
-
-  return { ok: false, reason, message: publicMessage[reason] };
+  return {
+    ok: false,
+    reason,
+    message: (await actionMessages()).mutation[reason],
+    reference,
+  };
 }
 
-function diagnosticFailure(
+async function diagnosticFailure(
   operation: "persist_assessment" | "load_assessment_result",
   error: unknown,
-): DiagnosticMutationFailure {
+): Promise<DiagnosticMutationFailure> {
   const { code, message } = errorFields(error);
   const normalizedMessage = message.toLowerCase();
   const unauthenticated =
@@ -186,25 +192,24 @@ function diagnosticFailure(
       : code === "23505"
         ? "conflict"
         : "unavailable";
-  const publicMessage = {
-    unauthenticated:
-      "Your session has expired. Sign in again to save your progress.",
-    invalid_submission:
-      "The submitted information is invalid. Review it and try again.",
-    conflict: "This update was already processed. Refresh and try again.",
-    unavailable: "We could not save this update. Please try again.",
-  } satisfies Record<MutationFailureReason, string>;
   const reference = logServerError("Diagnostic submission failed", error, {
     operation,
     reason,
   });
-  return { ok: false, reason, message: publicMessage[reason], reference };
+  return {
+    ok: false,
+    reason,
+    message: (await actionMessages()).mutation[reason],
+    reference,
+  };
 }
 
 export async function getLearnerSnapshotAction(): Promise<SnapshotActionResult> {
   try {
     return { ok: true, snapshot: await getLearnerSnapshot() };
   } catch (error) {
+    // Prerendering reads cookies by throwing; that is not an outage to log.
+    unstable_rethrow(error);
     const { code } = getErrorDetails(error);
     const message = error instanceof Error ? error.message.toLowerCase() : "";
     const reason: SnapshotFailureReason =
@@ -216,18 +221,20 @@ export async function getLearnerSnapshotAction(): Promise<SnapshotActionResult> 
         : message.includes("learner profile") || code === "PGRST116"
           ? "profile_unavailable"
           : "service_unavailable";
-    const publicMessage = {
-      unauthenticated: "Your session has expired. Sign in again.",
-      profile_unavailable:
-        "Your account is signed in, but its learning profile could not be loaded.",
-      service_unavailable:
-        "Your learning profile is temporarily unavailable. Please try again.",
-    } satisfies Record<SnapshotFailureReason, string>;
-    const reference = logServerError("Learner snapshot failed", error, {
-      operation: "load_learner_snapshot",
+    // Signing out is routine, not an error worth a durable log entry.
+    const reference =
+      reason === "unauthenticated"
+        ? crypto.randomUUID()
+        : logServerError("Learner snapshot failed", error, {
+            operation: "load_learner_snapshot",
+            reason,
+          });
+    return {
+      ok: false,
       reason,
-    });
-    return { ok: false, reason, message: publicMessage[reason], reference };
+      message: (await actionMessages()).snapshot[reason],
+      reference,
+    };
   }
 }
 
@@ -241,8 +248,7 @@ export async function claimGuestAssessmentAction(
       answers: answersSchema,
     })
     .safeParse(session);
-  if (!parsed.success)
-    return invalidSubmission("The saved assessment is invalid.");
+  if (!parsed.success) return invalidSubmission("savedAssessment");
   try {
     const { supabase } = await requireUserId();
     const exam =
@@ -282,7 +288,7 @@ export async function submitDiagnosticAction(input: {
     return {
       ok: false,
       reason: "invalid_submission",
-      message: "Complete every assessment question.",
+      message: (await actionMessages()).invalid.completeQuestions,
       reference,
     };
   }
@@ -333,8 +339,7 @@ export async function submitPracticeAction(input: {
       answers: sessionAnswersSchema.min(1),
     })
     .safeParse(input);
-  if (!parsed.success)
-    return invalidSubmission("The practice submission is invalid.");
+  if (!parsed.success) return invalidSubmission("practice");
   const submissionId = parsed.data.submissionId ?? crypto.randomUUID();
   try {
     const { supabase } = await requireUserId();
@@ -364,8 +369,7 @@ export async function submitMockExamAction(input: {
   const parsed = z
     .object({ exam: examSchema, answers: sessionAnswersSchema.min(1) })
     .safeParse(input);
-  if (!parsed.success)
-    return invalidSubmission("The exam submission is invalid.");
+  if (!parsed.success) return invalidSubmission("exam");
   try {
     const { supabase } = await requireUserId();
     const { data, error } = await supabase.rpc("mpk_submit_assessment", {
@@ -390,7 +394,7 @@ export async function completeLessonAction(
   lessonId: string,
 ): Promise<MutationResult<LessonCompletion>> {
   if (!z.string().min(1).max(200).safeParse(lessonId).success)
-    return invalidSubmission("Unknown lesson.");
+    return invalidSubmission("lesson");
   try {
     const { supabase } = await requireUserId();
     const { data, error } = await supabase.rpc("mpk_complete_lesson", {
@@ -410,7 +414,7 @@ export async function updateProfileAction(input: {
   assistance: "full" | "on_request" | "minimal";
 }): Promise<MutationResult> {
   try {
-    const { supabase } = await requireUserId();
+    const { supabase, claims } = await requireUserId();
     const { error } = await supabase.rpc("mpk_update_profile", {
       p_first_name: input.firstName,
       p_last_name: input.lastName,
@@ -418,6 +422,15 @@ export async function updateProfileAction(input: {
       p_assistance: input.assistance,
     });
     if (error) throw error;
+    // Auth emails such as password resets pick their language from the
+    // account metadata, so keep it in step with the profile.
+    if (claims.user_metadata?.locale !== input.locale) {
+      const { error: metadataError } = await supabase.auth.updateUser({
+        data: { locale: input.locale },
+      });
+      if (metadataError)
+        logServerError("Email language sync failed", metadataError);
+    }
     const cookieStore = await cookies();
     cookieStore.set("mpk_locale", input.locale, {
       path: "/",

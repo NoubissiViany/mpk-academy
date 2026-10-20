@@ -1,7 +1,15 @@
 import { AuthForm } from "@/features/auth/auth-form";
 import { Card, CardContent } from "@/components/ui/card";
-import { isPaidPlanId } from "@/config/product";
-export const metadata = { title: "Sign in" };
+import { isOfferedPlanId } from "@/config/product";
+import { getMessages } from "@/i18n/server";
+
+export async function generateMetadata() {
+  return { title: (await getMessages()).metadata.login };
+}
+
+const first = (value?: string | string[]) =>
+  Array.isArray(value) ? value[0] : value;
+
 export default async function LoginPage({
   searchParams,
 }: {
@@ -13,37 +21,28 @@ export default async function LoginPage({
   }>;
 }) {
   const resolved = await searchParams;
-  const rawPlan = resolved.plan;
-  const candidate = Array.isArray(rawPlan) ? rawPlan[0] : rawPlan;
-  const planId = isPaidPlanId(candidate) ? candidate : undefined;
-  const error = Array.isArray(resolved.error)
-    ? resolved.error[0]
-    : resolved.error;
-  const reference = Array.isArray(resolved.ref)
-    ? resolved.ref[0]
-    : resolved.ref;
+  const t = (await getMessages()).auth.login;
+  const candidate = first(resolved.plan);
+  const planId = isOfferedPlanId(candidate) ? candidate : undefined;
+  const reference = first(resolved.ref);
   return (
     <div className="container-page py-16">
       <Card className="mx-auto max-w-md">
         <CardContent className="pt-6">
-          <p className="eyebrow">Welcome back</p>
-          <h1 className="mt-3 text-3xl font-bold">
-            Continue your preparation.
-          </h1>
+          <p className="eyebrow">{t.eyebrow}</p>
+          <h1 className="mt-3 text-3xl font-bold">{t.title}</h1>
           <p className="mt-3 mb-7 text-sm leading-6 text-muted-foreground">
-            Enter your MPK Academy email and password. Your account and learning
-            progress are securely stored with Supabase.
+            {t.description}
           </p>
-          {error === "confirmation" && (
+          {first(resolved.error) === "confirmation" && (
             <div
               className="mb-6 rounded-xl border border-danger/25 bg-danger/5 px-4 py-3 text-sm text-danger"
               role="alert"
             >
-              This confirmation link is invalid or has expired. Request a new
-              confirmation email or create the account again.
+              {t.confirmationError}
               {reference && (
                 <span className="mt-2 block font-mono text-xs">
-                  Reference: {reference}
+                  {t.reference(reference)}
                 </span>
               )}
             </div>
@@ -51,9 +50,7 @@ export default async function LoginPage({
           <AuthForm
             mode="login"
             planId={planId}
-            nextPath={
-              Array.isArray(resolved.next) ? resolved.next[0] : resolved.next
-            }
+            nextPath={first(resolved.next)}
           />
         </CardContent>
       </Card>

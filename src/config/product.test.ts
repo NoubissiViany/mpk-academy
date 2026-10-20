@@ -1,12 +1,15 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   calculatePlanAccessUntil,
   estimatedStripeFeeMinor,
   formatPlanPrice,
   formatPrice,
   getPaidPlan,
+  isBetaMode,
+  isOfferedPlanId,
   isPaidPlanId,
   hasPlanFeature,
+  planDisplayName,
   productPlans,
   recommendedPaidPlanId,
 } from "@/config/product";
@@ -21,7 +24,6 @@ describe("product plans", () => {
   it.each([
     ["essential", 12_286, 11_900],
     ["complete", 25_675, 24_900],
-    ["intensive", 35_973, 34_900],
   ] as const)(
     "grosses up %s for the standard domestic Stripe fee",
     (planId, priceMinor, targetNetMinor) => {
@@ -39,8 +41,22 @@ describe("product plans", () => {
     expect(isPaidPlanId("unknown")).toBe(false);
   });
 
+  it("keeps the retired Intensive plan recognizable but no longer offered", () => {
+    expect(isPaidPlanId("intensive")).toBe(true);
+    expect(isOfferedPlanId("intensive")).toBe(false);
+    expect(getPaidPlan("intensive")).toBeUndefined();
+    expect(planDisplayName("intensive")).toBe("Intensive");
+    expect(planDisplayName("complete")).toBe("Complete");
+    expect(
+      calculatePlanAccessUntil(
+        "intensive",
+        new Date("2026-09-15T12:00:00.000Z"),
+      ).toISOString(),
+    ).toBe("2027-03-15T12:00:00.000Z");
+  });
+
   it("selects only valid requested paid plans without a fallback", () => {
-    expect(getPaidPlan("intensive")?.id).toBe("intensive");
+    expect(getPaidPlan("complete")?.id).toBe("complete");
     expect(getPaidPlan(["essential", "complete"])?.id).toBe("essential");
     expect(getPaidPlan("unknown")).toBeUndefined();
     expect(getPaidPlan()).toBeUndefined();
@@ -51,8 +67,10 @@ describe("product plans", () => {
       "Discover your current level and weaknesses.",
       "Build your French foundations across all four skills.",
       "Full personalized preparation from lessons to mock exams.",
-      "Candidates near exam day or preparing for a retake.",
     ]);
+    expect(
+      productPlans.flatMap((plan) => plan.highlights).join(" "),
+    ).not.toMatch(/coming later/i);
     for (const plan of productPlans) {
       expect(plan.bestFor.length).toBeLessThan(70);
       expect(plan.highlights).toHaveLength(3);
@@ -102,10 +120,23 @@ describe("product plans", () => {
   it.each([
     ["NCLC 5", "essential"],
     ["NCLC 7", "complete"],
-    ["NCLC 9+", "intensive"],
+    ["NCLC 9+", "complete"],
     ["I'm not sure", "complete"],
     [undefined, "complete"],
   ] as const)("maps target %s to %s", (target, expected) => {
     expect(recommendedPaidPlanId(target)).toBe(expected);
+  });
+});
+
+describe("closed beta mode", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
+  it("is on unless explicitly disabled", () => {
+    vi.stubEnv("NEXT_PUBLIC_BETA_MODE", "");
+    expect(isBetaMode()).toBe(true);
+    vi.stubEnv("NEXT_PUBLIC_BETA_MODE", "true");
+    expect(isBetaMode()).toBe(true);
+    vi.stubEnv("NEXT_PUBLIC_BETA_MODE", "false");
+    expect(isBetaMode()).toBe(false);
   });
 });

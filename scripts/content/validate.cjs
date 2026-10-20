@@ -61,3 +61,22 @@ const legacyIds = new Set(
 );
 if ([...items, ...lessons].some((i) => legacyIds.has(i.id)))
   throw Error("Published legacy ID reused by new content");
+
+// French teaching text. Content is bilingual by requirement; until the Phase 4
+// rewrite lands, gaps are reported and `--require-fr` turns them into failures.
+const mcqs = items.filter((i) => i.kind === "mcq");
+const missingFr = {
+  lessonTitles: lessons.filter((l) => !l.titleFr || l.titleFr === l.title),
+  answerExplanations: mcqs.filter((i) => !i.correction.explanationFr),
+  lessonBodies: lessons.filter((l) => !l.explanationFr),
+};
+console.log(
+  `French coverage: lesson titles ${lessons.length - missingFr.lessonTitles.length}/${lessons.length}, ` +
+    `answer explanations ${mcqs.length - missingFr.answerExplanations.length}/${mcqs.length}, ` +
+    `lesson bodies ${lessons.length - missingFr.lessonBodies.length}/${lessons.length}.`,
+);
+if (
+  process.argv.includes("--require-fr") &&
+  Object.values(missingFr).some((list) => list.length)
+)
+  throw Error("French teaching text missing: see coverage above");

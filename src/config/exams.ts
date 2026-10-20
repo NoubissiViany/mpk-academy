@@ -1,10 +1,4 @@
-import { practiceItems } from "@/content/catalog";
-import type {
-  ExamConfiguration,
-  ExamId,
-  ExamSkill,
-  ProductivePracticeTask,
-} from "@/types/domain";
+import type { ExamConfiguration, ExamId, ExamSkill } from "@/types/domain";
 
 export const examSkillOrder: ExamSkill[] = [
   "reading",
@@ -151,29 +145,3 @@ export const examStrategyContent: Record<
     },
   ],
 };
-
-export const productiveTasks: Record<ExamId, ProductivePracticeTask[]> =
-  Object.fromEntries(
-    (["TEF Canada", "TCF Canada"] as const).map((exam) => [
-      exam,
-      practiceItems
-        .filter((i) => i.exam === (exam === "TEF Canada" ? "TEF" : "TCF"))
-        .flatMap((i) =>
-          i.kind === "mcq"
-            ? []
-            : [
-                {
-                  id: i.id,
-                  exam,
-                  skill: i.skill,
-                  title: i.title,
-                  prompt: i.scenario + " " + i.instructions,
-                  guidance: i.correction.guidance,
-                  durationMinutes: i.durationSeconds / 60,
-                  minimumWords: i.wordCount?.min,
-                  rubric: i.correction.rubric,
-                },
-              ],
-        ),
-    ]),
-  ) as Record<ExamId, ProductivePracticeTask[]>;

@@ -9,8 +9,10 @@ import {
 } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useI18n } from "@/i18n/client";
 
 export function ForgotPasswordForm() {
+  const { t } = useI18n();
   const [email, setEmail] = useState("");
   const [pending, setPending] = useState(false);
   const [sent, setSent] = useState(false);
@@ -28,13 +30,12 @@ export function ForgotPasswordForm() {
     >
       {sent ? (
         <p className="rounded-xl bg-primary/10 p-4 text-sm leading-6">
-          If an account exists for that address, a password-reset email is on
-          its way.
+          {t.auth.forgot.sent}
         </p>
       ) : (
         <>
           <label className="block text-sm font-semibold">
-            Email
+            {t.auth.form.email}
             <Input
               className="mt-2"
               type="email"
@@ -45,7 +46,7 @@ export function ForgotPasswordForm() {
             />
           </label>
           <Button className="w-full" disabled={pending}>
-            {pending ? "Sending…" : "Send reset link"}
+            {pending ? t.auth.forgot.sending : t.auth.forgot.submit}
           </Button>
         </>
       )}
@@ -55,6 +56,8 @@ export function ForgotPasswordForm() {
 
 export function UpdatePasswordForm() {
   const router = useRouter();
+  const { t } = useI18n();
+  const copy = t.auth.update;
   const [password, setPassword] = useState("");
   const [pending, setPending] = useState(false);
   return (
@@ -66,13 +69,13 @@ export function UpdatePasswordForm() {
         const result = await updatePasswordAction(password);
         setPending(false);
         if (!result.ok) return toast.error(result.message);
-        toast.success("Your password has been updated.");
+        toast.success(copy.updated);
         router.replace("/dashboard");
         router.refresh();
       }}
     >
       <label className="block text-sm font-semibold">
-        New password
+        {copy.label}
         <Input
           className="mt-2"
           type="password"
@@ -83,11 +86,9 @@ export function UpdatePasswordForm() {
           onChange={(event) => setPassword(event.target.value)}
         />
       </label>
-      <p className="text-xs text-muted-foreground">
-        Use at least eight characters with a letter and a number.
-      </p>
+      <p className="text-xs text-muted-foreground">{copy.hint}</p>
       <Button className="w-full" disabled={pending}>
-        {pending ? "Updating…" : "Update password"}
+        {pending ? copy.updating : copy.submit}
       </Button>
     </form>
   );

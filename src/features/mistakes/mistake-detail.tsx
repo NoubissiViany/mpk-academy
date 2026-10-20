@@ -6,43 +6,59 @@ import { useApp } from "@/components/providers/app-provider";
 import { EmptyState, PageHeader } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useI18n } from "@/i18n/client";
+import { focusLabel, lessonTitle } from "@/i18n/format";
 import { getMistakeDetail } from "@/lib/domain/personalization";
 
-export function MistakeDetail({ mistakeId }: { mistakeId: string }) {
+export function MistakeDetail({
+  mistakeId,
+  optionLabels = {},
+}: {
+  mistakeId: string;
+  optionLabels?: Record<string, Record<string, string>>;
+}) {
   const { state } = useApp();
+  const { t, locale } = useI18n();
+  const copy = t.mistakes.detail;
   const detail = getMistakeDetail(state, mistakeId);
   if (!detail)
     return (
       <>
         <EmptyState
-          title="Mistake pattern not found"
-          description="This pattern may no longer be part of your current exam profile."
+          title={copy.notFoundTitle}
+          description={copy.notFoundBody}
         />
         <Button asChild variant="secondary" className="mt-6">
-          <Link href="/mistakes">Return to mistakes</Link>
+          <Link href="/mistakes">{copy.returnTo}</Link>
         </Button>
       </>
     );
 
   const skill = detail.anchor.examSkill ?? "reading";
-  const practiceHref = `/practice/session?skill=${skill}&focus=${detail.anchor.competencyId}&count=10`;
+  const practiceHref = `/practice/session?skill=${skill}&focus=${detail.focus.competency}&count=10`;
+  const answerText = (questionId: string, answer: string) =>
+    answer ? (optionLabels[questionId]?.[answer] ?? answer) : copy.noAnswer;
   return (
     <>
       <Link
         href="/mistakes"
         className="mb-5 inline-flex items-center gap-1 text-sm font-bold text-primary hover:underline"
       >
-        <ArrowLeft className="size-4" /> Back to mistakes
+        <ArrowLeft className="size-4" aria-hidden="true" /> {copy.back}
       </Link>
       <PageHeader
-        eyebrow={detail.anchor.examSkill ?? "Weakness review"}
-        title={detail.title}
-        description={`You've struggled with this pattern ${detail.count} ${detail.count === 1 ? "time" : "times"}.`}
+        eyebrow={
+          detail.anchor.examSkill
+            ? t.practice.skills[detail.anchor.examSkill]
+            : copy.eyebrow
+        }
+        title={focusLabel(t, detail.focus)}
+        description={copy.struggled(detail.count)}
       />
 
       <section aria-labelledby="recent-examples">
         <h2 id="recent-examples" className="text-xl font-bold">
-          Most recent examples
+          {copy.examples}
         </h2>
         <div className="mt-4 space-y-4">
           {detail.examples.map((example) => (
@@ -50,15 +66,19 @@ export function MistakeDetail({ mistakeId }: { mistakeId: string }) {
               <CardContent className="grid gap-4 pt-6 md:grid-cols-2">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
-                    Your answer
+                    {copy.yourAnswer}
                   </p>
-                  <p className="mt-2 font-semibold">{example.learnerAnswer}</p>
+                  <p className="mt-2 font-semibold" lang="fr">
+                    {answerText(example.questionId, example.learnerAnswer)}
+                  </p>
                 </div>
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
-                    Correct answer
+                    {copy.correctAnswer}
                   </p>
-                  <p className="mt-2 font-semibold">{example.correctAnswer}</p>
+                  <p className="mt-2 font-semibold" lang="fr">
+                    {answerText(example.questionId, example.correctAnswer)}
+                  </p>
                 </div>
                 <p className="text-sm leading-6 text-muted-foreground md:col-span-2">
                   {example.explanation}
@@ -74,17 +94,19 @@ export function MistakeDetail({ mistakeId }: { mistakeId: string }) {
           <CardContent className="flex h-full flex-col pt-6">
             <BookOpen className="size-5 text-learn" aria-hidden="true" />
             <p className="mt-4 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
-              Recommended lesson
+              {copy.lessonEyebrow}
             </p>
             <h2 className="mt-2 text-xl font-bold">
-              {detail.lesson?.title ?? "Review the related lesson"}
+              {detail.lesson
+                ? lessonTitle(locale, detail.lesson)
+                : copy.lessonFallback}
             </h2>
             {detail.lesson && (
               <Button asChild className="mt-6 w-fit">
                 <Link
                   href={`/learn/${detail.lesson.moduleId}/${detail.lesson.id}`}
                 >
-                  Review lesson <ArrowRight className="size-4" />
+                  {copy.reviewLesson} <ArrowRight className="size-4" />
                 </Link>
               </Button>
             )}
@@ -94,12 +116,12 @@ export function MistakeDetail({ mistakeId }: { mistakeId: string }) {
           <CardContent className="flex h-full flex-col pt-6">
             <Target className="size-5 text-practice" aria-hidden="true" />
             <p className="mt-4 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
-              Recommended practice
+              {copy.practiceEyebrow}
             </p>
-            <h2 className="mt-2 text-xl font-bold">10 targeted questions</h2>
+            <h2 className="mt-2 text-xl font-bold">{copy.practiceTitle}</h2>
             <Button asChild className="mt-6 w-fit">
               <Link href={practiceHref}>
-                Practice weakness <ArrowRight className="size-4" />
+                {copy.practiceCta} <ArrowRight className="size-4" />
               </Link>
             </Button>
           </CardContent>

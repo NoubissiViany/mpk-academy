@@ -5,7 +5,8 @@ import { ArrowRight } from "lucide-react";
 import { PageHeader } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { examSkillContent, examSkillOrder } from "@/config/exams";
+import { examSkillOrder } from "@/config/exams";
+import { getLocale, getMessages } from "@/i18n/server";
 import {
   createEmptyExamProfile,
   getWeakestExamSkill,
@@ -24,10 +25,13 @@ export default async function ExamResultsPage({
 }) {
   const { assessment } = await searchParams;
   if (!assessment) notFound();
-  const [result, snapshot] = await Promise.all([
+  const [result, snapshot, t, locale] = await Promise.all([
     getAssessmentResult(assessment),
     getLearnerSnapshot(),
+    getMessages(),
+    getLocale(),
   ]);
+  const copy = t.exam.results;
   if (!result || result.kind !== "mock_exam") notFound();
   const answers = await getCompletedAssessmentAnswers(assessment);
   const exam = result.exam as ExamId;
@@ -36,26 +40,23 @@ export default async function ExamResultsPage({
   return (
     <>
       <PageHeader
-        eyebrow={`${exam} MPK practice simulation`}
-        title="Your independent performance"
-        description="Instructional support is available again. Use this saved practice evidence to choose what to strengthen next."
+        eyebrow={copy.eyebrow(exam)}
+        title={copy.title}
+        description={copy.description}
       />
       <div className="grid gap-5 lg:grid-cols-[.7fr_1.3fr]">
         <Card className="bg-exam text-white">
           <CardContent className="pt-6">
-            <p className="text-sm text-white/70">MPK comprehension result</p>
+            <p className="text-sm text-white/70">{copy.scoreLabel}</p>
             <p className="mt-3 text-6xl font-black">{result.score}%</p>
             <p className="mt-4 text-xs leading-5 text-white/60">
-              Independent practice simulation. This is not an official {exam}{" "}
-              score, immigration result, or prediction. This percentage uses
-              Reading and Listening only. Writing and Speaking are rehearsal
-              tasks and are not corrected or scored.
+              {copy.scoreNote(exam)}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="space-y-5 pt-6">
-            <h2 className="font-bold">Your four exam skills</h2>
+            <h2 className="font-bold">{copy.skillsTitle}</h2>
             {examSkillOrder.map((skill) => {
               const productive = skill === "writing" || skill === "speaking";
               return (
@@ -63,7 +64,7 @@ export default async function ExamResultsPage({
                   key={skill}
                   className="flex items-center justify-between border-b pb-3 last:border-0"
                 >
-                  <span>{examSkillContent[skill].label}</span>
+                  <span>{t.practice.skills[skill]}</span>
                   <strong>
                     {(() => {
                       const entries = answers.filter(
@@ -71,10 +72,18 @@ export default async function ExamResultsPage({
                           mockItems.find((i) => i.id === a.question_id)
                             ?.skill === skill,
                       );
-                      if (!entries.length) return "Historical result";
+                      if (!entries.length) return copy.historical;
                       if (productive)
-                        return `${entries.filter((a) => a.answer.trim()).length}/${entries.length} completed · not scored`;
-                      return `${Math.round((100 * entries.filter((a) => a.is_correct).length) / entries.length)}% practice accuracy`;
+                        return copy.productive(
+                          entries.filter((a) => a.answer.trim()).length,
+                          entries.length,
+                        );
+                      return copy.accuracy(
+                        Math.round(
+                          (100 * entries.filter((a) => a.is_correct).length) /
+                            entries.length,
+                        ),
+                      );
                     })()}
                   </strong>
                 </div>
@@ -84,7 +93,7 @@ export default async function ExamResultsPage({
         </Card>
       </div>
       <section className="mt-8 space-y-4">
-        <h2 className="text-2xl font-bold">Corrections and self-review</h2>
+        <h2 className="text-2xl font-bold">{copy.correctionsTitle}</h2>
         {answers.map((answer) => {
           const item = mockItems.find((i) => i.id === answer.question_id);
           if (!item) return null;
@@ -94,22 +103,30 @@ export default async function ExamResultsPage({
                 {item.kind === "mcq" ? item.prompt : item.title}
               </summary>
               <p className="mt-3">
-                Your response:{" "}
-                {item.kind === "mcq"
-                  ? (item.options.find((o) => o.id === answer.answer)?.label ??
-                    "Unanswered")
-                  : answer.answer || "Not completed"}
+                {copy.yourResponse}{" "}
+                <span lang="fr">
+                  {item.kind === "mcq"
+                    ? (item.options.find((o) => o.id === answer.answer)
+                        ?.label ?? copy.unanswered)
+                    : answer.answer || copy.notCompleted}
+                </span>
               </p>
               {item.kind === "mcq" ? (
                 <>
                   <p className="mt-3">
-                    Correct answer:{" "}
-                    {
-                      item.options.find((o) => o.id === item.correction.answer)
-                        ?.label
-                    }
+                    {copy.correctAnswer}{" "}
+                    <span lang="fr">
+                      {
+                        item.options.find(
+                          (o) => o.id === item.correction.answer,
+                        )?.label
+                      }
+                    </span>
                   </p>
-                  <p className="mt-3">{item.correction.explanation}</p>
+                  <p className="mt-3">
+                    {(locale === "fr" && item.correction.explanationFr) ||
+                      item.correction.explanation}
+                  </p>
                   {item.audio && (
                     <p className="mt-3 whitespace-pre-line" lang="fr">
                       {item.audio.transcript}
@@ -138,17 +155,17 @@ export default async function ExamResultsPage({
       <Card className="mt-5">
         <CardContent className="flex flex-col gap-5 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="eyebrow">Recommended next</p>
+            <p className="eyebrow">{copy.nextEyebrow}</p>
             <h2 className="mt-2 text-xl font-bold">
-              Practice {examSkillContent[weakest].label.toLowerCase()}
+              {copy.nextTitle(t.practice.skills[weakest])}
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              This is currently your weakest assessed exam skill.
+              {copy.nextBody}
             </p>
           </div>
           <Button asChild>
             <Link href={`/practice/session?skill=${weakest}`}>
-              Start targeted practice <ArrowRight className="size-4" />
+              {copy.nextCta} <ArrowRight className="size-4" />
             </Link>
           </Button>
         </CardContent>

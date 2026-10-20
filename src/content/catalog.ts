@@ -1,3 +1,5 @@
+// Contains answer keys and model responses: never import from client code.
+import "server-only";
 import { diagnosticItems } from "./diagnostic/questions";
 import { lessons as foundations } from "./shared/foundations";
 import { lessons as tefLessons } from "./tef/learn/lessons";

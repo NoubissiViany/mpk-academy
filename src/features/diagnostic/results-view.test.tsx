@@ -1,5 +1,5 @@
 import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AppProvider } from "@/components/providers/app-provider";
 import { defaultState } from "@/data/mock-state";
 import { diagnosticQuestions } from "@/data/questions";
@@ -12,9 +12,12 @@ import { ResultsView } from "./results-view";
 afterEach(() => {
   cleanup();
   localStorage.clear();
+  vi.unstubAllEnvs();
 });
 
 describe("ResultsView", () => {
+  beforeEach(() => vi.stubEnv("NEXT_PUBLIC_BETA_MODE", "false"));
+
   it("renders dynamic results, intake context, and the visitor handoff", async () => {
     const answers = Object.fromEntries(
       diagnosticQuestions
@@ -54,15 +57,16 @@ describe("ResultsView", () => {
       screen.getAllByText(/Listening — Not assessed yet/).length,
     ).toBeGreaterThan(0);
     expect(
-      screen.getByRole("link", { name: "Continue with Intensive" }),
-    ).toHaveAttribute("href", "/register?plan=intensive");
+      screen.getByRole("link", { name: "Continue with Complete" }),
+    ).toHaveAttribute("href", "/register?plan=complete");
+    expect(screen.getByText(/For a NCLC 9\+ goal/)).toBeVisible();
   });
 
   it.each([
     ["NCLC 5", "Essential", "essential"],
     ["NCLC 7", "Complete", "complete"],
     ["I'm not sure", "Complete", "complete"],
-    ["NCLC 9+", "Intensive", "intensive"],
+    ["NCLC 9+", "Complete", "complete"],
   ] as const)(
     "continues target %s through registration with %s",
     async (target, planName, planId) => {
@@ -153,9 +157,7 @@ describe("ResultsView", () => {
       await screen.findByRole("link", { name: "Continue with Essential" }),
     ).toHaveAttribute("href", "/checkout?plan=essential");
     expect(screen.getByText("Your selected plan")).toBeVisible();
-    expect(
-      screen.getByText(/your assessment recommends Complete/i),
-    ).toBeVisible();
+    expect(screen.getByText(/we recommend Complete/i)).toBeVisible();
   });
 
   it("falls back to the recommendation for an invalid stored plan", async () => {
@@ -187,5 +189,46 @@ describe("ResultsView", () => {
     expect(
       screen.getByRole("link", { name: "Start my assessment" }),
     ).toHaveAttribute("href", "/diagnostic");
+  });
+});
+
+describe("ResultsView during the closed beta", () => {
+  beforeEach(() => vi.stubEnv("NEXT_PUBLIC_BETA_MODE", "true"));
+
+  it("invites a visitor to create a beta account instead of buying a plan", async () => {
+    saveState({
+      ...defaultState,
+      user: null,
+      diagnosticIntake: {
+        goal: "TEF Canada",
+        target: "NCLC 7",
+        frenchExperience: "I know some French",
+      },
+      diagnosticResult: scoreDiagnostic(diagnosticQuestions, {}),
+    });
+    render(
+      <AppProvider>
+        <ResultsView />
+      </AppProvider>,
+    );
+
+    expect(
+      await screen.findByRole("link", { name: /Create my beta account/ }),
+    ).toHaveAttribute("href", "/register");
+    expect(screen.queryByText(/\$\d/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /Compare all plans/ }),
+    ).toBeNull();
+  });
+
+  it("sends a signed-in learner without access to beta activation", async () => {
+    render(
+      <AppProvider initialState={{ ...demoState, planAccess: null }}>
+        <ResultsView />
+      </AppProvider>,
+    );
+    expect(
+      await screen.findByRole("link", { name: /Activate beta access/ }),
+    ).toHaveAttribute("href", "/beta");
   });
 });

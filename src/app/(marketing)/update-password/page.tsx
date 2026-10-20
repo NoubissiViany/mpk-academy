@@ -1,17 +1,21 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { UpdatePasswordForm } from "@/features/auth/password-forms";
+import { getMessages } from "@/i18n/server";
 
-export const metadata = { title: "Choose a new password" };
+export async function generateMetadata() {
+  return { title: (await getMessages()).metadata.updatePassword };
+}
 
-export default function UpdatePasswordPage() {
+export default async function UpdatePasswordPage() {
+  const t = (await getMessages()).auth.update;
   return (
     <div className="container-page py-16">
       <Card className="mx-auto max-w-md">
         <CardContent className="pt-6">
-          <p className="eyebrow">Account recovery</p>
-          <h1 className="mt-3 text-3xl font-bold">Choose a new password.</h1>
+          <p className="eyebrow">{t.eyebrow}</p>
+          <h1 className="mt-3 text-3xl font-bold">{t.title}</h1>
           <p className="mt-3 mb-7 text-sm leading-6 text-muted-foreground">
-            This form is available after opening your recovery email.
+            {t.description}
           </p>
           <UpdatePasswordForm />
         </CardContent>

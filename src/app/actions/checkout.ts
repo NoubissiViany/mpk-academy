@@ -1,6 +1,6 @@
 "use server";
 
-import { isPaidPlanId } from "@/config/product";
+import { isBetaMode, isOfferedPlanId } from "@/config/product";
 import { createStripeCheckoutSession } from "@/lib/stripe/server";
 import { requireUserId } from "@/lib/supabase/learner";
 
@@ -20,7 +20,7 @@ export type CheckoutActionResult =
 export async function createCheckoutSessionAction(
   planId: string,
 ): Promise<CheckoutActionResult> {
-  if (!isPaidPlanId(planId))
+  if (isBetaMode() || !isOfferedPlanId(planId))
     return {
       ok: false,
       reason: "invalid_plan",

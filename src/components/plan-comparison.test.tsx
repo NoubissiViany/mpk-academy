@@ -30,13 +30,17 @@ vi.mock("sonner", () => ({
 
 describe("PlanComparison checkout intent", () => {
   beforeEach(() => {
+    vi.stubEnv("NEXT_PUBLIC_BETA_MODE", "false");
     Object.values(mocks).forEach((mock) => mock.mockReset());
     mocks.setCheckoutIntent.mockImplementation(async (planId: string) => ({
       ok: true,
       planId,
     }));
   });
-  afterEach(cleanup);
+  afterEach(() => {
+    cleanup();
+    vi.unstubAllEnvs();
+  });
 
   it("sends anonymous paid-plan selections directly to registration", () => {
     render(
@@ -52,8 +56,8 @@ describe("PlanComparison checkout intent", () => {
       screen.getByRole("link", { name: "Choose Complete" }),
     ).toHaveAttribute("href", "/register?plan=complete");
     expect(
-      screen.getByRole("link", { name: "Choose Intensive" }),
-    ).toHaveAttribute("href", "/register?plan=intensive");
+      screen.queryByRole("link", { name: "Choose Intensive" }),
+    ).not.toBeInTheDocument();
   });
 
   it("keeps the free plan on the assessment entry point", () => {
@@ -97,10 +101,10 @@ describe("PlanComparison checkout intent", () => {
       </AppProvider>,
     );
 
-    await user.click(screen.getByRole("button", { name: "Choose Intensive" }));
+    await user.click(screen.getByRole("button", { name: "Choose Complete" }));
 
     await waitFor(() =>
-      expect(mocks.push).toHaveBeenCalledWith("/checkout?plan=intensive"),
+      expect(mocks.push).toHaveBeenCalledWith("/checkout?plan=complete"),
     );
   });
 

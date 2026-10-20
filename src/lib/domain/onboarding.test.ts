@@ -110,6 +110,8 @@ describe("onboarding route resolution", () => {
     ).toBe("/login");
   });
 
+  const paid = { beta: false };
+
   it("requires the assessment before payment or student routes", () => {
     expect(
       resolveOnboardingDestination(
@@ -118,6 +120,8 @@ describe("onboarding route resolution", () => {
           diagnosticResult: null,
         },
         "/dashboard",
+        undefined,
+        paid,
       ),
     ).toBe("/diagnostic");
   });
@@ -127,6 +131,8 @@ describe("onboarding route resolution", () => {
       resolveOnboardingDestination(
         { ...demoState, planAccess: null },
         "/learn",
+        undefined,
+        paid,
       ),
     ).toBe("/diagnostic/results");
   });
@@ -141,10 +147,53 @@ describe("onboarding route resolution", () => {
     };
     const now = Date.parse("2026-09-24T00:00:00.000Z");
 
-    expect(getOnboardingStage(expiredState, now)).toBe("results_checkout");
-    expect(resolveOnboardingDestination(expiredState, "/dashboard", now)).toBe(
-      "/diagnostic/results",
+    expect(getOnboardingStage(expiredState, now, paid)).toBe(
+      "results_checkout",
     );
+    expect(
+      resolveOnboardingDestination(expiredState, "/dashboard", now, paid),
+    ).toBe("/diagnostic/results");
+  });
+
+  describe("during the closed beta", () => {
+    const beta = { beta: true };
+
+    it("requires invite access before anything else", () => {
+      expect(
+        resolveOnboardingDestination(
+          { ...demoState, diagnosticResult: null, planAccess: null },
+          "/dashboard",
+          undefined,
+          beta,
+        ),
+      ).toBe("/beta");
+    });
+
+    it("starts the assessment once access is active", () => {
+      expect(
+        resolveOnboardingDestination(
+          { ...demoState, diagnosticResult: null },
+          "/dashboard",
+          undefined,
+          beta,
+        ),
+      ).toBe("/diagnostic");
+    });
+
+    it("never routes to results or checkout", () => {
+      const expired = {
+        ...demoState,
+        planAccess: {
+          ...demoState.planAccess!,
+          accessUntil: "2026-09-23T00:00:00.000Z",
+        },
+      };
+      const now = Date.parse("2026-09-24T00:00:00.000Z");
+      expect(getOnboardingStage(expired, now, beta)).toBe("beta_access");
+      expect(
+        resolveOnboardingDestination(demoState, "/learn", undefined, beta),
+      ).toBe("/learn");
+    });
   });
 
   it("honors only student destinations after onboarding is complete", () => {

@@ -1,4 +1,6 @@
 "use client";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -11,6 +13,7 @@ import {
 import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useI18n } from "@/i18n/client";
 
 const schema = z.object({
   firstName: z.string().min(2),
@@ -40,16 +43,19 @@ function Field({
   );
 }
 export function SettingsForm() {
+  const router = useRouter();
   const { state, replaceState } = useApp();
+  const { t } = useI18n();
+  const copy = t.account.settings;
   const user = state.user;
   const activeExam =
     user?.goal.exam === "TCF Canada" ? "TCF Canada" : "TEF Canada";
   const form = useForm<Values>({
     resolver: zodResolver(schema),
     defaultValues: {
-      firstName: user?.firstName ?? "Alex",
-      lastName: user?.lastName ?? "Morgan",
-      email: user?.email ?? "alex@demo.mpk",
+      firstName: user?.firstName ?? "",
+      lastName: user?.lastName ?? "",
+      email: user?.email ?? "",
       locale: user?.locale ?? "en",
       assistance: user?.assistance ?? "full",
       exam: activeExam,
@@ -92,20 +98,22 @@ export function SettingsForm() {
       return;
     }
     replaceState(goalResult.snapshot);
-    toast.success(`${values.exam} dashboard activated`);
+    toast.success(copy.saved(values.exam));
+    // Server-rendered text follows the saved language.
+    if (values.locale !== user.locale) router.refresh();
   };
   return (
     <form onSubmit={form.handleSubmit(submit)} className="space-y-8">
       <section className="rounded-2xl border bg-card p-5 sm:p-7">
-        <h2 className="text-lg font-bold">Profile</h2>
+        <h2 className="text-lg font-bold">{copy.profile}</h2>
         <div className="mt-5 grid gap-5 sm:grid-cols-2">
-          <Field label="First name">
+          <Field label={copy.firstName}>
             <Input className="mt-2" {...form.register("firstName")} />
           </Field>
-          <Field label="Last name">
+          <Field label={copy.lastName}>
             <Input className="mt-2" {...form.register("lastName")} />
           </Field>
-          <Field label="Email">
+          <Field label={copy.email}>
             <Input
               className="mt-2"
               type="email"
@@ -117,55 +125,56 @@ export function SettingsForm() {
               id="email-help"
               className="mt-1 block text-xs font-normal text-muted-foreground"
             >
-              Email changes are managed through account security.
+              {copy.emailHelp}
             </span>
           </Field>
         </div>
       </section>
       <section className="rounded-2xl border bg-card p-5 sm:p-7">
-        <h2 className="text-lg font-bold">Learning preferences</h2>
+        <h2 className="text-lg font-bold">{copy.preferences}</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          These choices affect instruction and correction. Exam Mode always
-          remains French-first.
+          {copy.preferencesHelp}
         </p>
         <div className="mt-5 grid gap-5 sm:grid-cols-2">
-          <Field label="Instructional support language">
+          <Field label={copy.locale}>
             <select className={select} {...form.register("locale")}>
-              <option value="en">English</option>
-              <option value="fr">Français</option>
+              <option value="en">{t.common.language.english}</option>
+              <option value="fr">{t.common.language.french}</option>
             </select>
           </Field>
-          <Field label="English assistance">
+          <Field label={copy.assistance}>
             <select className={select} {...form.register("assistance")}>
-              <option value="full">Full support</option>
-              <option value="on_request">Only when requested</option>
-              <option value="minimal">Minimal support</option>
+              <option value="full">{copy.assistanceOptions.full}</option>
+              <option value="on_request">
+                {copy.assistanceOptions.on_request}
+              </option>
+              <option value="minimal">{copy.assistanceOptions.minimal}</option>
             </select>
           </Field>
         </div>
       </section>
       <section className="rounded-2xl border bg-card p-5 sm:p-7">
-        <h2 className="text-lg font-bold">Exam goal</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Switching activates that exam&apos;s independent dashboard. Your other
-          exam history is preserved.
-        </p>
+        <h2 className="text-lg font-bold">{copy.goal}</h2>
+        <p className="mt-2 text-sm text-muted-foreground">{copy.goalHelp}</p>
         <div className="mt-5 grid gap-5 sm:grid-cols-3">
-          <Field label="Exam">
+          <Field label={copy.exam}>
             <select className={select} {...form.register("exam")}>
-              <option>TEF Canada</option>
-              <option>TCF Canada</option>
+              <option value="TEF Canada">TEF Canada</option>
+              <option value="TCF Canada">TCF Canada</option>
             </select>
           </Field>
-          <Field label="NCLC target">
+          <Field label={copy.target}>
             <select className={select} {...form.register("target")}>
-              <option>NCLC 5</option>
-              <option>NCLC 7</option>
-              <option>NCLC 9+</option>
-              <option>{"I'm not sure"}</option>
+              {(["NCLC 5", "NCLC 7", "NCLC 9+", "I'm not sure"] as const).map(
+                (value) => (
+                  <option key={value} value={value}>
+                    {t.diagnostic.intake.targets[value]}
+                  </option>
+                ),
+              )}
             </select>
           </Field>
-          <Field label="Target date (optional)">
+          <Field label={copy.targetDate}>
             <Input
               className="mt-2"
               type="date"
@@ -175,15 +184,19 @@ export function SettingsForm() {
         </div>
       </section>
       <section className="rounded-2xl border bg-card p-5 sm:p-7">
-        <h2 className="text-lg font-bold">Account & privacy</h2>
+        <h2 className="text-lg font-bold">{copy.privacy}</h2>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Your profile and learning progress are stored securely in your
-          account. Account export and deletion controls will be added before
-          general availability.
+          {copy.privacyBody}
         </p>
+        <Link
+          href="/privacy"
+          className="mt-3 inline-block text-sm font-semibold text-primary hover:underline"
+        >
+          {copy.privacyLink}
+        </Link>
       </section>
       <Button type="submit" size="lg" disabled={form.formState.isSubmitting}>
-        {form.formState.isSubmitting ? "Saving…" : "Save changes"}
+        {form.formState.isSubmitting ? t.common.saving : t.common.save}
       </Button>
     </form>
   );

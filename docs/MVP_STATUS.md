@@ -14,7 +14,9 @@
 | Mistake review                    | Per-user RLS and restricted status update                | Integrated  |
 | Purchases/entitlements            | Atomic Stripe fulfillment; no browser writes             | Integrated  |
 | Checkout                          | Stripe-hosted payment, tax, webhook, refund revocation   | Integrated  |
-| Certificate                       | Existing UI; server issuance/verification still required | Deferred    |
+| Closed beta access                | Invite codes, seat limit, `/admin` tools                 | Integrated  |
+| Bilingual interface (EN/FR)       | Typed messages; lesson bodies still English              | Partial     |
+| Certificate                       | Removed until server issuance/verification exists        | Removed     |
 | Storage, Realtime, Edge Functions | Not used                                                 | Deferred    |
 
-Question definitions are still application-owned mock content. Before public exam delivery, move secure question retrieval behind a trusted server boundary so answer keys are not bundled into active client sessions.
+Answer keys, explanations, and model responses stay on the server: lessons, practice, and the diagnostic receive redacted content and are checked by server actions. `npm run check:bundle` verifies the browser bundle after each build.

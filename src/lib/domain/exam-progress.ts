@@ -5,7 +5,6 @@ import type {
   ExamId,
   ExamPreparationProfile,
   ExamSkill,
-  Mistake,
   WeeklyExamStats,
 } from "@/types/domain";
 
@@ -95,12 +94,16 @@ export function currentWeeklyStats(stats: WeeklyExamStats, value = new Date()) {
     : emptyWeeklyStats(value);
 }
 
-export function getSkillStatus(score: number | null) {
-  if (score === null) return "Not assessed yet";
-  if (score >= 70) return "On track";
-  if (score >= 55) return "Improving";
-  if (score >= 50) return "Needs attention";
-  return "Priority";
+export type SkillStatus =
+  "notAssessed" | "onTrack" | "improving" | "needsAttention" | "priority";
+
+/** A translation key; components render it with `t.practice.status`. */
+export function getSkillStatus(score: number | null): SkillStatus {
+  if (score === null) return "notAssessed";
+  if (score >= 70) return "onTrack";
+  if (score >= 55) return "improving";
+  if (score >= 50) return "needsAttention";
+  return "priority";
 }
 
 export function getWeakestExamSkill(profile: ExamPreparationProfile) {
@@ -117,28 +120,6 @@ export function getWeakestExamSkill(profile: ExamPreparationProfile) {
       )
       .sort((a, b) => a.score - b.score || a.order - b.order)[0]?.skill ?? null
   );
-}
-
-export function aggregateMistakePatterns(mistakes: Mistake[]) {
-  const patterns = new Map<string, Mistake>();
-  for (const mistake of mistakes) {
-    const key = `${mistake.exam ?? "general"}:${mistake.examSkill ?? "other"}:${mistake.pattern ?? mistake.mistakeCategory}`;
-    const existing = patterns.get(key);
-    patterns.set(
-      key,
-      existing
-        ? {
-            ...existing,
-            count: (existing.count ?? 1) + (mistake.count ?? 1),
-            timestamp:
-              existing.timestamp > mistake.timestamp
-                ? existing.timestamp
-                : mistake.timestamp,
-          }
-        : { ...mistake, count: mistake.count ?? 1 },
-    );
-  }
-  return [...patterns.values()].sort((a, b) => (b.count ?? 1) - (a.count ?? 1));
 }
 
 export function updateExamSkill(

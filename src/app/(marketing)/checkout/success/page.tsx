@@ -1,4 +1,5 @@
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { isBetaMode } from "@/config/product";
 import { CheckoutSuccessView } from "@/features/checkout/checkout-success-view";
 import { fulfillStripeCheckout } from "@/lib/payments";
 import { retrieveStripeCheckoutSession } from "@/lib/stripe/server";
@@ -14,6 +15,7 @@ export default async function CheckoutSuccessPage({
 }: {
   searchParams: Promise<{ session_id?: string | string[] }>;
 }) {
+  if (isBetaMode()) notFound();
   const value = (await searchParams).session_id;
   const sessionId = Array.isArray(value) ? value[0] : value;
   if (!sessionId || !/^cs_[A-Za-z0-9_]{1,200}$/.test(sessionId))

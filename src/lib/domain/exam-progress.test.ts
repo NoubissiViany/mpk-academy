@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { examConfigurations, productiveTasks } from "@/config/exams";
+import { examConfigurations } from "@/config/exams";
+import { getPublicProductiveTasks } from "@/lib/server/content";
+import { groupMistakes, mistakeFocus } from "@/lib/domain/personalization";
 import { demoState } from "@/test/fixtures";
 import {
   activateExamProfile,
   createEmptyExamProfile,
-  aggregateMistakePatterns,
   currentWeeklyStats,
   getSkillStatus,
   getWeakestExamSkill,
@@ -89,11 +90,12 @@ describe("exam preparation profiles", () => {
 
   it("applies status thresholds and deterministic priority", () => {
     expect([70, 55, 50, 49].map(getSkillStatus)).toEqual([
-      "On track",
-      "Improving",
-      "Needs attention",
-      "Priority",
+      "onTrack",
+      "improving",
+      "needsAttention",
+      "priority",
     ]);
+    expect(getSkillStatus(null)).toBe("notAssessed");
     const profile = createEmptyExamProfile("TEF Canada");
     profile.skills.reading.current = 40;
     profile.skills.listening.current = 40;
@@ -116,12 +118,44 @@ describe("exam preparation profiles", () => {
       pattern: "Numbers and dates",
       count: 2,
     };
-    const result = aggregateMistakePatterns([
-      base,
-      { ...base, id: "two", count: 3 },
-    ]);
+    const result = groupMistakes([base, { ...base, id: "two", count: 3 }]);
     expect(result).toHaveLength(1);
     expect(result[0].count).toBe(5);
+  });
+
+  it("merges legacy and canonical competency ids into one weakness", () => {
+    const legacy = {
+      id: "legacy",
+      questionId: "d4",
+      competencyId: "listening-detail" as const,
+      mistakeCategory: "Missed detail" as const,
+      learnerAnswer: "a",
+      correctAnswer: "b",
+      explanation: "Review the detail.",
+      timestamp: "2026-09-14T12:00:00Z",
+      reviewStatus: "new" as const,
+      exam: "TEF Canada" as const,
+      examSkill: "listening" as const,
+      pattern: "Understanding specific details",
+    };
+    const current = {
+      ...legacy,
+      id: "current",
+      competencyId: "specific_detail" as const,
+      pattern: "specific_detail",
+    };
+    const transcript = {
+      ...current,
+      id: "transcript",
+      pattern: "Transcript exercise · specific_detail",
+    };
+    expect(mistakeFocus(legacy)).toEqual({
+      competency: "specific_detail",
+      transcript: false,
+    });
+    const groups = groupMistakes([legacy, current, transcript]);
+    expect(groups.map((group) => group.count)).toEqual([2, 1]);
+    expect(mistakeFocus(groups[1]).transcript).toBe(true);
   });
 });
 
@@ -137,12 +171,8 @@ describe("distinct exam configuration fixtures", () => {
       speakingTasks: 3,
       durationMinutes: 167,
     });
-    expect(
-      productiveTasks["TEF Canada"].filter((task) => task.skill === "writing"),
-    ).toHaveLength(4);
-    expect(
-      productiveTasks["TCF Canada"].filter((task) => task.skill === "writing"),
-    ).toHaveLength(6);
+    expect(getPublicProductiveTasks("TEF Canada", "writing")).toHaveLength(4);
+    expect(getPublicProductiveTasks("TCF Canada", "writing")).toHaveLength(6);
     expect(examConfigurations["TEF Canada"].officialFormat.listening).toContain(
       "one-way",
     );

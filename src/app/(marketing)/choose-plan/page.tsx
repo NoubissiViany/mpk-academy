@@ -1,5 +1,6 @@
 import { PlanComparison } from "@/components/plan-comparison";
-import { paidPlans } from "@/config/product";
+import { notFound } from "next/navigation";
+import { isBetaMode, paidPlans } from "@/config/product";
 
 export const metadata = {
   title: "Choose your plan",
@@ -7,6 +8,7 @@ export const metadata = {
 };
 
 export default function ChoosePlanPage() {
+  if (isBetaMode()) notFound();
   return (
     <div className="container-page py-16">
       <div className="mx-auto max-w-2xl text-center">

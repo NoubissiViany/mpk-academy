@@ -1,5 +1,10 @@
 import { ResultsView } from "@/features/diagnostic/results-view";
-export const metadata = { title: "French assessment results" };
+import { getMessages } from "@/i18n/server";
+
+export async function generateMetadata() {
+  return { title: (await getMessages()).metadata.results };
+}
+
 export default function DiagnosticResultsPage() {
   return (
     <div className="container-page py-10 sm:py-14">

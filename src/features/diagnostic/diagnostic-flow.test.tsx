@@ -11,6 +11,7 @@ import { AppProvider } from "@/components/providers/app-provider";
 import { productConfig } from "@/config/product";
 import { diagnosticQuestions } from "@/data/questions";
 import { scoreDiagnostic } from "@/lib/domain/diagnostic";
+import { toPublicQuestion } from "@/lib/server/content";
 import { guestAssessmentRepository } from "@/repositories/guest-assessment";
 import { demoState } from "@/test/fixtures";
 import { DiagnosticFlow } from "./diagnostic-flow";
@@ -22,6 +23,7 @@ const mocks = vi.hoisted(() => ({
   submitDiagnostic: vi.fn(),
   updateProfile: vi.fn(),
   toastError: vi.fn(),
+  scoreGuest: vi.fn(),
 }));
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mocks.push, refresh: mocks.refresh }),
@@ -31,10 +33,15 @@ vi.mock("@/app/actions/learner", () => ({
   submitDiagnosticAction: mocks.submitDiagnostic,
   updateProfileAction: mocks.updateProfile,
 }));
+vi.mock("@/app/actions/content", () => ({
+  scoreGuestDiagnosticAction: mocks.scoreGuest,
+}));
 vi.mock("sonner", () => ({
   toast: { error: mocks.toastError },
   Toaster: () => null,
 }));
+
+const publicQuestions = diagnosticQuestions.map(toPublicQuestion);
 
 async function completeAssessment(user: ReturnType<typeof userEvent.setup>) {
   await user.click(screen.getByRole("button", { name: /Start my assessment/ }));
@@ -65,6 +72,38 @@ afterEach(() => {
 });
 
 describe("DiagnosticFlow", () => {
+  it("ships questions to the browser without answer keys", () => {
+    for (const question of publicQuestions)
+      expect(question).not.toHaveProperty("correctAnswer");
+  });
+
+  it("scores a guest on the server and keeps the result on this device", async () => {
+    const user = userEvent.setup();
+    Object.defineProperty(window, "scrollTo", {
+      value: vi.fn(),
+      writable: true,
+    });
+    const serverResult = scoreDiagnostic(diagnosticQuestions, {});
+    mocks.scoreGuest.mockResolvedValue({ ok: true, result: serverResult });
+    render(
+      <AppProvider>
+        <DiagnosticFlow questions={publicQuestions} />
+      </AppProvider>,
+    );
+    await user.click(await screen.findByLabelText("Prepare for TEF Canada"));
+    await user.click(screen.getByLabelText("NCLC 7"));
+    await user.click(screen.getByLabelText("I know some French"));
+    await completeAssessment(user);
+
+    await waitFor(() =>
+      expect(mocks.push).toHaveBeenCalledWith("/diagnostic/results"),
+    );
+    expect(mocks.scoreGuest).toHaveBeenCalledOnce();
+    expect((await guestAssessmentRepository.getActive())?.result).toEqual(
+      serverResult,
+    );
+  }, 10_000);
+
   it("prefills the exam and target saved during registration", async () => {
     render(
       <AppProvider
@@ -76,7 +115,7 @@ describe("DiagnosticFlow", () => {
           diagnosticResult: null,
         }}
       >
-        <DiagnosticFlow />
+        <DiagnosticFlow questions={publicQuestions} />
       </AppProvider>,
     );
 
@@ -95,7 +134,7 @@ describe("DiagnosticFlow", () => {
     });
     render(
       <AppProvider>
-        <DiagnosticFlow />
+        <DiagnosticFlow questions={publicQuestions} />
       </AppProvider>,
     );
 
@@ -135,7 +174,7 @@ describe("DiagnosticFlow", () => {
     });
     render(
       <AppProvider>
-        <DiagnosticFlow />
+        <DiagnosticFlow questions={publicQuestions} />
       </AppProvider>,
     );
     await user.click(await screen.findByLabelText("I'm not sure yet"));
@@ -166,6 +205,10 @@ describe("DiagnosticFlow", () => {
       reason: "unauthenticated",
       message: "Your session has expired. Sign in again to save your progress.",
     });
+    mocks.scoreGuest.mockResolvedValue({
+      ok: true,
+      result: scoreDiagnostic(diagnosticQuestions, {}),
+    });
     render(
       <AppProvider
         initialState={{
@@ -174,7 +217,7 @@ describe("DiagnosticFlow", () => {
           diagnosticResult: null,
         }}
       >
-        <DiagnosticFlow />
+        <DiagnosticFlow questions={publicQuestions} />
       </AppProvider>,
     );
 
@@ -224,7 +267,7 @@ describe("DiagnosticFlow", () => {
           diagnosticResult: null,
         }}
       >
-        <DiagnosticFlow />
+        <DiagnosticFlow questions={publicQuestions} />
       </AppProvider>,
     );
 
@@ -256,7 +299,7 @@ describe("DiagnosticFlow", () => {
           diagnosticResult: null,
         }}
       >
-        <DiagnosticFlow />
+        <DiagnosticFlow questions={publicQuestions} />
       </AppProvider>,
     );
 

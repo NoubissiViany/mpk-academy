@@ -30,7 +30,8 @@ function paidSessionDetails(
   if (session.payment_status !== "paid")
     throw new Error("Checkout payment is not complete.");
 
-  const plan = getPaidPlan(planId)!;
+  const plan = getPaidPlan(planId);
+  if (!plan) throw new Error("Checkout plan is no longer offered.");
   const lineItems = session.line_items?.data ?? [];
   if (
     lineItems.length !== 1 ||

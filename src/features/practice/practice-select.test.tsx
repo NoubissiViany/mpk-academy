@@ -19,8 +19,9 @@ describe("personalized practice landing", () => {
     );
 
     expect(await screen.findByText("54% · Needs attention")).toBeVisible();
-    expect(screen.getByText(/Specific details/)).toBeVisible();
-    expect(screen.getByText(/Numbers and dates/)).toBeVisible();
+    // Legacy "Numbers and dates" mistakes now count toward Specific details.
+    expect(screen.getAllByText(/Specific details/).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/Numbers and dates/)).not.toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: "Practice recommended weakness" }),
     ).toHaveAttribute("href", expect.stringContaining("skill=listening"));

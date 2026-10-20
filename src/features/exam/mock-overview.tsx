@@ -5,18 +5,21 @@ import { LockedContent, ModeBadge, PageHeader } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { mockSummaries } from "@/content/mock-summaries";
+import { useI18n } from "@/i18n/client";
 import { canAccessExam } from "@/lib/domain/access";
 export function MockOverview() {
   const { state } = useApp();
+  const { t } = useI18n();
+  const copy = t.exam.overview;
   if (!canAccessExam(state.planAccess))
     return (
       <>
         <PageHeader
-          eyebrow="Mock Exams"
-          title="Measure independent performance."
-          description="Four-skill MPK practice simulations."
+          eyebrow={copy.eyebrow}
+          title={copy.lockedTitle}
+          description={copy.lockedDescription}
         />
-        <LockedContent title="Unlock Mock Exams" />
+        <LockedContent title={copy.unlock} />
       </>
     );
   const exam = state.user?.goal.exam === "TCF Canada" ? "TCF" : "TEF";
@@ -25,21 +28,21 @@ export function MockOverview() {
     <>
       <PageHeader
         eyebrow={`${exam} Canada`}
-        title="Mock Exams"
-        description="A full-length MPK practice simulation, independently authored. This is not an official examination and does not produce an official score."
+        title={copy.title}
+        description={copy.description}
         action={<ModeBadge mode="exam" />}
       />
       <div className="grid gap-4 sm:grid-cols-2">
         {mock.sections.map((section) => (
           <Card key={section.skill}>
             <CardContent className="pt-6">
-              <h2 className="text-xl font-bold capitalize">{section.skill}</h2>
+              <h2 className="text-xl font-bold">
+                {t.practice.skills[section.skill]}
+              </h2>
               <p className="mt-3">
-                {section.count}{" "}
-                {["reading", "listening"].includes(section.skill)
-                  ? "questions"
-                  : "tasks"}{" "}
-                · {section.durationSeconds / 60} minutes
+                {(["reading", "listening"].includes(section.skill)
+                  ? copy.questions
+                  : copy.tasks)(section.count, section.durationSeconds / 60)}
               </p>
             </CardContent>
           </Card>
@@ -47,37 +50,30 @@ export function MockOverview() {
       </div>
       <Card className="mt-6">
         <CardContent className="space-y-4 pt-6">
-          <h2 className="text-xl font-bold">{exam} Canada · MPK Mock 01</h2>
+          <h2 className="text-xl font-bold">{copy.mockTitle(exam)}</h2>
           <p>
-            {mock.sections.reduce((n, s) => n + s.durationSeconds, 0) / 60}{" "}
-            minutes total
+            {copy.totalMinutes(
+              mock.sections.reduce((n, s) => n + s.durationSeconds, 0) / 60,
+            )}
           </p>
-          <p>
-            Writing and speaking are rehearsal-only. Speaking is timed
-            self-practice without a live interlocutor, recording, or AI
-            evaluation.
-          </p>
-          {!mock.ready && (
-            <p role="status">
-              Audio pending — the complete mock is unavailable until all
-              original recordings are ready. Transcript exercises are available
-              in Practice.
-            </p>
-          )}
+          <p>{copy.productiveNote}</p>
+          {!mock.ready && <p role="status">{copy.audioPending}</p>}
           <Button asChild>
-            <Link href="/exam/setup">Review simulation format</Link>
+            <Link href="/exam/setup">{copy.reviewFormat}</Link>
           </Button>
         </CardContent>
       </Card>
     </>
   );
 }
+// The setup screen is French-first like the exam itself (Exam Mode).
 export function MockSetup() {
   const { state } = useApp();
+  const { t } = useI18n();
   const exam = state.user?.goal.exam === "TCF Canada" ? "TCF" : "TEF";
   const mock = mockSummaries.find((m) => m.exam === exam)!;
   if (!canAccessExam(state.planAccess))
-    return <LockedContent title="Unlock Mock Exams" />;
+    return <LockedContent title={t.exam.overview.unlock} />;
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <PageHeader
@@ -105,7 +101,7 @@ export function MockSetup() {
         </Button>
       ) : (
         <>
-          <Button disabled>Audio pending — simulation unavailable</Button>
+          <Button disabled>{t.exam.setup.unavailable}</Button>
           <p>
             Les transcriptions restent disponibles pour un entraînement
             clairement identifié dans Practice.

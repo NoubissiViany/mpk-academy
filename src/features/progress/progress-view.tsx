@@ -4,8 +4,9 @@ import { useApp } from "@/components/providers/app-provider";
 import { PageHeader } from "@/components/shared";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { examSkillContent, examSkillOrder } from "@/config/exams";
+import { examSkillOrder } from "@/config/exams";
 import { hasPlanFeature } from "@/config/product";
+import { useI18n } from "@/i18n/client";
 import {
   createEmptyExamProfile,
   getWeakestExamSkill,
@@ -13,14 +14,12 @@ import {
 
 export function ProgressView() {
   const { state } = useApp();
+  const { t } = useI18n();
+  const copy = t.account.progress;
+  const skills = t.practice.skills;
   const exam = state.user?.goal.exam;
   if (exam !== "TEF Canada" && exam !== "TCF Canada") {
-    return (
-      <PageHeader
-        title="Progress"
-        description="Choose your exam on the dashboard to begin tracking exam-specific progress."
-      />
-    );
+    return <PageHeader title={copy.title} description={copy.chooseExam} />;
   }
   const profile = state.examProfiles[exam] ?? createEmptyExamProfile(exam);
   if (!hasPlanFeature(state.planAccess, "detailedReadiness")) {
@@ -28,36 +27,22 @@ export function ProgressView() {
       <>
         <PageHeader
           eyebrow={exam}
-          title="Progress"
-          description="Your course and practice activity with the Essential plan."
+          title={copy.title}
+          description={copy.basicDescription}
         />
         <div className="grid gap-5 sm:grid-cols-3">
-          <Card>
-            <CardContent className="pt-6">
-              <p className="text-sm text-muted-foreground">Course completion</p>
-              <p className="mt-2 text-3xl font-bold">
-                {state.progress.courseCompletion}%
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <p className="text-sm text-muted-foreground">
-                Practice questions
-              </p>
-              <p className="mt-2 text-3xl font-bold">
-                {state.progress.practiceAnswered}
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <p className="text-sm text-muted-foreground">Practice accuracy</p>
-              <p className="mt-2 text-3xl font-bold">
-                {state.progress.practiceAccuracy}%
-              </p>
-            </CardContent>
-          </Card>
+          {[
+            [copy.courseCompletion, `${state.progress.courseCompletion}%`],
+            [copy.practiceQuestions, String(state.progress.practiceAnswered)],
+            [copy.practiceAccuracy, `${state.progress.practiceAccuracy}%`],
+          ].map(([label, value]) => (
+            <Card key={label}>
+              <CardContent className="pt-6">
+                <p className="text-sm text-muted-foreground">{label}</p>
+                <p className="mt-2 text-3xl font-bold">{value}</p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </>
     );
@@ -80,45 +65,45 @@ export function ProgressView() {
     readiness !== null && readinessBaseline !== null
       ? readiness - readinessBaseline
       : null;
+  const signed = (value: number) =>
+    `${value >= 0 ? "+" : ""}${Math.round(value)}`;
 
   return (
     <>
       <PageHeader
         eyebrow={exam}
-        title="Progress"
-        description="Your diagnostic readiness and assessed-skill movement over the last 30 days."
+        title={copy.title}
+        description={copy.description}
       />
       <Card>
         <CardContent className="pt-6">
-          <p className="text-sm font-semibold">Diagnostic readiness</p>
+          <p className="text-sm font-semibold">{copy.readiness}</p>
           <div className="mt-4 flex items-baseline gap-3">
             <span className="text-muted-foreground">
               {readinessBaseline === null ? "—" : `${readinessBaseline}%`}
             </span>
-            <span>→</span>
+            <span aria-hidden="true">→</span>
             <strong className="text-3xl">
-              {readiness === null ? "Not assessed yet" : `${readiness}%`}
+              {readiness === null ? copy.notAssessed : `${readiness}%`}
             </strong>
-            {readinessChange !== null && (
+            {readinessChange !== null && readinessChange !== 0 && (
               <span className="font-bold text-primary">
-                ↑ {readinessChange >= 0 ? "+" : ""}
-                {Math.round(readinessChange)}%
+                {signed(readinessChange)}%
               </span>
             )}
           </div>
           <Progress
             className="mt-4"
             value={readiness ?? 0}
-            label="Diagnostic readiness"
+            label={copy.readiness}
           />
           <p className="mt-3 text-xs text-muted-foreground">
-            This readiness comes from your latest diagnostic and is not changed
-            by practice or MPK mock results.
+            {copy.readinessNote}
           </p>
         </CardContent>
       </Card>
       <h2 className="mt-9 text-sm font-bold tracking-[0.14em]">
-        SKILL PROGRESS
+        {copy.skillProgress}
       </h2>
       <Card className="mt-4">
         <CardContent className="space-y-7 pt-6">
@@ -131,10 +116,10 @@ export function ProgressView() {
             return (
               <div key={skill}>
                 <div className="mb-2 flex flex-wrap items-center justify-between gap-3 text-sm">
-                  <strong>{examSkillContent[skill].label}</strong>
+                  <strong>{skills[skill]}</strong>
                   {values.current === null ? (
                     <span className="font-semibold text-muted-foreground">
-                      Not assessed yet
+                      {copy.notAssessed}
                     </span>
                   ) : (
                     <span>
@@ -142,9 +127,9 @@ export function ProgressView() {
                         {values.baseline30Days ?? values.current}% →{" "}
                       </span>
                       <strong>{values.current}%</strong>
-                      {change !== null && (
+                      {change !== null && change !== 0 && (
                         <span className="ml-3 font-bold text-primary">
-                          ↑{change}
+                          {signed(change)}
                         </span>
                       )}
                     </span>
@@ -152,7 +137,7 @@ export function ProgressView() {
                 </div>
                 <Progress
                   value={values.current ?? 0}
-                  label={`${examSkillContent[skill].label} progress`}
+                  label={copy.skillLabel(skills[skill])}
                 />
               </div>
             );
@@ -163,22 +148,22 @@ export function ProgressView() {
         <Card>
           <CardContent className="pt-6">
             <p className="text-xs font-bold tracking-[0.14em] text-muted-foreground">
-              YOUR BIGGEST IMPROVEMENT
+              {copy.biggest}
             </p>
             <p className="mt-3 text-2xl font-bold">
-              {biggest
-                ? `${examSkillContent[biggest.skill].label} ↑${biggest.change}`
-                : "More evidence needed"}
+              {biggest && biggest.change! > 0
+                ? `${skills[biggest.skill]} ${signed(biggest.change!)}`
+                : copy.moreEvidence}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
             <p className="text-xs font-bold tracking-[0.14em] text-muted-foreground">
-              CURRENT PRIORITY
+              {copy.priority}
             </p>
             <p className="mt-3 text-2xl font-bold">
-              {priority ? examSkillContent[priority].label : "Not assessed yet"}
+              {priority ? skills[priority] : copy.notAssessed}
             </p>
           </CardContent>
         </Card>

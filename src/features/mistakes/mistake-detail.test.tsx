@@ -18,12 +18,11 @@ describe("mistake detail", () => {
     );
 
     expect(
-      await screen.findByRole("heading", {
-        name: "Understanding specific details",
-      }),
+      await screen.findByRole("heading", { name: "Specific details" }),
     ).toBeVisible();
+    // Legacy listening-detail rows merge into the canonical competency.
     expect(
-      screen.getByText(/struggled with this pattern 8 times/),
+      screen.getByText(/struggled with this pattern 13 times/),
     ).toBeVisible();
     expect(
       screen.getByRole("heading", {
@@ -34,7 +33,26 @@ describe("mistake detail", () => {
       screen.getByRole("link", { name: /Practice weakness/ }),
     ).toHaveAttribute(
       "href",
-      "/practice/session?skill=listening&focus=listening-detail&count=10",
+      "/practice/session?skill=listening&focus=specific_detail&count=10",
     );
+  });
+
+  it("shows option text instead of stored option ids", async () => {
+    const mistake = demoState.mistakes.find((item) => item.id === "m1")!;
+    render(
+      <AppProvider initialState={demoState}>
+        <MistakeDetail
+          mistakeId="m1"
+          optionLabels={{
+            [mistake.questionId]: {
+              [mistake.learnerAnswer]: "Learner option text",
+              [mistake.correctAnswer]: "Correct option text",
+            },
+          }}
+        />
+      </AppProvider>,
+    );
+    expect(await screen.findByText("Learner option text")).toBeVisible();
+    expect(screen.getByText("Correct option text")).toBeVisible();
   });
 });

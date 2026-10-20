@@ -5,6 +5,7 @@ import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
 import { mockSummaries } from "@/content/mock-summaries";
 import { mockSessionEvent } from "@/app/actions/mock-session";
+import { useI18n } from "@/i18n/client";
 import type { MockSessionPayload } from "./mock-types";
 import type { Question, ProductivePracticeTask } from "@/types/domain";
 // Historical unit-test/API compatibility. Current scoring is authoritative in Supabase.
@@ -24,19 +25,21 @@ export function scoreMockComprehension(
       Math.max(q.length, 1),
   );
 }
+// The timed session is French-only by design (Exam Mode). Only the
+// pre-session unavailable notice follows the interface language.
 export function ScaledMockSession() {
   const { state } = useApp();
+  const { t } = useI18n();
   const exam = state.user?.goal.exam === "TCF Canada" ? "TCF" : "TEF";
   const summary = mockSummaries.find((m) => m.exam === exam)!;
   if (!summary.ready)
     return (
       <div className="mx-auto max-w-3xl space-y-4">
-        <h1 className="text-3xl font-bold">Simulation MPK · {exam} Canada</h1>
-        <p>
-          Audio pending — full mock unavailable. No transcript substitution is
-          permitted in a mock.
-        </p>
-        <p>Cette simulation d’entraînement n’est pas un examen officiel.</p>
+        <h1 className="text-3xl font-bold">
+          {t.exam.session.unavailableTitle(exam)}
+        </h1>
+        <p>{t.exam.session.unavailable}</p>
+        <p>{t.exam.session.notOfficial}</p>
       </div>
     );
   return <TimedSession manifestId={summary.id} />;

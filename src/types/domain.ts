@@ -132,8 +132,9 @@ export interface Competency {
 }
 
 export interface Lesson {
-  content?: import("@/content/shared/types").LearningLesson;
   id: string;
+  exam?: "TEF" | "TCF" | "shared";
+  skill?: string;
   moduleId: string;
   sequence: number;
   title: string;
@@ -190,6 +191,20 @@ export interface FillBlankQuestion extends QuestionBase {
 }
 
 export type Question = MultipleChoiceQuestion | FillBlankQuestion;
+
+type AnswerKeyFields = "correctAnswer" | "explanation" | "explanationFr";
+
+/** A question as sent to the browser: no answer key or explanation. */
+export type PublicQuestion =
+  | Omit<MultipleChoiceQuestion, AnswerKeyFields>
+  | Omit<FillBlankQuestion, AnswerKeyFields>;
+
+/** Server verdict for one answer, returned only after the learner answers. */
+export interface AnswerFeedback {
+  correct: boolean;
+  correctAnswer: string;
+  explanation: string;
+}
 
 export interface Attempt {
   questionId: string;

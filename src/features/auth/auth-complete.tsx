@@ -7,14 +7,18 @@ import {
   getLearnerSnapshotAction,
 } from "@/app/actions/learner";
 import { useApp } from "@/components/providers/app-provider";
+import { isBetaMode } from "@/config/product";
+import { useI18n } from "@/i18n/client";
 import { clearAnonymousState } from "@/lib/persistence";
-import { withErrorReference } from "@/lib/public-error";
 import { guestAssessmentRepository } from "@/repositories/guest-assessment";
 import { resolveOnboardingDestination } from "@/lib/domain/onboarding";
 
 export function AuthComplete() {
   const router = useRouter();
   const { replaceState } = useApp();
+  const { t } = useI18n();
+  const copy = t.auth.complete;
+  const formatError = t.common.errorReference;
   const [error, setError] = useState<string>();
 
   useEffect(() => {
@@ -32,10 +36,7 @@ export function AuthComplete() {
         const snapshotResult = await getLearnerSnapshotAction();
         if (!snapshotResult.ok) {
           setError(
-            withErrorReference(
-              snapshotResult.message,
-              snapshotResult.reference,
-            ),
+            formatError(snapshotResult.message, snapshotResult.reference),
           );
           return;
         }
@@ -47,7 +48,7 @@ export function AuthComplete() {
         clearAnonymousState();
       }
       router.replace(
-        guest
+        guest && !isBetaMode()
           ? `/checkout?plan=${snapshot.checkoutIntentPlanId ?? guest.recommendedPlanId}`
           : resolveOnboardingDestination(snapshot),
       );
@@ -56,15 +57,13 @@ export function AuthComplete() {
     return () => {
       active = false;
     };
-  }, [replaceState, router]);
+  }, [formatError, replaceState, router]);
 
   return (
     <div className="container-page py-20 text-center">
-      <p className="eyebrow">Account confirmed</p>
+      <p className="eyebrow">{copy.eyebrow}</p>
       <h1 className="mt-3 text-3xl font-bold">
-        {error
-          ? "We could not finish loading your account."
-          : "Preparing your learning profile…"}
+        {error ? copy.failed : copy.preparing}
       </h1>
       {error && <p className="mt-4 text-sm text-danger">{error}</p>}
     </div>

@@ -1,6 +1,6 @@
 import type { DiagnosticResult, Question } from "@/types/domain";
 import {
-  diagnosticSkillContent,
+  diagnosticSkillModules,
   diagnosticSkillOrder,
 } from "@/config/diagnostic";
 import { clamp } from "@/lib/utils";
@@ -91,6 +91,6 @@ export function scoreDiagnostic(
     skillScores,
     strength: ranked[0]?.skill ?? "grammar",
     priority,
-    recommendedModuleId: diagnosticSkillContent[priority].moduleId,
+    recommendedModuleId: diagnosticSkillModules[priority],
   };
 }

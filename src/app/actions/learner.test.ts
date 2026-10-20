@@ -4,6 +4,13 @@ const mocks = vi.hoisted(() => ({
   getSnapshot: vi.fn(),
   requireUser: vi.fn(),
   rpc: vi.fn(),
+  updateUser: vi.fn(),
+  setCookie: vi.fn(),
+}));
+
+vi.mock("next/headers", () => ({
+  cookies: async () => ({ get: () => undefined, set: mocks.setCookie }),
+  headers: async () => new Headers(),
 }));
 
 vi.mock("@/lib/supabase/learner", () => ({
@@ -11,7 +18,11 @@ vi.mock("@/lib/supabase/learner", () => ({
   requireUserId: mocks.requireUser,
 }));
 
-import { getLearnerSnapshotAction, submitDiagnosticAction } from "./learner";
+import {
+  getLearnerSnapshotAction,
+  submitDiagnosticAction,
+  updateProfileAction,
+} from "./learner";
 
 const submission = {
   submissionId: "30000000-0000-4000-8000-000000000003",
@@ -134,6 +145,58 @@ describe("learner action failures", () => {
       reason: "profile_unavailable",
       message: expect.stringContaining("learning profile"),
       reference: expect.any(String),
+    });
+  });
+});
+
+describe("updateProfileAction", () => {
+  const profile = {
+    firstName: "Amina",
+    lastName: "Diallo",
+    locale: "fr",
+    assistance: "full",
+  } as const;
+
+  const signedInAs = (metadataLocale: string | undefined) =>
+    mocks.requireUser.mockResolvedValue({
+      userId: "user-1",
+      claims: { sub: "user-1", user_metadata: { locale: metadataLocale } },
+      supabase: { rpc: mocks.rpc, auth: { updateUser: mocks.updateUser } },
+    });
+
+  beforeEach(() => {
+    mocks.rpc.mockReset().mockResolvedValue({ data: null, error: null });
+    mocks.updateUser.mockReset().mockResolvedValue({ error: null });
+    mocks.getSnapshot.mockReset().mockResolvedValue({ user: null });
+    vi.spyOn(console, "error").mockImplementation(() => undefined);
+  });
+
+  afterEach(() => vi.restoreAllMocks());
+
+  it("moves auth emails to the new interface language", async () => {
+    signedInAs("en");
+    await expect(updateProfileAction(profile)).resolves.toMatchObject({
+      ok: true,
+    });
+    expect(mocks.updateUser).toHaveBeenCalledWith({ data: { locale: "fr" } });
+    expect(mocks.setCookie).toHaveBeenCalledWith(
+      "mpk_locale",
+      "fr",
+      expect.any(Object),
+    );
+  });
+
+  it("skips the auth update when the language is unchanged", async () => {
+    signedInAs("fr");
+    await updateProfileAction(profile);
+    expect(mocks.updateUser).not.toHaveBeenCalled();
+  });
+
+  it("keeps the saved profile when the email language cannot sync", async () => {
+    signedInAs("en");
+    mocks.updateUser.mockResolvedValue({ error: new Error("auth offline") });
+    await expect(updateProfileAction(profile)).resolves.toMatchObject({
+      ok: true,
     });
   });
 });

@@ -24,12 +24,13 @@ export async function mockSessionEvent(
 ): Promise<
   { ok: true; data: MockSessionPayload } | { ok: false; message: string }
 > {
+  // Messages are French: they appear inside the French-only Exam Mode screen.
   const parsed = eventSchema.safeParse(event);
   if (
     !parsed.success ||
     (sessionId !== null && !z.string().uuid().safeParse(sessionId).success)
   )
-    return { ok: false, message: "Invalid session request." };
+    return { ok: false, message: "Requête de session invalide." };
   const { supabase } = await requireUserId();
   const { data, error } = await supabase.rpc("mpk_mock_event", {
     p_session_id: sessionId,
@@ -41,15 +42,15 @@ export async function mockSessionEvent(
       ok: false,
       message:
         error.code === "55000"
-          ? "Audio pending: full mock unavailable."
-          : "This action is unavailable. Resume the session to check its current state.",
+          ? "Audio en préparation : examen blanc complet indisponible."
+          : "Cette action est indisponible. Reprenez la session pour vérifier son état actuel.",
     };
   const result = data as unknown as Omit<
     MockSessionPayload,
     "manifest" | "item" | "serverNow"
   > & { audioGranted: boolean };
   const manifest = manifests.find((m) => m.id === result.manifestId);
-  if (!manifest) return { ok: false, message: "Unknown simulation." };
+  if (!manifest) return { ok: false, message: "Simulation inconnue." };
   const serverNow = Date.now();
   const source = mockItems.find(
     (i) =>

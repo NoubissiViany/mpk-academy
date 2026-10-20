@@ -1,3 +1,4 @@
+import { isBetaMode } from "@/config/product";
 import { emptyProgress } from "@/data/mock-state";
 import { createEmptyExamProfile } from "@/lib/domain/exam-progress";
 import type {
@@ -12,10 +13,15 @@ import type {
 } from "@/types/domain";
 
 export type OnboardingStage =
-  "authentication" | "assessment" | "results_checkout" | "complete";
+  | "authentication"
+  | "beta_access"
+  | "assessment"
+  | "results_checkout"
+  | "complete";
+
+type OnboardingOptions = { beta?: boolean };
 
 type StudentRoute =
-  | "certificate"
   | "dashboard"
   | "exam"
   | "learn"
@@ -28,6 +34,7 @@ type StudentRoute =
 
 export type OnboardingDestination =
   | "/login"
+  | "/beta"
   | "/diagnostic"
   | "/diagnostic/results"
   | `/${StudentRoute}${string}`;
@@ -38,7 +45,6 @@ type OnboardingState = Pick<
 >;
 
 const studentRoutes = new Set<StudentRoute>([
-  "certificate",
   "dashboard",
   "exam",
   "learn",
@@ -75,8 +81,14 @@ function requestedStudentDestination(path?: string): OnboardingDestination {
 export function getOnboardingStage(
   state: OnboardingState,
   now = Date.now(),
+  { beta = isBetaMode() }: OnboardingOptions = {},
 ): OnboardingStage {
   if (!state.user) return "authentication";
+  // Beta access is granted by invite, so it gates the app before the diagnostic.
+  if (beta) {
+    if (!activePlanAccess(state, now)) return "beta_access";
+    return state.diagnosticResult ? "complete" : "assessment";
+  }
   if (!state.diagnosticResult) return "assessment";
   if (!activePlanAccess(state, now)) return "results_checkout";
   return "complete";
@@ -86,9 +98,11 @@ export function resolveOnboardingDestination(
   state: OnboardingState,
   requestedPath?: string,
   now = Date.now(),
+  options: OnboardingOptions = {},
 ): OnboardingDestination {
-  const stage = getOnboardingStage(state, now);
+  const stage = getOnboardingStage(state, now, options);
   if (stage === "authentication") return "/login";
+  if (stage === "beta_access") return "/beta";
   if (stage === "assessment") return "/diagnostic";
   if (stage === "results_checkout") return "/diagnostic/results";
   return requestedStudentDestination(requestedPath);

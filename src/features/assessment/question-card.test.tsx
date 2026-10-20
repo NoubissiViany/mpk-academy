@@ -1,34 +1,57 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { diagnosticQuestions } from "@/data/questions";
+import { toPublicQuestion } from "@/lib/server/content";
 import { QuestionCard } from "./question-card";
+
+const question = toPublicQuestion(diagnosticQuestions[0]);
+const feedback = {
+  correct: false,
+  correctAnswer: diagnosticQuestions[0].correctAnswer,
+  explanation: diagnosticQuestions[0].explanation,
+};
+
+afterEach(cleanup);
+
 describe("QuestionCard", () => {
   it("supports keyboard-accessible option selection", () => {
     const onChange = vi.fn();
-    render(
-      <QuestionCard question={diagnosticQuestions[0]} onChange={onChange} />,
-    );
+    render(<QuestionCard question={question} onChange={onChange} />);
     fireEvent.click(
-      screen.getByRole("radio", {
-        name: diagnosticQuestions[0].options![0].label,
-      }),
+      screen.getByRole("radio", { name: question.options![0].label }),
     );
-    expect(onChange).toHaveBeenCalledWith(
-      diagnosticQuestions[0].options![0].id,
-    );
+    expect(onChange).toHaveBeenCalledWith(question.options![0].id);
   });
+
+  it("receives no answer key from the public projection", () => {
+    expect(question).not.toHaveProperty("correctAnswer");
+    expect(question).not.toHaveProperty("explanation");
+    expect(question).not.toHaveProperty("explanationFr");
+  });
+
+  it("shows server feedback in practice", () => {
+    render(
+      <QuestionCard
+        question={question}
+        value="z"
+        onChange={() => undefined}
+        feedback={feedback}
+      />,
+    );
+    expect(screen.getByText("Not quite")).toBeInTheDocument();
+    expect(screen.getByText(feedback.explanation)).toBeInTheDocument();
+  });
+
   it("suppresses instructional feedback in exam mode", () => {
     render(
       <QuestionCard
-        question={diagnosticQuestions[0]}
+        question={question}
         value="b"
         onChange={() => undefined}
-        reveal
+        feedback={feedback}
         exam
       />,
     );
-    expect(
-      screen.queryByText(diagnosticQuestions[0].explanation),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(feedback.explanation)).not.toBeInTheDocument();
   });
 });

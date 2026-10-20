@@ -11,8 +11,7 @@ export type PlanFeature =
   | "mistakeReview"
   | "examStrategies"
   | "mockExams"
-  | "detailedReadiness"
-  | "certificate";
+  | "detailedReadiness";
 export type PlanEntitlements = Readonly<Record<PlanFeature, boolean>>;
 
 export interface ProductPlan {
@@ -40,7 +39,6 @@ export const productConfig = {
     percentageBps: 290,
     fixedMinor: 30,
   },
-  freeLessonCount: 3,
   supportedLanguages: ["en", "fr"] satisfies Locale[],
   storageKey: "mpk-academy:v1",
   storageNamespaceVersionKey: "mpk-academy:storage-version",
@@ -52,10 +50,6 @@ export const productConfig = {
   guestAssessmentStorageKey: "mpk-academy:guest-assessment:v2",
   guestAssessmentTtlMs: 7 * 24 * 60 * 60 * 1000,
   localeCookie: "mpk_locale",
-  readinessDisclaimer:
-    "MPK diagnostic readiness is a provisional learning indicator based on the latest assessment. It is not an official TEF/TCF score or immigration outcome.",
-  certificateDisclaimer:
-    "This is a course completion certificate, not an official TEF/TCF score or immigration credential.",
 } as const;
 
 export const productPlans = [
@@ -116,25 +110,6 @@ export const productPlans = [
     cta: "Choose Complete",
     featured: true,
   },
-  {
-    id: "intensive",
-    name: "Intensive",
-    bestFor: "Candidates near exam day or preparing for a retake.",
-    highlights: [
-      "Everything in Complete",
-      "Higher writing and speaking feedback limits coming later",
-      "Additional mock-attempt capacity coming later",
-    ],
-    priceMinor: 35_973,
-    targetNetMinor: 34_900,
-    approximate: false,
-    paymentModel: "One-time purchase",
-    access: "6 months",
-    accessMonths: 6,
-    purpose: "Full preparation with future higher feedback and mock limits",
-    cta: "Choose Intensive",
-    featured: false,
-  },
 ] as const satisfies readonly ProductPlan[];
 
 export const paidPlans = productPlans.filter(
@@ -152,7 +127,6 @@ const freeEntitlements: PlanEntitlements = {
   examStrategies: false,
   mockExams: false,
   detailedReadiness: false,
-  certificate: false,
 };
 
 const essentialEntitlements: PlanEntitlements = {
@@ -169,7 +143,6 @@ const completeEntitlements: PlanEntitlements = {
   examStrategies: true,
   mockExams: true,
   detailedReadiness: true,
-  certificate: true,
 };
 
 export const planEntitlements: Readonly<
@@ -178,16 +151,33 @@ export const planEntitlements: Readonly<
   free: freeEntitlements,
   essential: essentialEntitlements,
   complete: completeEntitlements,
+  // Retired from sale; kept so historical entitlements keep their access.
   intensive: completeEntitlements,
 };
 
+const retiredPlans: Record<
+  Exclude<PaidPlanId, OfferedPlanId>,
+  { name: string; accessMonths: number }
+> = {
+  intensive: { name: "Intensive", accessMonths: 6 },
+};
+
+export type OfferedPlanId = (typeof paidPlans)[number]["id"];
+
 export const isPaidPlanId = (value: unknown): value is PaidPlanId =>
   value === "essential" || value === "complete" || value === "intensive";
+
+export const isOfferedPlanId = (value: unknown): value is OfferedPlanId =>
+  paidPlans.some((plan) => plan.id === value);
 
 export const getPaidPlan = (value?: string | string[]) => {
   const planId = Array.isArray(value) ? value[0] : value;
   return paidPlans.find((plan) => plan.id === planId);
 };
+
+export const planDisplayName = (planId: PaidPlanId) =>
+  getPaidPlan(planId)?.name ??
+  retiredPlans[planId as keyof typeof retiredPlans].name;
 
 export const getActivePlanId = (
   planAccess: {
@@ -202,18 +192,17 @@ export const hasPlanFeature = (
 
 export const recommendedPaidPlanId = (
   target?: DiagnosticTarget,
-): PaidPlanId => {
-  if (target === "NCLC 5") return "essential";
-  if (target === "NCLC 9+") return "intensive";
-  return "complete";
-};
+): OfferedPlanId => (target === "NCLC 5" ? "essential" : "complete");
 
-export const featureFlags = {
-  enableReadiness: true,
-  enableExamMode: true,
-  enableMistakeReview: true,
-  enableCertificate: true,
-} as const;
+/**
+ * The closed beta hides pricing and checkout and grants access through invite
+ * codes. It is on unless explicitly disabled, so a deployment can never start
+ * selling by omission. Read at call time so tests can toggle it.
+ */
+export const isBetaMode = () => process.env.NEXT_PUBLIC_BETA_MODE !== "false";
+
+export const contactEmail = () =>
+  process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || null;
 
 export const formatPrice = (
   amountMinor: number = productConfig.priceMinor,
@@ -240,7 +229,9 @@ export function calculatePlanAccessUntil(
   planId: PaidPlanId,
   purchasedAt = new Date(),
 ) {
-  const months = paidPlans.find((plan) => plan.id === planId)!.accessMonths;
+  const months =
+    getPaidPlan(planId)?.accessMonths ??
+    retiredPlans[planId as keyof typeof retiredPlans].accessMonths;
   const accessUntil = new Date(purchasedAt);
   const originalDay = accessUntil.getUTCDate();
   accessUntil.setUTCDate(1);

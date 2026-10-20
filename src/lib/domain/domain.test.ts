@@ -1,25 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { mockCourse } from "@/data/course";
-import { defaultProgress } from "@/test/fixtures";
 import { diagnosticQuestions } from "@/data/questions";
-import { canAccessCertificate, canAccessExam, canAccessLesson } from "./access";
-import { isCertificateEligible } from "./certificate";
+import { canAccessExam, canAccessLesson } from "./access";
 import { scoreDiagnostic } from "./diagnostic";
-import { calculateReadiness, READINESS_ALGORITHM_VERSION } from "./readiness";
-import { generateRecommendations } from "./recommendations";
 
-describe("diagnostic readiness", () => {
-  it("returns no score until a diagnostic exists", () => {
-    expect(
-      calculateReadiness({ ...defaultProgress, diagnosticScore: null }).overall,
-    ).toBeNull();
-  });
-  it("uses the diagnostic result without mock activity weighting", () => {
-    const result = calculateReadiness(defaultProgress);
-    expect(result.algorithmVersion).toBe(READINESS_ALGORITHM_VERSION);
-    expect(result.overall).toBe(defaultProgress.diagnosticScore);
-  });
-});
 describe("diagnostic scoring", () => {
   it("contains 20 questions sampling four objective categories", () => {
     expect(diagnosticQuestions).toHaveLength(20);
@@ -72,7 +55,7 @@ describe("access policies", () => {
     accessUntil: null,
   };
   const complete = { ...essential, planId: "complete" as const };
-  it("enforces plan-specific learning, exam, and certificate access", () => {
+  it("enforces plan-specific learning and exam access", () => {
     expect(
       canAccessLesson(essential, {
         isFree: false,
@@ -87,27 +70,5 @@ describe("access policies", () => {
     ).toBe(false);
     expect(canAccessExam(essential)).toBe(false);
     expect(canAccessExam(complete)).toBe(true);
-    expect(canAccessCertificate(complete, true)).toBe(true);
-  });
-});
-describe("recommendations and certificate", () => {
-  it("prioritizes a missing diagnostic", () => {
-    expect(
-      generateRecommendations(
-        { ...defaultProgress, diagnosticScore: null },
-        [],
-      )[0].type,
-    ).toBe("diagnostic");
-  });
-  it("requires all lessons and a passing quiz average", () => {
-    expect(isCertificateEligible(mockCourse, defaultProgress)).toBe(false);
-    const ids = mockCourse.modules.flatMap((m) => m.lessons).map((l) => l.id);
-    expect(
-      isCertificateEligible(mockCourse, {
-        ...defaultProgress,
-        completedLessonIds: ids,
-        quizAverage: 70,
-      }),
-    ).toBe(true);
   });
 });

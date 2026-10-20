@@ -6,6 +6,7 @@ const mocks = vi.hoisted(() => ({
   resend: vi.fn(),
   resetPassword: vi.fn(),
   updateUser: vi.fn(),
+  rpc: vi.fn(),
 }));
 
 vi.mock("@/lib/app-url", () => ({
@@ -20,6 +21,7 @@ vi.mock("@/lib/supabase/server", () => ({
       resetPasswordForEmail: mocks.resetPassword,
       updateUser: mocks.updateUser,
     },
+    rpc: mocks.rpc,
   }),
 }));
 
@@ -39,15 +41,20 @@ const registration = {
   locale: "en",
   exam: "TEF Canada",
   target: "NCLC 7",
+  privacyConsent: true,
 } as const;
 
 describe("authentication action failures", () => {
   beforeEach(() => {
     Object.values(mocks).forEach((mock) => mock.mockReset());
     vi.spyOn(console, "error").mockImplementation(() => undefined);
+    vi.stubEnv("NEXT_PUBLIC_BETA_MODE", "false");
   });
 
-  afterEach(() => vi.restoreAllMocks());
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllEnvs();
+  });
 
   it("returns an explicit unconfirmed-email result", async () => {
     mocks.signIn.mockResolvedValue({
@@ -149,20 +156,32 @@ describe("authentication action failures", () => {
     });
   });
 
-  it("stores a validated selected plan in signup metadata", async () => {
+  it("stores a validated selected plan and privacy consent in signup metadata", async () => {
     mocks.signUp.mockResolvedValue({ data: { session: null }, error: null });
 
-    await signUpAction({ ...registration, planId: "intensive" });
+    await signUpAction({ ...registration, planId: "complete" });
 
     expect(mocks.signUp).toHaveBeenCalledWith(
       expect.objectContaining({
         options: expect.objectContaining({
           data: expect.objectContaining({
-            checkout_intent_plan_id: "intensive",
+            checkout_intent_plan_id: "complete",
+            privacy_notice_version: expect.any(String),
+            privacy_accepted_at: expect.any(String),
           }),
         }),
       }),
     );
+  });
+
+  it("refuses a sign-up without privacy consent", async () => {
+    await expect(
+      signUpAction({
+        ...registration,
+        privacyConsent: false as unknown as true,
+      }),
+    ).resolves.toMatchObject({ ok: false, reason: "invalid_submission" });
+    expect(mocks.signUp).not.toHaveBeenCalled();
   });
 
   it("updates an authenticated learner's checkout intent", async () => {
@@ -182,6 +201,65 @@ describe("authentication action failures", () => {
       ok: false,
       reason: "invalid_plan",
       reference: expect.any(String),
+    });
+    expect(mocks.updateUser).not.toHaveBeenCalled();
+  });
+});
+
+describe("closed beta sign-up", () => {
+  beforeEach(() => {
+    Object.values(mocks).forEach((mock) => mock.mockReset());
+    vi.spyOn(console, "error").mockImplementation(() => undefined);
+    vi.stubEnv("NEXT_PUBLIC_BETA_MODE", "true");
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllEnvs();
+  });
+
+  it("checks the invite before creating the account and stores it for redemption", async () => {
+    mocks.rpc.mockResolvedValue({ data: "valid", error: null });
+    mocks.signUp.mockResolvedValue({ data: { session: null }, error: null });
+
+    await expect(
+      signUpAction({
+        ...registration,
+        inviteCode: " mpk-abcd-efgh ",
+        planId: "complete",
+      }),
+    ).resolves.toEqual({ ok: true, confirmationRequired: true });
+
+    expect(mocks.rpc).toHaveBeenCalledWith("mpk_check_beta_invite", {
+      p_code: "mpk-abcd-efgh",
+    });
+    const metadata = mocks.signUp.mock.calls[0][0].options.data;
+    expect(metadata.beta_invite_code).toBe("mpk-abcd-efgh");
+    expect(metadata).not.toHaveProperty("checkout_intent_plan_id");
+  });
+
+  it("rejects a used invite without creating an account", async () => {
+    mocks.rpc.mockResolvedValue({ data: "exhausted", error: null });
+
+    await expect(
+      signUpAction({ ...registration, inviteCode: "MPK-ABCD-EFGH" }),
+    ).resolves.toMatchObject({ ok: false, reason: "invite_exhausted" });
+    expect(mocks.signUp).not.toHaveBeenCalled();
+  });
+
+  it("requires an invite code", async () => {
+    await expect(signUpAction(registration)).resolves.toMatchObject({
+      ok: false,
+      reason: "invite_invalid",
+    });
+    expect(mocks.rpc).not.toHaveBeenCalled();
+    expect(mocks.signUp).not.toHaveBeenCalled();
+  });
+
+  it("does not record checkout intents", async () => {
+    await expect(setCheckoutIntentAction("complete")).resolves.toMatchObject({
+      ok: false,
+      reason: "invalid_plan",
     });
     expect(mocks.updateUser).not.toHaveBeenCalled();
   });

@@ -1,28 +1,42 @@
-import { getLearnerSnapshot } from "@/lib/supabase/learner";
 import Link from "next/link";
 import { ChevronRight, Clock3 } from "lucide-react";
 import { PageHeader } from "@/components/shared";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { getCourseModules } from "@/data/course";
+import { getLocale, getMessages } from "@/i18n/server";
+import { lessonTitle, moduleTitle } from "@/i18n/format";
+import { getLearnerAccess } from "@/lib/supabase/learner";
+
 export default async function ModulePage({
   params,
 }: {
   params: Promise<{ moduleId: string }>;
 }) {
   const { moduleId } = await params;
-  const snapshot = await getLearnerSnapshot();
-  const courseModules = getCourseModules(
-    snapshot.user?.goal.exam === "TCF Canada" ? "TCF" : "TEF",
+  const [{ exam }, t, locale] = await Promise.all([
+    getLearnerAccess(),
+    getMessages(),
+    getLocale(),
+  ]);
+  const examCode = exam === "TCF Canada" ? "TCF" : "TEF";
+  const courseModule = getCourseModules(examCode).find(
+    (item) => item.id === moduleId,
   );
-  const courseModule = courseModules.find((item) => item.id === moduleId);
-  if (!courseModule) return <p>Module not found.</p>;
+  if (!courseModule) return <p>{t.learn.module.notFound}</p>;
+  const title =
+    courseModule.id === "exam-strategies"
+      ? t.learn.strategiesTitle(examCode)
+      : moduleTitle(t, courseModule.id);
   return (
     <>
       <PageHeader
-        eyebrow="Explore lessons"
-        title={courseModule.title}
-        description={courseModule.description}
+        eyebrow={t.learn.page.eyebrow}
+        title={title}
+        description={
+          courseModule.id === "exam-strategies"
+            ? t.learn.strategiesDescription(examCode)
+            : t.learn.moduleDescription
+        }
       />
       <div className="space-y-3">
         {courseModule.lessons.map((lesson) => (
@@ -32,19 +46,18 @@ export default async function ModulePage({
                 {lesson.sequence}
               </span>
               <div className="flex-1">
-                <h2 className="font-bold">{lesson.title}</h2>
+                <h2 className="font-bold">{lessonTitle(locale, lesson)}</h2>
                 <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
-                  <Clock3 className="size-3" />
-                  {lesson.duration} min
+                  <Clock3 className="size-3" aria-hidden="true" />
+                  {t.common.minutes(lesson.duration)}
                 </p>
               </div>
-              {lesson.isFree && <Badge>Free</Badge>}
               <Link
                 href={`/learn/${courseModule.id}/${lesson.id}`}
-                aria-label={`Open ${lesson.title}`}
+                aria-label={t.learn.module.open(lessonTitle(locale, lesson))}
                 className="rounded-lg p-2 text-primary hover:bg-muted"
               >
-                <ChevronRight />
+                <ChevronRight aria-hidden="true" />
               </Link>
             </CardContent>
           </Card>

@@ -128,3 +128,37 @@ export function candidateItem(item: ContentItem): CandidateItem {
       : {}),
   };
 }
+
+/** Browser-safe lesson metadata: no lesson body or checkpoint answer. */
+export type LessonSummary = Pick<
+  LearningLesson,
+  | "id"
+  | "exam"
+  | "skill"
+  | "moduleId"
+  | "title"
+  | "titleFr"
+  | "level"
+  | "estimatedTime"
+  | "isFree"
+  | "competencies"
+  | "objectives"
+>;
+
+/** Browser-safe practice item metadata used for counts and focus areas. */
+export type PracticeSummary = Pick<
+  ContentItem,
+  "id" | "exam" | "skill" | "kind" | "level" | "competencies"
+>;
+
+/** A lesson as sent to an entitled learner: the checkpoint answer stays on the server. */
+export type PublicLessonContent = Omit<LearningLesson, "checkpoint"> & {
+  checkpoint: Omit<LearningLesson["checkpoint"], "answer" | "explanation">;
+};
+
+/** A productive task as sent to the browser: the model response is fetched after review. */
+export type PublicProductiveTask = Omit<ProductiveTask, "correction"> & {
+  correction: Omit<ProductiveTask["correction"], "modelResponse"> & {
+    hasModelResponse: boolean;
+  };
+};

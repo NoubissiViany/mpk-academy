@@ -1,7 +1,16 @@
+import { TrackFunnelStep } from "@/components/track-funnel-step";
 import { AuthForm } from "@/features/auth/auth-form";
 import { Card, CardContent } from "@/components/ui/card";
-import { isPaidPlanId } from "@/config/product";
-export const metadata = { title: "Create account" };
+import { isBetaMode, isOfferedPlanId } from "@/config/product";
+import { getMessages } from "@/i18n/server";
+
+export async function generateMetadata() {
+  return { title: (await getMessages()).metadata.register };
+}
+
+const first = (value?: string | string[]) =>
+  Array.isArray(value) ? value[0] : value;
+
 export default async function RegisterPage({
   searchParams,
 }: {
@@ -11,29 +20,26 @@ export default async function RegisterPage({
   }>;
 }) {
   const resolved = await searchParams;
-  const rawPlan = resolved.plan;
-  const candidate = Array.isArray(rawPlan) ? rawPlan[0] : rawPlan;
-  const planId = isPaidPlanId(candidate) ? candidate : undefined;
+  const t = (await getMessages()).auth.register;
+  const beta = isBetaMode();
+  const candidate = first(resolved.plan);
+  const planId = isOfferedPlanId(candidate) ? candidate : undefined;
   return (
     <div className="container-page py-16">
       <Card className="mx-auto max-w-xl">
         <CardContent className="pt-6">
-          <p className="eyebrow">Create your account</p>
+          <p className="eyebrow">{t.eyebrow}</p>
           <h1 className="mt-3 text-3xl font-bold">
-            Start with your free assessment.
+            {beta ? t.betaTitle : t.title}
           </h1>
           <p className="mt-3 mb-7 text-sm leading-6 text-muted-foreground">
-            If you already completed the assessment, we will keep your results
-            and continue with your selected plan. Otherwise, your assessment
-            will identify your level and recommend the preparation plan that
-            fits your goal. You will confirm your email before signing in.
+            {beta ? t.betaDescription : t.description}
           </p>
+          <TrackFunnelStep step="register_view" />
           <AuthForm
             mode="register"
             planId={planId}
-            nextPath={
-              Array.isArray(resolved.next) ? resolved.next[0] : resolved.next
-            }
+            nextPath={first(resolved.next)}
           />
         </CardContent>
       </Card>
