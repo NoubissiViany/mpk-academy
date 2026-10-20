@@ -77,23 +77,21 @@ describe("original MPK seed", () => {
     expect(scoreDiagnostic(qs, answers)).toEqual(perfect);
   });
   it("counts listening only when ready audio is supplied", () => {
-    const qs = diagnosticItems
-      .map(toQuestion)
-      .map((q) =>
-        q.metadata?.audio
-          ? {
-              ...q,
-              metadata: {
-                ...q.metadata,
-                audio: {
-                  ...q.metadata.audio,
-                  status: "ready" as const,
-                  path: "/test-only/audio.wav",
-                },
+    const qs = diagnosticItems.map(toQuestion).map((q) =>
+      q.metadata?.audio
+        ? {
+            ...q,
+            metadata: {
+              ...q.metadata,
+              audio: {
+                ...q.metadata.audio,
+                status: "ready" as const,
+                path: "/test-only/audio.wav",
               },
-            }
-          : q,
-      );
+            },
+          }
+        : q,
+    );
     const result = scoreDiagnostic(
       qs,
       Object.fromEntries(qs.map((q) => [q.id, q.correctAnswer])),

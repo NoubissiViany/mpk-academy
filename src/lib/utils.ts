@@ -10,7 +10,9 @@ export function clamp(value: number, min = 0, max = 100) {
 }
 
 export function formatDate(value: string, locale = "en-CA") {
-  return new Intl.DateTimeFormat(locale, { month: "short", day: "numeric", year: "numeric" }).format(
-    new Date(value),
-  );
+  return new Intl.DateTimeFormat(locale, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(value));
 }

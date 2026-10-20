@@ -44,23 +44,21 @@ const cases = [
   },
 ];
 for (const [n, scenario] of cases.entries()) {
-  const questions = diagnosticItems
-    .map(toQuestion)
-    .map((q, i) =>
-      q.metadata?.audio && scenario.ready(q, i)
-        ? {
-            ...q,
-            metadata: {
-              ...q.metadata,
-              audio: {
-                ...q.metadata.audio,
-                status: "ready",
-                path: "/test-only/parity.wav",
-              },
+  const questions = diagnosticItems.map(toQuestion).map((q, i) =>
+    q.metadata?.audio && scenario.ready(q, i)
+      ? {
+          ...q,
+          metadata: {
+            ...q.metadata,
+            audio: {
+              ...q.metadata.audio,
+              status: "ready",
+              path: "/test-only/parity.wav",
             },
-          }
-        : q,
-    );
+          },
+        }
+      : q,
+  );
   const answers = Object.fromEntries(
     questions.map((q, i) => [
       q.id,
