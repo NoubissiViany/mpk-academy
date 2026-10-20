@@ -265,6 +265,15 @@ export interface Progress {
   competencyScores: Partial<Record<CompetencyId, number>>;
 }
 
+/** A missed practice item waiting for spaced review (1, 3, then 7 days). */
+export interface ReviewItem {
+  questionId: string;
+  exam: ExamId;
+  skill: "reading" | "listening";
+  step: number;
+  dueAt: string;
+}
+
 export interface Readiness {
   overall: number | null;
   evidence: "insufficient" | "sufficient";
@@ -289,6 +298,7 @@ export interface Activity {
   label: string;
   detail: string;
   timestamp: string;
+  kind?: "assessment" | "practice" | "lesson" | "profile";
 }
 
 export interface GuestAssessmentSession {
@@ -317,6 +327,7 @@ export interface AppState {
   diagnosticResult: DiagnosticResult | null;
   progress: Progress;
   mistakes: Mistake[];
+  reviews: ReviewItem[];
   activities: Activity[];
   lastPracticeScore?: number;
   lastExamScore?: number;

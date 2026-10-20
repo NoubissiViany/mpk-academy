@@ -47,8 +47,16 @@ describe("ResultsView", () => {
     expect(
       await screen.findByRole("heading", { name: "Your French Assessment" }),
     ).toBeVisible();
-    expect(screen.getByText("C1")).toBeVisible();
-    expect(screen.getByText("Advanced French")).toBeVisible();
+    expect(
+      screen.getByRole("heading", {
+        name: "Compared with your NCLC 9+ target",
+      }),
+    ).toBeVisible();
+    expect(
+      screen.getByText(/Estimated level C1 \(provisional\) · Advanced French/),
+    ).toBeVisible();
+    expect(screen.getByText("Limited evidence so far")).toBeVisible();
+    expect(screen.getAllByText(/Target line at 85%/).length).toBeGreaterThan(0);
     expect(
       screen.getByText(/preparing for TCF Canada and aiming for NCLC 9\+/),
     ).toBeVisible();

@@ -54,3 +54,56 @@ describe("personalized practice landing", () => {
     expect(screen.queryByText("48% · Priority")).not.toBeInTheDocument();
   });
 });
+
+describe("spaced review entry", () => {
+  const due = (questionId: string, skill: "reading" | "listening") => ({
+    questionId,
+    exam: "TEF Canada" as const,
+    skill,
+    step: 0,
+    dueAt: "2026-01-01T00:00:00Z",
+  });
+
+  it("offers each skill's due reviews and ignores future ones", async () => {
+    render(
+      <AppProvider
+        initialState={{
+          ...demoState,
+          reviews: [
+            due("q1", "listening"),
+            due("q2", "listening"),
+            { ...due("q3", "reading"), dueAt: "2999-01-01T00:00:00Z" },
+            { ...due("q4", "reading"), exam: "TCF Canada" },
+          ],
+        }}
+      >
+        <PracticeSelect />
+      </AppProvider>,
+    );
+    expect(
+      await screen.findByText("2 missed questions are due for review"),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("link", { name: "Review listening (2)" }),
+    ).toHaveAttribute("href", "/practice/session?skill=listening&review=1");
+    expect(
+      screen.queryByRole("link", { name: /Review reading/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("stays hidden without the mistake review feature", async () => {
+    render(
+      <AppProvider
+        initialState={{
+          ...demoState,
+          planAccess: { ...demoState.planAccess!, planId: "essential" },
+          reviews: [due("q1", "reading")],
+        }}
+      >
+        <PracticeSelect />
+      </AppProvider>,
+    );
+    expect(await screen.findByText("Choose a skill")).toBeVisible();
+    expect(screen.queryByText(/due for review/)).not.toBeInTheDocument();
+  });
+});

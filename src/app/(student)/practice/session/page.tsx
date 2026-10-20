@@ -1,15 +1,33 @@
+import { unstable_rethrow } from "next/navigation";
 import { hasPlanFeature } from "@/config/product";
 import { ExamPracticeSession } from "@/features/practice/exam-practice-session";
 import { ProductiveSession } from "@/features/practice/productive-session";
+import { logServerError } from "@/lib/server/diagnostics";
 import {
+  getPracticeItemIds,
   getPracticePool,
   getPublicProductiveTasks,
 } from "@/lib/server/content";
-import { getLearnerAccess } from "@/lib/supabase/learner";
-import type { CompetencyId, ExamSkill } from "@/types/domain";
+import { getLearnerAccess, getPracticeHistory } from "@/lib/supabase/learner";
+import type { CompetencyId, ExamId, ExamSkill } from "@/types/domain";
 
 const first = (value?: string | string[]) =>
   Array.isArray(value) ? value[0] : value;
+
+async function loadHistory(exam: ExamId, skill: "reading" | "listening") {
+  try {
+    return await getPracticeHistory(
+      exam,
+      skill,
+      getPracticeItemIds(exam, skill),
+    );
+  } catch (error) {
+    unstable_rethrow(error);
+    // Practice still works without history; it just cannot personalize.
+    logServerError("Practice history unavailable", error, { exam, skill });
+    return { answers: [], dueIds: [] };
+  }
+}
 
 export default async function PracticeSessionPage({
   searchParams,
@@ -18,6 +36,7 @@ export default async function PracticeSessionPage({
     skill?: string | string[];
     focus?: string | string[];
     count?: string | string[];
+    review?: string | string[];
   }>;
 }) {
   const params = await searchParams;
@@ -42,14 +61,27 @@ export default async function PracticeSessionPage({
       />
     );
 
-  const focus = (first(params.focus) ?? null) as CompetencyId | null;
-  const count = first(params.count) === "10" ? 10 : 5;
+  const reviewsAllowed = hasPlanFeature(planAccess, "mistakeReview");
+  const reviewOnly = reviewsAllowed && first(params.review) === "1";
+  const focus = reviewOnly
+    ? null
+    : ((first(params.focus) ?? null) as CompetencyId | null);
+  const history = await loadHistory(exam, skill);
+  const { questions, reviewIds } = getPracticePool(exam, skill, {
+    count: reviewOnly || first(params.count) === "10" ? 10 : 5,
+    focus,
+    answers: history.answers,
+    dueIds: reviewsAllowed ? history.dueIds : [],
+    reviewOnly,
+  });
   return (
     <ExamPracticeSession
       exam={exam}
       skill={skill}
       focus={focus}
-      pool={getPracticePool(exam, skill, focus, count)}
+      pool={questions}
+      reviewIds={reviewIds}
+      mode={reviewOnly ? "review" : "practice"}
     />
   );
 }

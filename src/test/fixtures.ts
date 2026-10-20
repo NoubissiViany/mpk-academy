@@ -128,6 +128,7 @@ export const demoState: AppState = {
       count: 5,
     },
   ],
+  reviews: [],
   activities: [
     {
       id: "a1",

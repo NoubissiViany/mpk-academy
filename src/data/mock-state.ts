@@ -24,5 +24,6 @@ export const defaultState: AppState = {
   diagnosticResult: null,
   progress: structuredClone(emptyProgress),
   mistakes: [],
+  reviews: [],
   activities: [],
 };

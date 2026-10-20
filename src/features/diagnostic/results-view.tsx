@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ArrowRight, Check, KeyRound, Sparkles, Target } from "lucide-react";
 import { useApp } from "@/components/providers/app-provider";
-import { MetricBar } from "@/components/shared";
+import { TargetBar } from "@/components/target-bar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,6 +14,11 @@ import {
   recommendedPaidPlanId,
 } from "@/config/product";
 import { useI18n } from "@/i18n/client";
+import {
+  itemEvidence,
+  targetAccuracy,
+  targetBand,
+} from "@/lib/domain/readiness";
 import type { Messages } from "@/i18n/messages";
 import type { AppState } from "@/types/domain";
 
@@ -104,6 +109,29 @@ export function ResultsView() {
     ? t.diagnostic.intake.experience[intake.frenchExperience]
     : undefined;
   const hasAccess = Boolean(state.user && state.planAccess);
+  const readinessCopy = t.dashboard.readiness;
+  const comparedTarget = target ?? "NCLC 7";
+  const goalAccuracy = targetAccuracy[comparedTarget];
+  const evidence = itemEvidence(result.assessedItemCount ?? 0);
+  const skillRows = [
+    { label: copy.reading, value: result.skillScores.reading, pending: null },
+    {
+      label: copy.listening,
+      value: result.skillScores.listening,
+      pending: copy.listeningPending,
+    },
+    {
+      label: copy.foundation,
+      value:
+        result.languageFoundation ??
+        Math.round(
+          ((result.skillScores.grammar ?? 0) +
+            (result.skillScores.vocabulary ?? 0)) /
+            2,
+        ),
+      pending: null,
+    },
+  ];
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -126,25 +154,25 @@ export function ResultsView() {
         </h1>
       </header>
 
-      <Card className="mt-8 overflow-hidden border-primary/20">
-        <CardContent className="grid gap-8 p-0 md:grid-cols-[.7fr_1.3fr]">
-          <div className="bg-ink p-7 text-white sm:p-9">
-            <p className="text-xs font-bold uppercase tracking-[.16em] text-white/55">
-              {copy.levelLabel}
-            </p>
-            <p className="mt-4 text-7xl font-black text-[#74dab8]">
-              {result.level}
-            </p>
-            <p className="mt-3 text-lg font-bold">{levelContent.descriptor}</p>
+      <Card className="mt-8 border-primary/20">
+        <CardContent className="pt-6 sm:p-9">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 className="text-2xl font-bold">
+                {target
+                  ? copy.targetTitle(t.diagnostic.intake.targets[target])
+                  : copy.referenceTitle}
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {copy.estimatedLevel(result.level)} · {levelContent.descriptor}
+              </p>
+            </div>
+            <Badge>{readinessCopy.evidence[evidence]}</Badge>
           </div>
-          <div className="p-7 sm:p-9">
-            <p className="text-xl font-bold leading-8">
-              {levelContent.summary}
-            </p>
-            <p className="mt-4 text-sm leading-6 text-muted-foreground">
-              {copy.intakeSummary(goal, target, experience)}
-            </p>
-          </div>
+          <p className="mt-5 leading-7">{levelContent.summary}</p>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">
+            {copy.intakeSummary(goal, target, experience)}
+          </p>
         </CardContent>
       </Card>
 
@@ -153,29 +181,31 @@ export function ResultsView() {
           {copy.skillsTitle}
         </h2>
         <Card className="mt-4">
-          <CardContent className="grid gap-x-10 gap-y-6 pt-6 md:grid-cols-2">
-            <MetricBar
-              label={copy.reading}
-              value={result.skillScores.reading ?? 0}
-            />
-            <MetricBar
-              label={copy.foundation}
-              value={
-                result.languageFoundation ??
-                Math.round(
-                  ((result.skillScores.grammar ?? 0) +
-                    (result.skillScores.vocabulary ?? 0)) /
-                    2,
-                )
-              }
-            />
-            {result.skillScores.listening === null ? (
-              <p>{copy.listeningPending}</p>
-            ) : (
-              <MetricBar
-                label={copy.listening}
-                value={result.skillScores.listening}
-              />
+          <CardContent className="grid gap-x-10 gap-y-7 pt-6 md:grid-cols-2">
+            {skillRows.map((row) =>
+              row.value === null ? (
+                <p key={row.label}>{row.pending}</p>
+              ) : (
+                <div key={row.label}>
+                  <div className="mb-2 flex items-center justify-between gap-3 text-sm">
+                    <span className="font-medium">{row.label}</span>
+                    <span className="text-muted-foreground">
+                      {row.value}% ·{" "}
+                      {
+                        readinessCopy.bands[
+                          targetBand(row.value, comparedTarget)
+                        ]
+                      }
+                    </span>
+                  </div>
+                  <TargetBar
+                    value={row.value}
+                    goal={goalAccuracy}
+                    label={`${row.label}: ${row.value}%`}
+                    goalLabel={readinessCopy.goalLine(goalAccuracy)}
+                  />
+                </div>
+              ),
             )}
             <p>{copy.writingPending}</p>
             <p>{copy.speakingPending}</p>

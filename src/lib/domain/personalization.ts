@@ -3,7 +3,6 @@ import {
   competencyIds,
   type ContentCompetency,
 } from "@/content/shared/competencies";
-import { diagnosticSkillModules } from "@/config/diagnostic";
 import { allLessons, getCourseModules } from "@/data/course";
 import { canAccessLesson } from "@/lib/domain/access";
 import { getWeakestExamSkill } from "@/lib/domain/exam-progress";
@@ -221,27 +220,6 @@ export function getRecommendedLessons(state: AppState) {
       { type: "next" },
     );
   return recommendations.slice(0, 3);
-}
-
-export function getDiagnosticNextActivity(
-  result: DiagnosticResult,
-  exam: ExamId | null = null,
-) {
-  const skill = result.priority;
-  if (skill === "reading" || skill === "listening") {
-    const scores = diagnosticCompetencyScores(result);
-    const focus = (competenciesBySkill[skill] ?? [])
-      .filter((competency) => scores.has(competency))
-      .sort((a, b) => scores.get(a)! - scores.get(b)!)[0];
-    const query = new URLSearchParams({ skill });
-    if (focus) query.set("focus", focus);
-    return { skill, href: `/practice/session?${query.toString()}` };
-  }
-  const lesson =
-    getCourseModules(examCode(exam)).find(
-      (module) => module.id === diagnosticSkillModules[skill],
-    )?.lessons[0] ?? allLessons[0];
-  return { skill, href: `/learn/${lesson.moduleId}/${lesson.id}` };
 }
 
 export function getMistakeDetail(state: AppState, mistakeId: string) {

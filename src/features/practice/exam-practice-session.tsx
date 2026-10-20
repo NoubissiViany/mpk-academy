@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { checkPracticeAnswerAction } from "@/app/actions/content";
 import { submitPracticeAction } from "@/app/actions/learner";
 import { useApp } from "@/components/providers/app-provider";
-import { ModeBadge } from "@/components/shared";
+import { EmptyState, ModeBadge } from "@/components/shared";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { QuestionCard } from "@/features/assessment/question-card";
@@ -25,11 +27,16 @@ export function ExamPracticeSession({
   skill,
   focus,
   pool,
+  reviewIds = [],
+  mode = "practice",
 }: {
   exam: ExamId;
   skill: "reading" | "listening";
   focus: CompetencyId | null;
   pool: PublicQuestion[];
+  /** Questions in `pool` that are due spaced reviews. */
+  reviewIds?: string[];
+  mode?: "practice" | "review";
 }) {
   const [submissionId] = useState(() => crypto.randomUUID());
   const [startedAt] = useState(() => Date.now());
@@ -43,7 +50,21 @@ export function ExamPracticeSession({
   const [checking, setChecking] = useState(false);
   const [saving, setSaving] = useState(false);
   const question = pool[index];
-  if (!question) return <p>{copy.empty}</p>;
+  if (!question)
+    return mode === "review" ? (
+      <div className="mx-auto max-w-3xl">
+        <EmptyState
+          title={copy.reviewTitle(t.practice.skills[skill])}
+          description={copy.reviewEmpty}
+        />
+        <Button asChild variant="secondary" className="mt-6">
+          <Link href="/practice">{copy.backToPractice}</Link>
+        </Button>
+      </div>
+    ) : (
+      <p>{copy.empty}</p>
+    );
+  const isReview = reviewIds.includes(question.id);
   const value = answers[question.id];
   const revealed = feedback[question.id];
 
@@ -95,16 +116,31 @@ export function ExamPracticeSession({
         </span>
       </div>
       <p className="mb-3 text-sm font-bold">
-        {t.practice.skills[skill]}
-        {t.practice.skills[skill] !== t.practice.frenchSkills[skill] &&
+        {mode === "review"
+          ? copy.reviewTitle(t.practice.skills[skill])
+          : t.practice.skills[skill]}
+        {mode !== "review" &&
+          t.practice.skills[skill] !== t.practice.frenchSkills[skill] &&
           ` · ${t.practice.frenchSkills[skill]}`}
         {focus ? ` · ${copy.focus(competencyLabel(t, focus))}` : ""}
       </p>
+      {mode === "review" && index === 0 && (
+        <p className="mb-3 text-sm text-muted-foreground">{copy.reviewIntro}</p>
+      )}
       <Progress
         value={((index + 1) / pool.length) * 100}
         label={copy.progress}
       />
       <div className="mt-7 rounded-2xl border border-practice/20 bg-card p-5 sm:p-8">
+        {isReview && (
+          <p className="mb-4 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+            <Badge className="gap-1">
+              <RotateCcw className="size-3.5" aria-hidden="true" />
+              {copy.reviewBadge}
+            </Badge>
+            {copy.reviewHint}
+          </p>
+        )}
         <QuestionCard
           question={question}
           value={value}

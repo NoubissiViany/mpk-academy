@@ -125,8 +125,9 @@ enabled = true
 # [storage.analytics.buckets.my-warehouse]
 
 # Store vector embeddings in S3 for large and durable datasets
+# Off: vector buckets are a Pro-plan feature and the app does not use them.
 [storage.vector]
-enabled = true
+enabled = false
 max_buckets = 10
 max_indexes = 5
 

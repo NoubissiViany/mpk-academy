@@ -82,8 +82,10 @@ export function validateContent(
         !item.examples.length ||
         !item.guidedApplication ||
         !item.commonErrors.length ||
-        !item.checkpoint.options[item.checkpoint.answer] ||
-        !item.checkpoint.explanation
+        [item.checkpoint, ...(item.extraCheckpoints ?? [])].some(
+          (checkpoint) =>
+            !checkpoint.options[checkpoint.answer] || !checkpoint.explanation,
+        )
       )
         fail(item.id, "incomplete teaching content");
     } else {

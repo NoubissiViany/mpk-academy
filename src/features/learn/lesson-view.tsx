@@ -25,23 +25,38 @@ export function LessonView({
   const { state, replaceState } = useApp();
   const { t, locale } = useI18n();
   const copy = t.learn.lesson;
-  const [answer, setAnswer] = useState<number | null>(null);
-  const [feedback, setFeedback] = useState<AnswerFeedback | null>(null);
-  const [checking, setChecking] = useState(false);
+  const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [feedback, setFeedback] = useState<Record<number, AnswerFeedback>>({});
+  const [checking, setChecking] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const completed = state.progress.completedLessonIds.includes(lesson.id);
+  const total = content.checkpoints.length;
+  const allAnswered = Object.keys(feedback).length === total;
+  // French bodies are shown when they exist; otherwise the English text.
+  const french = locale === "fr" && Boolean(content.explanationFr);
+  const body = {
+    explanation: french ? content.explanationFr! : content.explanation,
+    guidedApplication:
+      (french && content.guidedApplicationFr) || content.guidedApplication,
+    commonErrors: (french && content.commonErrorsFr) || content.commonErrors,
+  };
   const errorText = (result: { message: string; reference?: string }) =>
     result.reference
       ? t.common.errorReference(result.message, result.reference)
       : result.message;
 
-  const check = async () => {
-    if (answer === null) return;
-    setChecking(true);
-    const result = await checkLessonCheckpointAction(lesson.id, answer);
-    setChecking(false);
+  const check = async (checkpoint: number) => {
+    const answer = answers[checkpoint];
+    if (answer === undefined) return;
+    setChecking(checkpoint);
+    const result = await checkLessonCheckpointAction(
+      lesson.id,
+      checkpoint,
+      answer,
+    );
+    setChecking(null);
     if (!result.ok) return toast.error(errorText(result));
-    setFeedback(result.feedback);
+    setFeedback((current) => ({ ...current, [checkpoint]: result.feedback }));
   };
   const save = async () => {
     setSaving(true);
@@ -66,14 +81,14 @@ export function LessonView({
           {lessonTitle(locale, lesson)}
         </h1>
       </header>
-      {copy.englishOnly && (
+      {copy.englishOnly && !french && (
         <p className="rounded-xl border border-dashed p-4 text-sm leading-6 text-muted-foreground">
           {copy.englishOnly}
         </p>
       )}
       <section>
         <h2 className="text-xl font-bold">{copy.understand}</h2>
-        <p className="mt-3 leading-8">{content.explanation}</p>
+        <p className="mt-3 leading-8">{body.explanation}</p>
       </section>
       <section className="rounded-xl border bg-learn/5 p-6">
         <h2 className="font-bold">{copy.examples}</h2>
@@ -85,63 +100,93 @@ export function LessonView({
       </section>
       <section>
         <h2 className="text-xl font-bold">{copy.tryIt}</h2>
-        <p className="mt-3 leading-7">{content.guidedApplication}</p>
+        <p className="mt-3 leading-7">{body.guidedApplication}</p>
       </section>
       <section>
         <h2 className="text-xl font-bold">{copy.commonErrors}</h2>
         <ul className="mt-3 list-inside list-disc space-y-2 leading-7">
-          {content.commonErrors.map((error) => (
+          {body.commonErrors.map((error) => (
             <li key={error}>{error}</li>
           ))}
         </ul>
       </section>
       <section className="rounded-xl border p-6">
         <h2 className="text-xl font-bold">{copy.checkpoint}</h2>
-        <p className="mt-3" lang="fr">
-          {content.checkpoint.prompt}
-        </p>
-        <fieldset className="my-5 space-y-3">
-          <legend className="sr-only">{copy.chooseAnswer}</legend>
-          {content.checkpoint.options.map((option, index) => (
-            <label
-              key={option}
-              className={cn(
-                "flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 focus-within:ring-2 focus-within:ring-primary",
-                answer === index && !feedback && "border-primary bg-primary/5",
-                feedback &&
-                  option === feedback.correctAnswer &&
-                  "border-primary bg-primary/10",
-                feedback &&
-                  answer === index &&
-                  !feedback.correct &&
-                  "border-danger bg-danger/5",
-              )}
-            >
-              <input
-                type="radio"
-                name={lesson.id}
-                className="size-4 accent-primary"
-                checked={answer === index}
-                disabled={Boolean(feedback)}
-                onChange={() => setAnswer(index)}
-              />
-              <span lang="fr">{option}</span>
-            </label>
-          ))}
-        </fieldset>
-        {!feedback ? (
-          <Button disabled={answer === null || checking} onClick={check}>
-            {checking ? t.assessment.checking : copy.check}
-          </Button>
-        ) : (
-          <p role="status" className="leading-7">
-            <strong>{feedback.correct ? copy.correct : copy.review}</strong>{" "}
-            {feedback.explanation}
-          </p>
+        <ol className="mt-4 space-y-8">
+          {content.checkpoints.map((checkpoint, position) => {
+            const answer = answers[position];
+            const verdict = feedback[position];
+            return (
+              <li key={checkpoint.prompt}>
+                {total > 1 && (
+                  <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                    {copy.checkpointProgress(position + 1, total)}
+                  </p>
+                )}
+                <p className="mt-2" lang="fr">
+                  {checkpoint.prompt}
+                </p>
+                <fieldset className="my-5 space-y-3">
+                  <legend className="sr-only">{copy.chooseAnswer}</legend>
+                  {checkpoint.options.map((option) => (
+                    <label
+                      key={option.index}
+                      className={cn(
+                        "flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 focus-within:ring-2 focus-within:ring-primary",
+                        answer === option.index &&
+                          !verdict &&
+                          "border-primary bg-primary/5",
+                        verdict &&
+                          option.label === verdict.correctAnswer &&
+                          "border-primary bg-primary/10",
+                        verdict &&
+                          answer === option.index &&
+                          !verdict.correct &&
+                          "border-danger bg-danger/5",
+                      )}
+                    >
+                      <input
+                        type="radio"
+                        name={`${lesson.id}-${position}`}
+                        className="size-4 accent-primary"
+                        checked={answer === option.index}
+                        disabled={Boolean(verdict)}
+                        onChange={() =>
+                          setAnswers((current) => ({
+                            ...current,
+                            [position]: option.index,
+                          }))
+                        }
+                      />
+                      <span lang="fr">{option.label}</span>
+                    </label>
+                  ))}
+                </fieldset>
+                {!verdict ? (
+                  <Button
+                    disabled={answer === undefined || checking !== null}
+                    onClick={() => check(position)}
+                  >
+                    {checking === position ? t.assessment.checking : copy.check}
+                  </Button>
+                ) : (
+                  <p role="status" className="leading-7">
+                    <strong>
+                      {verdict.correct ? copy.correct : copy.review}
+                    </strong>{" "}
+                    {verdict.explanation}
+                  </p>
+                )}
+              </li>
+            );
+          })}
+        </ol>
+        {!allAnswered && !completed && total > 1 && (
+          <p className="mt-6 text-sm text-muted-foreground">{copy.answerAll}</p>
         )}
         <Button
           className="mt-6"
-          disabled={!feedback || completed || saving}
+          disabled={!allAnswered || completed || saving}
           onClick={save}
         >
           {completed
