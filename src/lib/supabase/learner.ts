@@ -6,6 +6,7 @@ import { defaultState, emptyProgress } from "@/data/mock-state";
 import { isPaidPlanId } from "@/config/product";
 import { createEmptyExamProfile } from "@/lib/domain/exam-progress";
 import type { PracticeAnswerRecord } from "@/lib/domain/practice-selection";
+import { logServerError } from "@/lib/server/diagnostics";
 import { createClient } from "@/lib/supabase/server";
 import type {
   Activity,
@@ -256,9 +257,12 @@ async function loadLearnerSnapshot(): Promise<AppState> {
     diagnosticResponse,
     practiceResponse,
     mockResponse,
-    reviewsResponse,
   ].find((response) => response.error)?.error;
   if (relatedError) throw relatedError;
+  // The review queue is an aid, not a requirement: without it (for example
+  // before its migration reaches a project) learners still get their pages.
+  if (reviewsResponse.error)
+    logServerError("Review queue unavailable", reviewsResponse.error);
 
   const diagnostic = diagnosticResponse.data;
   const [
@@ -429,13 +433,15 @@ async function loadLearnerSnapshot(): Promise<AppState> {
       pattern: mistake.pattern ?? undefined,
       count: mistake.occurrence_count,
     })),
-    reviews: (reviewsResponse.data ?? []).map((review) => ({
-      questionId: review.question_id,
-      exam: review.exam as ExamId,
-      skill: review.skill as ReviewItem["skill"],
-      step: review.step,
-      dueAt: review.due_at,
-    })),
+    reviews: (reviewsResponse.error ? [] : (reviewsResponse.data ?? [])).map(
+      (review) => ({
+        questionId: review.question_id,
+        exam: review.exam as ExamId,
+        skill: review.skill as ReviewItem["skill"],
+        step: review.step,
+        dueAt: review.due_at,
+      }),
+    ),
     activities: (historyResponse.data ?? []).map((event) => ({
       id: event.id,
       label: event.label,
