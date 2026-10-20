@@ -65,6 +65,9 @@ const en = {
     tryIt: "Try it",
     commonErrors: "Common errors",
     checkpoint: "Checkpoint",
+    checkpointProgress: (number: number, total: number) =>
+      `Question ${number} of ${total}`,
+    answerAll: "Answer every checkpoint question to complete the lesson.",
     chooseAnswer: "Choose an answer",
     check: "Check understanding",
     correct: "Correct.",
@@ -142,6 +145,10 @@ const fr: typeof en = {
     tryIt: "À vous de jouer",
     commonErrors: "Erreurs fréquentes",
     checkpoint: "Point de contrôle",
+    checkpointProgress: (number: number, total: number) =>
+      `Question ${number} sur ${total}`,
+    answerAll:
+      "Répondez à chaque question du point de contrôle pour terminer la leçon.",
     chooseAnswer: "Choisissez une réponse",
     check: "Vérifier ma compréhension",
     correct: "Bonne réponse.",

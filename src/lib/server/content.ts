@@ -21,6 +21,7 @@ import {
   selectPracticeItems,
   type PracticeAnswerRecord,
 } from "@/lib/domain/practice-selection";
+import { shuffle } from "@/lib/utils";
 import type {
   AnswerFeedback,
   ExamId,
@@ -126,24 +127,43 @@ export const getLessonContent = (
 ): LearningLesson | undefined =>
   lessons.find((lesson) => lesson.id === lessonId);
 
-export function toPublicLesson(lesson: LearningLesson): PublicLessonContent {
-  const { checkpoint, ...rest } = lesson;
+const lessonCheckpoints = (lesson: LearningLesson) => [
+  lesson.checkpoint,
+  ...(lesson.extraCheckpoints ?? []),
+];
+
+export function toPublicLesson(
+  lesson: LearningLesson,
+  random: () => number = Math.random,
+): PublicLessonContent {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- answers stay on the server
+  const { checkpoint, extraCheckpoints, ...rest } = lesson;
   return {
     ...rest,
-    checkpoint: { prompt: checkpoint.prompt, options: checkpoint.options },
+    checkpoints: lessonCheckpoints(lesson).map((item) => ({
+      prompt: item.prompt,
+      options: shuffle(
+        item.options.map((label, index) => ({ index, label })),
+        random,
+      ),
+    })),
   };
 }
 
 export function checkLessonCheckpoint(
   lessonId: string,
+  checkpointIndex: number,
   answerIndex: number,
+  locale: Locale,
 ): AnswerFeedback | null {
   const lesson = getLessonContent(lessonId);
-  if (!lesson) return null;
+  const checkpoint = lesson ? lessonCheckpoints(lesson)[checkpointIndex] : null;
+  if (!checkpoint || answerIndex >= checkpoint.options.length) return null;
   return {
-    correct: answerIndex === lesson.checkpoint.answer,
-    correctAnswer: lesson.checkpoint.options[lesson.checkpoint.answer],
-    explanation: lesson.checkpoint.explanation,
+    correct: answerIndex === checkpoint.answer,
+    correctAnswer: checkpoint.options[checkpoint.answer],
+    explanation:
+      (locale === "fr" && checkpoint.explanationFr) || checkpoint.explanation,
   };
 }
 

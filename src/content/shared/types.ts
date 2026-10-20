@@ -63,12 +63,20 @@ export interface LearningLesson extends Metadata {
   examples: string[];
   guidedApplication: string;
   commonErrors: string[];
-  checkpoint: {
-    prompt: string;
-    options: string[];
-    answer: number;
-    explanation: string;
-  };
+  /** French versions, shown when the interface is in French. */
+  explanationFr?: string;
+  guidedApplicationFr?: string;
+  commonErrorsFr?: string[];
+  checkpoint: LessonCheckpoint;
+  /** Further checkpoint questions; 3–5 per lesson in total is the target. */
+  extraCheckpoints?: LessonCheckpoint[];
+}
+export interface LessonCheckpoint {
+  prompt: string;
+  options: string[];
+  answer: number;
+  explanation: string;
+  explanationFr?: string;
 }
 export type ContentItem = MCQ | ProductiveTask;
 export interface MockManifest {
@@ -151,9 +159,18 @@ export type PracticeSummary = Pick<
   "id" | "exam" | "skill" | "kind" | "level" | "competencies"
 >;
 
-/** A lesson as sent to an entitled learner: the checkpoint answer stays on the server. */
-export type PublicLessonContent = Omit<LearningLesson, "checkpoint"> & {
-  checkpoint: Omit<LearningLesson["checkpoint"], "answer" | "explanation">;
+/**
+ * A lesson as sent to an entitled learner. Checkpoint answers stay on the
+ * server; options arrive shuffled, each keeping its original index.
+ */
+export type PublicLessonContent = Omit<
+  LearningLesson,
+  "checkpoint" | "extraCheckpoints"
+> & {
+  checkpoints: Array<{
+    prompt: string;
+    options: Array<{ index: number; label: string }>;
+  }>;
 };
 
 /** A productive task as sent to the browser: the model response is fetched after review. */

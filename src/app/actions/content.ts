@@ -117,15 +117,26 @@ export async function checkPracticeAnswerAction(
 
 export async function checkLessonCheckpointAction(
   lessonId: string,
+  checkpointIndex: number,
   answerIndex: number,
 ): Promise<{ ok: true; feedback: AnswerFeedback } | Failure> {
   const summary = lessonSummaries.find((lesson) => lesson.id === lessonId);
-  if (!summary || !Number.isInteger(answerIndex) || answerIndex < 0)
+  if (
+    !summary ||
+    ![checkpointIndex, answerIndex].every(
+      (value) => Number.isInteger(value) && value >= 0,
+    )
+  )
     return fail("invalid");
   const learner = await access("check_lesson_checkpoint");
   if (!learner.ok) return learner;
   if (!canAccessLesson(learner.planAccess, summary)) return fail("locked");
-  const feedback = checkLessonCheckpoint(lessonId, answerIndex);
+  const feedback = checkLessonCheckpoint(
+    lessonId,
+    checkpointIndex,
+    answerIndex,
+    await getLocale(),
+  );
   return feedback ? { ok: true, feedback } : fail("not_found");
 }
 
