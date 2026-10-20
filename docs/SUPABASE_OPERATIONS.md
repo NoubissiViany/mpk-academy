@@ -35,35 +35,23 @@ Never place the Resend API key in this repository, application environment varia
 
 ### 1. Verify mpkacademy.com in Resend
 
-Resend's free plan allows one domain, 100 emails a day, and 3,000 a month, which covers the closed beta. In Resend → Domains, add `mpkacademy.com` (region North Virginia, `us-east-1`, unless another is preferred), then copy the records it shows into Namecheap → Domain List → `mpkacademy.com` → Advanced DNS. Enter only the host part:
+Resend's free plan allows one domain, 100 emails a day, and 3,000 a month, which covers the closed beta. `mpkacademy.com` was added in Resend → Domains, and its records live in Namecheap → Domain List → `mpkacademy.com` → Advanced DNS (enter only the host part):
 
-| Type | Host                | Value                                                               | Priority |
-| ---- | ------------------- | ------------------------------------------------------------------- | -------- |
-| MX   | `send`              | `feedback-smtp.us-east-1.amazonses.com` (copy Resend's exact value) | 10       |
-| TXT  | `send`              | `v=spf1 include:amazonses.com ~all`                                 | —        |
-| TXT  | `resend._domainkey` | the `p=…` key shown by Resend                                       | —        |
-| TXT  | `_dmarc`            | `v=DMARC1; p=none;`                                                 | —        |
+| Type  | Host                | Value                         |
+| ----- | ------------------- | ----------------------------- |
+| CNAME | `send`              | `send.forge.rmta.net`         |
+| TXT   | `resend._domainkey` | the `p=…` key shown by Resend |
+| TXT   | `_dmarc`            | `v=DMARC1; p=none;`           |
 
-These records live on subdomains, so the root `@` SPF record stays as it is and must not be merged with Resend's.
-
-Namecheap only accepts MX records when **Mail Settings** is set to **Custom MX**, and that switch removes the Email Forwarding MX records on `@`. If any `@mpkacademy.com` forwarding address is in use, add these five MX records for host `@` in the same save so forwarding keeps working:
-
-| Host | Value                             | Priority |
-| ---- | --------------------------------- | -------- |
-| `@`  | `eforward1.registrar-servers.com` | 10       |
-| `@`  | `eforward2.registrar-servers.com` | 10       |
-| `@`  | `eforward3.registrar-servers.com` | 10       |
-| `@`  | `eforward4.registrar-servers.com` | 15       |
-| `@`  | `eforward5.registrar-servers.com` | 20       |
+The `send` CNAME delegates the bounce MX and SPF to Resend's sending servers, so no MX record is added in Namecheap and **Mail Settings stays on Email Forwarding**: the root `@` MX and SPF records keep serving `@mpkacademy.com` forwarding and must not be merged with Resend's. If Resend ever shows MX and TXT records for `send` instead, adding that MX requires Namecheap's **Custom MX** mode, which removes the forwarding MX records on `@`; re-add `eforward1`–`eforward3.registrar-servers.com` (priority 10), `eforward4` (15), and `eforward5` (20) in the same save.
 
 Check propagation without leaving the terminal, then press **Verify** in Resend:
 
 ```bash
-dig +short MX send.mpkacademy.com
-dig +short TXT send.mpkacademy.com
+dig +short CNAME send.mpkacademy.com
 dig +short TXT resend._domainkey.mpkacademy.com
 dig +short TXT _dmarc.mpkacademy.com
-dig +short MX mpkacademy.com   # forwarding still listed when it is in use
+dig +short MX mpkacademy.com   # forwarding records still listed
 ```
 
 Once DMARC reports show no legitimate failures for a few weeks, tighten it to `p=quarantine`.
