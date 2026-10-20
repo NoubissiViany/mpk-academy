@@ -200,6 +200,7 @@ export type Database = {
           id: string;
           plan_id: string;
           purchase_id: string | null;
+          source: string;
           starts_at: string;
           status: string;
           updated_at: string;
@@ -211,6 +212,7 @@ export type Database = {
           id?: string;
           plan_id: string;
           purchase_id?: string | null;
+          source?: string;
           starts_at: string;
           status: string;
           updated_at?: string;
@@ -222,6 +224,7 @@ export type Database = {
           id?: string;
           plan_id?: string;
           purchase_id?: string | null;
+          source?: string;
           starts_at?: string;
           status?: string;
           updated_at?: string;
@@ -754,6 +757,43 @@ export type Database = {
     };
     Functions: {
       mpk_complete_lesson: { Args: { p_lesson_id: string }; Returns: Json };
+      mpk_admin_beta_overview: { Args: never; Returns: Json };
+      mpk_admin_beta_metrics: { Args: never; Returns: Json };
+      mpk_admin_create_beta_invite: {
+        Args: {
+          p_code: string;
+          p_expires_at: string | null;
+          p_label: string;
+          p_max_uses: number;
+        };
+        Returns: Json;
+      };
+      mpk_admin_recent_errors: { Args: { p_limit?: number }; Returns: Json };
+      mpk_admin_revoke_beta_invite: {
+        Args: { p_code: string };
+        Returns: undefined;
+      };
+      mpk_admin_update_beta_settings: {
+        Args: { p_access_days: number; p_seat_limit: number };
+        Returns: undefined;
+      };
+      mpk_check_beta_invite: { Args: { p_code: string }; Returns: string };
+      mpk_log_app_error: {
+        Args: {
+          p_code: string | null;
+          p_context: Json;
+          p_event: string;
+          p_reference: string;
+          p_source: string | null;
+          p_status: number | null;
+        };
+        Returns: undefined;
+      };
+      mpk_record_funnel_step: {
+        Args: { p_locale: string; p_step: string };
+        Returns: undefined;
+      };
+      mpk_redeem_beta_invite: { Args: { p_code: string }; Returns: Json };
       mpk_fulfill_stripe_purchase: {
         Args: {
           p_checkout_session_id: string;
