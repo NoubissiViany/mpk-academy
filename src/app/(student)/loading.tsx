@@ -1,0 +1,19 @@
+import { getMessages } from "@/i18n/server";
+
+export default async function Loading() {
+  const label = (await getMessages()).common.loading;
+  return (
+    <div className="container-page py-14" aria-label={label} aria-busy="true">
+      <div className="h-4 w-32 animate-pulse rounded bg-muted" />
+      <div className="mt-4 h-10 max-w-xl animate-pulse rounded bg-muted" />
+      <div className="mt-9 grid gap-5 md:grid-cols-3">
+        {[1, 2, 3].map((item) => (
+          <div
+            key={item}
+            className="h-44 animate-pulse rounded-2xl border bg-card"
+          />
+        ))}
+      </div>
+    </div>
+  );
+}

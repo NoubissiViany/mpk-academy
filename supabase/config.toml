@@ -214,23 +214,27 @@ otp_length = 8
 # Number of seconds before the email OTP expires (defaults to 1 hour).
 otp_expiry = 3600
 
-# Resend test SMTP. Keep this block commented because the API key is entered
-# directly in the hosted Supabase dashboard and must never be committed.
+# Resend SMTP for the mpkacademy.com sender. Keep this block commented: the API
+# key is entered directly in the hosted Supabase dashboard and must never be
+# committed. The sender only works once mpkacademy.com is verified in Resend
+# (see docs/SUPABASE_OPERATIONS.md).
 # [auth.email.smtp]
 # enabled = true
 # host = "smtp.resend.com"
 # port = 465
 # user = "resend"
 # pass = "env(RESEND_API_KEY)"
-# admin_email = "onboarding@resend.dev"
+# admin_email = "no-reply@mpkacademy.com"
 # sender_name = "MPK Academy"
 
 [auth.email.template.confirmation]
-subject = "Confirm your MPK Academy account"
+# Subjects are Go templates like the bodies; .Data is the user metadata, whose
+# locale is set at sign-up and kept in step by updateProfileAction.
+subject = '{{ if eq .Data.locale "fr" }}Confirmez votre compte MPK Academy{{ else }}Confirm your MPK Academy account{{ end }}'
 content_path = "./supabase/templates/confirmation.html"
 
 [auth.email.template.recovery]
-subject = "Reset your MPK Academy password"
+subject = '{{ if eq .Data.locale "fr" }}Réinitialisez votre mot de passe MPK Academy{{ else }}Reset your MPK Academy password{{ end }}'
 content_path = "./supabase/templates/recovery.html"
 
 # Uncomment to customize notification email template
@@ -391,3 +395,14 @@ enabled = true
 # formatted with uppercase keywords, indent 2, max width 180, trailing commas,
 # and column/key alignment. Set to "null" to emit raw, unformatted SQL.
 # format_options = "{\"keywordCase\":\"upper\",\"indent\":2,\"maxWidth\":180,\"commaStyle\":\"trailing\"}"
+
+# The CLI is linked to the staging project that serves the hosted sandbox
+# (https://mpk-academy-sandbox.vercel.app) and localhost. These overrides apply
+# only when the linked project ref matches, so `config push` keeps the sandbox
+# URLs there instead of the production ones above.
+[remotes.staging]
+project_id = "czbynijgpkflnntgoqgj"
+
+[remotes.staging.auth]
+site_url = "https://mpk-academy-sandbox.vercel.app"
+additional_redirect_urls = ["https://mpk-academy-sandbox.vercel.app/auth/confirm", "https://mpk-academy-sandbox.vercel.app/update-password", "http://localhost:3000/auth/confirm", "http://127.0.0.1:3000/auth/confirm", "http://localhost:3000/update-password"]

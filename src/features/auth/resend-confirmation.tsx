@@ -4,9 +4,11 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { resendConfirmationAction } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
-import { withErrorReference } from "@/lib/public-error";
+import { useI18n } from "@/i18n/client";
 
 export function ResendConfirmation({ email }: { email: string }) {
+  const { t } = useI18n();
+  const copy = t.auth.checkEmail;
   const [pending, setPending] = useState(false);
 
   return (
@@ -18,14 +20,18 @@ export function ResendConfirmation({ email }: { email: string }) {
         const result = await resendConfirmationAction(email);
         setPending(false);
         if (result.ok) {
-          toast.success("A new confirmation email has been requested.");
+          toast.success(copy.resent);
           return;
         }
-        toast.error(withErrorReference(result.message, result.reference));
+        toast.error(
+          result.reference
+            ? t.common.errorReference(result.message, result.reference)
+            : result.message,
+        );
       }}
       type="button"
     >
-      {pending ? "Sending…" : "Resend confirmation email"}
+      {pending ? copy.sending : copy.resend}
     </Button>
   );
 }

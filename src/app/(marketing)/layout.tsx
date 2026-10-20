@@ -1,11 +1,15 @@
+import Link from "next/link";
 import { PublicHeader } from "@/components/public-header";
 import { Wordmark } from "@/components/shared";
+import { getMessages } from "@/i18n/server";
 
-export default function MarketingLayout({
+export default async function MarketingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const t = await getMessages();
+  const footer = t.common.footer;
   return (
     <>
       <PublicHeader />
@@ -15,25 +19,30 @@ export default function MarketingLayout({
           <div>
             <Wordmark />
             <p className="mt-4 max-w-sm text-sm leading-6 text-muted-foreground">
-              Understand in English. Learn in French. Perform in French.
+              {footer.tagline}
             </p>
           </div>
           <div>
-            <p className="text-sm font-bold">Prepare with clarity</p>
+            <p className="text-sm font-bold">{footer.clarityTitle}</p>
             <p className="mt-3 text-sm leading-6 text-muted-foreground">
-              Independent practice material. MPK Academy is not an official
-              TEF/TCF testing organization.
+              {footer.clarityCopy}
             </p>
           </div>
           <div>
-            <p className="text-sm font-bold">Canada-focused</p>
+            <p className="text-sm font-bold">{footer.canadaTitle}</p>
             <p className="mt-3 text-sm leading-6 text-muted-foreground">
-              Privacy-minded learning for adult immigrants and professionals.
+              {footer.canadaCopy}
             </p>
+            <Link
+              href="/privacy"
+              className="mt-3 inline-block text-sm font-semibold text-primary hover:underline"
+            >
+              {t.common.nav.privacy}
+            </Link>
           </div>
         </div>
         <div className="border-t py-5 text-center text-xs text-muted-foreground">
-          © 2026 MPK Academy.
+          {footer.rights(new Date().getFullYear())}
         </div>
       </footer>
     </>

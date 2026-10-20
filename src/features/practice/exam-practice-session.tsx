@@ -1,132 +1,91 @@
 "use client";
 
-import Link from "next/link";
-import { useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
+import { checkPracticeAnswerAction } from "@/app/actions/content";
 import { submitPracticeAction } from "@/app/actions/learner";
 import { useApp } from "@/components/providers/app-provider";
 import { ModeBadge } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { examSkillContent } from "@/config/exams";
-import { getExamQuestionPool } from "@/data/exam-question-pools";
 import { QuestionCard } from "@/features/assessment/question-card";
-import { competencyFocusLabel } from "@/lib/domain/personalization";
-import type { CompetencyId, ExamId, ExamSkill } from "@/types/domain";
+import { useI18n } from "@/i18n/client";
+import { competencyLabel } from "@/i18n/format";
+import type {
+  AnswerFeedback,
+  CompetencyId,
+  ExamId,
+  PublicQuestion,
+} from "@/types/domain";
 
-function activeExam(value: string | undefined): ExamId {
-  return value === "TCF Canada" ? "TCF Canada" : "TEF Canada";
-}
-
-export function ExamPracticeSession() {
-  const router = useRouter();
-  const search = useSearchParams();
-  const { state, replaceState } = useApp();
-  const exam = activeExam(state.user?.goal.exam);
-  const requested = search.get("skill");
-  const requestedFocus = search.get("focus") as CompetencyId | null;
-  const questionCount = search.get("count") === "10" ? 10 : 5;
-  const skill: ExamSkill =
-    requested === "listening" ||
-    requested === "writing" ||
-    requested === "speaking"
-      ? requested
-      : "reading";
-
-  if (skill === "writing" || skill === "speaking")
-    return (
-      <div className="mx-auto max-w-2xl rounded-2xl border bg-card p-7 text-center sm:p-10">
-        <p className="eyebrow">Coming soon</p>
-        <h1 className="mt-3 text-3xl font-bold">
-          Corrected {examSkillContent[skill].label.toLowerCase()} practice is
-          not available yet.
-        </h1>
-        <p className="mx-auto mt-4 max-w-lg text-sm leading-6 text-muted-foreground">
-          You can continue learning this skill in Lessons. MPK will not create a
-          score until a supported correction experience is available.
-        </p>
-        <div className="mt-7 flex flex-wrap justify-center gap-3">
-          <Button asChild>
-            <Link href="/learn">Explore lessons</Link>
-          </Button>
-          <Button asChild variant="secondary">
-            <Link href="/practice">Back to practice</Link>
-          </Button>
-        </div>
-      </div>
-    );
-  return (
-    <ComprehensionSession
-      exam={exam}
-      skill={skill}
-      focus={requestedFocus}
-      questionCount={questionCount}
-      onSave={async (answers) => {
-        const result = await submitPracticeAction({
-          exam,
-          skill,
-          focus: requestedFocus,
-          durationSeconds: 15 * 60,
-          answers,
-        });
-        if (!result.ok) {
-          toast.error(result.message);
-          return;
-        }
-        replaceState(result.snapshot);
-        router.push(`/practice/results?session=${result.data.id}`);
-        router.refresh();
-      }}
-    />
-  );
-}
-
-function ComprehensionSession({
+export function ExamPracticeSession({
   exam,
   skill,
   focus,
-  questionCount,
-  onSave,
+  pool,
 }: {
   exam: ExamId;
   skill: "reading" | "listening";
   focus: CompetencyId | null;
-  questionCount: 5 | 10;
-  onSave: (
-    answers: Array<{ questionId: string; sequence: number; answer: string }>,
-  ) => Promise<void>;
+  pool: PublicQuestion[];
 }) {
-  const pool = useMemo(() => {
-    const source = getExamQuestionPool(exam, skill);
-    const focused = focus
-      ? source.filter((question) => question.competencies.includes(focus))
-      : source;
-    const available = focused.length ? focused : source;
-    return Array.from(
-      { length: questionCount },
-      (_, index) => available[index % available.length],
-    );
-  }, [exam, focus, questionCount, skill]);
+  const [submissionId] = useState(() => crypto.randomUUID());
+  const [startedAt] = useState(() => Date.now());
+  const router = useRouter();
+  const { replaceState } = useApp();
+  const { t } = useI18n();
+  const copy = t.practice.session;
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [revealed, setRevealed] = useState(false);
+  const [feedback, setFeedback] = useState<Record<string, AnswerFeedback>>({});
+  const [checking, setChecking] = useState(false);
   const [saving, setSaving] = useState(false);
   const question = pool[index];
-  const answerKey = `${index}-${question.id}`;
-  const value = answers[answerKey];
+  if (!question) return <p>{copy.empty}</p>;
+  const value = answers[question.id];
+  const revealed = feedback[question.id];
+
+  const check = async () => {
+    setChecking(true);
+    const result = await checkPracticeAnswerAction(question.id, value);
+    setChecking(false);
+    if (!result.ok) {
+      toast.error(
+        result.reference
+          ? t.common.errorReference(result.message, result.reference)
+          : result.message,
+      );
+      return;
+    }
+    setFeedback((current) => ({ ...current, [question.id]: result.feedback }));
+  };
+
   const finish = async () => {
     setSaving(true);
-    await onSave(
-      pool.map((item, sequence) => ({
+    const result = await submitPracticeAction({
+      exam,
+      skill,
+      focus,
+      durationSeconds: Math.floor((Date.now() - startedAt) / 1000),
+      submissionId,
+      answers: pool.map((item, sequence) => ({
         questionId: item.id,
         sequence,
-        answer: answers[`${sequence}-${item.id}`] ?? "",
+        answer: answers[item.id] ?? "",
       })),
-    );
-    setSaving(false);
+    });
+    if (!result.ok) {
+      setSaving(false);
+      toast.error(result.message);
+      return;
+    }
+    replaceState(result.snapshot);
+    router.push(`/practice/results?session=${result.data.id}`);
+    router.refresh();
   };
+
   return (
     <div className="mx-auto max-w-3xl">
       <div className="mb-7 flex items-center justify-between">
@@ -136,51 +95,50 @@ function ComprehensionSession({
         </span>
       </div>
       <p className="mb-3 text-sm font-bold">
-        {examSkillContent[skill].label} · {examSkillContent[skill].labelFr}
-        {focus ? ` · Focus: ${competencyFocusLabel(focus)}` : ""}
+        {t.practice.skills[skill]}
+        {t.practice.skills[skill] !== t.practice.frenchSkills[skill] &&
+          ` · ${t.practice.frenchSkills[skill]}`}
+        {focus ? ` · ${copy.focus(competencyLabel(t, focus))}` : ""}
       </p>
       <Progress
         value={((index + 1) / pool.length) * 100}
-        label="Practice progress"
+        label={copy.progress}
       />
       <div className="mt-7 rounded-2xl border border-practice/20 bg-card p-5 sm:p-8">
         <QuestionCard
           question={question}
           value={value}
-          onChange={(answer) => setAnswers({ ...answers, [answerKey]: answer })}
-          reveal={revealed}
+          onChange={(answer) =>
+            setAnswers((current) => ({ ...current, [question.id]: answer }))
+          }
+          feedback={revealed}
         />
       </div>
       <div className="mt-6 flex justify-between">
         <Button
           variant="ghost"
           disabled={index === 0}
-          onClick={() => {
-            setIndex(index - 1);
-            setRevealed(false);
-          }}
+          onClick={() => setIndex(index - 1)}
         >
           <ArrowLeft className="size-4" />
-          Previous
+          {t.common.previous}
         </Button>
         {!revealed ? (
-          <Button disabled={!value} onClick={() => setRevealed(true)}>
-            Check answer
+          <Button disabled={!value || checking} onClick={check}>
+            {checking ? t.assessment.checking : copy.check}
           </Button>
         ) : (
           <Button
             disabled={saving}
             onClick={() =>
-              index === pool.length - 1
-                ? finish()
-                : (setIndex(index + 1), setRevealed(false))
+              index === pool.length - 1 ? finish() : setIndex(index + 1)
             }
           >
             {saving
-              ? "Saving…"
+              ? copy.saving
               : index === pool.length - 1
-                ? "See results"
-                : "Next question"}
+                ? copy.results
+                : copy.next}
             <ArrowRight className="size-4" />
           </Button>
         )}

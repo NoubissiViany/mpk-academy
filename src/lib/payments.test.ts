@@ -7,32 +7,36 @@ vi.mock("@/lib/supabase/admin", () => ({
   createAdminClient: () => ({ rpc: mocks.rpc }),
 }));
 
-const session: StripeCheckoutSession = {
+const session = {
   id: "cs_test_complete",
-  created: 1_790_078_400,
+  created: 1_790_000_000,
   url: null,
+  mode: "payment",
+  status: "complete",
   client_reference_id: "learner-id",
   customer_details: { email: "learner@example.com" },
   metadata: { user_id: "learner-id", plan_id: "complete" },
   payment_status: "paid",
   payment_intent: {
     id: "pi_test_complete",
+    created: 1_790_078_400,
+    metadata: { user_id: "learner-id", plan_id: "complete" },
     latest_charge: {
       id: "ch_test_complete",
-      amount: 28_137,
+      amount: 29_013,
       amount_refunded: 0,
       refunded: false,
       payment_intent: "pi_test_complete",
     },
   },
-  amount_subtotal: 24_900,
-  amount_total: 28_137,
+  amount_subtotal: 25_675,
+  amount_total: 29_013,
   currency: "cad",
-  total_details: { amount_tax: 3_237 },
+  total_details: { amount_tax: 3_338 },
   line_items: {
     data: [{ quantity: 1, price: { id: "price_complete" } }],
   },
-};
+} as unknown as StripeCheckoutSession;
 
 describe("Stripe fulfillment validation", () => {
   beforeEach(() => {
@@ -48,11 +52,35 @@ describe("Stripe fulfillment validation", () => {
       expect.objectContaining({
         p_user_id: "learner-id",
         p_plan_id: "complete",
-        p_subtotal_minor: 24_900,
-        p_tax_minor: 3_237,
-        p_total_minor: 28_137,
+        p_subtotal_minor: 25_675,
+        p_tax_minor: 3_338,
+        p_total_minor: 29_013,
+        p_purchased_at: "2026-09-22T12:00:00.000Z",
       }),
     );
+  });
+
+  it("rejects a session that is not a completed one-time payment", async () => {
+    await expect(
+      fulfillStripeCheckout(
+        { ...session, status: "open" } as StripeCheckoutSession,
+        "learner-id",
+      ),
+    ).rejects.toThrow("Checkout session is not a completed one-time payment.");
+    expect(mocks.rpc).not.toHaveBeenCalled();
+  });
+
+  it("requires expanded, matching PaymentIntent metadata", async () => {
+    await expect(
+      fulfillStripeCheckout(
+        {
+          ...session,
+          payment_intent: "pi_test_complete",
+        } as StripeCheckoutSession,
+        "learner-id",
+      ),
+    ).rejects.toThrow("Checkout payment identifier or metadata is invalid.");
+    expect(mocks.rpc).not.toHaveBeenCalled();
   });
 
   it("rejects another learner's success URL", async () => {
@@ -70,7 +98,7 @@ describe("Stripe fulfillment validation", () => {
           line_items: {
             data: [{ quantity: 1, price: { id: "price_tampered" } }],
           },
-        },
+        } as StripeCheckoutSession,
         "learner-id",
       ),
     ).rejects.toThrow("Checkout line item does not match the selected plan.");
@@ -83,15 +111,17 @@ describe("Stripe fulfillment validation", () => {
         ...session,
         payment_intent: {
           id: "pi_test_complete",
+          created: 1_790_078_400,
+          metadata: { user_id: "learner-id", plan_id: "complete" },
           latest_charge: {
             id: "ch_test_complete",
-            amount: 28_137,
-            amount_refunded: 28_137,
+            amount: 29_013,
+            amount_refunded: 29_013,
             refunded: true,
             payment_intent: "pi_test_complete",
           },
         },
-      },
+      } as unknown as StripeCheckoutSession,
       "learner-id",
     );
     expect(mocks.rpc).toHaveBeenNthCalledWith(2, "mpk_revoke_stripe_purchase", {

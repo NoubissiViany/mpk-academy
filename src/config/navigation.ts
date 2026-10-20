@@ -9,44 +9,30 @@ import {
   UserRound,
 } from "lucide-react";
 
+// Labels come from the `account.shell.nav` messages, keyed by `key`.
+
 export const overviewNavigation = [
-  {
-    href: "/dashboard",
-    label: "Dashboard",
-    labelFr: "Tableau de bord",
-    icon: Gauge,
-  },
+  { href: "/dashboard", key: "dashboard", icon: Gauge },
 ] as const;
 
 export const prepareNavigation = [
-  { href: "/learn", label: "Learn", labelFr: "Apprendre", icon: BookOpen },
-  { href: "/practice", label: "Practice", labelFr: "Pratiquer", icon: Target },
-  {
-    href: "/exam",
-    label: "Mock Exams",
-    labelFr: "Examens blancs",
-    icon: ShieldQuestion,
-  },
+  { href: "/learn", key: "learn", icon: BookOpen },
+  { href: "/practice", key: "practice", icon: Target },
+  { href: "/exam", key: "exam", icon: ShieldQuestion },
 ] as const;
 
 export const trackNavigation = [
   {
     href: "/progress",
-    label: "Progress",
-    labelFr: "Progrès",
+    key: "progress",
     icon: ChartNoAxesColumnIncreasing,
   },
-  { href: "/mistakes", label: "Mistakes", labelFr: "Erreurs", icon: RotateCcw },
+  { href: "/mistakes", key: "mistakes", icon: RotateCcw },
 ] as const;
 
 export const accountNavigation = [
-  { href: "/profile", label: "Profile", labelFr: "Profil", icon: UserRound },
-  {
-    href: "/settings",
-    label: "Settings",
-    labelFr: "Paramètres",
-    icon: Settings,
-  },
+  { href: "/profile", key: "profile", icon: UserRound },
+  { href: "/settings", key: "settings", icon: Settings },
 ] as const;
 
 export const quickNavigation = [

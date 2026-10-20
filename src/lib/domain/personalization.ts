@@ -1,192 +1,150 @@
-import { diagnosticSkillContent } from "@/config/diagnostic";
-import { examSkillContent } from "@/config/exams";
-import { allLessons, courseModules } from "@/data/course";
-import { canAccessLesson } from "@/lib/domain/access";
 import {
-  aggregateMistakePatterns,
-  getWeakestExamSkill,
-} from "@/lib/domain/exam-progress";
+  canonicalCompetency,
+  competencyIds,
+  type ContentCompetency,
+} from "@/content/shared/competencies";
+import { diagnosticSkillModules } from "@/config/diagnostic";
+import { allLessons, getCourseModules } from "@/data/course";
+import { canAccessLesson } from "@/lib/domain/access";
+import { getWeakestExamSkill } from "@/lib/domain/exam-progress";
 import type {
   AppState,
-  CompetencyId,
   DiagnosticResult,
+  DiagnosticSkill,
   ExamId,
   ExamSkill,
   Lesson,
   Mistake,
 } from "@/types/domain";
 
-const competencyLabels: Partial<Record<CompetencyId, string>> = {
-  "reading-main-idea": "Main ideas",
-  "reading-detail": "Specific details",
-  "reading-inference": "Inferences",
-  "listening-main-idea": "Main ideas",
-  "listening-detail": "Specific details",
-  "grammar-tense": "Verb tense and agreement",
-  "grammar-prepositions": "Prepositions",
-  "vocabulary-context": "Vocabulary in context",
-  connectors: "Connectors",
-  "time-expressions": "Time expressions",
-};
+// Every recommendation keys on canonical competencies. Legacy ids from older
+// rows are mapped through `canonicalCompetency`, so one taxonomy drives
+// mistakes, focus areas, and lesson matching. Functions return data, not
+// sentences; components translate it.
 
-const lessonByCompetency: Partial<
-  Record<CompetencyId, { moduleId: string; lessonId: string }>
-> = {
-  "reading-main-idea": {
-    moduleId: "reading-strategies",
-    lessonId: "reading-strategies-1",
-  },
-  "reading-detail": {
-    moduleId: "reading-strategies",
-    lessonId: "reading-strategies-2",
-  },
-  "reading-inference": {
-    moduleId: "reading-strategies",
-    lessonId: "reading-strategies-3",
-  },
-  "listening-main-idea": {
-    moduleId: "listening-strategies",
-    lessonId: "listening-strategies-1",
-  },
-  "listening-detail": {
-    moduleId: "listening-strategies",
-    lessonId: "listening-strategies-2",
-  },
-  "grammar-tense": { moduleId: "grammar", lessonId: "grammar-3" },
-  "grammar-prepositions": { moduleId: "grammar", lessonId: "grammar-1" },
-  "vocabulary-context": {
-    moduleId: "vocabulary",
-    lessonId: "vocabulary-1",
-  },
-  connectors: { moduleId: "grammar", lessonId: "connectors" },
-  "time-expressions": { moduleId: "grammar", lessonId: "grammar-1" },
-};
+/** A weakness: a competency, and whether the evidence came from a transcript. */
+export type FocusArea = { competency: string; transcript: boolean };
 
-function activeExam(state: AppState): ExamId | null {
+export type LessonReason =
+  | { type: "diagnostic"; skill: DiagnosticSkill }
+  | { type: "mistake"; focus: FocusArea }
+  | { type: "next" };
+
+const isCanonical = (id: string): id is ContentCompetency =>
+  (competencyIds as readonly string[]).includes(id);
+
+function activeExam(state: Pick<AppState, "user">): ExamId | null {
   const exam = state.user?.goal.exam;
   return exam === "TEF Canada" || exam === "TCF Canada" ? exam : null;
 }
 
-function patternKey(mistake: Mistake) {
-  return mistake.pattern ?? mistake.mistakeCategory;
+const examCode = (exam: ExamId | null) =>
+  exam === "TCF Canada" ? "TCF" : "TEF";
+
+export function mistakeFocus(mistake: Mistake): FocusArea {
+  const pattern = mistake.pattern ?? "";
+  const transcript = pattern.startsWith("Transcript exercise");
+  const fromPattern = canonicalCompetency(
+    transcript ? (pattern.split("·").pop()?.trim() ?? "") : pattern,
+  );
+  return {
+    competency: isCanonical(fromPattern)
+      ? fromPattern
+      : canonicalCompetency(mistake.competencyId),
+    transcript,
+  };
 }
 
-export function focusAreaLabel(mistake: Mistake) {
-  if (patternKey(mistake) === "Understanding specific details")
-    return "Specific details";
-  if (patternKey(mistake) === mistake.competencyId.replaceAll("-", " "))
-    return competencyFocusLabel(mistake.competencyId);
+const focusKey = (mistake: Mistake) => {
+  const focus = mistakeFocus(mistake);
+  return `${mistake.exam ?? "general"}:${mistake.examSkill ?? "other"}:${focus.transcript ? "transcript:" : ""}${focus.competency}`;
+};
+
+/** Mistakes grouped by canonical focus, most frequent first. */
+export function groupMistakes(mistakes: Mistake[]) {
+  const groups = new Map<string, Mistake>();
+  for (const mistake of mistakes) {
+    const key = focusKey(mistake);
+    const existing = groups.get(key);
+    groups.set(
+      key,
+      existing
+        ? {
+            ...existing,
+            count: (existing.count ?? 1) + (mistake.count ?? 1),
+            timestamp:
+              existing.timestamp > mistake.timestamp
+                ? existing.timestamp
+                : mistake.timestamp,
+          }
+        : { ...mistake, count: mistake.count ?? 1 },
+    );
+  }
+  return [...groups.values()].sort((a, b) => (b.count ?? 1) - (a.count ?? 1));
+}
+
+function lessonExamMatches(lesson: Lesson, exam: ExamId | null) {
   return (
-    patternKey(mistake) || competencyLabels[mistake.competencyId] || "Review"
+    !lesson.exam || lesson.exam === "shared" || lesson.exam === examCode(exam)
   );
 }
 
-export function competencyFocusLabel(competencyId: CompetencyId) {
-  return competencyLabels[competencyId] ?? competencyId.replaceAll("-", " ");
-}
-
-function lessonFromReference(reference?: {
-  moduleId: string;
-  lessonId: string;
-}) {
-  return reference
-    ? (allLessons.find(
-        (lesson) =>
-          lesson.moduleId === reference.moduleId &&
-          lesson.id === reference.lessonId,
-      ) ?? null)
-    : null;
-}
-
 export function getWeaknessLesson(mistake: Mistake): Lesson | null {
-  const pattern = patternKey(mistake).toLowerCase();
-  if (pattern.includes("number"))
-    return lessonFromReference(lessonByCompetency["listening-detail"]);
-  if (pattern.includes("specific detail"))
-    return lessonFromReference(
-      lessonByCompetency[
-        mistake.examSkill === "reading" ? "reading-detail" : "listening-detail"
-      ],
-    );
-  if (pattern.includes("inference") && mistake.examSkill === "listening")
-    return (
-      allLessons.find(
-        (lesson) =>
-          lesson.moduleId === "listening-strategies" && lesson.sequence === 3,
-      ) ?? null
-    );
-  if (pattern.includes("connector"))
-    return lessonFromReference(lessonByCompetency.connectors);
-  if (pattern.includes("register"))
-    return (
-      allLessons.find(
-        (lesson) =>
-          lesson.moduleId === "writing-techniques" && lesson.sequence === 3,
-      ) ?? null
-    );
-  return lessonFromReference(lessonByCompetency[mistake.competencyId]);
+  const { competency } = mistakeFocus(mistake);
+  const candidates = allLessons.filter(
+    (lesson) =>
+      lessonExamMatches(lesson, mistake.exam ?? null) &&
+      lesson.competencies.some((c) => canonicalCompetency(c) === competency),
+  );
+  return (
+    candidates.find((lesson) => lesson.skill === mistake.examSkill) ??
+    candidates[0] ??
+    null
+  );
 }
 
-const competenciesBySkill: Partial<Record<ExamSkill, CompetencyId[]>> = {
-  reading: ["reading-main-idea", "reading-detail", "reading-inference"],
-  listening: ["listening-main-idea", "listening-detail"],
+const competenciesBySkill: Partial<Record<ExamSkill, ContentCompetency[]>> = {
+  reading: [
+    "main_idea",
+    "specific_detail",
+    "inference",
+    "vocabulary_in_context",
+    "reading_efficiency",
+  ],
+  listening: ["main_idea", "specific_detail", "inference", "speaker_intention"],
 };
 
-function lowestDiagnosticCompetency(
-  result: DiagnosticResult | null,
-  skill: ExamSkill,
-) {
-  const candidates = competenciesBySkill[skill] ?? [];
-  return candidates
-    .map((competencyId) => ({
-      competencyId,
-      score: result?.competencyScores[competencyId],
-    }))
-    .filter(
-      (item): item is { competencyId: CompetencyId; score: number } =>
-        typeof item.score === "number",
-    )
-    .sort((a, b) => a.score - b.score)[0]?.competencyId;
+/** Diagnostic scores keyed by canonical competency (older results use legacy ids). */
+function diagnosticCompetencyScores(result: DiagnosticResult | null) {
+  const scores = new Map<string, number>();
+  for (const [id, score] of Object.entries(result?.competencyScores ?? {}))
+    if (typeof score === "number") {
+      const key = canonicalCompetency(id);
+      scores.set(key, Math.min(score, scores.get(key) ?? score));
+    }
+  return scores;
 }
 
 export function getSkillFocusAreas(state: AppState, skill: ExamSkill) {
   const exam = activeExam(state);
-  const mistakeAreas = aggregateMistakePatterns(
+  const fromMistakes = groupMistakes(
     state.mistakes.filter(
       (mistake) =>
         mistake.examSkill === skill && (!mistake.exam || mistake.exam === exam),
     ),
-  ).map((mistake) => ({
-    label: focusAreaLabel(mistake),
-    competencyId: mistake.competencyId,
-  }));
-  const uniqueMistakes = mistakeAreas.filter(
-    (item, index, items) =>
-      items.findIndex((candidate) => candidate.label === item.label) === index,
-  );
-  const diagnosticAreas = (competenciesBySkill[skill] ?? [])
-    .map((competencyId) => ({
-      competencyId,
-      score: state.diagnosticResult?.competencyScores[competencyId],
-      label: competencyLabels[competencyId] ?? competencyId,
-    }))
-    .filter(
-      (
-        item,
-      ): item is {
-        competencyId: CompetencyId;
-        score: number;
-        label: string;
-      } => typeof item.score === "number",
-    )
-    .sort((a, b) => a.score - b.score)
+  ).map(mistakeFocus);
+  const scores = diagnosticCompetencyScores(state.diagnosticResult);
+  const fromDiagnostic = (competenciesBySkill[skill] ?? [])
+    .filter((competency) => scores.has(competency))
+    .sort((a, b) => scores.get(a)! - scores.get(b)!)
     .slice(0, 2)
-    .map(({ competencyId, label }) => ({ competencyId, label }));
-  return [...uniqueMistakes, ...diagnosticAreas]
+    .map((competency) => ({ competency, transcript: false }));
+  return [...fromMistakes, ...fromDiagnostic]
     .filter(
       (item, index, items) =>
-        items.findIndex((candidate) => candidate.label === item.label) ===
-        index,
+        items.findIndex(
+          (candidate) => candidate.competency === item.competency,
+        ) === index,
     )
     .slice(0, 2);
 }
@@ -205,18 +163,16 @@ export function getRecommendedPractice(state: AppState) {
           ? "reading"
           : null;
   if (!skill) return null;
-  const focus = getSkillFocusAreas(state, skill)[0]?.competencyId;
+  const focus = getSkillFocusAreas(state, skill)[0]?.competency;
   const query = new URLSearchParams({ skill, count: "10" });
   if (focus) query.set("focus", focus);
-  return {
-    skill,
-    label: examSkillContent[skill].label,
-    href: `/practice/session?${query.toString()}`,
-  };
+  return { skill, href: `/practice/session?${query.toString()}` };
 }
 
 function firstIncompleteLesson(state: AppState, moduleId: string) {
-  const courseModule = courseModules.find((item) => item.id === moduleId);
+  const courseModule = getCourseModules(examCode(activeExam(state))).find(
+    (item) => item.id === moduleId,
+  );
   if (!courseModule) return null;
   return (
     courseModule.lessons.find(
@@ -226,10 +182,12 @@ function firstIncompleteLesson(state: AppState, moduleId: string) {
 }
 
 export function getRecommendedLessons(state: AppState) {
-  const recommendations: Array<{ lesson: Lesson; reason: string }> = [];
-  const add = (lesson: Lesson | null, reason: string) => {
+  const exam = activeExam(state);
+  const recommendations: Array<{ lesson: Lesson; reason: LessonReason }> = [];
+  const add = (lesson: Lesson | null, reason: LessonReason) => {
     if (
       lesson &&
+      lessonExamMatches(lesson, exam) &&
       canAccessLesson(state.planAccess, lesson) &&
       !recommendations.some((item) => item.lesson.id === lesson.id)
     )
@@ -238,62 +196,64 @@ export function getRecommendedLessons(state: AppState) {
   if (state.diagnosticResult)
     add(
       firstIncompleteLesson(state, state.diagnosticResult.recommendedModuleId),
-      `Recommended from your ${diagnosticSkillContent[state.diagnosticResult.priority].label.toLowerCase()} assessment priority.`,
+      {
+        type: "diagnostic",
+        skill: state.diagnosticResult.priority,
+      },
     );
 
-  const exam = activeExam(state);
-  for (const mistake of aggregateMistakePatterns(
+  for (const mistake of groupMistakes(
     state.mistakes.filter((item) => !item.exam || !exam || item.exam === exam),
   ))
-    add(getWeaknessLesson(mistake), `Supports ${focusAreaLabel(mistake)}.`);
+    add(getWeaknessLesson(mistake), {
+      type: "mistake",
+      focus: mistakeFocus(mistake),
+    });
 
   if (!recommendations.length)
     add(
       allLessons.find(
         (lesson) =>
+          lessonExamMatches(lesson, exam) &&
           canAccessLesson(state.planAccess, lesson) &&
           !state.progress.completedLessonIds.includes(lesson.id),
       ) ?? null,
-      "A useful next lesson for your preparation.",
+      { type: "next" },
     );
   return recommendations.slice(0, 3);
 }
 
-export function getDiagnosticNextActivity(result: DiagnosticResult) {
-  const label = diagnosticSkillContent[result.priority].label;
-  if (result.priority === "reading" || result.priority === "listening") {
-    const skill = result.priority;
-    const focus = lowestDiagnosticCompetency(result, skill);
+export function getDiagnosticNextActivity(
+  result: DiagnosticResult,
+  exam: ExamId | null = null,
+) {
+  const skill = result.priority;
+  if (skill === "reading" || skill === "listening") {
+    const scores = diagnosticCompetencyScores(result);
+    const focus = (competenciesBySkill[skill] ?? [])
+      .filter((competency) => scores.has(competency))
+      .sort((a, b) => scores.get(a)! - scores.get(b)!)[0];
     const query = new URLSearchParams({ skill });
     if (focus) query.set("focus", focus);
-    return {
-      label,
-      href: `/practice/session?${query.toString()}`,
-    };
+    return { skill, href: `/practice/session?${query.toString()}` };
   }
   const lesson =
-    courseModules.find((module) => module.id === result.recommendedModuleId)
-      ?.lessons[0] ?? allLessons[0];
-  return {
-    label,
-    href: `/learn/${lesson.moduleId}/${lesson.id}`,
-  };
+    getCourseModules(examCode(exam)).find(
+      (module) => module.id === diagnosticSkillModules[skill],
+    )?.lessons[0] ?? allLessons[0];
+  return { skill, href: `/learn/${lesson.moduleId}/${lesson.id}` };
 }
 
 export function getMistakeDetail(state: AppState, mistakeId: string) {
   const anchor = state.mistakes.find((mistake) => mistake.id === mistakeId);
   if (!anchor) return null;
+  const key = focusKey(anchor);
   const matches = state.mistakes
-    .filter(
-      (mistake) =>
-        mistake.exam === anchor.exam &&
-        mistake.examSkill === anchor.examSkill &&
-        patternKey(mistake) === patternKey(anchor),
-    )
+    .filter((mistake) => focusKey(mistake) === key)
     .sort((a, b) => b.timestamp.localeCompare(a.timestamp));
   return {
     anchor,
-    title: patternKey(anchor),
+    focus: mistakeFocus(anchor),
     count: matches.reduce((sum, mistake) => sum + (mistake.count ?? 1), 0),
     examples: matches.slice(0, 3),
     lesson: getWeaknessLesson(anchor),

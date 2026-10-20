@@ -1,5 +1,4 @@
 "use client";
-
 import Link from "next/link";
 import {
   ArrowRight,
@@ -15,13 +14,9 @@ import { PageHeader } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { diagnosticSkillContent } from "@/config/diagnostic";
-import {
-  examConfigurations,
-  examSkillContent,
-  examSkillOrder,
-} from "@/config/exams";
-import { hasPlanFeature } from "@/config/product";
+import { examConfigurations, examSkillOrder } from "@/config/exams";
+import { hasPlanFeature, isBetaMode } from "@/config/product";
+import { useI18n } from "@/i18n/client";
 import {
   createEmptyExamProfile,
   getSkillStatus,
@@ -38,43 +33,42 @@ const skillIcons = {
 
 export function DashboardView() {
   const { state, hydrated, replaceState } = useApp();
+  const { t } = useI18n();
+  const copy = t.dashboard;
   const user = state.user;
+  const name = user?.firstName ?? copy.learner;
   const activeExam =
     user?.goal.exam === "TEF Canada" || user?.goal.exam === "TCF Canada"
       ? user.goal.exam
       : null;
-
   if (!hydrated)
     return (
       <div
         className="h-96 animate-pulse rounded-2xl bg-muted"
-        aria-label="Loading dashboard"
+        aria-label={copy.loading}
       />
     );
-
   if (!state.planAccess) {
     const priority = state.diagnosticResult
-      ? diagnosticSkillContent[state.diagnosticResult.priority]
+      ? t.diagnostic.skills[state.diagnosticResult.priority].label
       : null;
     return (
       <>
         <PageHeader
-          eyebrow="Dashboard"
-          title={`Welcome, ${user?.firstName ?? "Learner"}`}
-          description="Your free account includes the assessment and a basic weakness profile."
+          eyebrow={copy.eyebrow}
+          title={copy.welcome(name)}
+          description={copy.free.description}
         />
         <Card className="max-w-3xl border-primary/20">
           <CardContent className="pt-6">
-            <p className="eyebrow">Assessment</p>
+            <p className="eyebrow">{copy.free.assessment}</p>
             <h2 className="mt-3 text-2xl font-bold">
               {state.diagnosticResult
-                ? `Your estimated level is ${state.diagnosticResult.level}`
-                : "Establish your starting point"}
+                ? copy.free.level(state.diagnosticResult.level)
+                : copy.free.establish}
             </h2>
             <p className="mt-3 text-sm leading-6 text-muted-foreground">
-              {priority
-                ? `${priority.label} is the main weakness identified by your latest assessment.`
-                : "Complete the assessment to identify your current level, strengths, and priority weakness."}
+              {priority ? copy.free.priority(priority) : copy.free.noResult}
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Button asChild>
@@ -86,20 +80,21 @@ export function DashboardView() {
                   }
                 >
                   {state.diagnosticResult
-                    ? "View assessment results"
-                    : "Start assessment"}
+                    ? copy.free.viewResults
+                    : copy.free.start}
                 </Link>
               </Button>
-              <Button asChild variant="secondary">
-                <Link href="/choose-plan">Compare paid plans</Link>
-              </Button>
+              {!isBetaMode() && (
+                <Button asChild variant="secondary">
+                  <Link href="/choose-plan">{copy.free.compare}</Link>
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>
       </>
     );
   }
-
   const selectExam = async (exam: ExamId) => {
     const result = await updateExamGoalAction({
       exam,
@@ -108,14 +103,13 @@ export function DashboardView() {
     });
     if (result.ok) replaceState(result.snapshot);
   };
-
   if (!activeExam) {
     return (
       <>
         <PageHeader
-          eyebrow="Choose your preparation"
-          title="Which Canadian French exam are you preparing for?"
-          description="TEF Canada and TCF Canada assess the same four language abilities through different formats. Your choice creates a separate dashboard that you can switch later in Settings."
+          eyebrow={copy.chooseExam.eyebrow}
+          title={copy.chooseExam.title}
+          description={copy.chooseExam.description}
         />
         <div className="grid gap-5 md:grid-cols-2">
           {(["TEF Canada", "TCF Canada"] as const).map((exam) => {
@@ -125,11 +119,11 @@ export function DashboardView() {
                 <CardContent className="pt-6">
                   <h2 className="text-2xl font-bold">{exam}</h2>
                   <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                    {config.officialFormat.reading}.{" "}
-                    {config.officialFormat.writing}.
+                    {t.exam.formats[exam].reading}.{" "}
+                    {t.exam.formats[exam].writing}.
                   </p>
                   <Button className="mt-6" onClick={() => selectExam(exam)}>
-                    Prepare for {config.shortName}
+                    {copy.chooseExam.prepare(config.shortName)}
                   </Button>
                 </CardContent>
               </Card>
@@ -143,7 +137,10 @@ export function DashboardView() {
   const profile =
     state.examProfiles[activeExam] ?? createEmptyExamProfile(activeExam);
   const diagnosticNext = state.diagnosticResult
-    ? getDiagnosticNextActivity(state.diagnosticResult)
+    ? getDiagnosticNextActivity(state.diagnosticResult, activeExam)
+    : null;
+  const nextSkill = diagnosticNext
+    ? t.diagnostic.skills[diagnosticNext.skill].label
     : null;
   const shortName = examConfigurations[activeExam].shortName;
   const readiness = state.diagnosticResult?.score ?? null;
@@ -155,31 +152,32 @@ export function DashboardView() {
     state.planAccess,
     "detailedReadiness",
   );
+  const minutes = profile.weekly.minutesStudied;
 
   return (
     <>
       <PageHeader
-        eyebrow="Dashboard"
-        title={`Welcome back, ${user?.firstName ?? "Learner"}`}
-        description="Your exam, current progress, and clearest next step in one place."
+        eyebrow={copy.eyebrow}
+        title={copy.welcomeBack(name)}
+        description={copy.description}
       />
 
       <div className="my-8 grid gap-5 lg:grid-cols-[1.2fr_.8fr]">
         <Card className="border-primary/20 bg-primary text-primary-foreground">
           <CardContent className="pt-6">
             <p className="text-xs font-bold tracking-[0.14em] text-white/70">
-              RECOMMENDED NEXT
+              {copy.next.eyebrow}
             </p>
-            <Target className="mt-6 size-6" />
+            <Target className="mt-6 size-6" aria-hidden="true" />
             <h2 className="mt-3 text-xl font-bold">
-              {personalized && diagnosticNext
-                ? `Start with ${diagnosticNext.label.toLowerCase()}`
-                : "Continue your guided lessons"}
+              {personalized && nextSkill
+                ? copy.next.startWith(nextSkill)
+                : copy.next.continueTitle}
             </h2>
             <p className="mt-3 text-sm text-white/75">
-              {personalized && diagnosticNext
-                ? `${diagnosticNext.label} is the priority identified by your latest diagnostic result.`
-                : "Build your French foundations and continue through the available skill lessons."}
+              {personalized && nextSkill
+                ? copy.next.priority(nextSkill)
+                : copy.next.continueBody}
             </p>
             <Button asChild variant="secondary" className="mt-6">
               <Link
@@ -190,40 +188,35 @@ export function DashboardView() {
                 }
               >
                 {personalized && diagnosticNext
-                  ? "Start recommended activity"
-                  : "Continue learning"}
+                  ? copy.next.start
+                  : copy.next.continue}
               </Link>
             </Button>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <h2 className="text-sm font-bold tracking-[0.14em]">THIS WEEK</h2>
+            <h2 className="text-sm font-bold tracking-[0.14em]">
+              {copy.week.title}
+            </h2>
           </CardHeader>
           <CardContent className="grid grid-cols-2 gap-x-5 gap-y-6">
             <WeeklyStat
               value={String(profile.weekly.practiceSessions)}
-              label="practice sessions"
+              label={copy.week.sessions}
             />
             <WeeklyStat
-              value={`${Math.floor(profile.weekly.minutesStudied / 60)}h ${profile.weekly.minutesStudied % 60}m`}
-              label="studied"
+              value={copy.week.duration(Math.floor(minutes / 60), minutes % 60)}
+              label={copy.week.studied}
             />
             <WeeklyStat
               value={String(profile.weekly.questionsReviewed)}
-              label="questions reviewed"
+              label={copy.week.reviewed}
             />
-            {detailedReadiness ? (
-              <WeeklyStat
-                value={`${profile.weekly.readinessChange >= 0 ? "+" : ""}${Math.round(profile.weekly.readinessChange)}%`}
-                label="readiness"
-              />
-            ) : (
-              <WeeklyStat
-                value={`${state.progress.courseCompletion}%`}
-                label="course complete"
-              />
-            )}
+            <WeeklyStat
+              value={`${state.progress.courseCompletion}%`}
+              label={copy.week.completion}
+            />
           </CardContent>
         </Card>
       </div>
@@ -231,15 +224,21 @@ export function DashboardView() {
       <Card className="border-primary/20">
         <CardContent className="pt-6">
           <p className="text-xs font-bold tracking-[0.14em] text-muted-foreground">
-            MY EXAM
+            {copy.exam.eyebrow}
           </p>
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-2xl font-bold">{activeExam}</h2>
-            <p className="font-semibold">Target: {user?.goal.target}</p>
+            {user?.goal.target && (
+              <p className="font-semibold">
+                {copy.exam.target(
+                  t.diagnostic.intake.targets[user.goal.target],
+                )}
+              </p>
+            )}
           </div>
           <div className="mt-7 flex items-end justify-between gap-4 text-sm">
             <span className="font-semibold">
-              {detailedReadiness ? "Diagnostic readiness" : "Practice accuracy"}
+              {detailedReadiness ? copy.exam.readiness : copy.exam.accuracy}
             </span>
             <strong className="text-2xl">
               {detailedReadiness
@@ -258,65 +257,63 @@ export function DashboardView() {
             }
             label={
               detailedReadiness && readiness === null
-                ? "Diagnostic readiness not available yet"
+                ? copy.exam.readinessUnavailable
                 : detailedReadiness
-                  ? `Diagnostic readiness ${readiness}%`
-                  : `Practice accuracy ${state.progress.practiceAccuracy}%`
+                  ? copy.exam.readinessLabel(readiness ?? 0)
+                  : copy.exam.accuracyLabel(state.progress.practiceAccuracy)
             }
           />
           <p className="mt-3 text-xs text-muted-foreground">
             {detailedReadiness
               ? readiness === null
-                ? "Complete your assessment to establish readiness."
-                : `This provisional result comes from your latest diagnostic. It is not an official ${shortName}, NCLC, or immigration score.`
-              : `${state.progress.practiceAnswered} practice questions completed. Detailed readiness is available with Complete and Intensive.`}
+                ? copy.exam.completeAssessment
+                : copy.exam.provisional(shortName)
+              : copy.exam.practiceCount(state.progress.practiceAnswered)}
           </p>
         </CardContent>
       </Card>
 
       <h2 className="mt-9 text-sm font-bold tracking-[0.14em]">
-        YOUR 4 EXAM SKILLS
+        {copy.skills.title}
       </h2>
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         {examSkillOrder.map((skill) => {
           const Icon = skillIcons[skill];
-          const content = examSkillContent[skill];
+          const label = t.practice.skills[skill];
+          const frenchLabel = t.practice.frenchSkills[skill];
           const productive = skill === "writing" || skill === "speaking";
           const score = productive ? null : profile.skills[skill].current;
           return (
             <Card key={skill}>
               <CardContent className="pt-6">
                 <span className="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary">
-                  <Icon className="size-5" />
+                  <Icon className="size-5" aria-hidden="true" />
                 </span>
-                <h3 className="mt-4 text-lg font-bold">{content.label}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {content.labelFr}
-                </p>
+                <h3 className="mt-4 text-lg font-bold">{label}</h3>
+                {frenchLabel !== label && (
+                  <p className="text-sm text-muted-foreground" lang="fr">
+                    {frenchLabel}
+                  </p>
+                )}
                 <p className="mt-5 text-3xl font-bold">
                   {productive
-                    ? "Not assessed yet"
+                    ? copy.skills.notAssessed
                     : score === null
                       ? "—"
                       : `${score}%`}
                 </p>
                 <p className="mt-1 text-sm font-semibold text-muted-foreground">
                   {productive
-                    ? "Correction coming soon"
-                    : getSkillStatus(score)}
+                    ? copy.skills.selfPractice
+                    : t.practice.status[getSkillStatus(score)]}
                 </p>
-                {productive ? (
-                  <p className="mt-6 text-sm font-semibold text-muted-foreground">
-                    Practice assessment unavailable
-                  </p>
-                ) : (
-                  <Link
-                    className="mt-6 inline-flex items-center gap-1 text-sm font-bold text-primary hover:underline"
-                    href={`/practice/session?skill=${skill}`}
-                  >
-                    Practice <ArrowRight className="size-4" />
-                  </Link>
-                )}
+                <Link
+                  className="mt-6 inline-flex items-center gap-1 text-sm font-bold text-primary hover:underline"
+                  href={`/practice/session?skill=${skill}`}
+                >
+                  {productive ? copy.skills.practiseNow : copy.skills.practice}{" "}
+                  <ArrowRight className="size-4" />
+                </Link>
               </CardContent>
             </Card>
           );

@@ -25,6 +25,7 @@ vi.mock("@/app/actions/learner", () => ({
 
 describe("confirmed registration handoff", () => {
   beforeEach(() => {
+    vi.stubEnv("NEXT_PUBLIC_BETA_MODE", "false");
     localStorage.clear();
     Object.values(mocks).forEach((mock) => mock.mockReset());
     mocks.getSnapshot.mockResolvedValue({
@@ -36,7 +37,10 @@ describe("confirmed registration handoff", () => {
       },
     });
   });
-  afterEach(cleanup);
+  afterEach(() => {
+    cleanup();
+    vi.unstubAllEnvs();
+  });
 
   it("starts the assessment after a direct registration", async () => {
     render(
@@ -60,7 +64,7 @@ describe("confirmed registration handoff", () => {
       ok: true,
       snapshot: {
         ...demoState,
-        checkoutIntentPlanId: "intensive",
+        checkoutIntentPlanId: "complete",
         diagnosticResult: null,
         planAccess: null,
       },
@@ -180,5 +184,53 @@ describe("confirmed registration handoff", () => {
       await screen.findByText(/Reference: confirmation-profile-reference/),
     ).toBeVisible();
     expect(mocks.replace).not.toHaveBeenCalled();
+  });
+});
+
+describe("confirmed registration handoff during the beta", () => {
+  beforeEach(() => {
+    vi.stubEnv("NEXT_PUBLIC_BETA_MODE", "true");
+    localStorage.clear();
+    Object.values(mocks).forEach((mock) => mock.mockReset());
+  });
+  afterEach(() => {
+    cleanup();
+    vi.unstubAllEnvs();
+  });
+
+  it("sends a confirmed guest to beta activation instead of checkout", async () => {
+    const result = scoreDiagnostic(diagnosticQuestions, {});
+    await guestAssessmentRepository.create({
+      intake: {
+        goal: "TEF Canada",
+        target: "NCLC 7",
+        frenchExperience: "I know some French",
+      },
+      answers: {},
+      result,
+      activity: {
+        id: "guest-beta",
+        label: "Assessment completed",
+        detail: `${result.level} estimated level`,
+        timestamp: "2026-10-19T12:00:00.000Z",
+      },
+      recommendedPlanId: "complete",
+    });
+    mocks.claimGuest.mockResolvedValue({
+      ok: true,
+      data: { id: "assessment-id" },
+      snapshot: { ...demoState, planAccess: null },
+    });
+    mocks.getSnapshot.mockResolvedValue({
+      ok: true,
+      snapshot: { ...demoState, planAccess: null },
+    });
+
+    render(
+      <AppProvider initialState={{ ...demoState, planAccess: null }}>
+        <AuthComplete />
+      </AppProvider>,
+    );
+    await waitFor(() => expect(mocks.replace).toHaveBeenCalledWith("/beta"));
   });
 });

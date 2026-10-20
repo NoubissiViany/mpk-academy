@@ -1,3 +1,5 @@
+import type { ContentCompetency } from "@/content/shared/competencies";
+import type { AudioAsset } from "@/content/shared/types";
 export type Locale = "en" | "fr";
 export type UserTier = "visitor" | "free_student" | "paid_student";
 export type PaidPlanId = "essential" | "complete" | "intensive";
@@ -22,6 +24,7 @@ export type DiagnosticSkill =
 export type AssistanceLevel = "full" | "on_request" | "minimal";
 export type LessonStatus = "locked" | "available" | "in_progress" | "completed";
 export type CompetencyId =
+  | ContentCompetency
   | "reading-main-idea"
   | "reading-detail"
   | "reading-inference"
@@ -130,6 +133,8 @@ export interface Competency {
 
 export interface Lesson {
   id: string;
+  exam?: "TEF" | "TCF" | "shared";
+  skill?: string;
   moduleId: string;
   sequence: number;
   title: string;
@@ -170,7 +175,7 @@ interface QuestionBase {
   competencies: CompetencyId[];
   diagnosticSkill: DiagnosticSkill;
   difficulty: "A2" | "B1" | "B2" | "C1";
-  metadata?: { passage?: string; audioLabel?: string };
+  metadata?: { passage?: string; audioLabel?: string; audio?: AudioAsset };
 }
 
 export interface MultipleChoiceQuestion extends QuestionBase {
@@ -186,6 +191,20 @@ export interface FillBlankQuestion extends QuestionBase {
 }
 
 export type Question = MultipleChoiceQuestion | FillBlankQuestion;
+
+type AnswerKeyFields = "correctAnswer" | "explanation" | "explanationFr";
+
+/** A question as sent to the browser: no answer key or explanation. */
+export type PublicQuestion =
+  | Omit<MultipleChoiceQuestion, AnswerKeyFields>
+  | Omit<FillBlankQuestion, AnswerKeyFields>;
+
+/** Server verdict for one answer, returned only after the learner answers. */
+export interface AnswerFeedback {
+  correct: boolean;
+  correctAnswer: string;
+  explanation: string;
+}
 
 export interface Attempt {
   questionId: string;
@@ -225,7 +244,10 @@ export interface DiagnosticResult {
   score: number;
   level: "A2" | "B1" | "B2" | "C1";
   competencyScores: Partial<Record<CompetencyId, number>>;
-  skillScores: Record<DiagnosticSkill, number>;
+  skillScores: Record<DiagnosticSkill, number | null>;
+  algorithmVersion?: string;
+  assessedItemCount?: number;
+  languageFoundation?: number;
   strength: DiagnosticSkill;
   priority: DiagnosticSkill;
   recommendedModuleId: string;

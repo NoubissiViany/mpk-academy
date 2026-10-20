@@ -16,6 +16,7 @@ function isGuestAssessmentSession(
 ): value is GuestAssessmentSession {
   if (!value || typeof value !== "object") return false;
   const session = value as Partial<GuestAssessmentSession>;
+  if (session.result?.algorithmVersion !== "mpk-diagnostic-v2") return false;
   return Boolean(
     typeof session.id === "string" &&
     typeof session.createdAt === "string" &&
@@ -35,6 +36,10 @@ function readStoredSession(): GuestAssessmentSession | null {
   const target = storage();
   if (!target) return null;
   try {
+    if (target.getItem("mpk-academy:guest-assessment:v1")) {
+      target.removeItem("mpk-academy:guest-assessment:v1");
+      target.setItem("mpk-assessment-restart", "true");
+    }
     const value: unknown = JSON.parse(
       target.getItem(productConfig.guestAssessmentStorageKey) ?? "null",
     );

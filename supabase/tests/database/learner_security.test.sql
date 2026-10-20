@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(30);
+select plan(35);
 
 select has_table('public', 'profiles', 'profiles table exists');
 select has_table('public', 'assessments', 'assessments table exists');
@@ -63,6 +63,11 @@ select is(
   'signup trigger creates four initial skill rows'
 );
 
+select set_config('mpk.test_diagnostic_answers',(
+ select jsonb_agg(jsonb_build_object('question_id',id,'sequence',seq-1,'answer',correct_answer))::text
+ from (select *,row_number() over(order by id) seq from private.question_bank where is_diagnostic) q
+),true);
+
 set local request.jwt.claim.sub = '10000000-0000-0000-0000-000000000001';
 set local role authenticated;
 
@@ -104,23 +109,7 @@ select lives_ok(
   $$select public.mpk_submit_assessment(
     '30000000-0000-0000-0000-000000000003', 'diagnostic', 'TEF Canada',
     '{"goal":"TEF Canada","target":"NCLC 7","frenchExperience":"I know some French"}'::jsonb,
-    '[
-      {"question_id":"d1","sequence":0,"answer":"a"},
-      {"question_id":"d2","sequence":1,"answer":"b"},
-      {"question_id":"d3","sequence":2,"answer":"b"},
-      {"question_id":"d4","sequence":3,"answer":"b"},
-      {"question_id":"d5","sequence":4,"answer":"lirais"},
-      {"question_id":"d6","sequence":5,"answer":"b"},
-      {"question_id":"d7","sequence":6,"answer":"b"},
-      {"question_id":"d8","sequence":7,"answer":"b"},
-      {"question_id":"d9","sequence":8,"answer":"b"},
-      {"question_id":"d10","sequence":9,"answer":"b"},
-      {"question_id":"d11","sequence":10,"answer":"a"},
-      {"question_id":"d12","sequence":11,"answer":"b"},
-      {"question_id":"d13","sequence":12,"answer":"b"},
-      {"question_id":"d14","sequence":13,"answer":"b"},
-      {"question_id":"d15","sequence":14,"answer":"c"}
-    ]'::jsonb
+    current_setting('mpk.test_diagnostic_answers')::jsonb
   )$$,
   'a diagnostic is saved atomically through the restricted function'
 );
@@ -160,7 +149,7 @@ select throws_ok(
   $$select public.mpk_submit_assessment('', 'diagnostic', 'TEF Canada', '{}'::jsonb,
     '[{"question_id":"d1","sequence":0,"answer":"a"}]'::jsonb)$$,
   '22023',
-  'Assessment question set is incomplete or invalid',
+  'Invalid content answers',
   'invalid submissions roll back instead of partially saving'
 );
 
@@ -197,7 +186,7 @@ select throws_ok(
 select throws_ok(
   $$select public.mpk_fulfill_stripe_purchase(
     '10000000-0000-0000-0000-000000000001', 'cs_forbidden', 'pi_forbidden',
-    'complete', 24900, 0, 24900, 'CAD', now()
+    'complete', 25675, 0, 25675, 'CAD', now()
   )$$,
   '42501',
   'permission denied for function mpk_fulfill_stripe_purchase',
@@ -210,7 +199,7 @@ set local role service_role;
 select lives_ok(
   $$select public.mpk_fulfill_stripe_purchase(
     '10000000-0000-0000-0000-000000000001', 'cs_test_complete', 'pi_test_complete',
-    'complete', 24900, 3237, 28137, 'CAD', '2026-09-22T12:00:00Z'
+    'complete', 25675, 3338, 29013, 'CAD', '2026-09-22T12:00:00Z'
   )$$,
   'service role can fulfill a verified Stripe purchase'
 );
@@ -218,7 +207,7 @@ select lives_ok(
 select lives_ok(
   $$select public.mpk_fulfill_stripe_purchase(
     '10000000-0000-0000-0000-000000000001', 'cs_test_complete', 'pi_test_complete',
-    'complete', 24900, 3237, 28137, 'CAD', '2026-09-22T12:00:00Z'
+    'complete', 25675, 3338, 29013, 'CAD', '2026-09-22T12:00:00Z'
   )$$,
   'Stripe fulfillment is idempotent'
 );
@@ -235,6 +224,46 @@ select is(
   )),
   1,
   'idempotent fulfillment creates one entitlement'
+);
+
+select is(
+  (select ends_at from public.entitlements where purchase_id = (
+    select id from public.purchases where checkout_session_id = 'cs_test_complete'
+  )),
+  '2027-03-22T12:00:00Z'::timestamptz,
+  'Complete access lasts six calendar months from verified payment'
+);
+
+select lives_ok(
+  $$select public.mpk_fulfill_stripe_purchase(
+    '10000000-0000-0000-0000-000000000001', 'cs_test_essential', 'pi_test_essential',
+    'essential', 12286, 0, 12286, 'CAD', '2026-01-31T12:00:00Z'
+  )$$,
+  'Essential purchase is fulfilled'
+);
+
+select is(
+  (select ends_at from public.entitlements where purchase_id = (
+    select id from public.purchases where checkout_session_id = 'cs_test_essential'
+  )),
+  '2026-04-30T12:00:00Z'::timestamptz,
+  'Essential access lasts three calendar months without overflowing April'
+);
+
+select lives_ok(
+  $$select public.mpk_fulfill_stripe_purchase(
+    '10000000-0000-0000-0000-000000000001', 'cs_test_intensive', 'pi_test_intensive',
+    'intensive', 35973, 0, 35973, 'CAD', '2026-08-31T12:00:00Z'
+  )$$,
+  'Intensive purchase is fulfilled'
+);
+
+select is(
+  (select ends_at from public.entitlements where purchase_id = (
+    select id from public.purchases where checkout_session_id = 'cs_test_intensive'
+  )),
+  '2027-02-28T12:00:00Z'::timestamptz,
+  'Intensive access lasts six calendar months without overflowing February'
 );
 
 select throws_ok(

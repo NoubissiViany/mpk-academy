@@ -16,8 +16,11 @@ import {
   quickNavigation,
   trackNavigation,
 } from "@/config/navigation";
-import { getPaidPlan, hasPlanFeature } from "@/config/product";
+import { hasPlanFeature, isBetaMode, planDisplayName } from "@/config/product";
 import { defaultState } from "@/data/mock-state";
+import { useI18n } from "@/i18n/client";
+import { intlLocale } from "@/i18n/config";
+import type { Messages } from "@/i18n/messages";
 import { requiredFeatureForPath } from "@/lib/domain/access";
 import { cn } from "@/lib/utils";
 import type { AppState } from "@/types/domain";
@@ -32,6 +35,8 @@ export function AppShell({
   const pathname = usePathname();
   const router = useRouter();
   const { state, hydrated, replaceState } = useApp();
+  const { t, locale } = useI18n();
+  const copy = t.account.shell;
   const resolvedState = hydrated && state.user ? state : initialState;
   const [open, setOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
@@ -48,15 +53,18 @@ export function AppShell({
     return (
       <div
         className="min-h-screen animate-pulse bg-muted"
-        aria-label="Checking account session"
+        aria-label={copy.checking}
       />
     );
-  const locale = resolvedState.user?.locale ?? "en";
-  const activePlan = resolvedState.planAccess
-    ? getPaidPlan(resolvedState.planAccess.planId)
-    : null;
+  const planLabel = resolvedState.planAccess
+    ? isBetaMode()
+      ? t.beta.planLabel
+      : t.account.profile.planName(
+          planDisplayName(resolvedState.planAccess.planId),
+        )
+    : t.account.profile.free;
   const accessUntil = resolvedState.planAccess?.accessUntil
-    ? new Intl.DateTimeFormat(locale === "fr" ? "fr-CA" : "en-CA", {
+    ? new Intl.DateTimeFormat(intlLocale(locale), {
         month: "long",
         day: "numeric",
         year: "numeric",
@@ -65,8 +73,7 @@ export function AppShell({
     : null;
   type NavigationItem = {
     href: string;
-    label: string;
-    labelFr: string;
+    key: keyof Messages["account"]["shell"]["nav"];
     icon: LucideIcon;
   };
   const nav = (items: readonly NavigationItem[]) =>
@@ -93,7 +100,7 @@ export function AppShell({
             )}
           >
             <Icon className="size-4" aria-hidden="true" />
-            {locale === "fr" ? item.labelFr : item.label}
+            {copy.nav[item.key]}
           </Link>
         );
       });
@@ -102,7 +109,7 @@ export function AppShell({
       <p className="mb-2 px-3 text-[11px] font-bold tracking-[0.14em] text-muted-foreground">
         {label}
       </p>
-      <nav className="space-y-1" aria-label={`${label} navigation`}>
+      <nav className="space-y-1" aria-label={copy.navigation(label)}>
         {nav(items)}
       </nav>
     </div>
@@ -114,17 +121,17 @@ export function AppShell({
         <button
           className="rounded-lg p-2 lg:hidden"
           onClick={() => setOpen(false)}
-          aria-label="Close navigation"
+          aria-label={t.common.nav.closeMenu}
         >
           <X className="size-5" />
         </button>
       </div>
       <div className="mt-5 flex-1 overflow-y-auto">
-        {group("OVERVIEW", overviewNavigation)}
-        {group("PREPARE", prepareNavigation)}
-        {group("TRACK", trackNavigation)}
+        {group(copy.overview, overviewNavigation)}
+        {group(copy.prepare, prepareNavigation)}
+        {group(copy.track, trackNavigation)}
         <div className="my-5 border-t" />
-        <nav className="space-y-1" aria-label="Account navigation">
+        <nav className="space-y-1" aria-label={copy.account}>
           {nav(accountNavigation)}
         </nav>
       </div>
@@ -139,26 +146,22 @@ export function AppShell({
           router.refresh();
         }}
       >
-        <LogOut className="size-4" />
-        {locale === "fr" ? "Se déconnecter" : "Log out"}
+        <LogOut className="size-4" aria-hidden="true" />
+        {copy.logout}
       </button>
       <div className="mt-4 flex items-center gap-3 border-t pt-5">
         <div className="grid size-9 place-items-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
-          {resolvedState.user?.firstName?.[0] ?? "L"}
+          {resolvedState.user?.firstName?.[0] ?? copy.learner[0]}
         </div>
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold">
-            {resolvedState.user?.firstName ?? "Learner"}{" "}
+            {resolvedState.user?.firstName ?? copy.learner}{" "}
             {resolvedState.user?.lastName ?? ""}
           </p>
-          <p className="truncate text-xs text-muted-foreground">
-            {resolvedState.planAccess && activePlan
-              ? `${activePlan.name} Plan`
-              : "Free plan"}
-          </p>
+          <p className="truncate text-xs text-muted-foreground">{planLabel}</p>
           {resolvedState.planAccess && accessUntil && (
             <p className="truncate text-[11px] text-muted-foreground">
-              Access until {accessUntil}
+              {`${t.account.profile.accessUntil} ${accessUntil}`}
             </p>
           )}
         </div>
@@ -172,9 +175,9 @@ export function AppShell({
   const content = !hasRequiredFeature ? (
     <>
       <PageHeader
-        eyebrow="Plan access"
-        title="This feature is not included in your plan."
-        description="Your dashboard and navigation show the tools included with your current plan."
+        eyebrow={copy.lockedEyebrow}
+        title={copy.lockedTitle}
+        description={copy.lockedBody}
       />
       <LockedContent />
     </>
@@ -195,7 +198,7 @@ export function AppShell({
       {open && (
         <>
           <button
-            aria-label="Close navigation overlay"
+            aria-label={copy.overlay}
             className="fixed inset-0 z-40 bg-ink/50 lg:hidden"
             onClick={() => setOpen(false)}
           />
@@ -210,7 +213,7 @@ export function AppShell({
           size="icon"
           variant="ghost"
           onClick={() => setOpen(true)}
-          aria-label="Open navigation"
+          aria-label={t.common.nav.openMenu}
         >
           <Menu />
         </Button>
@@ -225,7 +228,7 @@ export function AppShell({
         style={{
           gridTemplateColumns: `repeat(${accessibleQuickNavigation.length}, minmax(0, 1fr))`,
         }}
-        aria-label="Quick navigation"
+        aria-label={copy.quick}
       >
         {accessibleQuickNavigation.map((item) => {
           const Icon = item.icon;
@@ -240,8 +243,8 @@ export function AppShell({
                 active ? "text-primary" : "text-muted-foreground",
               )}
             >
-              <Icon className="size-5" />
-              {locale === "fr" ? item.labelFr : item.label}
+              <Icon className="size-5" aria-hidden="true" />
+              {copy.nav[item.key]}
             </Link>
           );
         })}

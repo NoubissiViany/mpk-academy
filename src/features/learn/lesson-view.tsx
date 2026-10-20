@@ -1,252 +1,161 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Check,
-  Lightbulb,
-  Play,
-  Volume2,
-} from "lucide-react";
 import { toast } from "sonner";
+import { checkLessonCheckpointAction } from "@/app/actions/content";
 import { completeLessonAction } from "@/app/actions/learner";
 import { useApp } from "@/components/providers/app-provider";
-import { LockedContent, ModeBadge } from "@/components/shared";
-import { Badge } from "@/components/ui/badge";
+import { ModeBadge } from "@/components/shared";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { allLessons, courseModules } from "@/data/course";
-import { examStrategyContent } from "@/config/exams";
-import { canAccessLesson } from "@/lib/domain/access";
+import type { PublicLessonContent } from "@/content/shared/types";
+import { useI18n } from "@/i18n/client";
+import { lessonTitle } from "@/i18n/format";
+import { cn } from "@/lib/utils";
+import type { AnswerFeedback, Lesson } from "@/types/domain";
 
 export function LessonView({
-  moduleId,
-  lessonId,
+  lesson,
+  content,
+  next,
 }: {
-  moduleId: string;
-  lessonId: string;
+  lesson: Lesson;
+  content: PublicLessonContent;
+  next: { id: string; moduleId: string } | null;
 }) {
   const { state, replaceState } = useApp();
+  const { t, locale } = useI18n();
+  const copy = t.learn.lesson;
+  const [answer, setAnswer] = useState<number | null>(null);
+  const [feedback, setFeedback] = useState<AnswerFeedback | null>(null);
+  const [checking, setChecking] = useState(false);
   const [saving, setSaving] = useState(false);
-  const courseModule = courseModules.find((item) => item.id === moduleId);
-  const lesson = allLessons.find(
-    (item) => item.id === lessonId && item.moduleId === moduleId,
-  );
-  const user = state.user;
-  if (!courseModule || !lesson)
-    return (
-      <div>
-        <h1 className="text-3xl font-bold">Lesson not found</h1>
-        <Button asChild className="mt-5">
-          <Link href="/learn">Return to course</Link>
-        </Button>
-      </div>
-    );
-  if (!canAccessLesson(state.planAccess, lesson))
-    return (
-      <div>
-        <ModeBadge mode="learn" />
-        <h1 className="mt-4 text-3xl font-bold">{lesson.title}</h1>
-        <div className="mt-8">
-          <LockedContent title="Unlock this lesson" />
-        </div>
-      </div>
-    );
   const completed = state.progress.completedLessonIds.includes(lesson.id);
-  const activeExam =
-    user?.goal.exam === "TCF Canada" ? "TCF Canada" : "TEF Canada";
-  const strategy =
-    moduleId === "exam-strategies"
-      ? examStrategyContent[activeExam][lesson.sequence - 1]
-      : null;
-  const index = allLessons.findIndex((item) => item.id === lesson.id);
-  const next = allLessons[index + 1];
-  const previous = allLessons[index - 1];
-  const markComplete = async () => {
-    if (completed || saving) return;
+  const errorText = (result: { message: string; reference?: string }) =>
+    result.reference
+      ? t.common.errorReference(result.message, result.reference)
+      : result.message;
+
+  const check = async () => {
+    if (answer === null) return;
+    setChecking(true);
+    const result = await checkLessonCheckpointAction(lesson.id, answer);
+    setChecking(false);
+    if (!result.ok) return toast.error(errorText(result));
+    setFeedback(result.feedback);
+  };
+  const save = async () => {
     setSaving(true);
     const result = await completeLessonAction(lesson.id);
     setSaving(false);
-    if (!result.ok) {
-      toast.error(result.message);
-      return;
-    }
+    if (!result.ok) return toast.error(result.message);
     replaceState(result.snapshot);
-    toast.success("Lesson progress saved");
+    toast.success(copy.saved);
   };
+
   return (
-    <div>
-      <div className="mb-5 flex flex-wrap items-center gap-3">
-        <ModeBadge mode="learn" />
-        <Badge>{lesson.duration} min</Badge>
-        {completed && (
-          <Badge className="border-primary/20 bg-primary/10 text-primary">
-            <Check className="mr-1 size-3" />
-            Completed
-          </Badge>
-        )}
-      </div>
-      <div className="grid gap-7 xl:grid-cols-[15rem_1fr]">
-        <aside className="hidden xl:block">
-          <p className="mb-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            {courseModule.title}
+    <article className="mx-auto max-w-3xl space-y-8">
+      <ModeBadge mode="learn" />
+      <header>
+        <p className="text-sm text-muted-foreground">
+          {copy.duration(
+            lesson.duration,
+            content.exam === "shared" ? copy.shared : `${content.exam} Canada`,
+          )}
+        </p>
+        <h1 className="mt-3 text-3xl font-bold">
+          {lessonTitle(locale, lesson)}
+        </h1>
+      </header>
+      {copy.englishOnly && (
+        <p className="rounded-xl border border-dashed p-4 text-sm leading-6 text-muted-foreground">
+          {copy.englishOnly}
+        </p>
+      )}
+      <section>
+        <h2 className="text-xl font-bold">{copy.understand}</h2>
+        <p className="mt-3 leading-8">{content.explanation}</p>
+      </section>
+      <section className="rounded-xl border bg-learn/5 p-6">
+        <h2 className="font-bold">{copy.examples}</h2>
+        {content.examples.map((example) => (
+          <p key={example} lang="fr" className="mt-3 text-lg">
+            {example}
           </p>
-          <nav className="space-y-1">
-            {courseModule.lessons.map((item) => (
-              <Link
-                key={item.id}
-                href={`/learn/${courseModule.id}/${item.id}`}
-                aria-current={item.id === lesson.id ? "page" : undefined}
-                className={`block rounded-xl px-3 py-3 text-sm font-semibold ${item.id === lesson.id ? "bg-learn text-white" : "text-muted-foreground hover:bg-muted"}`}
-              >
-                {item.sequence}. {item.title}
-              </Link>
-            ))}
-          </nav>
-        </aside>
-        <article className="min-w-0">
-          <header>
-            <p className="eyebrow text-learn">
-              Lesson {lesson.sequence} of {courseModule.lessons.length}
-            </p>
-            <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-              {strategy?.title ?? lesson.title}
-            </h1>
-            <p className="mt-3 leading-7 text-muted-foreground">
-              {lesson.description}
-            </p>
-            <Progress
-              value={(lesson.sequence / courseModule.lessons.length) * 100}
-              label="Lesson module progress"
-              className="mt-6"
-            />
-          </header>
-          <div className="mt-8 aspect-video rounded-2xl bg-ink p-6 text-white">
-            <div className="flex h-full flex-col items-center justify-center text-center">
-              <button
-                aria-label="Play lesson video placeholder"
-                className="grid size-14 place-items-center rounded-full bg-white text-ink focus-visible:ring-2 focus-visible:ring-accent"
-              >
-                <Play className="ml-1 size-5 fill-current" />
-              </button>
-              <p className="mt-4 font-bold">Lesson video placeholder</p>
-              <p className="mt-1 text-xs text-white/55">
-                Content delivery adapter ready
-              </p>
-            </div>
-          </div>
-          <section className="mt-8">
-            <h2 className="text-2xl font-bold">Key idea</h2>
-            <p className="mt-4 leading-8">
-              {strategy?.keyIdea ??
-                "Time and linking expressions help the reader understand when an action happens and how ideas relate. In exam questions, these small words often carry the decisive detail."}
-            </p>
-            <Card className="mt-6 border-learn/20 bg-learn/5">
-              <CardContent className="pt-6">
-                <div className="flex items-start gap-3">
-                  <Volume2 className="mt-1 size-5 shrink-0 text-learn" />
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-learn">
-                      French example
-                    </p>
-                    <p className="mt-2 text-xl font-bold">
-                      {strategy?.example ?? lesson.example}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="mt-4 border-primary/20">
-              <CardContent className="pt-6">
-                <div className="flex items-start gap-3">
-                  <Lightbulb className="mt-1 size-5 shrink-0 text-primary" />
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-primary">
-                      {user?.locale === "fr"
-                        ? "Explication en français"
-                        : "English explanation"}
-                    </p>
-                    <p className="mt-2 leading-7">
-                      {user?.locale === "fr"
-                        ? lesson.explanationFr
-                        : lesson.explanation}
-                    </p>
-                    <button className="mt-3 text-sm font-bold text-primary hover:underline">
-                      {user?.locale === "fr"
-                        ? "See the explanation in English"
-                        : "Voir l’explication en français"}
-                    </button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </section>
-          <section className="mt-10">
-            <h2 className="text-2xl font-bold">Vocabulary to notice</h2>
-            <div className="mt-5 grid gap-3 sm:grid-cols-3">
-              {lesson.vocabulary?.map((item) => (
-                <div
-                  key={item.french}
-                  className="rounded-xl border bg-card p-4"
-                >
-                  <strong>{item.french}</strong>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {item.english}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </section>
-          <section className="mt-10 rounded-2xl border bg-card p-5 sm:p-7">
-            <p className="eyebrow">Checkpoint</p>
-            <h2 className="mt-2 text-xl font-bold">
-              Choose the expression that signals contrast.
-            </h2>
-            <div className="mt-5 grid gap-3 sm:grid-cols-3">
-              {["donc", "pourtant", "ensuite"].map((item) => (
-                <button
-                  key={item}
-                  className="rounded-xl border p-4 text-left font-semibold hover:border-primary hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary"
-                >
-                  {item}
-                </button>
-              ))}
-            </div>
-            <Button
-              className="mt-6"
-              onClick={markComplete}
-              disabled={completed || saving}
+        ))}
+      </section>
+      <section>
+        <h2 className="text-xl font-bold">{copy.tryIt}</h2>
+        <p className="mt-3 leading-7">{content.guidedApplication}</p>
+      </section>
+      <section>
+        <h2 className="text-xl font-bold">{copy.commonErrors}</h2>
+        <ul className="mt-3 list-inside list-disc space-y-2 leading-7">
+          {content.commonErrors.map((error) => (
+            <li key={error}>{error}</li>
+          ))}
+        </ul>
+      </section>
+      <section className="rounded-xl border p-6">
+        <h2 className="text-xl font-bold">{copy.checkpoint}</h2>
+        <p className="mt-3" lang="fr">
+          {content.checkpoint.prompt}
+        </p>
+        <fieldset className="my-5 space-y-3">
+          <legend className="sr-only">{copy.chooseAnswer}</legend>
+          {content.checkpoint.options.map((option, index) => (
+            <label
+              key={option}
+              className={cn(
+                "flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 focus-within:ring-2 focus-within:ring-primary",
+                answer === index && !feedback && "border-primary bg-primary/5",
+                feedback &&
+                  option === feedback.correctAnswer &&
+                  "border-primary bg-primary/10",
+                feedback &&
+                  answer === index &&
+                  !feedback.correct &&
+                  "border-danger bg-danger/5",
+              )}
             >
-              {completed
-                ? "Lesson completed"
-                : saving
-                  ? "Saving…"
-                  : "Complete lesson"}
-            </Button>
-          </section>
-          <nav className="mt-9 flex justify-between gap-3">
-            {previous ? (
-              <Button asChild variant="ghost">
-                <Link href={`/learn/${previous.moduleId}/${previous.id}`}>
-                  <ArrowLeft className="size-4" />
-                  Previous
-                </Link>
-              </Button>
-            ) : (
-              <span />
-            )}
-            {next && (
-              <Button asChild>
-                <Link href={`/learn/${next.moduleId}/${next.id}`}>
-                  Next lesson <ArrowRight className="size-4" />
-                </Link>
-              </Button>
-            )}
-          </nav>
-        </article>
-      </div>
-    </div>
+              <input
+                type="radio"
+                name={lesson.id}
+                className="size-4 accent-primary"
+                checked={answer === index}
+                disabled={Boolean(feedback)}
+                onChange={() => setAnswer(index)}
+              />
+              <span lang="fr">{option}</span>
+            </label>
+          ))}
+        </fieldset>
+        {!feedback ? (
+          <Button disabled={answer === null || checking} onClick={check}>
+            {checking ? t.assessment.checking : copy.check}
+          </Button>
+        ) : (
+          <p role="status" className="leading-7">
+            <strong>{feedback.correct ? copy.correct : copy.review}</strong>{" "}
+            {feedback.explanation}
+          </p>
+        )}
+        <Button
+          className="mt-6"
+          disabled={!feedback || completed || saving}
+          onClick={save}
+        >
+          {completed
+            ? copy.completed
+            : saving
+              ? t.common.saving
+              : copy.complete}
+        </Button>
+      </section>
+      {next && (
+        <Button asChild>
+          <Link href={`/learn/${next.moduleId}/${next.id}`}>{copy.next}</Link>
+        </Button>
+      )}
+    </article>
   );
 }

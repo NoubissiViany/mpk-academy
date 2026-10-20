@@ -1,4 +1,6 @@
+import { notFound } from "next/navigation";
 import { PlanComparison } from "@/components/plan-comparison";
+import { isBetaMode } from "@/config/product";
 
 export const metadata = {
   title: "Pricing",
@@ -6,6 +8,7 @@ export const metadata = {
 };
 
 export default function PricingPage() {
+  if (isBetaMode()) notFound();
   return (
     <div className="container-page py-20">
       <div className="mx-auto max-w-2xl text-center">

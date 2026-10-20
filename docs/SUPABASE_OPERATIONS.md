@@ -3,10 +3,11 @@
 ## Hosted project
 
 - Organization: `NoubissiViany's Org` (`otnxgfnmgvxcrswbbrds`)
-- Project: `mpk-academy` (`uhbuvskmiojqjegpuuln`)
-- Region: Canada Central (`ca-central-1`)
-- Plan at creation: Free
+- Project used by the app and the linked CLI: `mpk-academy-staging` (`czbynijgpkflnntgoqgj`), Canada Central (`ca-central-1`), Postgres 17, Free plan
+- The first project, `mpk-academy` (`uhbuvskmiojqjegpuuln`), is paused and unused
 - Database password: GNOME Login keyring item `MPK Academy Supabase database`
+
+Free projects pause after a week without traffic. Before pointing a deployment at the database, confirm `npx supabase projects list` shows it as `ACTIVE_HEALTHY` and `supabase/.temp/project-ref` matches `NEXT_PUBLIC_SUPABASE_URL`.
 
 The browser receives only the public project URL and publishable key. Stripe fulfillment also requires a service-role key in server-only deployment secrets; never commit it, prefix it with `NEXT_PUBLIC_`, or import the admin client into browser code.
 
@@ -28,16 +29,49 @@ Custom confirmation and recovery templates are versioned under `supabase/templat
 
 ## Production authentication email
 
-Until MPK Academy owns a final domain, use Resend's test sender for Auth email. In Supabase Dashboard → Authentication → Email/SMTP, enable custom SMTP with:
+Supabase Auth sends confirmation and password-reset emails through Resend SMTP from `MPK Academy <no-reply@mpkacademy.com>`. The application does not use the Resend SDK or a custom email route.
 
-- Sender email: `onboarding@resend.dev`
+Never place the Resend API key in this repository, application environment variables, Vercel, documentation, screenshots, or support logs.
+
+### 1. Verify mpkacademy.com in Resend
+
+Resend's free plan allows one domain, 100 emails a day, and 3,000 a month, which covers the closed beta. `mpkacademy.com` was added in Resend → Domains, and its records live in Namecheap → Domain List → `mpkacademy.com` → Advanced DNS (enter only the host part):
+
+| Type  | Host                | Value                         |
+| ----- | ------------------- | ----------------------------- |
+| CNAME | `send`              | `send.forge.rmta.net`         |
+| TXT   | `resend._domainkey` | the `p=…` key shown by Resend |
+| TXT   | `_dmarc`            | `v=DMARC1; p=none;`           |
+
+The `send` CNAME delegates the bounce MX and SPF to Resend's sending servers, so no MX record is added in Namecheap and **Mail Settings stays on Email Forwarding**: the root `@` MX and SPF records keep serving `@mpkacademy.com` forwarding and must not be merged with Resend's. If Resend ever shows MX and TXT records for `send` instead, adding that MX requires Namecheap's **Custom MX** mode, which removes the forwarding MX records on `@`; re-add `eforward1`–`eforward3.registrar-servers.com` (priority 10), `eforward4` (15), and `eforward5` (20) in the same save.
+
+Check propagation without leaving the terminal, then press **Verify** in Resend:
+
+```bash
+dig +short CNAME send.mpkacademy.com
+dig +short TXT resend._domainkey.mpkacademy.com
+dig +short TXT _dmarc.mpkacademy.com
+dig +short MX mpkacademy.com   # forwarding records still listed
+```
+
+Once DMARC reports show no legitimate failures for a few weeks, tighten it to `p=quarantine`.
+
+### 2. Switch the Supabase sender
+
+Only after Resend shows the domain as **Verified**, open Supabase Dashboard → Authentication → Emails → SMTP Settings and keep custom SMTP enabled with:
+
+- Sender email: `no-reply@mpkacademy.com`
 - Sender name: `MPK Academy`
 - Host: `smtp.resend.com`
 - Port: `465`
 - Username: `resend`
-- Password: the Resend API key entered directly in the Supabase dashboard
+- Password: a Resend API key with **Sending access** restricted to `mpkacademy.com`, entered only in this dashboard field
 
-Never place the Resend API key in this repository, application environment variables, Vercel, documentation, screenshots, or support logs. Supabase Auth connects to Resend over SMTP; the application does not use the Resend SDK or a custom email API route.
+Switching the sender before verification makes every confirmation email fail. The commented `[auth.email.smtp]` block in `supabase/config.toml` documents the same values without storing the secret.
+
+### 3. Templates and language
+
+`supabase/templates/confirmation.html` and `recovery.html`, and their subjects in `supabase/config.toml`, branch on `.Data.locale` — the user metadata set at sign-up and kept in step by the profile language setting. Anything other than `fr` receives English. Push them with the safe change workflow above (`config diff`, then `config push`) and never change the production `site_url` or redirect URLs as a side effect.
 
 The versioned target rate is 30 authentication emails per hour. Increase it only after checking provider quotas and abuse protection. Keep **Confirm email** enabled, keep the production Site URL at `https://mpk-academy.vercel.app`, and retain these redirect URLs:
 
@@ -45,9 +79,9 @@ The versioned target rate is 30 authentication emails per hour. Increase it only
 - `https://mpk-academy.vercel.app/update-password`
 - the versioned localhost confirmation and password-reset URLs
 
-After saving the SMTP settings, use Supabase's SMTP test and then register with a brand-new external inbox. Confirm exactly one message arrives from `MPK Academy <onboarding@resend.dev>`, its link returns through `/auth/confirm`, the browser receives a valid session, and a direct registration continues to `/diagnostic`. Test the one-minute resend throttle and password recovery, then compare failures in Resend delivery logs and Supabase Auth logs.
+### 4. Acceptance test
 
-The commented `[auth.email.smtp]` block in `supabase/config.toml` documents the Resend CLI equivalent without enabling or storing the secret. When a final domain is purchased, verify it in Resend, configure SPF and DKIM, add DMARC, and replace only the sender address with a dedicated Auth address such as `no-reply@auth.example.com`.
+Register with a brand-new external inbox (Gmail and Outlook if possible) once with the interface in English and once in French. Confirm that exactly one message arrives from `MPK Academy <no-reply@mpkacademy.com>`, in the right language, outside the spam folder, with `dkim=pass`, `spf=pass`, and `dmarc=pass` under "Show original". Its link must return through `/auth/confirm` with a valid session, and a direct registration must continue to `/diagnostic`. Test the one-minute resend throttle and password recovery, then compare failures in Resend delivery logs and Supabase Auth logs.
 
 ## Free-plan monitoring and upgrade thresholds
 

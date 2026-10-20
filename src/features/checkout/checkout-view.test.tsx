@@ -27,6 +27,8 @@ describe("verified checkout", () => {
       await screen.findByRole("link", { name: "Create account" }),
     ).toHaveAttribute("href", "/register?plan=complete");
     expect(screen.getByText(/plus applicable tax/i)).toBeVisible();
+    expect(screen.getAllByText("$256.75")).toHaveLength(2);
+    expect(screen.getByText(/Stripe processing is included/i)).toBeVisible();
   });
 
   it("offers Stripe checkout only after an assessment", async () => {

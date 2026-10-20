@@ -1,7 +1,11 @@
 "use server";
 
 import { z } from "zod";
+import { isBetaMode } from "@/config/product";
+import { privacyNoticeVersion } from "@/config/privacy";
+import { getMessages } from "@/i18n/server";
 import { getAppUrl } from "@/lib/app-url";
+import { inviteCheckStatusSchema, inviteCodeSchema } from "@/lib/beta";
 import { getErrorDetails, logServerError } from "@/lib/server/diagnostics";
 import { createClient } from "@/lib/supabase/server";
 
@@ -10,7 +14,7 @@ const password = z
   .min(8)
   .regex(/[A-Za-z]/, "Password must include a letter")
   .regex(/[0-9]/, "Password must include a number");
-const paidPlanSchema = z.enum(["essential", "complete", "intensive"]);
+const offeredPlanSchema = z.enum(["essential", "complete"]);
 
 const signUpSchema = z.object({
   firstName: z.string().trim().min(2).max(100),
@@ -20,7 +24,9 @@ const signUpSchema = z.object({
   locale: z.enum(["en", "fr"]),
   exam: z.enum(["TEF Canada", "TCF Canada"]),
   target: z.enum(["NCLC 5", "NCLC 7", "NCLC 9+", "I'm not sure"]),
-  planId: paidPlanSchema.optional(),
+  planId: offeredPlanSchema.optional(),
+  inviteCode: z.string().optional(),
+  privacyConsent: z.literal(true),
 });
 
 const signInSchema = z.object({
@@ -34,7 +40,11 @@ export type AuthFailureReason =
   | "invalid_credentials"
   | "account_exists"
   | "rate_limited"
-  | "service_unavailable";
+  | "service_unavailable"
+  | "invite_invalid"
+  | "invite_expired"
+  | "invite_exhausted"
+  | "invite_beta_full";
 
 export type AuthActionResult =
   | { ok: true; confirmationRequired?: boolean }
@@ -46,7 +56,7 @@ export type AuthActionResult =
     };
 
 export type CheckoutIntentActionResult =
-  | { ok: true; planId: z.infer<typeof paidPlanSchema> }
+  | { ok: true; planId: z.infer<typeof offeredPlanSchema> }
   | {
       ok: false;
       reason: "invalid_plan" | "unauthenticated" | "service_unavailable";
@@ -54,11 +64,13 @@ export type CheckoutIntentActionResult =
       reference: string;
     };
 
-function authFailure(
+const failureMessages = async () => (await getMessages()).auth.failures;
+
+async function authFailure(
   operation: string,
   error: unknown,
   fallbackReason: AuthFailureReason = "service_unavailable",
-): Extract<AuthActionResult, { ok: false }> {
+): Promise<Extract<AuthActionResult, { ok: false }>> {
   const { code, status } = getErrorDetails(error);
   const normalizedCode = code?.toLowerCase();
   const reason: AuthFailureReason =
@@ -73,23 +85,38 @@ function authFailure(
           : normalizedCode === "user_already_exists"
             ? "account_exists"
             : fallbackReason;
-  const messages: Record<AuthFailureReason, string> = {
-    invalid_submission: "Check the information you entered and try again.",
-    email_not_confirmed:
-      "Confirm your email before signing in. Check your inbox and spam folder.",
-    invalid_credentials: "The email or password is incorrect.",
-    account_exists:
-      "An account already exists for this email. Sign in instead.",
-    rate_limited:
-      "Too many email or sign-in attempts were made. Wait a few minutes and try again.",
-    service_unavailable:
-      "Authentication is temporarily unavailable. Please try again.",
-  };
   const reference = logServerError("Authentication operation failed", error, {
     operation,
     reason,
   });
-  return { ok: false, reason, message: messages[reason], reference };
+  return {
+    ok: false,
+    reason,
+    message: (await failureMessages())[reason],
+    reference,
+  };
+}
+
+async function checkInviteCode(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  code: string | undefined,
+): Promise<Extract<AuthActionResult, { ok: false }> | null> {
+  const messages = await failureMessages();
+  const parsed = inviteCodeSchema.safeParse(code ?? "");
+  if (!parsed.success)
+    return {
+      ok: false,
+      reason: "invite_invalid",
+      message: messages.invite_invalid,
+    };
+  const { data, error } = await supabase.rpc("mpk_check_beta_invite", {
+    p_code: parsed.data,
+  });
+  if (error) throw error;
+  const status = inviteCheckStatusSchema.parse(data);
+  if (status === "valid") return null;
+  const reason = `invite_${status}` as const;
+  return { ok: false, reason, message: messages[reason] };
 }
 
 export async function signUpAction(
@@ -100,11 +127,19 @@ export async function signUpAction(
     return {
       ok: false,
       reason: "invalid_submission",
-      message: "Check your account details and password.",
+      message: (await failureMessages()).invalid_signup,
     };
 
+  const beta = isBetaMode();
   try {
     const supabase = await createClient();
+    if (beta) {
+      const inviteFailure = await checkInviteCode(
+        supabase,
+        parsed.data.inviteCode,
+      );
+      if (inviteFailure) return inviteFailure;
+    }
     const { data, error } = await supabase.auth.signUp({
       email: parsed.data.email,
       password: parsed.data.password,
@@ -117,7 +152,12 @@ export async function signUpAction(
           assistance: "full",
           exam: parsed.data.exam,
           target: parsed.data.target,
-          ...(parsed.data.planId
+          privacy_notice_version: privacyNoticeVersion,
+          privacy_accepted_at: new Date().toISOString(),
+          ...(beta && parsed.data.inviteCode
+            ? { beta_invite_code: parsed.data.inviteCode.trim() }
+            : {}),
+          ...(!beta && parsed.data.planId
             ? { checkout_intent_plan_id: parsed.data.planId }
             : {}),
         },
@@ -133,8 +173,9 @@ export async function signUpAction(
 export async function setCheckoutIntentAction(
   planId: unknown,
 ): Promise<CheckoutIntentActionResult> {
-  const parsed = paidPlanSchema.safeParse(planId);
-  if (!parsed.success) {
+  const messages = await failureMessages();
+  const parsed = offeredPlanSchema.safeParse(planId);
+  if (!parsed.success || isBetaMode()) {
     const reference = logServerError(
       "Checkout intent update failed",
       new Error("Invalid checkout plan intent"),
@@ -143,7 +184,7 @@ export async function setCheckoutIntentAction(
     return {
       ok: false,
       reason: "invalid_plan",
-      message: "Choose a valid preparation plan.",
+      message: messages.invalid_plan,
       reference,
     };
   }
@@ -170,8 +211,8 @@ export async function setCheckoutIntentAction(
         ok: false,
         reason,
         message: unauthenticated
-          ? "Sign in again to choose a plan."
-          : "We could not save your plan selection. Please try again.",
+          ? messages.plan_unauthenticated
+          : messages.plan_unavailable,
         reference,
       };
     }
@@ -184,7 +225,7 @@ export async function setCheckoutIntentAction(
     return {
       ok: false,
       reason: "service_unavailable",
-      message: "We could not save your plan selection. Please try again.",
+      message: messages.plan_unavailable,
       reference,
     };
   }
@@ -198,7 +239,7 @@ export async function signInAction(
     return {
       ok: false,
       reason: "invalid_submission",
-      message: "Enter a valid email and password.",
+      message: (await failureMessages()).invalid_signin,
     };
 
   try {
@@ -228,7 +269,7 @@ export async function requestPasswordResetAction(
     return {
       ok: false,
       reason: "invalid_submission",
-      message: "Enter a valid email address.",
+      message: (await failureMessages()).invalid_email,
     };
   try {
     const supabase = await createClient();
@@ -250,7 +291,7 @@ export async function resendConfirmationAction(
     return {
       ok: false,
       reason: "invalid_submission",
-      message: "Enter a valid email address.",
+      message: (await failureMessages()).invalid_email,
     };
   try {
     const supabase = await createClient();
@@ -276,7 +317,7 @@ export async function updatePasswordAction(
     return {
       ok: false,
       reason: "invalid_submission",
-      message: "Use at least 8 characters with a letter and a number.",
+      message: (await failureMessages()).invalid_password,
     };
   try {
     const supabase = await createClient();

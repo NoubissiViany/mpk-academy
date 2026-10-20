@@ -13,10 +13,6 @@ export const canAccessPractice = (planAccess: PlanAccess | null) =>
   hasPlanFeature(planAccess, "practice");
 export const canAccessExam = (planAccess: PlanAccess | null) =>
   hasPlanFeature(planAccess, "mockExams");
-export const canAccessCertificate = (
-  planAccess: PlanAccess | null,
-  eligible: boolean,
-) => hasPlanFeature(planAccess, "certificate") && eligible;
 
 export const requiredFeatureForPath = (
   pathname: string,
@@ -34,6 +30,5 @@ export const requiredFeatureForPath = (
   )
     return "mistakeReview";
   if (pathname === "/exam" || pathname.startsWith("/exam/")) return "mockExams";
-  if (pathname === "/certificate") return "certificate";
   return null;
 };

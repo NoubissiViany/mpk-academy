@@ -5,49 +5,55 @@ import { useApp } from "@/components/providers/app-provider";
 import { PageHeader } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { getPaidPlan } from "@/config/product";
+import { isBetaMode, planDisplayName } from "@/config/product";
+import { useI18n } from "@/i18n/client";
+import { intlLocale } from "@/i18n/config";
 
 export default function ProfilePage() {
   const { state } = useApp();
+  const { t, locale } = useI18n();
+  const copy = t.account.profile;
   const user = state.user;
   const exam = user?.goal.exam;
-  const paidPlan = state.planAccess
-    ? getPaidPlan(state.planAccess.planId)
-    : null;
   const accessUntil = state.planAccess?.accessUntil
-    ? new Intl.DateTimeFormat(user?.locale === "fr" ? "fr-CA" : "en-CA", {
+    ? new Intl.DateTimeFormat(intlLocale(locale), {
         month: "long",
         day: "numeric",
         year: "numeric",
         timeZone: "UTC",
       }).format(new Date(state.planAccess.accessUntil))
     : null;
+  const plan = state.planAccess
+    ? isBetaMode()
+      ? t.beta.planLabel
+      : copy.planName(planDisplayName(state.planAccess.planId))
+    : copy.free;
   const rows = [
-    ["Name", `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim()],
-    ["Email", user?.email ?? "—"],
+    [copy.name, `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim()],
+    [copy.email, user?.email ?? "—"],
+    [copy.plan, plan],
+    ...(accessUntil ? [[copy.accessUntil, accessUntil]] : []),
+    [copy.exam, exam && exam !== "Not sure yet" ? exam : copy.notSelected],
     [
-      "Plan",
-      state.planAccess && paidPlan ? `${paidPlan.name} Plan` : "Free plan",
+      copy.target,
+      t.diagnostic.intake.targets[user?.goal.target ?? "I'm not sure"],
     ],
-    ...(accessUntil ? [["Access until", accessUntil]] : []),
-    ["Active exam", exam ?? "Not selected"],
-    ["NCLC target", user?.goal.target ?? "I'm not sure"],
     [
-      "Diagnostic readiness",
+      copy.readiness,
       state.diagnosticResult == null
-        ? "Not assessed yet"
+        ? copy.notAssessed
         : `${state.diagnosticResult.score}%`,
     ],
   ];
   return (
     <>
       <PageHeader
-        eyebrow="Your account"
-        title="Profile"
-        description="A read-only summary of your MPK preparation profile."
+        eyebrow={copy.eyebrow}
+        title={copy.title}
+        description={copy.description}
         action={
           <Button asChild>
-            <Link href="/settings">Edit in Settings</Link>
+            <Link href="/settings">{copy.edit}</Link>
           </Button>
         }
       />

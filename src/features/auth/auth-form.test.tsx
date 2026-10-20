@@ -65,12 +65,17 @@ async function createGuestAssessment() {
   });
 }
 
-async function submitRegistration() {
+async function submitRegistration({
+  inviteCode,
+}: { inviteCode?: string } = {}) {
   const user = userEvent.setup();
+  if (inviteCode)
+    await user.type(await screen.findByLabelText(/Invite code/), inviteCode);
   await user.type(await screen.findByLabelText("First name"), "Amina");
   await user.type(screen.getByLabelText("Last name"), "Diallo");
   await user.type(screen.getByLabelText("Email"), "learner@example.com");
   await user.type(screen.getByLabelText("Password"), "password123");
+  await user.click(screen.getByRole("checkbox"));
   await user.click(screen.getByRole("button", { name: "Create my account" }));
 }
 
@@ -96,9 +101,13 @@ describe("Supabase authentication handoff", () => {
       diagnosticAnswers: answers,
       diagnosticResult: result,
     });
+    vi.stubEnv("NEXT_PUBLIC_BETA_MODE", "false");
   });
 
-  afterEach(cleanup);
+  afterEach(() => {
+    cleanup();
+    vi.unstubAllEnvs();
+  });
 
   it("sends a new learner to email confirmation", async () => {
     render(
@@ -137,14 +146,14 @@ describe("Supabase authentication handoff", () => {
   it("includes a chosen plan in registration for confirmation metadata", async () => {
     render(
       <AppProvider>
-        <AuthForm mode="register" planId="intensive" />
+        <AuthForm mode="register" planId="complete" />
       </AppProvider>,
     );
     await submitRegistration();
 
     await waitFor(() =>
       expect(mocks.signUp).toHaveBeenCalledWith(
-        expect.objectContaining({ planId: "intensive" }),
+        expect.objectContaining({ planId: "complete", privacyConsent: true }),
       ),
     );
   });
@@ -252,7 +261,7 @@ describe("Supabase authentication handoff", () => {
     });
     render(
       <AppProvider>
-        <AuthForm mode="login" planId="intensive" />
+        <AuthForm mode="login" planId="complete" />
       </AppProvider>,
     );
     const user = userEvent.setup();
@@ -264,7 +273,7 @@ describe("Supabase authentication handoff", () => {
     await user.click(screen.getByRole("button", { name: "Sign in" }));
 
     await waitFor(() =>
-      expect(mocks.push).toHaveBeenCalledWith("/checkout?plan=intensive"),
+      expect(mocks.push).toHaveBeenCalledWith("/checkout?plan=complete"),
     );
   });
 
@@ -298,6 +307,27 @@ describe("Supabase authentication handoff", () => {
     expect(mocks.toastSuccess).not.toHaveBeenCalled();
   });
 
+  it("blocks registration until the privacy notice is accepted", async () => {
+    render(
+      <AppProvider>
+        <AuthForm mode="register" />
+      </AppProvider>,
+    );
+    const user = userEvent.setup();
+    await user.type(await screen.findByLabelText("First name"), "Amina");
+    await user.type(screen.getByLabelText("Last name"), "Diallo");
+    await user.type(screen.getByLabelText("Email"), "learner@example.com");
+    await user.type(screen.getByLabelText("Password"), "password123");
+    await user.click(screen.getByRole("button", { name: "Create my account" }));
+
+    expect(
+      await screen.findByText(
+        "Accept the privacy notice to create your account.",
+      ),
+    ).toBeInTheDocument();
+    expect(mocks.signUp).not.toHaveBeenCalled();
+  });
+
   it("retains the guest assessment when registration fails", async () => {
     const guest = await createGuestAssessment();
     mocks.signUp.mockResolvedValue({
@@ -314,5 +344,72 @@ describe("Supabase authentication handoff", () => {
       expect(mocks.toastError).toHaveBeenCalledWith("Registration failed"),
     );
     expect(await guestAssessmentRepository.getActive()).toEqual(guest);
+  });
+});
+
+describe("closed beta authentication", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    Object.values(mocks).forEach((mock) => mock.mockReset());
+    mocks.signUp.mockResolvedValue({ ok: true, confirmationRequired: true });
+    mocks.signIn.mockResolvedValue({ ok: true });
+    vi.stubEnv("NEXT_PUBLIC_BETA_MODE", "true");
+  });
+
+  afterEach(() => {
+    cleanup();
+    vi.unstubAllEnvs();
+  });
+
+  it("requires and submits an invite code at registration", async () => {
+    render(
+      <AppProvider>
+        <AuthForm mode="register" planId="complete" />
+      </AppProvider>,
+    );
+    await submitRegistration({ inviteCode: "MPK-ABCD-EFGH" });
+
+    await waitFor(() =>
+      expect(mocks.signUp).toHaveBeenCalledWith(
+        expect.objectContaining({ inviteCode: "MPK-ABCD-EFGH" }),
+      ),
+    );
+    expect(mocks.signUp.mock.calls[0][0]).not.toHaveProperty("planId");
+  });
+
+  it("refuses registration without an invite code", async () => {
+    render(
+      <AppProvider>
+        <AuthForm mode="register" />
+      </AppProvider>,
+    );
+    await submitRegistration();
+
+    expect(
+      await screen.findByText("Enter your invite code."),
+    ).toBeInTheDocument();
+    expect(mocks.signUp).not.toHaveBeenCalled();
+  });
+
+  it("sends a signed-in learner without access to beta activation, not checkout", async () => {
+    mocks.getSnapshot.mockResolvedValue({
+      ok: true,
+      snapshot: { ...demoState, planAccess: null },
+    });
+    render(
+      <AppProvider>
+        <AuthForm mode="login" planId="complete" />
+      </AppProvider>,
+    );
+    const user = userEvent.setup();
+    await user.type(
+      await screen.findByLabelText("Email"),
+      "learner@example.com",
+    );
+    await user.type(screen.getByLabelText("Password"), "password123");
+    await user.click(screen.getByRole("button", { name: "Sign in" }));
+
+    await waitFor(() => expect(mocks.push).toHaveBeenCalledWith("/beta"));
+    expect(mocks.setCheckoutIntent).not.toHaveBeenCalled();
   });
 });

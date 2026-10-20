@@ -10,9 +10,13 @@ Provider response types must not enter components. Pure domain rules live outsid
 
 ## State
 
-The MVP uses an application provider and versioned `localStorage` document. It hydrates from a safe seeded state and persists each state transition. Locale also uses a cookie so a future server-rendered dictionary loader can select language without client-only routing.
+Signed-in learner state is loaded from Supabase on the server (deduplicated per request with React `cache`) and seeded into the application provider. Anonymous visitors keep only a guest assessment in `localStorage`; the provider skips the server snapshot entirely when no Supabase session cookie exists.
 
-This is UX simulation, not security. Frontend entitlement helpers make locking consistent but cannot authorize content.
+Frontend entitlement helpers make locking consistent but cannot authorize content. Content is authorized on the server: pages send lesson bodies, practice pools, and tasks only to entitled learners, and answers are checked by server actions.
+
+## Internationalization
+
+The `mpk_locale` cookie (falling back to `Accept-Language`) selects English or French. The root layout resolves it on the server for `<html lang>` and passes it to the provider; signed-in learners' profile locale overrides it and is written back to the cookie. Messages live in `src/i18n/messages/*`, one namespace per file with English and French side by side; French is typed as the English shape, so a missing translation fails the build. Exam Mode screens are French-only by design.
 
 ## UI and accessibility
 

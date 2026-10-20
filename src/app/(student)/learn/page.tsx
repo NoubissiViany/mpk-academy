@@ -14,70 +14,90 @@ import { ModeBadge, PageHeader } from "@/components/shared";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { courseModules, learningCategories } from "@/data/course";
 import { hasPlanFeature } from "@/config/product";
-import { getRecommendedLessons } from "@/lib/domain/personalization";
-import type { CourseModule } from "@/types/domain";
+import { getCourseModules, learningCategories } from "@/data/course";
+import { useI18n } from "@/i18n/client";
+import type { Messages } from "@/i18n/messages";
+import { focusLabel, lessonTitle, moduleTitle } from "@/i18n/format";
+import {
+  getRecommendedLessons,
+  type LessonReason,
+} from "@/lib/domain/personalization";
+import type { CourseModule, Locale } from "@/types/domain";
+
+function reasonText(t: Messages, reason: LessonReason) {
+  if (reason.type === "diagnostic")
+    return t.learn.reasons.diagnostic(t.diagnostic.skills[reason.skill].label);
+  if (reason.type === "mistake")
+    return t.learn.reasons.supports(focusLabel(t, reason.focus));
+  return t.learn.reasons.next;
+}
 
 export default function LearnPage() {
   const { state } = useApp();
+  const { t, locale } = useI18n();
+  const copy = t.learn.page;
   const activeExam = state.user?.goal.exam === "TCF Canada" ? "TCF" : "TEF";
+  const courseModules = getCourseModules(activeExam);
   const recommendations = getRecommendedLessons(state);
   const personalized = hasPlanFeature(
     state.planAccess,
     "personalizedRecommendations",
   );
   const examStrategies = hasPlanFeature(state.planAccess, "examStrategies");
+  const completedCount = courseModules
+    .flatMap((m) => m.lessons)
+    .filter((l) => state.progress.completedLessonIds.includes(l.id)).length;
 
   return (
     <>
       <PageHeader
-        eyebrow="Explore lessons"
-        title="Learn"
-        description="Build your French foundations, strengthen each exam skill, and study strategies for your active exam."
+        eyebrow={copy.eyebrow}
+        title={copy.title}
+        description={copy.description}
         action={<ModeBadge mode="learn" />}
       />
       <Card className="mb-7">
         <CardContent className="flex flex-col gap-4 pt-5 sm:flex-row sm:items-center">
           <div className="flex-1">
             <div className="flex justify-between text-sm">
-              <strong>Overall course completion</strong>
+              <strong>{copy.completion}</strong>
               <span>{state.progress.courseCompletion}%</span>
             </div>
             <Progress
               value={state.progress.courseCompletion}
-              label="Course completion"
+              label={copy.completionLabel}
               className="mt-3"
             />
           </div>
-          <Badge>
-            {state.progress.completedLessonIds.length} lessons completed
-          </Badge>
+          <Badge>{copy.completed(completedCount)}</Badge>
         </CardContent>
       </Card>
 
-      {personalized && (
+      {personalized && recommendations.length > 0 && (
         <section aria-labelledby="recommended-lessons">
           <div className="flex items-center gap-2">
             <Sparkles className="size-5 text-primary" aria-hidden="true" />
             <h2 id="recommended-lessons" className="text-xl font-bold">
-              Recommended lessons
+              {copy.recommendedTitle}
             </h2>
           </div>
           <div className="mt-4 grid gap-4 lg:grid-cols-3">
             {recommendations.map(({ lesson, reason }) => (
               <Card key={lesson.id} className="border-primary/20">
                 <CardContent className="flex h-full flex-col pt-6">
-                  <Badge className="w-fit">Recommended</Badge>
-                  <h3 className="mt-4 text-lg font-bold">{lesson.title}</h3>
+                  <Badge className="w-fit">{copy.recommended}</Badge>
+                  <h3 className="mt-4 text-lg font-bold">
+                    {lessonTitle(locale, lesson)}
+                  </h3>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    {reason}
+                    {reasonText(t, reason)}
                   </p>
                   <Link
                     href={`/learn/${lesson.moduleId}/${lesson.id}`}
                     className="mt-auto inline-flex items-center gap-1 pt-5 text-sm font-bold text-primary hover:underline"
                   >
-                    Start lesson <ArrowRight className="size-4" />
+                    {copy.startLesson} <ArrowRight className="size-4" />
                   </Link>
                 </CardContent>
               </Card>
@@ -99,7 +119,7 @@ export default function LearnPage() {
                 id={category.id}
                 className="text-2xl font-bold uppercase tracking-tight"
               >
-                {category.title}
+                {t.learn.categories[category.id]}
               </h2>
               <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {modules.map((module) => (
@@ -109,6 +129,8 @@ export default function LearnPage() {
                     activeExam={activeExam}
                     examStrategies={examStrategies}
                     completedLessonIds={state.progress.completedLessonIds}
+                    t={t}
+                    locale={locale}
                   />
                 ))}
               </div>
@@ -125,17 +147,21 @@ function ModuleCard({
   activeExam,
   examStrategies,
   completedLessonIds,
+  t,
+  locale,
 }: {
   module: CourseModule;
   activeExam: "TEF" | "TCF";
   examStrategies: boolean;
   completedLessonIds: string[];
+  t: Messages;
+  locale: Locale;
 }) {
-  const locked = module.id === "exam-strategies" && !examStrategies;
-  const title =
-    module.id === "exam-strategies"
-      ? `${activeExam} format and strategies`
-      : module.title;
+  const strategies = module.id === "exam-strategies";
+  const locked = strategies && !examStrategies;
+  const title = strategies
+    ? t.learn.strategiesTitle(activeExam)
+    : moduleTitle(t, module.id);
   const nextLesson =
     module.lessons.find((lesson) => !completedLessonIds.includes(lesson.id)) ??
     module.lessons[0];
@@ -148,29 +174,33 @@ function ModuleCard({
         <div className="flex items-start justify-between gap-3">
           <h3 className="text-lg font-bold">{title}</h3>
           {locked ? (
-            <LockKeyhole className="size-5 text-muted-foreground" />
+            <LockKeyhole
+              className="size-5 text-muted-foreground"
+              aria-hidden="true"
+            />
           ) : complete ? (
-            <CheckCircle2 className="size-5 text-primary" />
-          ) : module.sequence === 1 ? (
-            <Badge>Free</Badge>
+            <CheckCircle2 className="size-5 text-primary" aria-hidden="true" />
           ) : null}
         </div>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          {module.id === "exam-strategies"
-            ? `Formats, timing, and examples designed for ${activeExam} Canada.`
-            : module.description}
+          {strategies
+            ? t.learn.strategiesDescription(activeExam)
+            : t.learn.moduleDescription}
         </p>
         <p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
-          <Clock3 className="size-4" />
-          {module.lessons.length} lessons · Next: {nextLesson.title}
+          <Clock3 className="size-4" aria-hidden="true" />
+          {t.learn.page.lessonsNext(
+            module.lessons.length,
+            lessonTitle(locale, nextLesson),
+          )}
         </p>
         {!locked && (
           <Link
             href={`/learn/${module.id}`}
-            aria-label={`Explore ${title}`}
+            aria-label={t.learn.page.exploreLabel(title)}
             className="mt-auto inline-flex items-center gap-1 pt-5 text-sm font-bold text-primary hover:underline"
           >
-            Explore category <ChevronRight className="size-4" />
+            {t.learn.page.explore} <ChevronRight className="size-4" />
           </Link>
         )}
       </CardContent>

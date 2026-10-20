@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createCheckoutSessionAction } from "./checkout";
 
 const mocks = vi.hoisted(() => ({
@@ -48,7 +48,9 @@ function supabaseState(input?: {
 }
 
 describe("createCheckoutSessionAction", () => {
+  afterEach(() => vi.unstubAllEnvs());
   beforeEach(() => {
+    vi.stubEnv("NEXT_PUBLIC_BETA_MODE", "false");
     Object.values(mocks).forEach((mock) => mock.mockReset());
     mocks.createStripeSession.mockResolvedValue({
       url: "https://checkout.stripe.com/c/pay/test",
@@ -101,5 +103,18 @@ describe("createCheckoutSessionAction", () => {
       email: "learner@example.com",
       planId: "complete",
     });
+  });
+
+  it("never creates a checkout session during the closed beta", async () => {
+    vi.stubEnv("NEXT_PUBLIC_BETA_MODE", "true");
+    await expect(
+      createCheckoutSessionAction("complete"),
+    ).resolves.toMatchObject({ ok: false, reason: "invalid_plan" });
+  });
+
+  it("refuses the retired Intensive plan", async () => {
+    await expect(
+      createCheckoutSessionAction("intensive"),
+    ).resolves.toMatchObject({ ok: false, reason: "invalid_plan" });
   });
 });
