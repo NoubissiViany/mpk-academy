@@ -19,6 +19,7 @@ import {
   getSkillFocusAreas,
 } from "@/lib/domain/personalization";
 import type { ExamSkill } from "@/types/domain";
+import { ReviewDueCard } from "./review-due-card";
 
 const icons = {
   reading: BookOpen,
@@ -47,6 +48,7 @@ export function PracticeSelect() {
         description={copy.description}
         action={<ModeBadge mode="practice" />}
       />
+      <ReviewDueCard className="mb-6 border-primary/20 bg-primary/5" />
       <div className="grid gap-4 sm:grid-cols-2">
         {examSkillOrder.map((skill) => {
           const Icon = icons[skill];

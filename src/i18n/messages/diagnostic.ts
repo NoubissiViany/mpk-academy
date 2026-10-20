@@ -142,6 +142,9 @@ const en = {
     eyebrow: "Assessment complete",
     title: "Your French Assessment",
     levelLabel: "Provisional MPK level",
+    targetTitle: (target: string) => `Compared with your ${target} target`,
+    referenceTitle: "Compared with NCLC 7, a common target",
+    estimatedLevel: (level: string) => `Estimated level ${level} (provisional)`,
     intakeSummary: (goal?: string, target?: string, experience?: string) =>
       `This starting point is personalized for someone ${
         goal ? `preparing for ${goal}` : "exploring their French goals"
@@ -330,6 +333,9 @@ const fr: typeof en = {
     eyebrow: "Évaluation terminée",
     title: "Votre évaluation de français",
     levelLabel: "Niveau MPK provisoire",
+    targetTitle: (target: string) => `Par rapport à votre objectif ${target}`,
+    referenceTitle: "Par rapport au NCLC 7, un objectif courant",
+    estimatedLevel: (level: string) => `Niveau estimé ${level} (provisoire)`,
     intakeSummary: (goal?: string, target?: string, experience?: string) =>
       `Ce point de départ est personnalisé pour une personne ${
         goal

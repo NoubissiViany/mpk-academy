@@ -1,28 +1,41 @@
 "use client";
+import { useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
   BookOpen,
+  Check,
   Headphones,
   Mic2,
   PenLine,
-  Target,
 } from "lucide-react";
 import { useApp } from "@/components/providers/app-provider";
 import { updateExamGoalAction } from "@/app/actions/learner";
 import { PageHeader } from "@/components/shared";
+import { TargetBar } from "@/components/target-bar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { examConfigurations, examSkillOrder } from "@/config/exams";
 import { hasPlanFeature, isBetaMode } from "@/config/product";
 import { useI18n } from "@/i18n/client";
+import { lessonTitle } from "@/i18n/format";
 import {
   createEmptyExamProfile,
+  currentWeeklyStats,
   getSkillStatus,
 } from "@/lib/domain/exam-progress";
-import { getDiagnosticNextActivity } from "@/lib/domain/personalization";
-import type { ExamId, ExamSkill } from "@/types/domain";
+import { getReadiness } from "@/lib/domain/readiness";
+import { getStudyPlan, type StudyPlan } from "@/lib/domain/study-plan";
+import { getTodayPlan, type TodayStep } from "@/lib/domain/today";
+import { cn } from "@/lib/utils";
+import type {
+  ExamId,
+  ExamSkill,
+  NclcTarget,
+  WeeklyExamStats,
+} from "@/types/domain";
 
 const skillIcons = {
   reading: BookOpen,
@@ -34,6 +47,8 @@ const skillIcons = {
 export function DashboardView() {
   const { state, hydrated, replaceState } = useApp();
   const { t } = useI18n();
+  // Fixed for the visit, so "today" does not shift between renders.
+  const [now] = useState(() => new Date());
   const copy = t.dashboard;
   const user = state.user;
   const name = user?.firstName ?? copy.learner;
@@ -136,23 +151,23 @@ export function DashboardView() {
 
   const profile =
     state.examProfiles[activeExam] ?? createEmptyExamProfile(activeExam);
-  const diagnosticNext = state.diagnosticResult
-    ? getDiagnosticNextActivity(state.diagnosticResult, activeExam)
-    : null;
-  const nextSkill = diagnosticNext
-    ? t.diagnostic.skills[diagnosticNext.skill].label
-    : null;
-  const shortName = examConfigurations[activeExam].shortName;
-  const readiness = state.diagnosticResult?.score ?? null;
-  const personalized = hasPlanFeature(
-    state.planAccess,
-    "personalizedRecommendations",
-  );
-  const detailedReadiness = hasPlanFeature(
-    state.planAccess,
-    "detailedReadiness",
-  );
-  const minutes = profile.weekly.minutesStudied;
+  const target = user?.goal.target ?? "I'm not sure";
+  const features = {
+    personalized: hasPlanFeature(
+      state.planAccess,
+      "personalizedRecommendations",
+    ),
+    reviews: hasPlanFeature(state.planAccess, "mistakeReview"),
+  };
+  const today = getTodayPlan(state, now, features);
+  const readiness = getReadiness(profile, target);
+  const plan = getStudyPlan({
+    targetDate: user?.goal.targetDate,
+    target,
+    readiness: readiness.overall,
+    weekly: profile.weekly,
+    now,
+  });
 
   return (
     <>
@@ -161,173 +176,369 @@ export function DashboardView() {
         title={copy.welcomeBack(name)}
         description={copy.description}
       />
-
-      <div className="my-8 grid gap-5 lg:grid-cols-[1.2fr_.8fr]">
-        <Card className="border-primary/20 bg-primary text-primary-foreground">
-          <CardContent className="pt-6">
-            <p className="text-xs font-bold tracking-[0.14em] text-white/70">
-              {copy.next.eyebrow}
-            </p>
-            <Target className="mt-6 size-6" aria-hidden="true" />
-            <h2 className="mt-3 text-xl font-bold">
-              {personalized && nextSkill
-                ? copy.next.startWith(nextSkill)
-                : copy.next.continueTitle}
-            </h2>
-            <p className="mt-3 text-sm text-white/75">
-              {personalized && nextSkill
-                ? copy.next.priority(nextSkill)
-                : copy.next.continueBody}
-            </p>
-            <Button asChild variant="secondary" className="mt-6">
-              <Link
-                href={
-                  personalized
-                    ? (diagnosticNext?.href ?? "/diagnostic")
-                    : "/learn"
-                }
-              >
-                {personalized && diagnosticNext
-                  ? copy.next.start
-                  : copy.next.continue}
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <h2 className="text-sm font-bold tracking-[0.14em]">
-              {copy.week.title}
-            </h2>
-          </CardHeader>
-          <CardContent className="grid grid-cols-2 gap-x-5 gap-y-6">
-            <WeeklyStat
-              value={String(profile.weekly.practiceSessions)}
-              label={copy.week.sessions}
-            />
-            <WeeklyStat
-              value={copy.week.duration(Math.floor(minutes / 60), minutes % 60)}
-              label={copy.week.studied}
-            />
-            <WeeklyStat
-              value={String(profile.weekly.questionsReviewed)}
-              label={copy.week.reviewed}
-            />
-            <WeeklyStat
-              value={`${state.progress.courseCompletion}%`}
-              label={copy.week.completion}
-            />
-          </CardContent>
-        </Card>
+      <div className="grid gap-5 lg:grid-cols-[1.25fr_.75fr]">
+        <TodayCard today={today} personalized={features.personalized} />
+        <StudyPlanCard
+          plan={plan}
+          weekly={currentWeeklyStats(profile.weekly, now)}
+        />
       </div>
-
-      <Card className="border-primary/20">
-        <CardContent className="pt-6">
-          <p className="text-xs font-bold tracking-[0.14em] text-muted-foreground">
-            {copy.exam.eyebrow}
-          </p>
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-2xl font-bold">{activeExam}</h2>
-            {user?.goal.target && (
-              <p className="font-semibold">
-                {copy.exam.target(
-                  t.diagnostic.intake.targets[user.goal.target],
-                )}
-              </p>
-            )}
-          </div>
-          <div className="mt-7 flex items-end justify-between gap-4 text-sm">
-            <span className="font-semibold">
-              {detailedReadiness ? copy.exam.readiness : copy.exam.accuracy}
-            </span>
-            <strong className="text-2xl">
-              {detailedReadiness
-                ? readiness === null
-                  ? "—"
-                  : `${readiness}%`
-                : `${state.progress.practiceAccuracy}%`}
-            </strong>
-          </div>
-          <Progress
-            className="mt-3"
-            value={
-              detailedReadiness
-                ? (readiness ?? 0)
-                : state.progress.practiceAccuracy
-            }
-            label={
-              detailedReadiness && readiness === null
-                ? copy.exam.readinessUnavailable
-                : detailedReadiness
-                  ? copy.exam.readinessLabel(readiness ?? 0)
-                  : copy.exam.accuracyLabel(state.progress.practiceAccuracy)
-            }
-          />
-          <p className="mt-3 text-xs text-muted-foreground">
-            {detailedReadiness
-              ? readiness === null
-                ? copy.exam.completeAssessment
-                : copy.exam.provisional(shortName)
-              : copy.exam.practiceCount(state.progress.practiceAnswered)}
-          </p>
-        </CardContent>
-      </Card>
-
-      <h2 className="mt-9 text-sm font-bold tracking-[0.14em]">
-        {copy.skills.title}
-      </h2>
-      <div className="mt-4 grid gap-4 sm:grid-cols-2">
-        {examSkillOrder.map((skill) => {
-          const Icon = skillIcons[skill];
-          const label = t.practice.skills[skill];
-          const frenchLabel = t.practice.frenchSkills[skill];
-          const productive = skill === "writing" || skill === "speaking";
-          const score = productive ? null : profile.skills[skill].current;
-          return (
-            <Card key={skill}>
-              <CardContent className="pt-6">
-                <span className="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary">
-                  <Icon className="size-5" aria-hidden="true" />
-                </span>
-                <h3 className="mt-4 text-lg font-bold">{label}</h3>
-                {frenchLabel !== label && (
-                  <p className="text-sm text-muted-foreground" lang="fr">
-                    {frenchLabel}
-                  </p>
-                )}
-                <p className="mt-5 text-3xl font-bold">
-                  {productive
-                    ? copy.skills.notAssessed
-                    : score === null
-                      ? "—"
-                      : `${score}%`}
-                </p>
-                <p className="mt-1 text-sm font-semibold text-muted-foreground">
-                  {productive
-                    ? copy.skills.selfPractice
-                    : t.practice.status[getSkillStatus(score)]}
-                </p>
-                <Link
-                  className="mt-6 inline-flex items-center gap-1 text-sm font-bold text-primary hover:underline"
-                  href={`/practice/session?skill=${skill}`}
-                >
-                  {productive ? copy.skills.practiseNow : copy.skills.practice}{" "}
-                  <ArrowRight className="size-4" />
-                </Link>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+      <ReadinessSection
+        exam={activeExam}
+        target={target}
+        readiness={readiness}
+        detailed={hasPlanFeature(state.planAccess, "detailedReadiness")}
+        practiceAccuracy={state.progress.practiceAccuracy}
+        practiceAnswered={state.progress.practiceAnswered}
+      />
     </>
   );
 }
 
-function WeeklyStat({ value, label }: { value: string; label: string }) {
+function TodayCard({
+  today,
+  personalized,
+}: {
+  today: ReturnType<typeof getTodayPlan>;
+  personalized: boolean;
+}) {
+  const { t, locale } = useI18n();
+  const copy = t.dashboard.today;
+  const title = (step: TodayStep) =>
+    step.kind === "review"
+      ? copy.review(step.count, t.practice.skills[step.skill])
+      : step.kind === "practice"
+        ? copy.practice(t.practice.skills[step.skill])
+        : copy.lesson(lessonTitle(locale, step.lesson));
+  const hint = (step: TodayStep) =>
+    step.kind === "review"
+      ? copy.reviewHint
+      : step.kind === "practice"
+        ? personalized
+          ? copy.practiceHint
+          : copy.practiceHintGeneral
+        : personalized
+          ? copy.lessonHint
+          : null;
+  const started = today.steps.some((step) => step.done);
   return (
-    <div>
-      <strong className="text-xl">{value}</strong>
-      <p className="mt-1 text-xs text-muted-foreground">{label}</p>
-    </div>
+    <Card className="border-primary/20">
+      <CardContent className="pt-6">
+        <p className="eyebrow">{copy.eyebrow}</p>
+        <h2 className="mt-2 text-2xl font-bold">
+          {today.next ? copy.title(today.minutes) : copy.allDone}
+        </h2>
+        {!today.next && (
+          <p className="mt-2 text-sm text-muted-foreground">
+            {copy.allDoneBody}
+          </p>
+        )}
+        <ol className="mt-5 space-y-3">
+          {today.steps.map((step, index) => (
+            <li key={step.kind}>
+              <Link
+                href={step.href}
+                className={cn(
+                  "flex items-start gap-3 rounded-xl border p-4 transition-colors hover:border-primary/40",
+                  step.done && "bg-muted/40",
+                )}
+              >
+                <span
+                  className={cn(
+                    "mt-0.5 grid size-7 shrink-0 place-items-center rounded-full border text-sm font-bold",
+                    step.done &&
+                      "border-primary bg-primary text-primary-foreground",
+                  )}
+                  aria-hidden="true"
+                >
+                  {step.done ? <Check className="size-4" /> : index + 1}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-semibold">{title(step)}</span>
+                  {hint(step) && (
+                    <span className="mt-1 block text-sm text-muted-foreground">
+                      {hint(step)}
+                    </span>
+                  )}
+                </span>
+                <span className="shrink-0 text-sm font-semibold text-muted-foreground">
+                  {step.done ? copy.done : copy.minutes(step.minutes)}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ol>
+        <Button asChild className="mt-6">
+          <Link href={today.next?.href ?? "/practice"}>
+            {today.next ? (started ? copy.continue : copy.start) : copy.extra}
+            <ArrowRight className="size-4" />
+          </Link>
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+function StudyPlanCard({
+  plan,
+  weekly,
+}: {
+  plan: StudyPlan;
+  weekly: WeeklyExamStats;
+}) {
+  const { t } = useI18n();
+  const copy = t.dashboard.plan;
+  return (
+    <Card>
+      <CardContent className="flex h-full flex-col pt-6">
+        <p className="eyebrow">{copy.eyebrow}</p>
+        {plan.status === "noDate" ? (
+          <>
+            <h2 className="mt-2 text-xl font-bold">{copy.noDateTitle}</h2>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              {copy.noDateBody}
+            </p>
+            <Button asChild variant="secondary" className="mt-5 w-fit">
+              <Link href="/settings">{copy.setDate}</Link>
+            </Button>
+          </>
+        ) : plan.status === "past" ? (
+          <>
+            <p className="mt-2 text-sm leading-6">{copy.past}</p>
+            <Button asChild variant="secondary" className="mt-5 w-fit">
+              <Link href="/settings">{copy.change}</Link>
+            </Button>
+          </>
+        ) : (
+          <>
+            <h2 className="mt-2 text-xl font-bold">
+              {copy.daysLeft(plan.daysLeft)}
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {copy.rhythm(plan.sessionsPerWeek)}
+            </p>
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-2 text-sm">
+              <span className="font-semibold">
+                {copy.thisWeek(plan.sessionsThisWeek)}
+              </span>
+              <Badge
+                className={cn(
+                  plan.status === "onTrack"
+                    ? "border-primary/30 bg-primary/10 text-primary"
+                    : "border-accent/30 bg-accent/10 text-accent",
+                )}
+              >
+                {plan.status === "onTrack"
+                  ? copy.onTrack
+                  : copy.behind(plan.expectedByToday - plan.sessionsThisWeek)}
+              </Badge>
+            </div>
+            <Progress
+              className="mt-3"
+              value={Math.min(
+                100,
+                (100 * plan.sessionsThisWeek) / plan.sessionsPerWeek,
+              )}
+              label={copy.thisWeek(plan.sessionsThisWeek)}
+            />
+            <Link
+              href="/settings"
+              className="mt-4 w-fit text-sm font-bold text-primary hover:underline"
+            >
+              {copy.change}
+            </Link>
+          </>
+        )}
+        <p className="mt-auto pt-5 text-xs text-muted-foreground">
+          {copy.week(
+            Math.floor(weekly.minutesStudied / 60),
+            weekly.minutesStudied % 60,
+            weekly.questionsReviewed,
+          )}
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ReadinessSection({
+  exam,
+  target,
+  readiness,
+  detailed,
+  practiceAccuracy,
+  practiceAnswered,
+}: {
+  exam: ExamId;
+  target: NclcTarget;
+  readiness: ReturnType<typeof getReadiness>;
+  detailed: boolean;
+  practiceAccuracy: number;
+  practiceAnswered: number;
+}) {
+  const { t } = useI18n();
+  const copy = t.dashboard.readiness;
+  const targetLabel = t.diagnostic.intake.targets[target];
+  const shortName = examConfigurations[exam].shortName;
+  return (
+    <section className="mt-9" aria-labelledby="readiness-title">
+      <p className="eyebrow">{copy.eyebrow}</p>
+      <h2 id="readiness-title" className="mt-1 text-2xl font-bold">
+        {exam} · {targetLabel}
+      </h2>
+      <Card className="mt-4">
+        <CardContent className="pt-6">
+          {!detailed ? (
+            <>
+              <div className="flex items-end justify-between gap-4 text-sm">
+                <span className="font-semibold">{copy.accuracy}</span>
+                <strong className="text-2xl">{practiceAccuracy}%</strong>
+              </div>
+              <Progress
+                className="mt-3"
+                value={practiceAccuracy}
+                label={`${copy.accuracy} ${practiceAccuracy}%`}
+              />
+              <p className="mt-3 text-xs text-muted-foreground">
+                {copy.practiceCount(practiceAnswered)}
+              </p>
+            </>
+          ) : readiness.overall === null || readiness.band === null ? (
+            <p className="text-sm leading-6">{copy.unavailable}</p>
+          ) : (
+            <>
+              <div className="flex items-end justify-between gap-4">
+                <span className="font-semibold">{copy.title}</span>
+                <strong className="text-3xl">{readiness.overall}%</strong>
+              </div>
+              <div className="mt-3">
+                <TargetBar
+                  value={readiness.overall}
+                  goal={readiness.goal}
+                  label={`${copy.title} ${readiness.overall}%`}
+                  goalLabel={copy.goalLine(readiness.goal)}
+                />
+              </div>
+              <p className="mt-3 text-sm">
+                <strong>{copy.bands[readiness.band]}</strong> ·{" "}
+                {copy.evidence[readiness.evidence]}
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {copy.goal(readiness.goal, targetLabel)}
+              </p>
+            </>
+          )}
+          <p className="mt-4 text-xs leading-5 text-muted-foreground">
+            {copy.disclaimer(shortName)}
+          </p>
+        </CardContent>
+      </Card>
+      <h3 className="mt-7 text-sm font-bold tracking-[0.14em]">
+        {t.dashboard.skills.title}
+      </h3>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        {examSkillOrder.map((skill) => (
+          <SkillCard
+            key={skill}
+            skill={skill}
+            readiness={readiness}
+            detailed={detailed}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function SkillCard({
+  skill,
+  readiness,
+  detailed,
+}: {
+  skill: ExamSkill;
+  readiness: ReturnType<typeof getReadiness>;
+  detailed: boolean;
+}) {
+  const { t } = useI18n();
+  const copy = t.dashboard.skills;
+  const readinessCopy = t.dashboard.readiness;
+  const Icon = skillIcons[skill];
+  const label = t.practice.skills[skill];
+  const frenchLabel = t.practice.frenchSkills[skill];
+  const objective = readiness.skills.find((item) => item.skill === skill);
+  const focus = detailed && readiness.weakest === skill;
+  const score = objective?.score ?? null;
+  return (
+    <Card className={cn(focus && "border-accent/40")}>
+      <CardContent className="pt-6">
+        <div className="flex items-start justify-between gap-3">
+          <span className="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary">
+            <Icon className="size-5" aria-hidden="true" />
+          </span>
+          {focus && (
+            <Badge className="border-accent/30 bg-accent/10 text-accent">
+              {copy.focus}
+            </Badge>
+          )}
+        </div>
+        <h4 className="mt-4 text-lg font-bold">{label}</h4>
+        {frenchLabel !== label && (
+          <p className="text-sm text-muted-foreground" lang="fr">
+            {frenchLabel}
+          </p>
+        )}
+        {!objective ? (
+          <>
+            <p className="mt-5 text-2xl font-bold">{copy.notScored}</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {copy.selfPractice}
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="mt-5 text-3xl font-bold">
+              {score === null ? "—" : `${score}%`}
+            </p>
+            <div className="mt-3">
+              {detailed ? (
+                <TargetBar
+                  value={score}
+                  goal={readiness.goal}
+                  label={`${label} ${score ?? 0}%`}
+                  goalLabel={readinessCopy.goalLine(readiness.goal)}
+                />
+              ) : (
+                <Progress
+                  value={score ?? 0}
+                  label={`${label} ${score ?? 0}%`}
+                />
+              )}
+            </div>
+            <p className="mt-3 text-sm font-semibold text-muted-foreground">
+              {score === null
+                ? copy.notAssessed
+                : detailed && objective.band
+                  ? readinessCopy.bands[objective.band]
+                  : t.practice.status[getSkillStatus(score)]}
+            </p>
+            {detailed && score !== null && (
+              <p className="mt-1 text-xs text-muted-foreground">
+                {objective.change === null
+                  ? null
+                  : `${readinessCopy.change(objective.change)} · `}
+                {readinessCopy.evidence[objective.evidence]}
+              </p>
+            )}
+          </>
+        )}
+        <Link
+          className="mt-6 inline-flex items-center gap-1 text-sm font-bold text-primary hover:underline"
+          href={`/practice/session?skill=${skill}`}
+        >
+          {objective ? copy.practice : copy.practiseNow}{" "}
+          <ArrowRight className="size-4" />
+        </Link>
+      </CardContent>
+    </Card>
   );
 }

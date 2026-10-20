@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { examSkillOrder } from "@/config/exams";
 import { useI18n } from "@/i18n/client";
 import { focusLabel } from "@/i18n/format";
+import { ReviewDueCard } from "@/features/practice/review-due-card";
 import { groupMistakes, mistakeFocus } from "@/lib/domain/personalization";
 import { cn } from "@/lib/utils";
 import type { ExamSkill } from "@/types/domain";
@@ -44,6 +45,7 @@ export default function MistakesPage() {
         title={copy.title}
         description={copy.description}
       />
+      <ReviewDueCard className="mb-6 border-primary/20 bg-primary/5" />
       <div
         className="flex gap-2 overflow-x-auto pb-2"
         role="tablist"
