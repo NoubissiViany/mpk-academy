@@ -1,0 +1,92 @@
+# AI writing feedback operations
+
+Learners on the Complete plan (everyone in the closed beta) can send a writing-practice text for AI feedback. The text waits in `public.writing_submissions` and is reviewed on the server by Groq (`openai/gpt-oss-120b`, low reasoning effort, strict JSON output). The server then keeps only what the essay supports: quoted errors must appear in the text, corrections must be small edits, and the rewritten passage must come from the text. Learners see a level per criterion against their target, the main corrections, one passage rewritten, rule-based checks (length, paragraphs, tu/vous, connecting words), and a "This correction is wrong" button.
+
+Nothing is sent before the learner agrees (`profiles.ai_feedback_consent_version` must equal `aiFeedbackNoticeVersion` in `src/config/privacy.ts`). The feature is hidden on any deployment without `GROQ_API_KEY`.
+
+## Limits and free-plan budget
+
+| Limit                                 | Default                         | Where                                          |
+| ------------------------------------- | ------------------------------- | ---------------------------------------------- |
+| Essays started per day (all learners) | 60                              | `private.ai_settings.writing_daily_limit`      |
+| Essays per learner per day            | 2 (failed reviews do not count) | `private.ai_settings.writing_user_daily_limit` |
+| Tokens per essay                      | about 2,500–3,000               | Shown per model in `/admin`                    |
+| Groq free tier (per model)            | check your Limits page          | console.groq.com/settings/limits               |
+
+Days follow America/Toronto. Past the daily cap, essays stay queued and learners see "Saved — feedback tomorrow morning". On a Groq 429, the job waits for `retry-after`; a job is retried at most three times, then marked failed.
+
+Change the caps without a deploy:
+
+```sql
+update private.ai_settings set writing_daily_limit = 60, writing_user_daily_limit = 2, updated_at = now();
+```
+
+## One-time setup per environment
+
+### 1. Groq
+
+1. Create a Groq account and an API key per environment (for example `mpk-production`, `mpk-staging`).
+2. In **Settings → Data controls**, turn on **Zero Data Retention**. The privacy notice says it is on; do not launch AI feedback without it.
+3. Check **Settings → Limits** for `openai/gpt-oss-120b`. If the daily token limit is below 200,000, lower `writing_daily_limit` so that limit ÷ 3,000 is not exceeded.
+
+### 2. Vercel (server-only variables)
+
+| Variable             | Value                                                             |
+| -------------------- | ----------------------------------------------------------------- |
+| `GROQ_API_KEY`       | The Groq key for this environment                                 |
+| `JOBS_SECRET`        | At least 32 random characters, for example `openssl rand -hex 32` |
+| `GROQ_WRITING_MODEL` | Optional; defaults to `openai/gpt-oss-120b`                       |
+
+Redeploy after setting them. `SUPABASE_SERVICE_ROLE_KEY` must also be the key of the same Supabase project.
+
+### 3. Supabase
+
+Push the migration (`20261021000100_writing_feedback.sql`) with `npx supabase db push` as usual. On hosted Supabase it enables `pg_cron` and `pg_net` and schedules `mpk-writing-feedback` every minute. The scheduled function calls the app only while an essay is waiting.
+
+Then store the job URL and the same `JOBS_SECRET` in Vault, once per project (SQL editor):
+
+```sql
+-- Production project
+select vault.create_secret('https://mpk-academy.vercel.app/api/jobs/run', 'mpk_jobs_url');
+select vault.create_secret('<the JOBS_SECRET value>', 'mpk_jobs_secret');
+```
+
+Use `https://mpk-academy-sandbox.vercel.app/api/jobs/run` on the staging project. Without these secrets the scheduler does nothing. Essays are still reviewed right after they are sent, and again while the learner keeps the feedback page open; only essays left waiting rely on the scheduler.
+
+To rotate the secret, change it in Vercel and then in Vault:
+
+```sql
+select vault.update_secret(id, '<new secret>') from vault.secrets where name = 'mpk_jobs_secret';
+```
+
+Check that the scheduler runs:
+
+```sql
+select jobname, schedule, active from cron.job where jobname = 'mpk-writing-feedback';
+select status, return_message, start_time from cron.job_run_details order by start_time desc limit 5;
+select status_code, created from net._http_response order by created desc limit 5;
+```
+
+## Monitoring
+
+`/admin` → **AI writing feedback** shows essays started today against the cap, the queue, tokens today against 200,000, failures, and corrections flagged as wrong in the last 30 days. Failures and provider errors are also in **Recent server errors** (no essay text is logged).
+
+Read flagged corrections before each weekly review:
+
+```sql
+select f.created_at, s.task_id, f.fix_index, s.feedback->'fixes'->f.fix_index as fix, f.note
+from public.writing_feedback_flags f join public.writing_submissions s on s.id = f.submission_id
+order by f.created_at desc limit 50;
+```
+
+## Calibration (before trusting the levels)
+
+1. With learners' agreement, pick 40 reviewed essays across both exams and all targets.
+2. A qualified French teacher grades each criterion (task, coherence, vocabulary, grammar) on the same A2–C1 scale, without seeing the AI levels.
+3. For each criterion, report exact agreement and agreement within one level. Aim for at least 60% exact and 90% within one before showing levels as anything more than rough guidance.
+4. Keep the results in the repository (`docs/calibration/`) and adjust the prompt or the target bars if a criterion is consistently off.
+
+## Privacy duties
+
+- Changing the provider, the data sent, or retention means updating the AI section of the privacy notice and bumping `aiFeedbackNoticeVersion`; learners are then asked again.
+- Learners can withdraw agreement in Settings. Deletion requests: `delete from public.writing_submissions where user_id = '<uuid>';` (flags are removed with them).
