@@ -13,6 +13,7 @@ import { learn } from "./learn";
 import { metadata } from "./metadata";
 import { mistakes } from "./mistakes";
 import { practice } from "./practice";
+import { writing } from "./writing";
 
 const namespaces = {
   account,
@@ -29,6 +30,7 @@ const namespaces = {
   metadata,
   mistakes,
   practice,
+  writing,
 };
 
 type Namespaces = typeof namespaces;

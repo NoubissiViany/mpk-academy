@@ -273,3 +273,101 @@ export function TestersSection({
     </section>
   );
 }
+
+export const aiUsageSchema = z.object({
+  today: z.array(
+    z.object({
+      feature: z.string(),
+      model: z.string(),
+      requests: z.number(),
+      failures: z.number(),
+      tokens: z.number(),
+    }),
+  ),
+  last7Tokens: z.number(),
+  queue: z.object({
+    queued: z.number(),
+    processing: z.number(),
+    failedToday: z.number(),
+    startedToday: z.number(),
+  }),
+  limits: z.object({ daily: z.number(), perLearner: z.number() }),
+  flags30: z.number(),
+});
+
+/** Groq's free daily token allowance per model; check the account Limits page. */
+const DAILY_TOKEN_ALLOWANCE = 200_000;
+
+export function AiUsageSection({
+  usage,
+  configured,
+}: {
+  usage: z.infer<typeof aiUsageSchema>;
+  configured: boolean;
+}) {
+  const tokensToday = usage.today.reduce((sum, row) => sum + row.tokens, 0);
+  const cards = [
+    [
+      "Essays started today",
+      `${usage.queue.startedToday} of ${usage.limits.daily}`,
+    ],
+    [
+      "Waiting in the queue",
+      `${usage.queue.queued} queued · ${usage.queue.processing} in progress`,
+    ],
+    [
+      "Tokens today",
+      `${tokensToday.toLocaleString("en-CA")} of ${DAILY_TOKEN_ALLOWANCE.toLocaleString("en-CA")}`,
+    ],
+    [
+      "Failed today · flagged (30 days)",
+      `${usage.queue.failedToday} · ${usage.flags30}`,
+    ],
+  ];
+  return (
+    <section>
+      <h2 className="text-lg font-bold">AI writing feedback</h2>
+      <p className="mt-1 text-sm leading-6 text-muted-foreground">
+        {configured
+          ? `Each learner can send ${usage.limits.perLearner} essays a day. Tokens over the last 7 days: ${usage.last7Tokens.toLocaleString("en-CA")}.`
+          : "Not configured on this deployment: GROQ_API_KEY is missing, so learners do not see AI feedback."}
+      </p>
+      <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {cards.map(([label, value]) => (
+          <Card key={label}>
+            <CardContent className="pt-5">
+              <p className="text-sm text-muted-foreground">{label}</p>
+              <p className="mt-1 text-xl font-bold">{value}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+      {usage.today.length > 0 && (
+        <div className="mt-3 overflow-x-auto rounded-xl border">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-muted/60 text-xs uppercase text-muted-foreground">
+              <tr>
+                <th className="px-3 py-2">Model</th>
+                <th className="px-3 py-2 text-right">Requests</th>
+                <th className="px-3 py-2 text-right">Failures</th>
+                <th className="px-3 py-2 text-right">Tokens</th>
+              </tr>
+            </thead>
+            <tbody>
+              {usage.today.map((row) => (
+                <tr key={`${row.feature}-${row.model}`} className="border-t">
+                  <td className="px-3 py-2 font-mono">{row.model}</td>
+                  <td className="px-3 py-2 text-right">{row.requests}</td>
+                  <td className="px-3 py-2 text-right">{row.failures}</td>
+                  <td className="px-3 py-2 text-right">
+                    {row.tokens.toLocaleString("en-CA")}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </section>
+  );
+}

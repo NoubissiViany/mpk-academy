@@ -2,6 +2,7 @@ import { unstable_rethrow } from "next/navigation";
 import { hasPlanFeature } from "@/config/product";
 import { ExamPracticeSession } from "@/features/practice/exam-practice-session";
 import { ProductiveSession } from "@/features/practice/productive-session";
+import { isAiWritingConfigured } from "@/lib/server/ai/groq";
 import { logServerError } from "@/lib/server/diagnostics";
 import {
   getPracticeItemIds,
@@ -10,6 +11,9 @@ import {
 } from "@/lib/server/content";
 import { getLearnerAccess, getPracticeHistory } from "@/lib/supabase/learner";
 import type { CompetencyId, ExamId, ExamSkill } from "@/types/domain";
+
+// Requesting AI feedback may work the queue after the action responds.
+export const maxDuration = 60;
 
 const first = (value?: string | string[]) =>
   Array.isArray(value) ? value[0] : value;
@@ -58,6 +62,11 @@ export default async function PracticeSessionPage({
         exam={exam}
         skill={skill}
         tasks={getPublicProductiveTasks(exam, skill)}
+        aiFeedback={
+          skill === "writing" &&
+          hasPlanFeature(planAccess, "aiWritingFeedback") &&
+          isAiWritingConfigured()
+        }
       />
     );
 

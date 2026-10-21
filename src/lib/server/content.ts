@@ -183,6 +183,24 @@ export function getPublicProductiveTasks(
     }));
 }
 
+/** A writing task for the learner's exam, as public task text. */
+export function getPublicWritingTask(exam: ExamId, taskId: string) {
+  return (
+    getPublicProductiveTasks(exam, "writing").find(
+      (task) => task.id === taskId,
+    ) ?? null
+  );
+}
+
+/** Titles of every writing task, for lists of past submissions. */
+export const getWritingTaskTitles = () =>
+  Object.fromEntries(
+    practiceItems
+      .filter(isProductive)
+      .filter((item) => item.kind === "writing")
+      .map((item) => [item.id, item.title]),
+  ) as Record<string, string>;
+
 export function getModelResponse(exam: ExamId, taskId: string) {
   const item = practiceItems.find(
     (candidate) => candidate.id === taskId && candidate.exam === examCode(exam),

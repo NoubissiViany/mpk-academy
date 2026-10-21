@@ -53,6 +53,7 @@ const learnerAreas = [
   "/weaknesses",
   "/profile",
   "/settings",
+  "/writing",
 ];
 
 export const requiresSignIn = (pathname: string) =>

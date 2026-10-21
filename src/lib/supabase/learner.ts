@@ -378,6 +378,13 @@ async function loadLearnerSnapshot(): Promise<AppState> {
         target: goal.target as NclcTarget,
         ...(goal.target_date ? { targetDate: goal.target_date } : {}),
       },
+      aiFeedbackConsent:
+        profile.ai_feedback_consent_version && profile.ai_feedback_consent_at
+          ? {
+              version: profile.ai_feedback_consent_version,
+              at: profile.ai_feedback_consent_at,
+            }
+          : null,
     },
     planAccess: entitlement
       ? {

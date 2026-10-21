@@ -38,7 +38,7 @@ const en = {
       `Focus next on ${skill.toLowerCase()} using your current evidence.`,
     recommendedCta: "Practice recommended weakness",
     productiveNote:
-      "Writing and speaking offer guided self-practice. AI evaluation and official scores are not provided yet.",
+      "Speaking is guided self-practice without recording. Writing can also receive AI feedback where your plan includes it. None of this is an official score.",
     reviewTitle: (count: number) =>
       `${count} missed ${count === 1 ? "question is" : "questions are"} due for review`,
     reviewBody:
@@ -68,6 +68,8 @@ const en = {
   productive: {
     title: (exam: string, skill: string) => `${exam} · ${skill} self-practice`,
     note: "MPK practice feedback only. No recording, AI evaluation, or official grading. Speaking requires you to imagine or arrange an interlocutor.",
+    noteAi:
+      "Timed practice. When you finish, you can ask for AI feedback on your text. It is a practice aid, not an official grade.",
     chooseTask: "Choose a task",
     words: (count: number) => `${count} words`,
     wordRange: (min: number, max?: number) =>
@@ -147,7 +149,7 @@ const fr: typeof en = {
       `Concentrez-vous ensuite sur la ${skill.toLowerCase()} à partir de vos résultats actuels.`,
     recommendedCta: "Travailler la faiblesse recommandée",
     productiveNote:
-      "L’expression écrite et orale proposent un auto-entraînement guidé. L’évaluation par IA et les résultats officiels ne sont pas encore offerts.",
+      "L’expression orale est un auto-entraînement guidé sans enregistrement. L’expression écrite peut aussi recevoir une correction par IA si votre formule l’inclut. Aucun de ces retours n’est un résultat officiel.",
     reviewTitle: (count: number) =>
       count === 1
         ? "1 question manquée est à revoir"
@@ -180,6 +182,8 @@ const fr: typeof en = {
     title: (exam: string, skill: string) =>
       `${exam} · auto-entraînement en ${skill.toLowerCase()}`,
     note: "Retour d’entraînement MPK uniquement. Pas d’enregistrement, d’évaluation par IA ni de notation officielle. À l’oral, imaginez un interlocuteur ou demandez à quelqu’un de jouer ce rôle.",
+    noteAi:
+      "Entraînement chronométré. À la fin, vous pouvez demander une correction de votre texte par IA. C’est une aide à l’entraînement, pas une note officielle.",
     chooseTask: "Choisissez une tâche",
     words: (count: number) => `${count} mots`,
     wordRange: (min: number, max?: number) =>

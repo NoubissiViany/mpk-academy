@@ -127,6 +127,15 @@ export function PracticeSelect() {
           </CardContent>
         </Card>
       )}
+      {hasPlanFeature(state.planAccess, "aiWritingFeedback") && (
+        <Link
+          href="/writing"
+          className="mt-6 inline-flex items-center gap-1 text-sm font-bold text-primary hover:underline"
+        >
+          <PenLine className="size-4" aria-hidden="true" />
+          {t.writing.feedback.history}
+        </Link>
+      )}
       <p className="mt-7 text-xs leading-5 text-muted-foreground">
         {copy.productiveNote}
       </p>

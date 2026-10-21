@@ -1,5 +1,6 @@
 import { PageHeader } from "@/components/shared";
 import { SettingsForm } from "@/features/settings/settings-form";
+import { AiConsentSettings } from "@/features/writing/ai-consent-settings";
 import { getMessages } from "@/i18n/server";
 
 export default async function SettingsPage() {
@@ -12,6 +13,7 @@ export default async function SettingsPage() {
         description={copy.description}
       />
       <SettingsForm />
+      <AiConsentSettings />
     </>
   );
 }

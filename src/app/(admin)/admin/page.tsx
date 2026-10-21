@@ -11,7 +11,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { getAdminEmail } from "@/lib/server/admin";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isAiWritingConfigured } from "@/lib/server/ai/groq";
 import {
+  AiUsageSection,
+  aiUsageSchema,
   EngagementSummary,
   FunnelSection,
   metricsSchema,
@@ -89,16 +92,18 @@ export default async function AdminPage({
   const { error } = await searchParams;
 
   const admin = createAdminClient();
-  const [overviewResponse, errorsResponse, metricsResponse] = await Promise.all(
-    [
+  const [overviewResponse, errorsResponse, metricsResponse, aiResponse] =
+    await Promise.all([
       admin.rpc("mpk_admin_beta_overview"),
       admin.rpc("mpk_admin_recent_errors", { p_limit: 50 }),
       admin.rpc("mpk_admin_beta_metrics"),
-    ],
-  );
+      admin.rpc("mpk_admin_ai_usage"),
+    ]);
   if (overviewResponse.error) throw overviewResponse.error;
   if (errorsResponse.error) throw errorsResponse.error;
   if (metricsResponse.error) throw metricsResponse.error;
+  if (aiResponse.error) throw aiResponse.error;
+  const aiUsage = aiUsageSchema.parse(aiResponse.data);
   const overview = overviewSchema.parse(overviewResponse.data);
   const errors = errorsSchema.parse(errorsResponse.data);
   const metrics = metricsSchema.parse(metricsResponse.data);
@@ -277,6 +282,7 @@ export default async function AdminPage({
         </div>
       </section>
 
+      <AiUsageSection usage={aiUsage} configured={isAiWritingConfigured()} />
       <FunnelSection funnel={metrics.funnel} />
       <EngagementSummary summary={metrics.summary} />
       <TestersSection

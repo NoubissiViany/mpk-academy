@@ -7,6 +7,7 @@ import { submitPracticeAction } from "@/app/actions/learner";
 import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
 import type { PublicProductiveTask } from "@/content/shared/types";
+import { RequestAiFeedback } from "@/features/writing/request-feedback";
 import { useI18n } from "@/i18n/client";
 import type { ExamId } from "@/types/domain";
 
@@ -17,6 +18,8 @@ type SessionProps = {
   exam: ExamId;
   skill: "writing" | "speaking";
   tasks: PublicProductiveTask[];
+  /** AI writing feedback is included and configured on the server. */
+  aiFeedback?: boolean;
 };
 
 export function ProductiveSession(props: SessionProps) {
@@ -25,7 +28,7 @@ export function ProductiveSession(props: SessionProps) {
   return <TaskSession {...props} />;
 }
 
-function TaskSession({ exam, skill, tasks }: SessionProps) {
+function TaskSession({ exam, skill, tasks, aiFeedback }: SessionProps) {
   const { t } = useI18n();
   const copy = t.practice.productive;
   const [submissionId] = useState(() => crypto.randomUUID());
@@ -65,16 +68,18 @@ function TaskSession({ exam, skill, tasks }: SessionProps) {
     if (result.ok) setModelResponse(result.modelResponse);
   };
 
+  const elapsedSeconds =
+    started === null
+      ? 0
+      : Math.min(task.durationSeconds, Math.floor((now - started) / 1000));
+
   const finish = async () => {
     setSaving(true);
     const result = await submitPracticeAction({
       exam,
       skill,
       submissionId,
-      durationSeconds:
-        started === null
-          ? 0
-          : Math.min(task.durationSeconds, Math.floor((now - started) / 1000)),
+      durationSeconds: elapsedSeconds,
       answers: [
         {
           questionId: task.id,
@@ -93,7 +98,7 @@ function TaskSession({ exam, skill, tasks }: SessionProps) {
       <h1 className="text-3xl font-bold">
         {copy.title(exam, t.practice.skills[skill])}
       </h1>
-      <p>{copy.note}</p>
+      <p>{skill === "writing" && aiFeedback ? copy.noteAi : copy.note}</p>
       <label className="block">
         {copy.chooseTask}
         <select
@@ -182,7 +187,20 @@ function TaskSession({ exam, skill, tasks }: SessionProps) {
               </p>
             </details>
           )}
+          {skill === "writing" && aiFeedback && (
+            <div className="rounded-xl border bg-card p-5">
+              <RequestAiFeedback
+                taskId={task.id}
+                text={response}
+                practice={{ submissionId, durationSeconds: elapsedSeconds }}
+                disabled={saving}
+              />
+            </div>
+          )}
           <Button
+            variant={
+              skill === "writing" && aiFeedback ? "secondary" : "primary"
+            }
             disabled={saving || (skill === "writing" && !response.trim())}
             onClick={finish}
           >
