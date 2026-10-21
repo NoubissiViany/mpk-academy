@@ -576,6 +576,8 @@ export type Database = {
       };
       profiles: {
         Row: {
+          ai_feedback_consent_at: string | null;
+          ai_feedback_consent_version: string | null;
           assistance: string;
           created_at: string;
           first_name: string;
@@ -585,6 +587,8 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
+          ai_feedback_consent_at?: string | null;
+          ai_feedback_consent_version?: string | null;
           assistance?: string;
           created_at?: string;
           first_name: string;
@@ -594,6 +598,8 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
+          ai_feedback_consent_at?: string | null;
+          ai_feedback_consent_version?: string | null;
           assistance?: string;
           created_at?: string;
           first_name?: string;
@@ -795,6 +801,99 @@ export type Database = {
           },
         ];
       };
+      writing_feedback_flags: {
+        Row: {
+          created_at: string;
+          fix_index: number;
+          note: string | null;
+          submission_id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          fix_index: number;
+          note?: string | null;
+          submission_id: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          fix_index?: number;
+          note?: string | null;
+          submission_id?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      writing_submissions: {
+        Row: {
+          attempts: number;
+          body: string;
+          checks: Json;
+          client_key: string;
+          completed_at: string | null;
+          created_at: string;
+          error_code: string | null;
+          exam: string;
+          feedback: Json | null;
+          id: string;
+          locale: string;
+          model: string | null;
+          not_before: string;
+          parent_id: string | null;
+          started_at: string | null;
+          status: string;
+          task_id: string;
+          tokens: number | null;
+          user_id: string;
+          word_count: number;
+        };
+        Insert: {
+          attempts?: number;
+          body: string;
+          checks?: Json;
+          client_key: string;
+          completed_at?: string | null;
+          created_at?: string;
+          error_code?: string | null;
+          exam: string;
+          feedback?: Json | null;
+          id?: string;
+          locale: string;
+          model?: string | null;
+          not_before?: string;
+          parent_id?: string | null;
+          started_at?: string | null;
+          status?: string;
+          task_id: string;
+          tokens?: number | null;
+          user_id: string;
+          word_count: number;
+        };
+        Update: {
+          attempts?: number;
+          body?: string;
+          checks?: Json;
+          client_key?: string;
+          completed_at?: string | null;
+          created_at?: string;
+          error_code?: string | null;
+          exam?: string;
+          feedback?: Json | null;
+          id?: string;
+          locale?: string;
+          model?: string | null;
+          not_before?: string;
+          parent_id?: string | null;
+          started_at?: string | null;
+          status?: string;
+          task_id?: string;
+          tokens?: number | null;
+          user_id?: string;
+          word_count?: number;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -803,6 +902,65 @@ export type Database = {
       mpk_complete_lesson: { Args: { p_lesson_id: string }; Returns: Json };
       mpk_admin_beta_overview: { Args: never; Returns: Json };
       mpk_admin_beta_metrics: { Args: never; Returns: Json };
+      mpk_admin_ai_usage: { Args: never; Returns: Json };
+      mpk_claim_writing_jobs: {
+        Args: { p_limit: number };
+        Returns: {
+          attempts: number;
+          body: string;
+          exam: string;
+          id: string;
+          locale: string;
+          target: string;
+          task_id: string;
+          user_id: string;
+        }[];
+      };
+      mpk_complete_writing_job: {
+        Args: {
+          p_feedback: Json;
+          p_id: string;
+          p_model: string;
+          p_tokens: number;
+        };
+        Returns: undefined;
+      };
+      mpk_flag_writing_fix: {
+        Args: {
+          p_fix_index: number;
+          p_note: string | null;
+          p_submission_id: string;
+        };
+        Returns: undefined;
+      };
+      mpk_retry_writing_job: {
+        Args: {
+          p_delay_seconds: number;
+          p_error: string;
+          p_final: boolean;
+          p_id: string;
+          p_model: string;
+          p_tokens: number;
+        };
+        Returns: string | null;
+      };
+      mpk_set_ai_feedback_consent: {
+        Args: { p_version: string | null };
+        Returns: undefined;
+      };
+      mpk_submit_writing: {
+        Args: {
+          p_body: string;
+          p_checks: Json;
+          p_client_key: string;
+          p_exam: string;
+          p_locale: string;
+          p_parent_id?: string | null;
+          p_task_id: string;
+        };
+        Returns: Json;
+      };
+      mpk_writing_status: { Args: { p_id: string }; Returns: Json };
       mpk_admin_create_beta_invite: {
         Args: {
           p_code: string;
