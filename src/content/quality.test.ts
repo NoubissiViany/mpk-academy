@@ -8,6 +8,7 @@ import {
   nearDuplicates,
   unbalancedPositions,
 } from "./quality";
+import { sampleItems } from "./sample";
 import type { MCQ } from "./shared/types";
 import {
   contentDebt,
@@ -64,6 +65,15 @@ describe("item-writing checks", () => {
       return item;
     });
     expect(unbalancedPositions(pool)).toContain("a: 25/40");
+  });
+
+  it("holds the public landing sample to the same rules", () => {
+    for (const item of sampleItems) {
+      expect(isShortDocument(item), item.id).toBe(false);
+      expect(correctIsLongest(item), item.id).toBe(false);
+      expect(item.correction.explanationFr, item.id).toBeTruthy();
+    }
+    expect(sampleItems.some((item) => item.skill === "listening")).toBe(true);
   });
 
   it("finds near-duplicates and ignores different texts", () => {

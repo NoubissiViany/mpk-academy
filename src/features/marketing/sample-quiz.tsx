@@ -11,7 +11,7 @@ import { useI18n } from "@/i18n/client";
 import { trackFunnelStep } from "@/lib/track-funnel";
 import type { AnswerFeedback, PublicQuestion } from "@/types/domain";
 
-/** Three public questions checked on the server, ending on the assessment CTA. */
+/** Four public questions (one listening) checked on the server, ending on the assessment CTA. */
 export function SampleQuiz({ questions }: { questions: PublicQuestion[] }) {
   const { t } = useI18n();
   const copy = t.landing.sample;

@@ -10,7 +10,7 @@ const en = {
     facts: "Free · 20 questions · About 12–15 minutes · No card required",
   },
   sample: {
-    eyebrow: "Try three questions",
+    eyebrow: "Try four questions",
     title: "See how MPK practice works",
     progress: (current: number, total: number) => `${current} / ${total}`,
     check: "Check answer",
@@ -18,7 +18,7 @@ const en = {
     scoreTitle: (correct: number, total: number) =>
       `${correct} of ${total} correct`,
     scoreBody:
-      "Three questions can't place you. The free assessment estimates your level and finds the skill to work on first.",
+      "Four questions can't place you. The free assessment estimates your level and finds the skill to work on first.",
     cta: "Take the free assessment",
     restart: "Try again",
     note: "Original MPK practice items · not official TEF/TCF questions",
@@ -160,7 +160,7 @@ const fr: typeof en = {
       "Gratuit · 20 questions · Environ 12 à 15 minutes · Sans carte bancaire",
   },
   sample: {
-    eyebrow: "Essayez trois questions",
+    eyebrow: "Essayez quatre questions",
     title: "Découvrez l’entraînement MPK",
     progress: (current: number, total: number) => `${current} / ${total}`,
     check: "Vérifier la réponse",
@@ -168,7 +168,7 @@ const fr: typeof en = {
     scoreTitle: (correct: number, total: number) =>
       `${correct} bonne${correct > 1 ? "s" : ""} réponse${correct > 1 ? "s" : ""} sur ${total}`,
     scoreBody:
-      "Trois questions ne suffisent pas pour vous situer. L’évaluation gratuite estime votre niveau et repère la compétence à travailler en premier.",
+      "Quatre questions ne suffisent pas pour vous situer. L’évaluation gratuite estime votre niveau et repère la compétence à travailler en premier.",
     cta: "Faire l’évaluation gratuite",
     restart: "Recommencer",
     note: "Questions d’entraînement originales MPK · ce ne sont pas des questions officielles du TEF/TCF",
