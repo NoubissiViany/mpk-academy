@@ -115,6 +115,8 @@ export interface User {
   locale: Locale;
   assistance: AssistanceLevel;
   goal: Goal;
+  /** Agreement to send writing for AI feedback, if given. */
+  aiFeedbackConsent?: { version: string; at: string } | null;
 }
 
 export interface PlanAccess {

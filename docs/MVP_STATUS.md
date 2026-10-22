@@ -1,23 +1,24 @@
 # MVP Status
 
-| Feature                            | Persistence/security                                     | Status      |
-| ---------------------------------- | -------------------------------------------------------- | ----------- |
-| Email/password Auth                | Supabase Auth, confirmation, recovery, SSR cookies       | Integrated  |
-| Profile and exam goal              | Supabase RLS + restricted functions                      | Integrated  |
-| Diagnostic                         | Atomic answers/results/progress; server-owned scoring    | Integrated  |
-| Guest diagnostic handoff           | Seven-day browser record; idempotent authenticated claim | Integrated  |
-| Dashboard (Today, plan, readiness) | Server-loaded learner snapshot; client-side planning     | Integrated  |
-| Lessons                            | Several shuffled checkpoints; server-checked answers     | Integrated  |
-| Reading/listening practice         | Unseen-first, weakness-weighted selection on the server  | Integrated  |
-| Writing/speaking correction        | No trusted scoring implementation                        | Coming soon |
-| Mock exam                          | Atomic assessment and server-owned scoring               | Integrated  |
-| Mistake review (1, 3, 7 days)      | `review_items` kept by a trigger; owner-only reads       | Integrated  |
-| Purchases/entitlements             | Atomic Stripe fulfillment; no browser writes             | Integrated  |
-| Checkout                           | Stripe-hosted payment, tax, webhook, refund revocation   | Integrated  |
-| Closed beta access                 | Invite codes, seat limit, `/admin` tools                 | Integrated  |
-| Bilingual interface (EN/FR)        | Typed messages; lesson bodies still English              | Partial     |
-| Certificate                        | Removed until server issuance/verification exists        | Removed     |
-| Storage, Realtime, Edge Functions  | Not used                                                 | Deferred    |
+| Feature                            | Persistence/security                                     | Status     |
+| ---------------------------------- | -------------------------------------------------------- | ---------- |
+| Email/password Auth                | Supabase Auth, confirmation, recovery, SSR cookies       | Integrated |
+| Profile and exam goal              | Supabase RLS + restricted functions                      | Integrated |
+| Diagnostic                         | Atomic answers/results/progress; server-owned scoring    | Integrated |
+| Guest diagnostic handoff           | Seven-day browser record; idempotent authenticated claim | Integrated |
+| Dashboard (Today, plan, readiness) | Server-loaded learner snapshot; client-side planning     | Integrated |
+| Lessons                            | Several shuffled checkpoints; server-checked answers     | Integrated |
+| Reading/listening practice         | Unseen-first, weakness-weighted selection on the server  | Integrated |
+| Writing AI feedback                | Queue + DB caps; server-verified Groq output; consent    | Integrated |
+| Speaking feedback                  | Self-practice only                                       | Phase 3    |
+| Mock exam                          | Atomic assessment and server-owned scoring               | Integrated |
+| Mistake review (1, 3, 7 days)      | `review_items` kept by a trigger; owner-only reads       | Integrated |
+| Purchases/entitlements             | Atomic Stripe fulfillment; no browser writes             | Integrated |
+| Checkout                           | Stripe-hosted payment, tax, webhook, refund revocation   | Integrated |
+| Closed beta access                 | Invite codes, seat limit, `/admin` tools                 | Integrated |
+| Bilingual interface (EN/FR)        | Typed messages; lesson bodies still English              | Partial    |
+| Certificate                        | Removed until server issuance/verification exists        | Removed    |
+| Storage, Realtime, Edge Functions  | Not used                                                 | Deferred   |
 
 Answer keys, explanations, and model responses stay on the server: lessons, practice, and the diagnostic receive redacted content and are checked by server actions. `npm run check:bundle` verifies the browser bundle after each build.
 
@@ -27,3 +28,10 @@ Answer keys, explanations, and model responses stay on the server: lessons, prac
 - **Today** combines due reviews, one practice session on the weakest skill, and one recommended lesson (about 20–30 minutes). Steps count as done from today's activity in the learner's time zone.
 - **Study plan** turns the exam date from Settings into practice sessions per week (3–5 by target, plus up to 2 when far behind close to the exam) and compares them with this week.
 - **Waiting on content (Phase 4):** diagnostic v3 (30 items with real listening audio and a writing sample), 3–5 checkpoints per lesson (the code supports `extraCheckpoints`), and French lesson bodies and explanations (`explanationFr` fields are shown as soon as they exist). With 10 reading and 10 listening items per exam, a learner sees every item within a few sessions; selection then repeats the items seen longest ago.
+
+## Phase 2 (AI writing feedback)
+
+- A writing-practice text can be sent for AI feedback after the learner agrees (separate consent, recorded with the notice version). Groq reviews it; the server drops quotes that are not in the text, corrections that rewrite too much, and rewrites of text the learner did not write.
+- Caps are enforced in the database: 60 essays a day in total and 2 per learner (failed reviews do not count). Essays past the cap are reviewed the next morning. Setup, monitoring, and calibration: `docs/AI_OPERATIONS.md`.
+- Learners can rewrite a text and compare it with the first version, and report wrong corrections. `/admin` shows tokens, the queue, failures, and flags.
+- **Not done yet:** the 40-essay calibration with a teacher (levels are uncalibrated estimates until then), and the diagnostic writing sample (model C), which waits for diagnostic v3.
