@@ -2,6 +2,7 @@ import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AppProvider } from "@/components/providers/app-provider";
+import { aiFeedbackNoticeVersion } from "@/config/privacy";
 import type { WritingFeedback } from "@/lib/domain/writing-feedback";
 import type { WritingSubmission } from "@/lib/supabase/writing";
 import { demoState } from "@/test/fixtures";
@@ -250,5 +251,59 @@ describe("requesting AI feedback", () => {
       }),
     );
     expect(mocks.push).toHaveBeenCalledWith("/writing/sub-9");
+  });
+});
+
+describe("a review that failed", () => {
+  it("shows the text and sends it again on request", async () => {
+    const user = userEvent.setup();
+    mocks.status.mockResolvedValue({
+      ok: true,
+      status: "failed",
+      ahead: 0,
+      capReached: false,
+      feedback: null,
+    });
+    mocks.request.mockResolvedValue({ ok: true, id: "sub-10" });
+    render(
+      <AppProvider
+        initialState={{
+          ...demoState,
+          user: {
+            ...demoState.user!,
+            aiFeedbackConsent: {
+              version: aiFeedbackNoticeVersion,
+              at: "2026-10-21T12:00:00Z",
+            },
+          },
+        }}
+      >
+        <WritingFeedbackView
+          submission={submission({
+            status: "failed",
+            feedback: null,
+            body: "Mon texte à revoir.",
+          })}
+          taskTitle="Tâche"
+          parentBody={null}
+        />
+      </AppProvider>,
+    );
+    expect(
+      await screen.findByText("We could not review this text"),
+    ).toBeVisible();
+    expect(screen.getByText("Mon texte à revoir.")).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "Try again" }));
+    expect(mocks.request).toHaveBeenCalledWith(
+      expect.objectContaining({
+        taskId: "tef-writing-section-b-002",
+        text: "Mon texte à revoir.",
+        parentId: null,
+      }),
+    );
+    expect(mocks.push).toHaveBeenCalledWith("/writing/sub-10");
+    expect(
+      screen.queryByRole("link", { name: "Rewrite this text" }),
+    ).not.toBeInTheDocument();
   });
 });

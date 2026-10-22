@@ -82,12 +82,17 @@ export function RequestAiFeedback({
   parentId,
   practice,
   disabled,
+  compact,
+  label,
 }: {
   taskId: string;
   text: string;
   parentId?: string;
   practice?: { submissionId: string; durationSeconds: number };
   disabled?: boolean;
+  /** Only the button (or the consent step), without the explanation. */
+  compact?: boolean;
+  label?: string;
 }) {
   const { t } = useI18n();
   const { state } = useApp();
@@ -120,22 +125,24 @@ export function RequestAiFeedback({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-start gap-3">
-        <Sparkles
-          className="mt-0.5 size-5 shrink-0 text-primary"
-          aria-hidden="true"
-        />
-        <div>
-          <h3 className="font-bold">{copy.title}</h3>
-          <p className="mt-1 text-sm leading-6 text-muted-foreground">
-            {copy.body}
-          </p>
-          <p className="mt-1 text-xs text-muted-foreground">{copy.limit}</p>
+      {!compact && (
+        <div className="flex items-start gap-3">
+          <Sparkles
+            className="mt-0.5 size-5 shrink-0 text-primary"
+            aria-hidden="true"
+          />
+          <div>
+            <h3 className="font-bold">{copy.title}</h3>
+            <p className="mt-1 text-sm leading-6 text-muted-foreground">
+              {copy.body}
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">{copy.limit}</p>
+          </div>
         </div>
-      </div>
+      )}
       {consented ? (
         <Button disabled={disabled || sending || !text.trim()} onClick={send}>
-          {sending ? copy.sending : copy.button}
+          {sending ? copy.sending : (label ?? copy.button)}
         </Button>
       ) : (
         <AiConsent />
