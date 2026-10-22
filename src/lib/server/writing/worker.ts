@@ -2,21 +2,15 @@ import "server-only";
 
 import { practiceItems } from "@/content/catalog";
 import type { ProductiveTask } from "@/content/shared/types";
-import {
-  feedbackJsonSchema,
-  rawFeedbackSchema,
-  targetBandFor,
-  verifyFeedback,
-} from "@/lib/domain/writing-feedback";
+import { targetBandFor } from "@/lib/domain/writing-feedback";
+import { runFeedbackQueue } from "@/lib/server/ai/feedback-queue";
 import {
   aiWritingModel,
-  GroqError,
   groqChat,
   isAiWritingConfigured,
   type ChatFunction,
   type ChatMessage,
 } from "@/lib/server/ai/groq";
-import { logServerError } from "@/lib/server/diagnostics";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Database, Json } from "@/types/database";
 import type { NclcTarget } from "@/types/domain";
@@ -79,100 +73,6 @@ export function buildReviewMessages(
   ];
 }
 
-type Outcome = { stop: boolean };
-
-async function retry(
-  client: AdminClient,
-  job: Job,
-  error: string,
-  delaySeconds: number,
-  final = false,
-  tokens = 0,
-) {
-  await client.rpc("mpk_retry_writing_job", {
-    p_id: job.id,
-    p_delay_seconds: delaySeconds,
-    p_error: error,
-    p_model: aiWritingModel(),
-    p_tokens: tokens,
-    p_final: final,
-  });
-}
-
-async function processJob(
-  client: AdminClient,
-  chat: ChatFunction,
-  job: Job,
-): Promise<Outcome> {
-  const task = findTask(job.task_id);
-  if (!task) {
-    await retry(client, job, "unknown_task", 0, true);
-    return { stop: false };
-  }
-  try {
-    const result = await chat({
-      model: aiWritingModel(),
-      messages: buildReviewMessages(job, task),
-      schemaName: "writing_feedback",
-      schema: feedbackJsonSchema,
-      maxCompletionTokens: 2500,
-    });
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(result.content);
-    } catch {
-      parsed = null;
-    }
-    const raw = rawFeedbackSchema.safeParse(parsed);
-    const feedback = raw.success ? verifyFeedback(job.body, raw.data) : null;
-    if (!feedback) {
-      await retry(client, job, "invalid_output", 30, false, result.totalTokens);
-      return { stop: false };
-    }
-    const { error } = await client.rpc("mpk_complete_writing_job", {
-      p_id: job.id,
-      p_feedback: feedback as unknown as Json,
-      p_model: aiWritingModel(),
-      p_tokens: result.totalTokens,
-    });
-    if (error) throw error;
-    // Leave the rest of this minute's token allowance unused rather than hit 429.
-    return {
-      stop: result.remainingTokens !== null && result.remainingTokens < 3000,
-    };
-  } catch (error) {
-    if (error instanceof GroqError) {
-      if (error.kind === "rate_limited") {
-        await retry(client, job, "rate_limited", error.retryAfterSeconds ?? 60);
-        return { stop: true };
-      }
-      if (error.kind === "auth") {
-        logServerError("AI provider rejected the API key", error, {
-          operation: "writing_feedback",
-        });
-        await retry(client, job, "provider_auth", 600);
-        return { stop: true };
-      }
-      if (error.kind === "rejected") {
-        await retry(client, job, "provider_rejected", 0, true);
-        return { stop: false };
-      }
-      await retry(
-        client,
-        job,
-        error.kind,
-        error.kind === "invalid_output" ? 30 : 120,
-      );
-      return { stop: error.kind === "unavailable" };
-    }
-    logServerError("Writing feedback job failed", error, {
-      operation: "writing_feedback",
-    });
-    await retry(client, job, "server_error", 120);
-    return { stop: true };
-  }
-}
-
 /**
  * Works through queued essays one at a time until `maxJobs`, the deadline, an
  * empty queue, the daily cap, or the provider's per-minute limit stops it.
@@ -190,22 +90,51 @@ export async function processWritingQueue({
 } = {}) {
   if (!client && !isAiWritingConfigured()) return { processed: 0 };
   const admin = client ?? createAdminClient();
-  const deadline = Date.now() + deadlineMs;
-  let processed = 0;
-  while (processed < maxJobs && Date.now() < deadline) {
-    const { data, error } = await admin.rpc("mpk_claim_writing_jobs", {
-      p_limit: 1,
+  const retry = async (
+    job: Job,
+    error: string,
+    delaySeconds: number,
+    final: boolean,
+    tokens: number,
+  ) => {
+    await admin.rpc("mpk_retry_writing_job", {
+      p_id: job.id,
+      p_delay_seconds: delaySeconds,
+      p_error: error,
+      p_model: aiWritingModel(),
+      p_tokens: tokens,
+      p_final: final,
     });
-    if (error) {
-      logServerError("Writing queue claim failed", error, {
-        operation: "writing_feedback",
-      });
-      break;
-    }
-    const job = data?.[0];
-    if (!job) break;
-    processed += 1;
-    if ((await processJob(admin, chat, job)).stop) break;
-  }
-  return { processed };
+  };
+  return runFeedbackQueue<Job>(
+    {
+      operation: "writing_feedback",
+      model: aiWritingModel,
+      chat,
+      claim: async () => {
+        const { data, error } = await admin.rpc("mpk_claim_writing_jobs", {
+          p_limit: 1,
+        });
+        if (error) throw error;
+        return data?.[0] ?? null;
+      },
+      prepare: (job) => {
+        const task = findTask(job.task_id);
+        return task
+          ? { text: job.body, messages: buildReviewMessages(job, task) }
+          : null;
+      },
+      complete: async (job, feedback, tokens) => {
+        const { error } = await admin.rpc("mpk_complete_writing_job", {
+          p_id: job.id,
+          p_feedback: feedback as unknown as Json,
+          p_model: aiWritingModel(),
+          p_tokens: tokens,
+        });
+        if (error) throw error;
+      },
+      retry,
+    },
+    { maxJobs, deadlineMs },
+  );
 }

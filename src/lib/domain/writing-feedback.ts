@@ -201,13 +201,32 @@ const categoryFor = (value: string): (typeof fixCategories)[number] => {
     : "grammar";
 };
 
+export interface VerifyOptions {
+  /** Fix categories that do not apply (for example spelling in a transcript). */
+  ignoreCategories?: ReadonlyArray<(typeof fixCategories)[number]>;
+  /**
+   * Match quotes without case or punctuation, for automatic transcripts whose
+   * punctuation is the transcriber's, not the learner's.
+   */
+  looseMatch?: boolean;
+}
+
 export function verifyFeedback(
   essay: string,
   raw: RawFeedback,
+  options: VerifyOptions = {},
 ): WritingFeedback | null {
-  const source = normalizeForMatch(essay);
+  const normalizeText = (text: string) =>
+    options.looseMatch
+      ? normalizeForMatch(text)
+          .toLowerCase()
+          .replace(/[.,;:!?…"()]/g, " ")
+          .replace(/\s+/g, " ")
+          .trim()
+      : normalizeForMatch(text);
+  const source = normalizeText(essay);
   const appears = (quote: string) => {
-    const needle = normalizeForMatch(quote);
+    const needle = normalizeText(quote);
     return needle.length > 0 && source.includes(needle);
   };
   let dropped = 0;
@@ -236,9 +255,10 @@ export function verifyFeedback(
 
   const seen = new Set<string>();
   const fixes = raw.fixes.filter((fix) => {
-    const quote = normalizeForMatch(fix.quote);
-    const correction = normalizeForMatch(fix.correction);
+    const quote = normalizeText(fix.quote);
+    const correction = normalizeText(fix.correction);
     const valid =
+      !options.ignoreCategories?.includes(categoryFor(fix.category)) &&
       quote.length > 0 &&
       quote.length <= 160 &&
       correction.length > 0 &&
@@ -253,13 +273,13 @@ export function verifyFeedback(
     return valid;
   });
 
-  const original = normalizeForMatch(raw.rewrite.original);
+  const original = normalizeText(raw.rewrite.original);
   const improved = raw.rewrite.improved.trim();
   const rewrite =
     original.length >= 30 &&
     appears(raw.rewrite.original) &&
     improved.length > 0 &&
-    normalizeForMatch(improved) !== original &&
+    normalizeText(improved) !== original &&
     improved.length <= original.length * 1.8 + 40
       ? { original: raw.rewrite.original.trim(), improved }
       : null;
