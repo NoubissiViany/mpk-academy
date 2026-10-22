@@ -190,7 +190,12 @@ describe("recording a spoken answer", () => {
 const feedback: WritingFeedback = {
   version: 1,
   criteria: (["task", "coherence", "vocabulary", "grammar"] as const).map(
-    (id) => ({ id, band: "B1", evidence: null, comment: "Commentaire." }),
+    (id) => ({
+      id,
+      band: "B1",
+      evidence: "je voudrais te proposer",
+      comment: "Commentaire.",
+    }),
   ),
   fixes: [
     {
@@ -247,6 +252,7 @@ describe("speaking feedback", () => {
     expect(screen.getByText(/fill short silences/)).toBeVisible();
     expect(screen.getByText("Pronunciation is not assessed.")).toBeVisible();
     expect(screen.getByText("You said")).toBeVisible();
+    expect(screen.queryByText(/From your text/)).not.toBeInTheDocument();
     expect(screen.getByText("tu manques de temps")).toBeVisible();
     expect(mocks.status).not.toHaveBeenCalled();
   });

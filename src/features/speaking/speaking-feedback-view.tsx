@@ -74,6 +74,7 @@ export function SpeakingFeedbackView({
           flagged={submission.flaggedFixes}
           onFlag={flag}
           quoteLabel={copy.feedback.youSaid}
+          evidenceLabel={copy.feedback.evidence}
         />
       ) : (
         <ReviewStatusCard

@@ -79,6 +79,7 @@ const en = {
     startDelay: (seconds: number) => `You started speaking after ${seconds} s.`,
     pronunciation: "Pronunciation is not assessed.",
     youSaid: "You said",
+    evidence: "From your answer",
     history: "My recordings",
   },
   history: {
@@ -176,6 +177,7 @@ const fr: typeof en = {
       `Vous avez commencé à parler après ${seconds} s.`,
     pronunciation: "La prononciation n’est pas évaluée.",
     youSaid: "Vous avez dit",
+    evidence: "Dans votre réponse",
     history: "Mes enregistrements",
   },
   history: {

@@ -134,6 +134,7 @@ export function AiFeedbackBody({
   flagged,
   onFlag,
   quoteLabel,
+  evidenceLabel,
   children,
 }: {
   feedback: WritingFeedback;
@@ -141,6 +142,8 @@ export function AiFeedbackBody({
   onFlag: FlagAction;
   /** "You wrote" by default; speaking says "You said". */
   quoteLabel?: string;
+  /** "From your text" by default; speaking says "From your answer". */
+  evidenceLabel?: string;
   /** Extra cards shown after the rewritten passage. */
   children?: ReactNode;
 }) {
@@ -204,7 +207,10 @@ export function AiFeedbackBody({
                     lang="fr"
                     className="mt-3 border-l-2 border-primary/40 pl-3 text-sm italic text-muted-foreground"
                   >
-                    <span className="sr-only">{copy.evidence}: </span>«&nbsp;
+                    <span className="sr-only">
+                      {evidenceLabel ?? copy.evidence}:{" "}
+                    </span>
+                    «&nbsp;
                     {criterion.evidence}&nbsp;»
                   </blockquote>
                 )}
