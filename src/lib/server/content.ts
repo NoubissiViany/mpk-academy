@@ -192,14 +192,28 @@ export function getPublicWritingTask(exam: ExamId, taskId: string) {
   );
 }
 
-/** Titles of every writing task, for lists of past submissions. */
-export const getWritingTaskTitles = () =>
+/** A speaking task for the learner's exam, as public task text. */
+export function getPublicSpeakingTask(exam: ExamId, taskId: string) {
+  return (
+    getPublicProductiveTasks(exam, "speaking").find(
+      (task) => task.id === taskId,
+    ) ?? null
+  );
+}
+
+const productiveTitles = (kind: "writing" | "speaking") =>
   Object.fromEntries(
     practiceItems
       .filter(isProductive)
-      .filter((item) => item.kind === "writing")
+      .filter((item) => item.kind === kind)
       .map((item) => [item.id, item.title]),
   ) as Record<string, string>;
+
+/** Titles of every writing task, for lists of past submissions. */
+export const getWritingTaskTitles = () => productiveTitles("writing");
+
+/** Titles of every speaking task, for lists of past recordings. */
+export const getSpeakingTaskTitles = () => productiveTitles("speaking");
 
 export function getModelResponse(exam: ExamId, taskId: string) {
   const item = practiceItems.find(

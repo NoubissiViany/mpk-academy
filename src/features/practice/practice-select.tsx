@@ -127,15 +127,26 @@ export function PracticeSelect() {
           </CardContent>
         </Card>
       )}
-      {hasPlanFeature(state.planAccess, "aiWritingFeedback") && (
-        <Link
-          href="/writing"
-          className="mt-6 inline-flex items-center gap-1 text-sm font-bold text-primary hover:underline"
-        >
-          <PenLine className="size-4" aria-hidden="true" />
-          {t.writing.feedback.history}
-        </Link>
-      )}
+      <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
+        {hasPlanFeature(state.planAccess, "aiWritingFeedback") && (
+          <Link
+            href="/writing"
+            className="inline-flex items-center gap-1 text-sm font-bold text-primary hover:underline"
+          >
+            <PenLine className="size-4" aria-hidden="true" />
+            {t.writing.feedback.history}
+          </Link>
+        )}
+        {hasPlanFeature(state.planAccess, "aiSpeakingFeedback") && (
+          <Link
+            href="/speaking"
+            className="inline-flex items-center gap-1 text-sm font-bold text-primary hover:underline"
+          >
+            <Mic2 className="size-4" aria-hidden="true" />
+            {t.speaking.feedback.history}
+          </Link>
+        )}
+      </div>
       <p className="mt-7 text-xs leading-5 text-muted-foreground">
         {copy.productiveNote}
       </p>

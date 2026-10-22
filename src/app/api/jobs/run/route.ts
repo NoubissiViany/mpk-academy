@@ -1,9 +1,10 @@
 import { timingSafeEqual } from "node:crypto";
 import { isAiWritingConfigured } from "@/lib/server/ai/groq";
 import { logServerError } from "@/lib/server/diagnostics";
+import { processSpeakingQueue } from "@/lib/server/speaking/worker";
 import { processWritingQueue } from "@/lib/server/writing/worker";
 
-// Called every minute by pg_cron (only while essays wait). Protected by a
+// Called every minute by pg_cron (only while essays or recordings wait). Protected by a
 // shared secret stored in Vercel and in Supabase Vault.
 export const maxDuration = 60;
 
@@ -24,11 +25,19 @@ export async function POST(request: Request) {
   if (!isAiWritingConfigured())
     return Response.json({ error: "not_configured" }, { status: 404 });
   try {
-    const result = await processWritingQueue({
+    const writing = await processWritingQueue({
       maxJobs: 3,
-      deadlineMs: 45_000,
+      deadlineMs: 25_000,
     });
-    return Response.json(result);
+    const speaking = await processSpeakingQueue({
+      maxJobs: 3,
+      deadlineMs: 20_000,
+    });
+    return Response.json({
+      processed: writing.processed + speaking.processed,
+      writing: writing.processed,
+      speaking: speaking.processed,
+    });
   } catch (error) {
     const reference = logServerError("Writing job run failed", error, {
       operation: "run_writing_jobs",

@@ -1,8 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const mocks = vi.hoisted(() => ({ process: vi.fn() }));
+const mocks = vi.hoisted(() => ({ process: vi.fn(), speaking: vi.fn() }));
 vi.mock("@/lib/server/writing/worker", () => ({
   processWritingQueue: mocks.process,
+}));
+vi.mock("@/lib/server/speaking/worker", () => ({
+  processSpeakingQueue: mocks.speaking,
 }));
 
 import { POST } from "./route";
@@ -22,6 +25,7 @@ describe("job route", () => {
     vi.stubEnv("GROQ_API_KEY", "gsk_test");
     vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "service");
     mocks.process.mockReset().mockResolvedValue({ processed: 2 });
+    mocks.speaking.mockReset().mockResolvedValue({ processed: 1 });
   });
   afterEach(() => vi.unstubAllEnvs());
 
@@ -39,10 +43,18 @@ describe("job route", () => {
   it("works the queue for the scheduler", async () => {
     const response = await call(`Bearer ${secret}`);
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ processed: 2 });
+    expect(await response.json()).toEqual({
+      processed: 3,
+      writing: 2,
+      speaking: 1,
+    });
     expect(mocks.process).toHaveBeenCalledWith({
       maxJobs: 3,
-      deadlineMs: 45_000,
+      deadlineMs: 25_000,
+    });
+    expect(mocks.speaking).toHaveBeenCalledWith({
+      maxJobs: 3,
+      deadlineMs: 20_000,
     });
   });
 

@@ -7,6 +7,7 @@ import { submitPracticeAction } from "@/app/actions/learner";
 import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
 import type { PublicProductiveTask } from "@/content/shared/types";
+import { SpeakingRecorder } from "@/features/speaking/speaking-recorder";
 import { RequestAiFeedback } from "@/features/writing/request-feedback";
 import { useI18n } from "@/i18n/client";
 import type { ExamId } from "@/types/domain";
@@ -20,6 +21,8 @@ type SessionProps = {
   tasks: PublicProductiveTask[];
   /** AI writing feedback is included and configured on the server. */
   aiFeedback?: boolean;
+  /** Recorded speaking feedback is included and configured on the server. */
+  aiSpeaking?: boolean;
 };
 
 export function ProductiveSession(props: SessionProps) {
@@ -28,7 +31,13 @@ export function ProductiveSession(props: SessionProps) {
   return <TaskSession {...props} />;
 }
 
-function TaskSession({ exam, skill, tasks, aiFeedback }: SessionProps) {
+function TaskSession({
+  exam,
+  skill,
+  tasks,
+  aiFeedback,
+  aiSpeaking,
+}: SessionProps) {
   const { t } = useI18n();
   const copy = t.practice.productive;
   const [submissionId] = useState(() => crypto.randomUUID());
@@ -40,6 +49,7 @@ function TaskSession({ exam, skill, tasks, aiFeedback }: SessionProps) {
   const [saving, setSaving] = useState(false);
   const [modelResponse, setModelResponse] = useState<string | null>(null);
   const [loadingModel, setLoadingModel] = useState(false);
+  const [withoutRecording, setWithoutRecording] = useState(false);
   const task = tasks[index];
   const router = useRouter();
   const { replaceState } = useApp();
@@ -93,42 +103,80 @@ function TaskSession({ exam, skill, tasks, aiFeedback }: SessionProps) {
     replaceState(result.snapshot);
     router.push(`/practice/results?session=${result.data.id}`);
   };
+  const taskPicker = (
+    <label className="block">
+      {copy.chooseTask}
+      <select
+        className="ml-3 rounded border bg-background p-2"
+        value={index}
+        disabled={started !== null}
+        onChange={(e) => {
+          setIndex(Number(e.target.value));
+          setResponse("");
+          setReview(false);
+          setModelResponse(null);
+        }}
+      >
+        {tasks.map((item, i) => (
+          <option key={item.id} value={i} lang="fr">
+            {item.title}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+  const taskCard = (
+    <div className="rounded-xl border bg-card p-6" lang="fr">
+      <h2 className="text-xl font-bold">{task.title}</h2>
+      <p className="mt-4">{task.scenario}</p>
+      <p className="mt-4">{task.instructions}</p>
+      {task.wordCount && (
+        <p className="mt-4">
+          {copy.wordRange(task.wordCount.min, task.wordCount.max)}
+        </p>
+      )}
+    </div>
+  );
+  const guidance = (
+    <details>
+      <summary>{copy.guidance}</summary>
+      <p className="mt-3">{task.correction.guidance}</p>
+      <ul className="mt-3 list-inside list-disc" lang="fr">
+        {task.correction.rubric.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+    </details>
+  );
+
+  // Recorded answers replace the timer flow; self-practice stays one click away.
+  if (skill === "speaking" && aiSpeaking && !withoutRecording)
+    return (
+      <div className="mx-auto max-w-3xl space-y-6">
+        <h1 className="text-3xl font-bold">
+          {copy.title(exam, t.practice.skills[skill])}
+        </h1>
+        <p>{copy.noteAiSpeaking}</p>
+        {taskPicker}
+        {taskCard}
+        <SpeakingRecorder
+          key={task.id}
+          task={task}
+          practiceSubmissionId={submissionId}
+          onPractiseWithout={() => setWithoutRecording(true)}
+        />
+        {guidance}
+      </div>
+    );
+
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <h1 className="text-3xl font-bold">
         {copy.title(exam, t.practice.skills[skill])}
       </h1>
       <p>{skill === "writing" && aiFeedback ? copy.noteAi : copy.note}</p>
-      <label className="block">
-        {copy.chooseTask}
-        <select
-          className="ml-3 rounded border bg-background p-2"
-          value={index}
-          disabled={started !== null}
-          onChange={(e) => {
-            setIndex(Number(e.target.value));
-            setResponse("");
-            setReview(false);
-            setModelResponse(null);
-          }}
-        >
-          {tasks.map((item, i) => (
-            <option key={item.id} value={i} lang="fr">
-              {item.title}
-            </option>
-          ))}
-        </select>
-      </label>
-      <div className="rounded-xl border bg-card p-6" lang="fr">
-        <h2 className="text-xl font-bold">{task.title}</h2>
-        <p className="mt-4">{task.scenario}</p>
-        <p className="mt-4">{task.instructions}</p>
-        {task.wordCount && (
-          <p className="mt-4">
-            {copy.wordRange(task.wordCount.min, task.wordCount.max)}
-          </p>
-        )}
-      </div>
+      {taskPicker}
+      {taskCard}
       <p role="timer">
         {preparing ? copy.preparation : copy.response} ·{" "}
         {Math.floor(remaining / 60)}:{String(remaining % 60).padStart(2, "0")}
