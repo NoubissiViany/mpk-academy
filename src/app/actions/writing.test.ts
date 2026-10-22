@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   access: vi.fn(),
   rpc: vi.fn(),
-  consentVersion: { value: "2026-10-21" as string | null },
+  consentVersion: { value: null as string | null },
   feedbackRow: { value: null as unknown },
   after: vi.fn(),
   process: vi.fn(),
@@ -45,6 +45,7 @@ vi.mock("@/lib/supabase/learner", () => ({
   }),
 }));
 
+import { aiFeedbackNoticeVersion } from "@/config/privacy";
 import {
   getWritingStatusAction,
   requestWritingFeedbackAction,
@@ -70,7 +71,7 @@ describe("requesting AI writing feedback", () => {
     vi.stubEnv("GROQ_API_KEY", "gsk_test");
     vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "service");
     mocks.access.mockResolvedValue(complete);
-    mocks.consentVersion.value = "2026-10-21";
+    mocks.consentVersion.value = aiFeedbackNoticeVersion;
     mocks.rpc.mockImplementation(async (name: string) =>
       name === "mpk_submit_writing"
         ? { data: { id: "sub-1", status: "queued" }, error: null }

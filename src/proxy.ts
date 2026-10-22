@@ -19,6 +19,7 @@ export const config = {
     "/weaknesses/:path*",
     "/profile/:path*",
     "/settings/:path*",
+    "/speaking/:path*",
     "/writing/:path*",
     "/beta/:path*",
     "/admin/:path*",

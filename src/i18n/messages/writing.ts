@@ -9,12 +9,12 @@ const en = {
   consent: {
     title: "Before your first AI review",
     points: [
-      "Your text, the task, your exam and target, and your interface language are sent to Groq, the AI provider we use. Your name and email are not sent.",
-      "Groq uses the text only to write the feedback. We have turned on Groq’s Zero Data Retention setting, so Groq does not keep it afterwards.",
-      "MPK keeps your text and its feedback in your account so you can review and compare versions. You can ask us to delete them at any time.",
+      "When you ask for AI feedback, your text or recording, the task, your exam and target, and your interface language are sent to Groq, the AI provider we use. Your name and email are not sent.",
+      "Recordings are transcribed by Groq and then deleted: MPK never stores your voice. We have turned on Groq’s Zero Data Retention setting, so Groq does not keep your text, audio, or transcript afterwards.",
+      "MPK keeps your texts, transcripts, and their feedback in your account so you can review and compare them. You can ask us to delete them at any time.",
       "AI feedback can be wrong. Treat levels as practice estimates, not official scores, and tell us when a correction is wrong.",
     ],
-    agree: "I agree to send my writing to Groq for AI feedback.",
+    agree: "I agree to send my writing and recordings to Groq for AI feedback.",
     confirm: "Agree and continue",
     privacy: "Privacy notice",
     withdraw: "You can withdraw this agreement at any time in Settings.",
@@ -141,7 +141,7 @@ const en = {
     back: "Back to the feedback",
   },
   settings: {
-    title: "AI writing feedback",
+    title: "AI feedback on writing and speaking",
     on: (date: string) => `You agreed to AI feedback on ${date}.`,
     off: "You have not agreed to AI feedback. You will be asked before your first review.",
     withdraw: "Withdraw agreement",
@@ -161,13 +161,13 @@ const fr: typeof en = {
   consent: {
     title: "Avant votre première correction par IA",
     points: [
-      "Votre texte, la tâche, votre examen et votre objectif, ainsi que la langue de l’interface sont envoyés à Groq, le fournisseur d’IA que nous utilisons. Votre nom et votre adresse courriel ne sont pas envoyés.",
-      "Groq utilise le texte uniquement pour rédiger la correction. Nous avons activé le réglage « Zero Data Retention » de Groq : Groq ne le conserve pas ensuite.",
-      "MPK conserve votre texte et sa correction dans votre compte pour que vous puissiez les revoir et comparer vos versions. Vous pouvez nous demander de les supprimer à tout moment.",
+      "Lorsque vous demandez une correction par IA, votre texte ou votre enregistrement, la tâche, votre examen et votre objectif, ainsi que la langue de l’interface sont envoyés à Groq, le fournisseur d’IA que nous utilisons. Votre nom et votre adresse courriel ne sont pas envoyés.",
+      "Les enregistrements sont transcrits par Groq, puis supprimés : MPK ne conserve jamais votre voix. Nous avons activé le réglage « Zero Data Retention » de Groq : Groq ne conserve ensuite ni votre texte, ni le son, ni la transcription.",
+      "MPK conserve vos textes, vos transcriptions et leurs corrections dans votre compte pour que vous puissiez les revoir et les comparer. Vous pouvez nous demander de les supprimer à tout moment.",
       "La correction par IA peut se tromper. Considérez les niveaux comme des estimations d’entraînement, pas comme des résultats officiels, et signalez-nous les corrections erronées.",
     ],
     agree:
-      "J’accepte d’envoyer mes textes à Groq pour obtenir une correction par IA.",
+      "J’accepte d’envoyer mes textes et mes enregistrements à Groq pour obtenir une correction par IA.",
     confirm: "Accepter et continuer",
     privacy: "Avis de confidentialité",
     withdraw:
@@ -297,7 +297,7 @@ const fr: typeof en = {
     back: "Retour à la correction",
   },
   settings: {
-    title: "Correction des textes par IA",
+    title: "Correction par IA de l’écrit et de l’oral",
     on: (date: string) => `Vous avez accepté la correction par IA le ${date}.`,
     off: "Vous n’avez pas accepté la correction par IA. La question vous sera posée avant votre première correction.",
     withdraw: "Retirer mon accord",

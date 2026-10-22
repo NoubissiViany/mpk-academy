@@ -70,6 +70,8 @@ const en = {
     note: "MPK practice feedback only. No recording, AI evaluation, or official grading. Speaking requires you to imagine or arrange an interlocutor.",
     noteAi:
       "Timed practice. When you finish, you can ask for AI feedback on your text. It is a practice aid, not an official grade.",
+    noteAiSpeaking:
+      "Record your answer and get AI feedback from a transcript. The recording is deleted after transcription, and pronunciation is not assessed. Speaking requires you to imagine the other person.",
     chooseTask: "Choose a task",
     words: (count: number) => `${count} words`,
     wordRange: (min: number, max?: number) =>
@@ -184,6 +186,8 @@ const fr: typeof en = {
     note: "Retour d’entraînement MPK uniquement. Pas d’enregistrement, d’évaluation par IA ni de notation officielle. À l’oral, imaginez un interlocuteur ou demandez à quelqu’un de jouer ce rôle.",
     noteAi:
       "Entraînement chronométré. À la fin, vous pouvez demander une correction de votre texte par IA. C’est une aide à l’entraînement, pas une note officielle.",
+    noteAiSpeaking:
+      "Enregistrez votre réponse et obtenez une correction par IA à partir d’une transcription. L’enregistrement est supprimé après la transcription, et la prononciation n’est pas évaluée. À l’oral, imaginez votre interlocuteur.",
     chooseTask: "Choisissez une tâche",
     words: (count: number) => `${count} mots`,
     wordRange: (min: number, max?: number) =>

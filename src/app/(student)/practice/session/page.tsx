@@ -2,7 +2,10 @@ import { unstable_rethrow } from "next/navigation";
 import { hasPlanFeature } from "@/config/product";
 import { ExamPracticeSession } from "@/features/practice/exam-practice-session";
 import { ProductiveSession } from "@/features/practice/productive-session";
-import { isAiWritingConfigured } from "@/lib/server/ai/groq";
+import {
+  isAiSpeakingConfigured,
+  isAiWritingConfigured,
+} from "@/lib/server/ai/groq";
 import { logServerError } from "@/lib/server/diagnostics";
 import {
   getPracticeItemIds,
@@ -66,6 +69,11 @@ export default async function PracticeSessionPage({
           skill === "writing" &&
           hasPlanFeature(planAccess, "aiWritingFeedback") &&
           isAiWritingConfigured()
+        }
+        aiSpeaking={
+          skill === "speaking" &&
+          hasPlanFeature(planAccess, "aiSpeakingFeedback") &&
+          isAiSpeakingConfigured()
         }
       />
     );

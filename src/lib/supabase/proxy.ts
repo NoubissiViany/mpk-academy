@@ -53,6 +53,7 @@ const learnerAreas = [
   "/weaknesses",
   "/profile",
   "/settings",
+  "/speaking",
   "/writing",
 ];
 

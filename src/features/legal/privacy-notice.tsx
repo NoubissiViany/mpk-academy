@@ -17,7 +17,7 @@ function notice(locale: Locale, contact: string): Notice {
   if (locale === "fr")
     return {
       title: "Avis de confidentialité",
-      updated: "Dernière mise à jour : 21 octobre 2026",
+      updated: "Dernière mise à jour : 22 octobre 2026",
       intro:
         "MPK Academy est un outil indépendant de préparation au TEF Canada et au TCF Canada, actuellement en bêta fermée. Cet avis explique quels renseignements nous recueillons, pourquoi, et comment vous pouvez les contrôler.",
       sections: [
@@ -26,7 +26,7 @@ function notice(locale: Locale, contact: string): Notice {
           items: [
             "Compte : prénom, nom, adresse courriel et mot de passe (le mot de passe est géré par notre fournisseur d’authentification ; nous ne le voyons jamais).",
             "Objectif : l’examen visé, l’objectif NCLC, la date visée et votre langue préférée.",
-            "Apprentissage : vos réponses à l’évaluation et aux exercices, vos résultats, vos erreurs, votre progression dans les leçons, les textes que vous enregistrez en expression écrite et, si vous l’avez demandée, leur correction par IA (y compris les corrections que vous signalez comme fausses).",
+            "Apprentissage : vos réponses à l’évaluation et aux exercices, vos résultats, vos erreurs, votre progression dans les leçons, les textes que vous enregistrez en expression écrite et, si vous l’avez demandée, la correction par IA de vos textes et de vos réponses orales (transcription, débit et pauses, correction, y compris les corrections que vous signalez comme fausses).",
             "Bêta : le code d’invitation utilisé et la période d’accès.",
             "Technique : des témoins essentiels (session de connexion et langue) et, en cas d’erreur, une référence technique sans le contenu de vos réponses ni votre mot de passe.",
             "Statistiques de fréquentation : nous comptons combien de visiteurs atteignent quelques étapes clés (par exemple, commencer l’évaluation), sous forme de totaux quotidiens par langue qui ne vous identifient jamais. Un repère enregistré dans votre navigateur évite seulement de vous compter deux fois le même jour. Les navigateurs qui envoient le signal « Do Not Track » ou « Global Privacy Control » ne sont pas comptés.",
@@ -35,17 +35,17 @@ function notice(locale: Locale, contact: string): Notice {
         {
           title: "Ce que nous ne faisons pas",
           items: [
-            "Nous n’enregistrons pas votre voix. L’expression orale est un auto-entraînement sans enregistrement.",
+            "Nous ne conservons jamais votre voix. Si vous enregistrez une réponse orale pour obtenir une correction, l’enregistrement est transcrit puis supprimé ; sinon, l’expression orale reste un auto-entraînement sans enregistrement.",
             "Nous n’utilisons pas de témoins publicitaires et ne vendons pas vos renseignements.",
-            "Nous n’envoyons rien à un service d’intelligence artificielle, sauf un texte pour lequel vous demandez une correction par IA après l’avoir acceptée.",
+            "Nous n’envoyons rien à un service d’intelligence artificielle, sauf un texte ou un enregistrement pour lequel vous demandez une correction par IA après l’avoir acceptée.",
           ],
         },
         {
-          title: "Correction des textes par IA",
+          title: "Correction par IA de l’écrit et de l’oral",
           items: [
-            "Uniquement avec votre accord, lorsque vous demandez la correction d’un texte : nous envoyons ce texte, la tâche, votre examen et votre objectif, ainsi que la langue de l’interface à Groq (États-Unis), qui rédige la correction. Votre nom et votre adresse courriel ne sont pas envoyés.",
-            "Nous avons activé le réglage « Zero Data Retention » de Groq : Groq ne conserve pas votre texte après avoir rédigé la correction, y compris pour la surveillance des abus.",
-            "Nous conservons votre texte et sa correction dans votre compte pour que vous puissiez les revoir et comparer vos versions.",
+            "Uniquement avec votre accord, lorsque vous demandez une correction : nous envoyons votre texte ou votre enregistrement, la tâche, votre examen et votre objectif, ainsi que la langue de l’interface à Groq (États-Unis), qui transcrit les enregistrements et rédige la correction. Votre nom et votre adresse courriel ne sont pas envoyés.",
+            "Votre enregistrement n’existe chez MPK que le temps de la transcription : il n’est jamais stocké. Nous avons activé le réglage « Zero Data Retention » de Groq : Groq ne conserve ni votre texte, ni le son, ni la transcription, y compris pour la surveillance des abus.",
+            "Nous conservons votre texte ou la transcription de votre réponse, vos mesures de débit et de pauses, et la correction dans votre compte pour que vous puissiez les revoir et les comparer.",
             "Vous pouvez retirer votre accord à tout moment dans les Paramètres. Les textes déjà corrigés restent dans votre compte jusqu’à ce que vous nous demandiez de les supprimer.",
             "La correction par IA peut se tromper. C’est une aide à l’entraînement, jamais un résultat officiel.",
           ],
@@ -59,7 +59,7 @@ function notice(locale: Locale, contact: string): Notice {
         {
           title: "Où sont stockées vos données",
           paragraphs: [
-            "Vos données sont stockées chez Supabase (base de données et authentification). Le site est hébergé par Vercel, les courriels du compte sont envoyés par Resend et, si vous l’acceptez, la correction de vos textes est rédigée par Groq. Ces fournisseurs peuvent traiter des données à l’extérieur du Canada.",
+            "Vos données sont stockées chez Supabase (base de données et authentification). Le site est hébergé par Vercel, les courriels du compte sont envoyés par Resend et, si vous l’acceptez, la transcription et la correction de vos réponses sont réalisées par Groq. Ces fournisseurs peuvent traiter des données à l’extérieur du Canada.",
           ],
         },
         {
@@ -86,7 +86,7 @@ function notice(locale: Locale, contact: string): Notice {
     };
   return {
     title: "Privacy notice",
-    updated: "Last updated: October 21, 2026",
+    updated: "Last updated: October 22, 2026",
     intro:
       "MPK Academy is an independent TEF Canada and TCF Canada preparation tool, currently in a closed beta. This notice explains what we collect, why, and how you control it.",
     sections: [
@@ -95,7 +95,7 @@ function notice(locale: Locale, contact: string): Notice {
         items: [
           "Account: first name, last name, email address, and password (your password is handled by our authentication provider; we never see it).",
           "Goal: your target exam, NCLC target, target date, and preferred language.",
-          "Learning: your assessment and practice answers, results, mistakes, lesson progress, any writing you save in practice, and, when you ask for it, its AI feedback (including corrections you report as wrong).",
+          "Learning: your assessment and practice answers, results, mistakes, lesson progress, any writing you save in practice, and, when you ask for it, AI feedback on your writing and spoken answers (transcript, pace and pauses, feedback, and corrections you report as wrong).",
           "Beta: the invite code you used and your access period.",
           "Technical: essential cookies (sign-in session and language) and, when something fails, a technical reference that never includes your answers or password.",
           "Usage counts: we count how many visitors reach a few key steps (for example, starting the assessment), as daily totals per language that never identify you. A marker stored in your browser only prevents counting you twice on the same day. Browsers that send Do Not Track or Global Privacy Control are not counted.",
@@ -104,17 +104,17 @@ function notice(locale: Locale, contact: string): Notice {
       {
         title: "What we don't do",
         items: [
-          "We do not record your voice. Speaking practice is self-practice without recording.",
+          "We never store your voice. If you record a spoken answer for feedback, the recording is transcribed and then deleted; otherwise speaking practice remains self-practice without recording.",
           "We do not use advertising cookies and we do not sell your information.",
-          "We do not send anything to an AI service, except a text you ask to have reviewed by AI after agreeing to it.",
+          "We do not send anything to an AI service, except a text or recording you ask to have reviewed by AI after agreeing to it.",
         ],
       },
       {
-        title: "AI writing feedback",
+        title: "AI feedback on writing and speaking",
         items: [
-          "Only with your agreement, when you ask for feedback on a text: we send that text, the task, your exam and target, and your interface language to Groq (United States), which writes the feedback. Your name and email are not sent.",
-          "We have turned on Groq’s Zero Data Retention setting, so Groq does not keep your text after writing the feedback, including for abuse monitoring.",
-          "We keep your text and its feedback in your account so you can review and compare versions.",
+          "Only with your agreement, when you ask for feedback: we send your text or recording, the task, your exam and target, and your interface language to Groq (United States), which transcribes recordings and writes the feedback. Your name and email are not sent.",
+          "Your recording exists at MPK only while it is transcribed: it is never stored. We have turned on Groq’s Zero Data Retention setting, so Groq does not keep your text, audio, or transcript, including for abuse monitoring.",
+          "We keep your text or the transcript of your answer, your pace and pause measures, and the feedback in your account so you can review and compare them.",
           "You can withdraw your agreement at any time in Settings. Texts already reviewed stay in your account until you ask us to delete them.",
           "AI feedback can be wrong. It is a practice aid, never an official result.",
         ],
@@ -128,7 +128,7 @@ function notice(locale: Locale, contact: string): Notice {
       {
         title: "Where your data is stored",
         paragraphs: [
-          "Your data is stored with Supabase (database and authentication). The site is hosted by Vercel, account emails are sent by Resend, and, if you agree, feedback on your writing is generated by Groq. These providers may process data outside Canada.",
+          "Your data is stored with Supabase (database and authentication). The site is hosted by Vercel, account emails are sent by Resend, and, if you agree, your answers are transcribed and reviewed by Groq. These providers may process data outside Canada.",
         ],
       },
       {

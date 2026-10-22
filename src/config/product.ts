@@ -12,7 +12,8 @@ export type PlanFeature =
   | "examStrategies"
   | "mockExams"
   | "detailedReadiness"
-  | "aiWritingFeedback";
+  | "aiWritingFeedback"
+  | "aiSpeakingFeedback";
 export type PlanEntitlements = Readonly<Record<PlanFeature, boolean>>;
 
 export interface ProductPlan {
@@ -129,6 +130,7 @@ const freeEntitlements: PlanEntitlements = {
   mockExams: false,
   detailedReadiness: false,
   aiWritingFeedback: false,
+  aiSpeakingFeedback: false,
 };
 
 const essentialEntitlements: PlanEntitlements = {
@@ -146,6 +148,7 @@ const completeEntitlements: PlanEntitlements = {
   mockExams: true,
   detailedReadiness: true,
   aiWritingFeedback: true,
+  aiSpeakingFeedback: true,
 };
 
 export const planEntitlements: Readonly<

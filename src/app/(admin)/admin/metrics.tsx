@@ -274,6 +274,7 @@ export function TestersSection({
   );
 }
 
+// Speaking fields default so the page still renders before their migration.
 export const aiUsageSchema = z.object({
   today: z.array(
     z.object({
@@ -282,6 +283,7 @@ export const aiUsageSchema = z.object({
       requests: z.number(),
       failures: z.number(),
       tokens: z.number(),
+      audioSeconds: z.number().default(0),
     }),
   ),
   last7Tokens: z.number(),
@@ -291,11 +293,32 @@ export const aiUsageSchema = z.object({
     failedToday: z.number(),
     startedToday: z.number(),
   }),
-  limits: z.object({ daily: z.number(), perLearner: z.number() }),
+  speaking: z
+    .object({
+      queued: z.number(),
+      processing: z.number(),
+      failedToday: z.number(),
+      createdToday: z.number(),
+      transcribedSecondsToday: z.number(),
+    })
+    .default({
+      queued: 0,
+      processing: 0,
+      failedToday: 0,
+      createdToday: 0,
+      transcribedSecondsToday: 0,
+    }),
+  limits: z.object({
+    daily: z.number(),
+    perLearner: z.number(),
+    speakingDaily: z.number().default(0),
+    speakingPerLearner: z.number().default(0),
+    transcriptionSeconds: z.number().default(0),
+  }),
   flags30: z.number(),
 });
 
-/** Groq's free daily token allowance per model; check the account Limits page. */
+/** Groq's daily token allowance per model; check the account Limits page. */
 const DAILY_TOKEN_ALLOWANCE = 200_000;
 
 export function AiUsageSection({
@@ -305,34 +328,48 @@ export function AiUsageSection({
   usage: z.infer<typeof aiUsageSchema>;
   configured: boolean;
 }) {
-  const tokensToday = usage.today.reduce((sum, row) => sum + row.tokens, 0);
+  const busiest = Math.max(
+    0,
+    ...usage.today
+      .filter((row) => row.feature !== "transcription")
+      .map((row) => row.tokens),
+  );
+  const minutes = (seconds: number) => Math.round(seconds / 60);
   const cards = [
     [
       "Essays started today",
       `${usage.queue.startedToday} of ${usage.limits.daily}`,
     ],
     [
-      "Waiting in the queue",
-      `${usage.queue.queued} queued · ${usage.queue.processing} in progress`,
+      "Recordings today",
+      `${usage.speaking.createdToday} of ${usage.limits.speakingDaily}`,
     ],
     [
-      "Tokens today",
-      `${tokensToday.toLocaleString("en-CA")} of ${DAILY_TOKEN_ALLOWANCE.toLocaleString("en-CA")}`,
+      "Audio transcribed today",
+      `${minutes(usage.speaking.transcribedSecondsToday)} of ${minutes(usage.limits.transcriptionSeconds)} min`,
+    ],
+    [
+      "Waiting (essays · recordings)",
+      `${usage.queue.queued + usage.queue.processing} · ${usage.speaking.queued + usage.speaking.processing}`,
+    ],
+    [
+      "Tokens today, busiest model",
+      `${busiest.toLocaleString("en-CA")} of ${DAILY_TOKEN_ALLOWANCE.toLocaleString("en-CA")}`,
     ],
     [
       "Failed today · flagged (30 days)",
-      `${usage.queue.failedToday} · ${usage.flags30}`,
+      `${usage.queue.failedToday + usage.speaking.failedToday} · ${usage.flags30}`,
     ],
   ];
   return (
     <section>
-      <h2 className="text-lg font-bold">AI writing feedback</h2>
+      <h2 className="text-lg font-bold">AI feedback</h2>
       <p className="mt-1 text-sm leading-6 text-muted-foreground">
         {configured
-          ? `Each learner can send ${usage.limits.perLearner} essays a day. Tokens over the last 7 days: ${usage.last7Tokens.toLocaleString("en-CA")}.`
+          ? `Each learner can send ${usage.limits.perLearner} essays and ${usage.limits.speakingPerLearner} recording a day. Tokens over the last 7 days: ${usage.last7Tokens.toLocaleString("en-CA")}.`
           : "Not configured on this deployment: GROQ_API_KEY is missing, so learners do not see AI feedback."}
       </p>
-      <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map(([label, value]) => (
           <Card key={label}>
             <CardContent className="pt-5">
@@ -347,20 +384,26 @@ export function AiUsageSection({
           <table className="w-full text-left text-sm">
             <thead className="bg-muted/60 text-xs uppercase text-muted-foreground">
               <tr>
+                <th className="px-3 py-2">Use</th>
                 <th className="px-3 py-2">Model</th>
                 <th className="px-3 py-2 text-right">Requests</th>
                 <th className="px-3 py-2 text-right">Failures</th>
                 <th className="px-3 py-2 text-right">Tokens</th>
+                <th className="px-3 py-2 text-right">Audio (min)</th>
               </tr>
             </thead>
             <tbody>
               {usage.today.map((row) => (
                 <tr key={`${row.feature}-${row.model}`} className="border-t">
+                  <td className="px-3 py-2">{row.feature}</td>
                   <td className="px-3 py-2 font-mono">{row.model}</td>
                   <td className="px-3 py-2 text-right">{row.requests}</td>
                   <td className="px-3 py-2 text-right">{row.failures}</td>
                   <td className="px-3 py-2 text-right">
                     {row.tokens.toLocaleString("en-CA")}
+                  </td>
+                  <td className="px-3 py-2 text-right">
+                    {minutes(row.audioSeconds)}
                   </td>
                 </tr>
               ))}

@@ -32,5 +32,7 @@ export const requiredFeatureForPath = (
   if (pathname === "/exam" || pathname.startsWith("/exam/")) return "mockExams";
   if (pathname === "/writing" || pathname.startsWith("/writing/"))
     return "aiWritingFeedback";
+  if (pathname === "/speaking" || pathname.startsWith("/speaking/"))
+    return "aiSpeakingFeedback";
   return null;
 };
