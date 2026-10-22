@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { checkWriting, countWords } from "./writing-checks";
 import {
   compareBand,
+  normalizeBand,
   rawFeedbackSchema,
   targetBandFor,
   verifyFeedback,
@@ -124,6 +125,23 @@ describe("AI feedback verification", () => {
     expect(verified.dropped).toBe(3);
   });
 
+  it("drops corrections that only swap look-alike characters", () => {
+    const verified = verifyFeedback(
+      `${essay}\nC’était un cadeau de sa grand-mère.`,
+      raw({
+        fixes: [
+          {
+            quote: "sa grand-mère",
+            correction: "sa grand\u2011mère",
+            explanation: "Hyphen.",
+            category: "punctuation",
+          },
+        ],
+      }),
+    )!;
+    expect(verified.fixes).toEqual([]);
+  });
+
   it("rejects feedback that misses a criterion", () => {
     const partial = raw();
     expect(
@@ -145,6 +163,39 @@ describe("AI feedback verification", () => {
       }),
     )!;
     expect(verified.rewrite).toBeNull();
+  });
+
+  it("normalises the model's ids, levels, and categories", () => {
+    const base = raw();
+    const verified = verifyFeedback(essay, {
+      ...base,
+      criteria: base.criteria.map((criterion, index) => ({
+        ...criterion,
+        id: index === 0 ? "Task" : criterion.id,
+        band: ["B1+", "c2", "A1", "B2"][index],
+      })),
+      fixes: [{ ...base.fixes[0], category: "word order" }],
+    })!;
+    expect(verified.criteria.map((criterion) => criterion.band)).toEqual([
+      "B1",
+      "C1",
+      "A1",
+      "B2",
+    ]);
+    expect(verified.fixes[0].category).toBe("grammar");
+    expect(normalizeBand("niveau intermédiaire")).toBeNull();
+  });
+
+  it("rejects feedback without a usable level for every criterion", () => {
+    const base = raw();
+    expect(
+      verifyFeedback(essay, {
+        ...base,
+        criteria: base.criteria.map((criterion, index) =>
+          index === 3 ? { ...criterion, band: "good" } : criterion,
+        ),
+      }),
+    ).toBeNull();
   });
 
   it("compares bands with the target level", () => {
