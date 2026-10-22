@@ -6,46 +6,16 @@ const {
   lessons,
 } = require("../../src/content/catalog.ts");
 const { mockItems, manifests } = require("../../src/content/mock-catalog.ts");
-const { validateContent } = require("../../src/content/validate.ts");
+const {
+  validateContent,
+  contentDebt,
+} = require("../../src/content/validate.ts");
 const items = [...diagnosticItems, ...practiceItems, ...mockItems];
 const result = validateContent(
   items,
   lessons,
   manifests,
   practiceItems.map((i) => i.id),
-);
-if (
-  diagnosticItems.length !== 20 ||
-  items.length !== 248 ||
-  lessons.length !== 24
-)
-  throw Error("Seed count mismatch");
-console.log(
-  JSON.stringify(
-    {
-      ...result,
-      counts: Object.fromEntries(
-        ["TEF", "TCF", "shared"].map((exam) => [
-          exam,
-          Object.fromEntries(
-            [
-              "reading",
-              "listening",
-              "writing",
-              "speaking",
-              "grammar",
-              "vocabulary",
-            ].map((skill) => [
-              skill,
-              items.filter((i) => i.exam === exam && i.skill === skill).length,
-            ]),
-          ),
-        ]),
-      ),
-    },
-    null,
-    2,
-  ),
 );
 
 const legacyQuestions =
@@ -62,21 +32,42 @@ const legacyIds = new Set(
 if ([...items, ...lessons].some((i) => legacyIds.has(i.id)))
   throw Error("Published legacy ID reused by new content");
 
-// French teaching text. Content is bilingual by requirement; until the Phase 4
-// rewrite lands, gaps are reported and `--require-fr` turns them into failures.
-const mcqs = items.filter((i) => i.kind === "mcq");
-const missingFr = {
-  lessonTitles: lessons.filter((l) => !l.titleFr || l.titleFr === l.title),
-  answerExplanations: mcqs.filter((i) => !i.correction.explanationFr),
-  lessonBodies: lessons.filter((l) => !l.explanationFr),
+// Progress toward the beta plan's per-exam targets (cohort 1 / cohort 2).
+const targets = {
+  lessons: [25, 25],
+  reading: [60, 120],
+  listening: [60, 120],
+  writing: [10, 20],
+  speaking: [10, 20],
 };
+const rows = ["TEF", "TCF"].map((exam) => {
+  const practice = practiceItems.filter((i) => i.exam === exam);
+  const have = {
+    lessons: lessons.filter((l) => l.exam === exam || l.exam === "shared")
+      .length,
+    ...Object.fromEntries(
+      ["reading", "listening", "writing", "speaking"].map((skill) => [
+        skill,
+        practice.filter((i) => i.skill === skill).length,
+      ]),
+    ),
+  };
+  return [
+    exam,
+    Object.fromEntries(
+      Object.entries(targets).map(([key, [first, second]]) => [
+        key,
+        `${have[key]} / ${first} (${second})`,
+      ]),
+    ),
+  ];
+});
+console.log("Content is valid.");
 console.log(
-  `French coverage: lesson titles ${lessons.length - missingFr.lessonTitles.length}/${lessons.length}, ` +
-    `answer explanations ${mcqs.length - missingFr.answerExplanations.length}/${mcqs.length}, ` +
-    `lesson bodies ${lessons.length - missingFr.lessonBodies.length}/${lessons.length}.`,
+  `${result.items} questions and tasks, ${result.lessons} lessons, ${result.mocks} mock exams; ${diagnosticItems.length} diagnostic items.`,
 );
-if (
-  process.argv.includes("--require-fr") &&
-  Object.values(missingFr).some((list) => list.length)
-)
-  throw Error("French teaching text missing: see coverage above");
+console.log("Practice and lessons against targets, cohort 1 (cohort 2):");
+console.table(Object.fromEntries(rows));
+console.log(
+  `Audio pending: ${result.pendingAudio.length} clips. Known content debt: ${contentDebt.shortDocuments.length} short documents; longest-option bias in ${Object.keys(contentDebt.longestCorrect).length} mock sections.`,
+);

@@ -38,7 +38,7 @@ function TaskSession({
   aiFeedback,
   aiSpeaking,
 }: SessionProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const copy = t.practice.productive;
   const [submissionId] = useState(() => crypto.randomUUID());
   const [index, setIndex] = useState(0);
@@ -137,10 +137,12 @@ function TaskSession({
       )}
     </div>
   );
+  const guidanceText =
+    (locale === "fr" && task.correction.guidanceFr) || task.correction.guidance;
   const guidance = (
     <details>
       <summary>{copy.guidance}</summary>
-      <p className="mt-3">{task.correction.guidance}</p>
+      <p className="mt-3">{guidanceText}</p>
       <ul className="mt-3 list-inside list-disc" lang="fr">
         {task.correction.rubric.map((item) => (
           <li key={item}>{item}</li>
@@ -207,7 +209,7 @@ function TaskSession({
       )}
       <details>
         <summary>{copy.guidance}</summary>
-        <p className="mt-3">{task.correction.guidance}</p>
+        <p className="mt-3">{guidanceText}</p>
       </details>
       <Button
         disabled={started === null || reviewing}

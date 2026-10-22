@@ -13,6 +13,7 @@ export const items = questions("shared", "vocabulary", [
     "Rendre sa carte.",
     "Réserver un siège.",
     "Renouveler means extending or renewing validity, not returning the card.",
+    "« Renouveler » l’abonnement, c’est prolonger sa validité, pas rendre la carte.",
   ],
   [
     "diagnostic-vocabulary-b1-001",
@@ -27,6 +28,7 @@ export const items = questions("shared", "vocabulary", [
     "Une estimation de ses dépenses.",
     "Une autorisation de son employeur.",
     "A justificatif de domicile documents where someone lives.",
+    "Un justificatif de domicile est un document qui prouve où l’on habite.",
   ],
   [
     "diagnostic-vocabulary-b2-001",
@@ -41,6 +43,7 @@ export const items = questions("shared", "vocabulary", [
     "La date, c'est pour quand, au fait ?",
     "Faudrait te décider sur la date.",
     "The conditional and vous suit a polite professional request to a less familiar colleague.",
+    "Le conditionnel et le vouvoiement conviennent à une demande professionnelle polie adressée à un collègue qu’on connaît peu.",
   ],
   [
     "diagnostic-vocabulary-c1-001",
@@ -55,5 +58,6 @@ export const items = questions("shared", "vocabulary", [
     "Elle refuse d'exprimer un avis sur la réforme.",
     "Elle soutient la réforme sans aucune réserve.",
     "The contrast separates acceptance of the principle from criticism of implementation.",
+    "L’opposition distingue l’adhésion au principe de la critique de sa mise en œuvre.",
   ],
 ]);

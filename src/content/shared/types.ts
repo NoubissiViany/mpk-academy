@@ -50,7 +50,13 @@ export interface ProductiveTask extends Metadata {
   durationSeconds: number;
   preparationSeconds: number;
   wordCount?: { min: number; max?: number };
-  correction: { guidance: string; rubric: string[]; modelResponse?: string };
+  correction: {
+    guidance: string;
+    /** French version of the guidance, shown when the interface is in French. */
+    guidanceFr?: string;
+    rubric: string[];
+    modelResponse?: string;
+  };
 }
 export interface LearningLesson extends Metadata {
   kind: "lesson";
@@ -73,7 +79,11 @@ export interface LearningLesson extends Metadata {
 }
 export interface LessonCheckpoint {
   prompt: string;
+  /** French prompt, when `prompt` is in English. */
+  promptFr?: string;
   options: string[];
+  /** French options in the same order, when `options` are in English. */
+  optionsFr?: string[];
   answer: number;
   explanation: string;
   explanationFr?: string;

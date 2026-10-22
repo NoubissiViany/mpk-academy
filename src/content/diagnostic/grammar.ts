@@ -13,6 +13,7 @@ export const items = questions("shared", "grammar", [
     "aux",
     "du",
     "Marché is masculine singular: à + le contracts to au.",
+    "« Marché » est masculin singulier : à + le se contracte en « au ».",
   ],
   [
     "diagnostic-grammar-b1-001",
@@ -27,6 +28,7 @@ export const items = questions("shared", "grammar", [
     "dans",
     "en",
     "Depuis introduces a duration continuing into the present.",
+    "« Depuis » introduit une durée qui se prolonge jusqu’au moment présent.",
   ],
   [
     "diagnostic-grammar-b1-002",
@@ -41,6 +43,7 @@ export const items = questions("shared", "grammar", [
     "envoyés",
     "envoyée",
     "With avoir, the past participle agrees with a preceding direct object: les lettres.",
+    "Avec l’auxiliaire avoir, le participe passé s’accorde avec le complément d’objet direct placé avant : « les lettres ».",
   ],
   [
     "diagnostic-grammar-b2-001",
@@ -55,6 +58,7 @@ export const items = questions("shared", "grammar", [
     "Après que",
     "Dès que",
     "Bien que introduces concession and licenses the subjunctive soit; the other options do not express this relationship.",
+    "« Bien que » exprime la concession et entraîne le subjonctif « soit » ; les autres choix n’expriment pas ce rapport.",
   ],
   [
     "diagnostic-grammar-b2-002",
@@ -69,6 +73,7 @@ export const items = questions("shared", "grammar", [
     "obtenez",
     "aviez obtenu",
     "A past counterfactual uses si plus pluperfect followed by the past conditional.",
+    "Pour une hypothèse non réalisée dans le passé : si + plus-que-parfait, puis conditionnel passé (« auriez obtenu »).",
   ],
   [
     "diagnostic-grammar-c1-001",
@@ -83,5 +88,6 @@ export const items = questions("shared", "grammar", [
     "Le dossier sera recevable dès qu'une preuve sera demandée.",
     "Le dossier ne sera recevable que si aucune preuve n'est fournie.",
     "Ne…que si establishes the required condition; requesting a document is not the same as providing it.",
+    "« Ne… que si » pose une condition nécessaire ; demander un document n’équivaut pas à le fournir.",
   ],
 ]);

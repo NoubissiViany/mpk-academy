@@ -4,15 +4,6 @@ import "server-only";
 import { questions } from "./shared/builders";
 import type { MCQ } from "./shared/types";
 
-const explanationsFr: Record<string, string> = {
-  "sample-reading-b1-001":
-    "Seul le prêt des livres numériques change (de deux à trois semaines) ; les livres papier étaient déjà prêtés pour vingt et un jours.",
-  "sample-grammar-b1-001":
-    "Depuis relie un point de départ passé à une situation toujours vraie aujourd’hui.",
-  "sample-vocabulary-b2-001":
-    "Reporter un vote, c’est le remettre à plus tard : les résidents voulaient plus de temps pour étudier le projet.",
-};
-
 export const sampleItems: MCQ[] = [
   ...questions("shared", "reading", [
     [
@@ -28,6 +19,7 @@ export const sampleItems: MCQ[] = [
       "Les horaires d'ouverture de la bibliothèque.",
       "Le nombre de livres qu'on peut emprunter.",
       "Only digital loans change (from two to three weeks); paper loans already last twenty-one days.",
+      "Seul le prêt des livres numériques change (de deux à trois semaines) ; les livres papier étaient déjà prêtés pour vingt et un jours.",
     ],
   ]),
   ...questions("shared", "grammar", [
@@ -44,6 +36,7 @@ export const sampleItems: MCQ[] = [
       "il y a",
       "dans",
       "Depuis links a past starting point to a situation that is still true.",
+      "Depuis relie un point de départ passé à une situation toujours vraie aujourd’hui.",
     ],
   ]),
   ...questions("shared", "vocabulary", [
@@ -60,9 +53,7 @@ export const sampleItems: MCQ[] = [
       "Raconter à la presse.",
       "Organiser plus vite.",
       "Reporter un vote means postponing it; residents wanted more time to study the project.",
+      "Reporter un vote, c’est le remettre à plus tard : les résidents voulaient plus de temps pour étudier le projet.",
     ],
   ]),
-].map((item) => ({
-  ...item,
-  correction: { ...item.correction, explanationFr: explanationsFr[item.id] },
-}));
+];

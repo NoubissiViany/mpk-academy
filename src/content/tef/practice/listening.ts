@@ -13,6 +13,7 @@ export const items = questions("TEF", "listening", [
     "À l'accueil principal.",
     "À la sortie jaune.",
     "The announcement changes the platform to four while keeping the departure time.",
+    "L’annonce déplace le départ à la voie quatre ; l’horaire ne change pas.",
   ],
   [
     "tef-listening-a2-002",
@@ -27,6 +28,7 @@ export const items = questions("TEF", "listening", [
     "Pour demander de nettoyer l'escalier.",
     "Pour annoncer son déménagement.",
     "He offers to return a scarf found in the stairwell.",
+    "Le voisin propose de rendre une écharpe trouvée dans l’escalier.",
   ],
   [
     "tef-listening-b1-001",
@@ -41,6 +43,7 @@ export const items = questions("TEF", "listening", [
     "Le numéro de téléphone.",
     "La date de commande.",
     "The employee identifies the missing apartment number as the delivery obstacle.",
+    "L’employé explique que le numéro d’appartement manquait pour livrer le colis.",
   ],
   [
     "tef-listening-b1-002",
@@ -55,6 +58,7 @@ export const items = questions("TEF", "listening", [
     "Le départ est déplacé au refuge.",
     "La sortie aura lieu samedi.",
     "The outing continues, but hikers must bring food because the refuge kitchen is closed.",
+    "La sortie est maintenue, mais chacun doit apporter son repas, car la cuisine du refuge est fermée.",
   ],
   [
     "tef-listening-b1-003",
@@ -69,6 +73,7 @@ export const items = questions("TEF", "listening", [
     "De réserver une salle plus grande.",
     "D'attendre la réponse de tous.",
     "The advice is to send a save-the-date message before capacity is finalized.",
+    "Le conseil est d’envoyer un message pour réserver la date, sans attendre le nombre de places.",
   ],
   [
     "tef-listening-b2-001",
@@ -83,6 +88,7 @@ export const items = questions("TEF", "listening", [
     "Une solution pour vendre ses outils.",
     "Une formation agricole diplômante.",
     "Visiting without gardening tasks and exchanging help show the social benefit.",
+    "Elle vient au jardin sans y travailler et échange des services : le jardin lui apporte surtout des liens avec ses voisins.",
   ],
   [
     "tef-listening-b2-002",
@@ -97,6 +103,7 @@ export const items = questions("TEF", "listening", [
     "Elle refuse définitivement la demande.",
     "Elle demande de refaire tous les documents.",
     "She gives the condition for processing, not a guarantee of approval.",
+    "Elle donne la condition pour traiter le dossier, pas une garantie qu’il sera accepté.",
   ],
   [
     "tef-listening-b2-003",
@@ -111,6 +118,7 @@ export const items = questions("TEF", "listening", [
     "Les voitures devraient être interdites partout.",
     "Le prix est le seul problème.",
     "Limited parking duration would free spaces for more visitors.",
+    "Limiter la durée de stationnement libérerait des places pour davantage de visiteurs.",
   ],
   [
     "tef-listening-c1-001",
@@ -125,6 +133,7 @@ export const items = questions("TEF", "listening", [
     "Les contrôles sont totalement absents.",
     "L'initiative entraîne toujours des erreurs.",
     "Repeated approvals undermine the autonomy management claims to encourage.",
+    "Les validations répétées contredisent l’autonomie que la direction dit encourager.",
   ],
   [
     "tef-listening-c1-002",
@@ -139,5 +148,6 @@ export const items = questions("TEF", "listening", [
     "Le musée expose trop peu d'objets.",
     "Les visiteurs ne peuvent pas circuler.",
     "She praises individual works but finds the interpretive connection unclear.",
+    "Elle apprécie les œuvres prises une à une, mais trouve le fil conducteur du parcours peu clair.",
   ],
 ]);

@@ -11,6 +11,7 @@ import { mockItems } from "@/content/mock-catalog";
 import { sampleItems } from "@/content/sample";
 import type {
   LearningLesson,
+  LessonCheckpoint,
   MCQ,
   ProductiveTask,
   PublicLessonContent,
@@ -132,21 +133,34 @@ const lessonCheckpoints = (lesson: LearningLesson) => [
   ...(lesson.extraCheckpoints ?? []),
 ];
 
+/** A checkpoint's prompt and options in the learner's language. */
+const localCheckpoint = (checkpoint: LessonCheckpoint, locale: Locale) =>
+  locale === "fr"
+    ? {
+        prompt: checkpoint.promptFr ?? checkpoint.prompt,
+        options: checkpoint.optionsFr ?? checkpoint.options,
+      }
+    : checkpoint;
+
 export function toPublicLesson(
   lesson: LearningLesson,
+  locale: Locale = "en",
   random: () => number = Math.random,
 ): PublicLessonContent {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars -- answers stay on the server
   const { checkpoint, extraCheckpoints, ...rest } = lesson;
   return {
     ...rest,
-    checkpoints: lessonCheckpoints(lesson).map((item) => ({
-      prompt: item.prompt,
-      options: shuffle(
-        item.options.map((label, index) => ({ index, label })),
-        random,
-      ),
-    })),
+    checkpoints: lessonCheckpoints(lesson).map((item) => {
+      const { prompt, options } = localCheckpoint(item, locale);
+      return {
+        prompt,
+        options: shuffle(
+          options.map((label, index) => ({ index, label })),
+          random,
+        ),
+      };
+    }),
   };
 }
 
@@ -161,7 +175,9 @@ export function checkLessonCheckpoint(
   if (!checkpoint || answerIndex >= checkpoint.options.length) return null;
   return {
     correct: answerIndex === checkpoint.answer,
-    correctAnswer: checkpoint.options[checkpoint.answer],
+    correctAnswer: localCheckpoint(checkpoint, locale).options[
+      checkpoint.answer
+    ],
     explanation:
       (locale === "fr" && checkpoint.explanationFr) || checkpoint.explanation,
   };
@@ -177,6 +193,7 @@ export function getPublicProductiveTasks(
       ...task,
       correction: {
         guidance: correction.guidance,
+        guidanceFr: correction.guidanceFr,
         rubric: correction.rubric,
         hasModelResponse: Boolean(correction.modelResponse),
       },
@@ -234,6 +251,33 @@ const optionLabelsById = new Map(
       ),
     ]),
 );
+
+const explanationsById = new Map(
+  [...diagnosticItems, ...practiceItems, ...mockItems]
+    .filter(isMcq)
+    .map((item) => [item.id, item.correction] as const),
+);
+
+/**
+ * Explanations in the learner's language for questions they answered. Saved
+ * mistakes keep a copy of the English explanation from the answer bank.
+ */
+export function getExplanations(questionIds: string[], locale: Locale) {
+  return Object.fromEntries(
+    questionIds.flatMap((id) => {
+      const correction = explanationsById.get(id);
+      return correction
+        ? [
+            [
+              id,
+              (locale === "fr" && correction.explanationFr) ||
+                correction.explanation,
+            ],
+          ]
+        : [];
+    }),
+  ) as Record<string, string>;
+}
 
 /** Option text for questions a learner already answered, keyed by option id. */
 export function getOptionLabels(questionIds: string[]) {

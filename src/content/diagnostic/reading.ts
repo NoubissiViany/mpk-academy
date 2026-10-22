@@ -13,6 +13,7 @@ export const items = questions("shared", "reading", [
     "Utiliser un ordinateur.",
     "Rencontrer un bibliothécaire.",
     "The exterior return box is available at any hour; the other services require entry.",
+    "La boîte de retour extérieure est accessible à toute heure ; les autres services demandent d’entrer dans la bibliothèque.",
   ],
   [
     "diagnostic-reading-b1-001",
@@ -27,6 +28,7 @@ export const items = questions("shared", "reading", [
     "Pour signaler une panne imprévue.",
     "Pour confirmer la fin des travaux.",
     "The message changes the scheduled work from Tuesday to Thursday.",
+    "Le message déplace les travaux prévus du mardi au jeudi.",
   ],
   [
     "diagnostic-reading-b1-002",
@@ -41,6 +43,7 @@ export const items = questions("shared", "reading", [
     "Distribuer des documents plus courts.",
     "Changer la personne responsable.",
     "Postponing nonurgent topics reduces the agenda, not the meeting's start time.",
+    "Reporter les sujets non urgents allège l’ordre du jour ; l’heure de début de la réunion ne change pas.",
   ],
   [
     "diagnostic-reading-b2-001",
@@ -55,6 +58,7 @@ export const items = questions("shared", "reading", [
     "Leurs clients viennent tous à vélo.",
     "Ils exigent une compensation financière.",
     "Asking for bicycle parking after initial opposition suggests a more favorable view, without proving all customers cycle.",
+    "Demander des stationnements pour vélos après s’être opposés au projet montre un avis plus favorable, sans prouver que tous les clients viennent à vélo.",
   ],
   [
     "diagnostic-reading-b2-002",
@@ -69,6 +73,7 @@ export const items = questions("shared", "reading", [
     "Les frais sont le seul frein à la formation.",
     "La garde devrait remplacer les cours.",
     "The childcare example supports addressing practical barriers in addition to fees.",
+    "L’exemple de la garde d’enfants montre qu’il faut lever les obstacles pratiques, et pas seulement réduire les frais.",
   ],
   [
     "diagnostic-reading-c1-001",
@@ -83,5 +88,6 @@ export const items = questions("shared", "reading", [
     "L'attractivité compromet toujours l'apprentissage.",
     "Les formations longues devraient être supprimées.",
     "Enrollment measures attraction, whereas completion and learning outcomes are needed to establish effectiveness.",
+    "Le nombre d’inscrits mesure l’attrait du programme ; pour établir son efficacité, il faudrait aussi l’achèvement et les apprentissages réels.",
   ],
 ]);

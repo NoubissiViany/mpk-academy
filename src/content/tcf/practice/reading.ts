@@ -13,6 +13,7 @@ export const items = questions("TCF", "reading", [
     "Le samedi.",
     "Le dimanche.",
     "The notice explicitly lists Monday as the closed day.",
+    "L’affiche indique clairement que la boulangerie est fermée le lundi.",
   ],
   [
     "tcf-reading-a2-002",
@@ -27,6 +28,7 @@ export const items = questions("TCF", "reading", [
     "Pour demander l'adresse d'une librairie.",
     "Pour inviter Karim à dîner.",
     "The message gives the collection location and deadline for Karim's book.",
+    "Le message dit à Karim où et avant quand reprendre son livre.",
   ],
   [
     "tcf-reading-b1-001",
@@ -41,6 +43,7 @@ export const items = questions("TCF", "reading", [
     "Un paiement en espèces.",
     "Une attestation de formation.",
     "Tools are supplied and the workshop is free; participants bring the device.",
+    "Les outils sont fournis et l’atelier est gratuit : les participants apportent seulement l’appareil à réparer.",
   ],
   [
     "tcf-reading-b1-002",
@@ -55,6 +58,7 @@ export const items = questions("TCF", "reading", [
     "Après le déménagement.",
     "Sans visite du logement.",
     "Conjointement means together, involving both landlord and tenant.",
+    "« Conjointement » signifie ensemble : le propriétaire et le locataire seront tous les deux présents.",
   ],
   [
     "tcf-reading-b1-003",
@@ -69,6 +73,7 @@ export const items = questions("TCF", "reading", [
     "L'annulation de la marche.",
     "La création d'un club nautique.",
     "Only the route changes; the start location remains the same.",
+    "Seul l’itinéraire change ; le lieu de départ reste le même.",
   ],
   [
     "tcf-reading-b2-001",
@@ -83,6 +88,7 @@ export const items = questions("TCF", "reading", [
     "Pour augmenter le nombre d'emballages jetables.",
     "Pour réserver les ventes aux abonnés.",
     "Unplanned shoppers may not have brought containers, making deposit packaging useful.",
+    "Les clients qui achètent sans l’avoir prévu n’ont pas forcément de contenant : les emballages consignés leur restent utiles.",
   ],
   [
     "tcf-reading-b2-002",
@@ -97,6 +103,7 @@ export const items = questions("TCF", "reading", [
     "Autoriser les conversations dans toute la bibliothèque.",
     "Limiter l'accès aux étudiants seuls.",
     "The argument balances quiet and collaboration through separate zones.",
+    "L’auteur concilie calme et collaboration en séparant les espaces selon les usages.",
   ],
   [
     "tcf-reading-b2-003",
@@ -111,6 +118,7 @@ export const items = questions("TCF", "reading", [
     "De recevoir les visiteurs à domicile.",
     "De venir obligatoirement le mercredi.",
     "Advance notice supports planning; Friday remote work remains allowed.",
+    "Prévenir à l’avance aide à organiser les présences ; le télétravail du vendredi reste permis.",
   ],
   [
     "tcf-reading-c1-001",
@@ -125,6 +133,7 @@ export const items = questions("TCF", "reading", [
     "Multiplier les usages commerciaux.",
     "Laisser disparaître le bâtiment faute d'action.",
     "Removing traces of successive uses can create a misleadingly unified past.",
+    "Effacer les traces des usages successifs peut donner l’image trompeuse d’un passé uniforme.",
   ],
   [
     "tcf-reading-c1-002",
@@ -139,5 +148,6 @@ export const items = questions("TCF", "reading", [
     "Entre désaccord politique et faute professionnelle.",
     "Entre opinion majoritaire et vérité certaine.",
     "The text distinguishes bounded uncertainty from knowing nothing.",
+    "Le texte distingue une incertitude délimitée d’une ignorance totale.",
   ],
 ]);

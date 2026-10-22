@@ -13,6 +13,7 @@ export const items = questions("TEF", "reading", [
     "À 18 h.",
     "À 18 h 15.",
     "The last admission is explicitly 17:15, including for members.",
+    "La dernière entrée est fixée à 17 h 15, y compris pour les abonnés.",
   ],
   [
     "tef-reading-a2-002",
@@ -27,6 +28,7 @@ export const items = questions("TEF", "reading", [
     "Une table à louer pour une matinée.",
     "Un service de transport de meubles.",
     "À donner means free, while à récupérer and no delivery require collection.",
+    "« À donner » signifie gratuit ; « à récupérer » et l’absence de livraison obligent à venir chercher la table.",
   ],
   [
     "tef-reading-b1-001",
@@ -41,6 +43,7 @@ export const items = questions("TEF", "reading", [
     "Collecter des meubles.",
     "Distribuer tous les articles.",
     "Saturday's distribution is restricted to coats.",
+    "Samedi, la distribution se limite aux manteaux.",
   ],
   [
     "tef-reading-b1-002",
@@ -55,6 +58,7 @@ export const items = questions("TEF", "reading", [
     "Des clients sans rendez-vous.",
     "Des tableaux trop anciens.",
     "Doublons are duplicate records, which checking existing entries helps avoid.",
+    "Les doublons sont des fiches en double ; vérifier le tableau avant d’en créer une permet de les éviter.",
   ],
   [
     "tef-reading-b1-003",
@@ -69,6 +73,7 @@ export const items = questions("TEF", "reading", [
     "Interdire tous les vélos dans la rue.",
     "Demander de revenir à l'ancien rangement.",
     "The writer acknowledges improvement and asks residents to keep using outside racks.",
+    "L’auteur constate l’amélioration et demande de continuer à utiliser les supports extérieurs.",
   ],
   [
     "tef-reading-b2-001",
@@ -83,6 +88,7 @@ export const items = questions("TEF", "reading", [
     "Les séances du soir vont disparaître.",
     "Les salariés préfèrent tous les films étrangers.",
     "A substantial audience outside the target group indicates a broader need.",
+    "Un public important en dehors du groupe visé montre un besoin plus large que prévu.",
   ],
   [
     "tef-reading-b2-002",
@@ -97,6 +103,7 @@ export const items = questions("TEF", "reading", [
     "Elle décrit le succès de la campagne.",
     "Elle rejette l'utilisation des gourdes.",
     "The first sentence states the practical condition supporting the recommendation.",
+    "La première phrase pose la condition pratique qui rend la recommandation efficace.",
   ],
   [
     "tef-reading-b2-003",
@@ -111,6 +118,7 @@ export const items = questions("TEF", "reading", [
     "Une demande de renseignements.",
     "Une promesse de remboursement.",
     "The sympathetic opening softens an explicit refusal to change the ticket.",
+    "L’ouverture compréhensive adoucit un refus clair de modifier le billet.",
   ],
   [
     "tef-reading-c1-001",
@@ -125,6 +133,7 @@ export const items = questions("TEF", "reading", [
     "Le rôle économique de l'attractivité.",
     "La nécessité de débattre publiquement.",
     "The author accepts demand pressure but rejects treating policy responses as inevitable.",
+    "L’auteur admet la pression de la demande, mais refuse de présenter les réponses politiques comme inévitables.",
   ],
   [
     "tef-reading-c1-002",
@@ -139,5 +148,6 @@ export const items = questions("TEF", "reading", [
     "Le nombre de formulaires supprimés.",
     "La vitesse des connexions mobiles.",
     "The omitted cost is users' time correcting errors, offsetting claimed efficiency gains.",
+    "Le coût oublié est le temps que les usagers passent à corriger les erreurs, ce qui annule une partie des gains d’efficacité annoncés.",
   ],
 ]);

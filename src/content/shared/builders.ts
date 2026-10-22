@@ -15,6 +15,7 @@ export type QuestionSeed = [
   wrong2: string,
   wrong3: string,
   explanation: string,
+  explanationFr?: string,
 ];
 export function questions(
   exam: ContentExam,
@@ -33,7 +34,7 @@ export function questions(
       correct,
       ...rest
     ]) => {
-      const [wrong1, wrong2, wrong3, explanation] = rest;
+      const [wrong1, wrong2, wrong3, explanation, explanationFr] = rest;
       // Stable ID-based placement avoids authoring-position identifiers and answer-position bias.
       const position = [...id].reduce((sum, c) => sum + c.charCodeAt(0), 0) % 4;
       const labels = [wrong1, wrong2, wrong3];
@@ -71,7 +72,11 @@ export function questions(
             }
           : { passage: document }),
         options: labels.map((label, i) => ({ id: "abcd"[i], label })),
-        correction: { answer: "abcd"[position], explanation },
+        correction: {
+          answer: "abcd"[position],
+          explanation,
+          ...(explanationFr ? { explanationFr } : {}),
+        },
       };
     },
   );

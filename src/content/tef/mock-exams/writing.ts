@@ -32,6 +32,8 @@ export const items: ProductiveTask[] = [
     correction: {
       guidance:
         "Keep the people and situation from the opening. Plan a development and an ending, narrate in coherent past tenses, and include concrete details. Write at least 80 words; do not replace the continuation with an opinion essay.",
+      guidanceFr:
+        "Gardez les personnages et la situation du début. Prévoyez un développement et une fin, racontez au passé avec des temps cohérents et ajoutez des détails concrets. Écrivez au moins 80 mots ; ne remplacez pas la suite de l’histoire par un texte d’opinion.",
       rubric: [
         "Respect de la consigne et du destinataire",
         "Organisation et cohésion",
@@ -78,6 +80,8 @@ export const items: ProductiveTask[] = [
     correction: {
       guidance:
         "Identify the claim you are responding to. State a position, develop two reasons with examples, acknowledge a possible objection, and close courteously. Write at least 200 words, reserving time to check organization, register, and agreements.",
+      guidanceFr:
+        "Repérez l’affirmation à laquelle vous répondez. Prenez position, développez deux arguments avec des exemples, envisagez une objection possible et terminez de façon courtoise. Écrivez au moins 200 mots et gardez du temps pour vérifier l’organisation, le registre et les accords.",
       rubric: [
         "Respect de la consigne et du destinataire",
         "Organisation et cohésion",

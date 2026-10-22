@@ -13,6 +13,7 @@ export const items = questions("TCF", "reading", [
     "Devant le magasin.",
     "À l'étage.",
     "The sign places order collection at the back counter.",
+    "L’affiche indique que les commandes se retirent au comptoir du fond.",
   ],
   [
     "tcf-mock-reading-a2-002",
@@ -27,6 +28,7 @@ export const items = questions("TCF", "reading", [
     "À 15 h 40.",
     "À 16 h 30.",
     "Ten minutes before 16:00 is 15:50.",
+    "Dix minutes avant 16 h, il est 15 h 50.",
   ],
   [
     "tcf-mock-reading-a2-003",
@@ -41,6 +43,7 @@ export const items = questions("TCF", "reading", [
     "D'acheter un porte-clés.",
     "De contacter un serrurier.",
     "The notice explains how to reclaim found keys.",
+    "L’avis explique comment récupérer des clés trouvées.",
   ],
   [
     "tcf-mock-reading-a2-004",
@@ -55,6 +58,7 @@ export const items = questions("TCF", "reading", [
     "Prendre le sandwich.",
     "Venir avant 14 h.",
     "The beverage is explicitly extra.",
+    "La boisson est en supplément : elle n’est pas comprise dans le menu.",
   ],
   [
     "tcf-mock-reading-a2-005",
@@ -69,6 +73,7 @@ export const items = questions("TCF", "reading", [
     "De préparer le dîner.",
     "De rentrer immédiatement.",
     "Milk is requested; bread is explicitly unnecessary.",
+    "Le message demande du lait et précise que le pain n’est pas nécessaire.",
   ],
   [
     "tcf-mock-reading-a2-006",
@@ -83,6 +88,7 @@ export const items = questions("TCF", "reading", [
     "Dans toutes les zones sans restriction.",
     "Uniquement sur le stationnement.",
     "The rules permit leashed dogs on trails, not the playground.",
+    "Le règlement autorise les chiens en laisse sur les sentiers, mais pas sur l’aire de jeux.",
   ],
   [
     "tcf-mock-reading-a2-007",
@@ -97,6 +103,7 @@ export const items = questions("TCF", "reading", [
     "Le tarif augmente aujourd'hui.",
     "Tous les départs de la semaine sont supprimés.",
     "Morning service is suspended; noon is an update time, not a confirmed restart.",
+    "Les départs du matin sont suspendus ; midi est l’heure de la prochaine information, pas celle d’une reprise confirmée.",
   ],
   [
     "tcf-mock-reading-a2-008",
@@ -111,6 +118,7 @@ export const items = questions("TCF", "reading", [
     "À l'arrêt de bus.",
     "Chez l'animateur.",
     "The meeting point stays unchanged in rainy weather.",
+    "En cas de pluie, le point de rendez-vous ne change pas.",
   ],
   [
     "tcf-mock-reading-b1-001",
@@ -125,6 +133,7 @@ export const items = questions("TCF", "reading", [
     "Le service à table.",
     "L'achat des ingrédients.",
     "Setup and cleanup still need volunteers; meal service is covered.",
+    "Il manque encore des bénévoles pour l’installation et le rangement ; le service du repas est assuré.",
   ],
   [
     "tcf-mock-reading-b1-002",
@@ -139,6 +148,7 @@ export const items = questions("TCF", "reading", [
     "En apportant son propre matériel.",
     "Si tous les inscrits sont présents.",
     "The condition is remaining capacity, with no stated surcharge.",
+    "La condition est qu’il reste des places ; aucun supplément n’est mentionné.",
   ],
   [
     "tcf-mock-reading-b1-003",
@@ -153,6 +163,7 @@ export const items = questions("TCF", "reading", [
     "La suppression des demandes écrites.",
     "Une réunion pour chaque demande.",
     "Nonurgent requests move to a shared document while urgent ones remain by phone.",
+    "Les demandes non urgentes passent par un document partagé ; les urgences restent traitées par téléphone.",
   ],
   [
     "tcf-mock-reading-b1-004",
@@ -167,6 +178,7 @@ export const items = questions("TCF", "reading", [
     "À l'accueil.",
     "Dans les jardins.",
     "Only the tower is excluded for strollers.",
+    "Seule la tour est interdite aux poussettes.",
   ],
   [
     "tcf-mock-reading-b1-005",
@@ -181,6 +193,7 @@ export const items = questions("TCF", "reading", [
     "Des frais journaliers sont ajoutés.",
     "Les produits restent réservés un mois.",
     "The email states both release of the goods and refund after the deadline.",
+    "Le courriel précise qu’après le délai, les articles sont remis en vente et le client est remboursé.",
   ],
   [
     "tcf-mock-reading-b1-006",
@@ -195,6 +208,7 @@ export const items = questions("TCF", "reading", [
     "Proposer d'acheter la maison.",
     "Féliciter sans formuler de demande.",
     "The compliment introduces a specific request to trim overhanging branches.",
+    "Le compliment introduit une demande précise : tailler les branches qui dépassent.",
   ],
   [
     "tcf-mock-reading-b1-007",
@@ -209,6 +223,7 @@ export const items = questions("TCF", "reading", [
     "De la fermeture du magasin.",
     "De l'expiration de la garantie.",
     "Réapprovisionnement means replenishing stock.",
+    "Le réapprovisionnement, c’est le retour d’un produit en stock.",
   ],
   [
     "tcf-mock-reading-b1-008",
@@ -223,6 +238,7 @@ export const items = questions("TCF", "reading", [
     "Remplacer les artisans du quartier.",
     "Distribuer des outils sans retour.",
     "The shared inventory reduces individual purchases of infrequently used tools.",
+    "L’inventaire commun évite que chacun achète des outils dont il se sert rarement.",
   ],
   [
     "tcf-mock-reading-b1-009",
@@ -237,6 +253,7 @@ export const items = questions("TCF", "reading", [
     "Déposer obligatoirement une copie papier.",
     "Envoyer le devoir sans prévenir une semaine après.",
     "The teacher requests notice before the deadline for connection problems.",
+    "En cas de problème de connexion, l’enseignant demande d’être prévenu avant l’échéance de lundi midi.",
   ],
   [
     "tcf-mock-reading-b1-010",
@@ -251,6 +268,7 @@ export const items = questions("TCF", "reading", [
     "Uniquement une personne possédant une voiture.",
     "Une personne refusant tout déplacement.",
     "No licence is required, and neighborhood knowledge is valued.",
+    "Le permis n’est pas exigé, et la connaissance du quartier est appréciée.",
   ],
   [
     "tcf-mock-reading-b1-011",
@@ -265,6 +283,7 @@ export const items = questions("TCF", "reading", [
     "De rester chez soi.",
     "De nettoyer le terrain avant la séance.",
     "The session moves indoors and requires clean shoes.",
+    "La séance a lieu à l’intérieur et demande des chaussures propres.",
   ],
   [
     "tcf-mock-reading-b1-012",
@@ -279,6 +298,7 @@ export const items = questions("TCF", "reading", [
     "Assister uniquement aux spectacles achevés.",
     "Choisir tous les acteurs.",
     "Open rehearsals expose the creative process and allow discussion.",
+    "Les répétitions ouvertes montrent le travail de création et permettent d’en discuter.",
   ],
   [
     "tcf-mock-reading-b2-001",
@@ -293,6 +313,7 @@ export const items = questions("TCF", "reading", [
     "Le nombre de voitures vendues.",
     "Le prix des vélos.",
     "The transfer wait illustrates why longer service hours alone are insufficient.",
+    "L’attente à la correspondance montre qu’allonger les horaires ne suffit pas : il faut aussi coordonner les lignes.",
   ],
   [
     "tcf-mock-reading-b2-002",
@@ -307,6 +328,7 @@ export const items = questions("TCF", "reading", [
     "Une opposition à toute économie d'espace.",
     "Une diminution du nombre de salariés.",
     "Seeking the same desk suggests attachment to a stable workspace.",
+    "Chercher toujours le même bureau traduit un attachement à un espace de travail stable.",
   ],
   [
     "tcf-mock-reading-b2-003",
@@ -321,6 +343,7 @@ export const items = questions("TCF", "reading", [
     "L'indifférence.",
     "La certitude.",
     "Circonspection means caution, justified here by the small sample.",
+    "La circonspection, c’est la prudence, justifiée ici par la petite taille de l’échantillon.",
   ],
   [
     "tcf-mock-reading-b2-004",
@@ -335,6 +358,7 @@ export const items = questions("TCF", "reading", [
     "Une suppression du deuxième service.",
     "Une augmentation générale de la faim.",
     "Smaller initial portions plus seconds reduced leftovers without reported hunger.",
+    "Des portions de départ plus petites, avec la possibilité de se resservir, ont réduit les restes sans que personne ne dise avoir eu faim.",
   ],
   [
     "tcf-mock-reading-b2-005",
@@ -349,6 +373,7 @@ export const items = questions("TCF", "reading", [
     "La demande est acceptée définitivement.",
     "Les observations seront détruites.",
     "Acknowledgment does not halt the process.",
+    "Les remarques sont prises en compte, mais cela n’arrête pas la procédure.",
   ],
   [
     "tcf-mock-reading-b2-006",
@@ -363,6 +388,7 @@ export const items = questions("TCF", "reading", [
     "Le prix de chaque séance.",
     "La difficulté des horaires du hall.",
     "The support label deterred some students; a more neutral location improved attendance.",
+    "L’étiquette « soutien » décourageait certains élèves ; un lieu plus neutre a augmenté la participation.",
   ],
   [
     "tcf-mock-reading-b2-007",
@@ -377,6 +403,7 @@ export const items = questions("TCF", "reading", [
     "L'arrêt de toute plantation.",
     "Le choix exclusif d'espèces décoratives.",
     "Existing mature trees provide functions new plants cannot immediately replace.",
+    "Les grands arbres existants remplissent des fonctions que de jeunes plantations ne peuvent pas assurer tout de suite.",
   ],
   [
     "tcf-mock-reading-b2-008",
@@ -391,6 +418,7 @@ export const items = questions("TCF", "reading", [
     "À retirer la demande de validation.",
     "À exprimer un désaccord définitif.",
     "The phrase softens the reminder by allowing that the sender may be mistaken.",
+    "L’expression adoucit la relance en admettant que l’expéditeur peut se tromper.",
   ],
   [
     "tcf-mock-reading-b2-009",
@@ -405,6 +433,7 @@ export const items = questions("TCF", "reading", [
     "Ils remplacent tous les autres services.",
     "Ils réduisent le besoin de personnel.",
     "Later customer returns justify looking beyond same-day purchases.",
+    "Les clients reviennent plus tard : il faut regarder au-delà des achats du jour même.",
   ],
   [
     "tcf-mock-reading-b2-010",
@@ -419,6 +448,7 @@ export const items = questions("TCF", "reading", [
     "La précision des données historiques.",
     "La rapidité constante du récit.",
     "The critic values believable, nuanced relationships despite a predictable plot.",
+    "Malgré une intrigue prévisible, la critique apprécie des relations crédibles et nuancées entre les personnages.",
   ],
   [
     "tcf-mock-reading-b2-011",
@@ -433,6 +463,7 @@ export const items = questions("TCF", "reading", [
     "Réserver toutes les démarches aux professionnels.",
     "Accélérer chaque entretien de la même manière.",
     "The mixed model serves both walk-in access and longer scheduled support.",
+    "Le modèle mixte permet à la fois un accès sans rendez-vous et un accompagnement plus long sur rendez-vous.",
   ],
   [
     "tcf-mock-reading-b2-012",
@@ -447,6 +478,7 @@ export const items = questions("TCF", "reading", [
     "L'atelier était obligatoire pour tous.",
     "Les étudiants absents ont suivi davantage de séances.",
     "Preexisting attendance differences may confound the apparent workshop effect.",
+    "Une assiduité différente au départ peut expliquer l’écart observé, et non l’atelier lui-même.",
   ],
   [
     "tcf-mock-reading-c1-001",
@@ -461,6 +493,7 @@ export const items = questions("TCF", "reading", [
     "La densité urbaine et le coût de construction.",
     "La mobilité quotidienne et les voyages lointains.",
     "The text separates co-location from conditions that enable interaction.",
+    "Le texte distingue le fait de partager un lieu des conditions qui rendent les échanges possibles.",
   ],
   [
     "tcf-mock-reading-c1-002",
@@ -475,6 +508,7 @@ export const items = questions("TCF", "reading", [
     "La disparition des données historiques.",
     "L'impossibilité de reconnaître ses goûts.",
     "Past preferences can constrain exposure to unfamiliar material and future interests.",
+    "Les préférences passées peuvent limiter la découverte de contenus nouveaux et l’évolution des goûts.",
   ],
   [
     "tcf-mock-reading-c1-003",
@@ -489,6 +523,7 @@ export const items = questions("TCF", "reading", [
     "Remplacer l'objection par un exemple.",
     "Étendre le raisonnement sans condition.",
     "Circonscrire la portée means limit the scope, not discard the entire reasoning.",
+    "« Circonscrire la portée » signifie limiter le champ d’application, pas abandonner tout le raisonnement.",
   ],
   [
     "tcf-mock-reading-c1-004",
@@ -503,6 +538,7 @@ export const items = questions("TCF", "reading", [
     "Le manque d'autonomie des nouveaux salariés.",
     "La surévaluation systématique des formations.",
     "Individual metrics may miss knowledge-sharing benefits to the whole group.",
+    "Des mesures individuelles risquent d’ignorer ce que le partage des connaissances apporte à tout le groupe.",
   ],
   [
     "tcf-mock-reading-c1-005",
@@ -517,6 +553,7 @@ export const items = questions("TCF", "reading", [
     "L'élimination de toute référence culturelle.",
     "La recherche exclusive d'une lecture sans effort.",
     "The author allows deliberate unfamiliarity to preserve cultural difference, without requiring literal translation.",
+    "L’auteur accepte une part d’étrangeté voulue pour préserver la différence culturelle, sans exiger une traduction littérale.",
   ],
   [
     "tcf-mock-reading-c1-006",
@@ -531,6 +568,7 @@ export const items = questions("TCF", "reading", [
     "Supprimer toute procédure de clôture.",
     "Assimiler systématiquement volume et qualité.",
     "The author urges scrutiny of what measured completion actually represents.",
+    "L’auteur invite à examiner ce que représente réellement le taux de réussite mesuré.",
   ],
   [
     "tcf-mock-reading-c1-007",
@@ -545,5 +583,6 @@ export const items = questions("TCF", "reading", [
     "Exclure les besoins du débat collectif.",
     "Considérer toute consommation comme superflue.",
     "The distinction between excess and necessity supports differentiated expectations.",
+    "La distinction entre excès et nécessité justifie d’adapter les attentes aux situations.",
   ],
 ]);

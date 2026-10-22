@@ -34,6 +34,8 @@ export const items: ProductiveTask[] = [
     correction: {
       guidance:
         "Answer without preparation. Give connected details about yourself, your surroundings, and your activities; respond to follow-up questions naturally. Communicate clearly within two minutes rather than reciting a memorized biography.",
+      guidanceFr:
+        "Répondez sans préparation. Donnez des informations liées entre elles sur vous, votre entourage et vos activités ; répondez naturellement aux questions de relance. Communiquez clairement en deux minutes plutôt que de réciter une biographie apprise par cœur.",
       rubric: [
         "Réalisation des objectifs de communication",
         "Interaction et adaptation au rôle",
@@ -77,6 +79,8 @@ export const items: ProductiveTask[] = [
     correction: {
       guidance:
         "Answer without preparation. Give connected details about yourself, your surroundings, and your activities; respond to follow-up questions naturally. Communicate clearly within two minutes rather than reciting a memorized biography.",
+      guidanceFr:
+        "Répondez sans préparation. Donnez des informations liées entre elles sur vous, votre entourage et vos activités ; répondez naturellement aux questions de relance. Communiquez clairement en deux minutes plutôt que de réciter une biographie apprise par cœur.",
       rubric: [
         "Réalisation des objectifs de communication",
         "Interaction et adaptation au rôle",
@@ -119,6 +123,8 @@ export const items: ProductiveTask[] = [
     correction: {
       guidance:
         "Use the two-minute preparation period to note question topics, not a full script. During the remaining three minutes thirty, ask relevant questions, listen, and seek clarification or alternatives. Finish by checking the information needed for your decision.",
+      guidanceFr:
+        "Pendant les deux minutes de préparation, notez des thèmes de questions, pas un texte complet. Pendant les trois minutes trente qui suivent, posez des questions pertinentes, écoutez, et demandez des précisions ou d’autres possibilités. Terminez en vérifiant que vous avez les informations nécessaires pour décider.",
       rubric: [
         "Réalisation des objectifs de communication",
         "Interaction et adaptation au rôle",
@@ -161,6 +167,8 @@ export const items: ProductiveTask[] = [
     correction: {
       guidance:
         "Use the two-minute preparation period to note question topics, not a full script. During the remaining three minutes thirty, ask relevant questions, listen, and seek clarification or alternatives. Finish by checking the information needed for your decision.",
+      guidanceFr:
+        "Pendant les deux minutes de préparation, notez des thèmes de questions, pas un texte complet. Pendant les trois minutes trente qui suivent, posez des questions pertinentes, écoutez, et demandez des précisions ou d’autres possibilités. Terminez en vérifiant que vous avez les informations nécessaires pour décider.",
       rubric: [
         "Réalisation des objectifs de communication",
         "Interaction et adaptation au rôle",
@@ -203,6 +211,8 @@ export const items: ProductiveTask[] = [
     correction: {
       guidance:
         "Begin immediately with a clear position. Develop two reasons and concrete examples, then add a qualification or address a counterargument. Connect your ideas and conclude within four minutes thirty. No preparation time is added.",
+      guidanceFr:
+        "Commencez tout de suite par une position claire. Développez deux arguments avec des exemples concrets, puis nuancez ou répondez à un contre-argument. Reliez vos idées et concluez en quatre minutes trente. Aucun temps de préparation n’est prévu.",
       rubric: [
         "Réalisation des objectifs de communication",
         "Interaction et adaptation au rôle",
@@ -245,6 +255,8 @@ export const items: ProductiveTask[] = [
     correction: {
       guidance:
         "Begin immediately with a clear position. Develop two reasons and concrete examples, then add a qualification or address a counterargument. Connect your ideas and conclude within four minutes thirty. No preparation time is added.",
+      guidanceFr:
+        "Commencez tout de suite par une position claire. Développez deux arguments avec des exemples concrets, puis nuancez ou répondez à un contre-argument. Reliez vos idées et concluez en quatre minutes trente. Aucun temps de préparation n’est prévu.",
       rubric: [
         "Réalisation des objectifs de communication",
         "Interaction et adaptation au rôle",

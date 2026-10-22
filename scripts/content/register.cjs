@@ -19,6 +19,7 @@ require.extensions[".ts"] = (module, filename) => {
       compilerOptions: {
         module: ts.ModuleKind.CommonJS,
         target: ts.ScriptTarget.ES2020,
+        esModuleInterop: true,
       },
     }).outputText,
     filename,

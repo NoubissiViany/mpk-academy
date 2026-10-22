@@ -36,6 +36,8 @@ export const items: ProductiveTask[] = [
     correction: {
       guidance:
         "Identify the recipient and purpose. Include every requested practical detail, use a suitable greeting and closing, and keep the message between 60 and 120 words. Check that the reader knows what to do next.",
+      guidanceFr:
+        "Repérez le destinataire et le but du message. Donnez chaque information pratique demandée, choisissez une formule d’appel et une formule finale adaptées, et restez entre 60 et 120 mots. Vérifiez que le lecteur sait ce qu’il doit faire ensuite.",
       rubric: [
         "Respect de la consigne et du destinataire",
         "Organisation et cohésion",
@@ -83,6 +85,8 @@ export const items: ProductiveTask[] = [
     correction: {
       guidance:
         "Plan a brief setting, the main events, and your comments or opinion. Use concrete details and an appropriate tone for the audience. Keep the account between 120 and 150 words; do not omit the evaluative part.",
+      guidanceFr:
+        "Prévoyez un bref cadre, les principaux événements et vos commentaires ou votre avis. Ajoutez des détails concrets et adaptez le ton au public. Restez entre 120 et 150 mots, sans oublier la partie où vous donnez votre appréciation.",
       rubric: [
         "Respect de la consigne et du destinataire",
         "Organisation et cohésion",
@@ -130,6 +134,8 @@ export const items: ProductiveTask[] = [
     correction: {
       guidance:
         "Identify the central point in each source, compare them fairly in your own words, then give a supported personal position. Reserve space for both comparison and opinion within 120–180 words. Do not simply copy the source statements.",
+      guidanceFr:
+        "Repérez l’idée centrale de chaque document, comparez-les honnêtement avec vos propres mots, puis donnez un avis personnel argumenté. Gardez de la place pour la comparaison et pour votre opinion, en 120 à 180 mots. Ne recopiez pas simplement les phrases des documents.",
       rubric: [
         "Respect de la consigne et du destinataire",
         "Organisation et cohésion",
