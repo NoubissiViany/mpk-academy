@@ -801,6 +801,99 @@ export type Database = {
           },
         ];
       };
+      speaking_feedback_flags: {
+        Row: {
+          created_at: string;
+          fix_index: number;
+          note: string | null;
+          submission_id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          fix_index: number;
+          note?: string | null;
+          submission_id: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          fix_index?: number;
+          note?: string | null;
+          submission_id?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      speaking_submissions: {
+        Row: {
+          attempts: number;
+          audio_seconds: number;
+          client_key: string;
+          completed_at: string | null;
+          created_at: string;
+          error_code: string | null;
+          exam: string;
+          feedback: Json | null;
+          id: string;
+          locale: string;
+          metrics: Json;
+          model: string | null;
+          not_before: string;
+          started_at: string | null;
+          status: string;
+          task_id: string;
+          tokens: number | null;
+          transcript: string;
+          user_id: string;
+          word_count: number;
+        };
+        Insert: {
+          attempts?: number;
+          audio_seconds: number;
+          client_key: string;
+          completed_at?: string | null;
+          created_at?: string;
+          error_code?: string | null;
+          exam: string;
+          feedback?: Json | null;
+          id?: string;
+          locale: string;
+          metrics?: Json;
+          model?: string | null;
+          not_before?: string;
+          started_at?: string | null;
+          status?: string;
+          task_id: string;
+          tokens?: number | null;
+          transcript: string;
+          user_id: string;
+          word_count: number;
+        };
+        Update: {
+          attempts?: number;
+          audio_seconds?: number;
+          client_key?: string;
+          completed_at?: string | null;
+          created_at?: string;
+          error_code?: string | null;
+          exam?: string;
+          feedback?: Json | null;
+          id?: string;
+          locale?: string;
+          metrics?: Json;
+          model?: string | null;
+          not_before?: string;
+          started_at?: string | null;
+          status?: string;
+          task_id?: string;
+          tokens?: number | null;
+          transcript?: string;
+          user_id?: string;
+          word_count?: number;
+        };
+        Relationships: [];
+      };
       writing_feedback_flags: {
         Row: {
           created_at: string;
@@ -903,6 +996,71 @@ export type Database = {
       mpk_admin_beta_overview: { Args: never; Returns: Json };
       mpk_admin_beta_metrics: { Args: never; Returns: Json };
       mpk_admin_ai_usage: { Args: never; Returns: Json };
+      mpk_claim_speaking_jobs: {
+        Args: { p_limit: number };
+        Returns: {
+          attempts: number;
+          exam: string;
+          id: string;
+          locale: string;
+          metrics: Json;
+          target: string;
+          task_id: string;
+          transcript: string;
+          user_id: string;
+        }[];
+      };
+      mpk_complete_speaking_job: {
+        Args: {
+          p_feedback: Json;
+          p_id: string;
+          p_model: string;
+          p_tokens: number;
+        };
+        Returns: undefined;
+      };
+      mpk_flag_speaking_fix: {
+        Args: {
+          p_fix_index: number;
+          p_note: string | null;
+          p_submission_id: string;
+        };
+        Returns: undefined;
+      };
+      mpk_record_transcription: {
+        Args: { p_audio_seconds: number; p_failed: boolean; p_model: string };
+        Returns: undefined;
+      };
+      mpk_requeue_speaking: { Args: { p_id: string }; Returns: string };
+      mpk_retry_speaking_job: {
+        Args: {
+          p_delay_seconds: number;
+          p_error: string;
+          p_final: boolean;
+          p_id: string;
+          p_model: string;
+          p_tokens: number;
+        };
+        Returns: string | null;
+      };
+      mpk_speaking_allowance: {
+        Args: { p_audio_seconds: number; p_user_id: string };
+        Returns: string;
+      };
+      mpk_speaking_status: { Args: { p_id: string }; Returns: Json };
+      mpk_submit_speaking: {
+        Args: {
+          p_audio_seconds: number;
+          p_client_key: string;
+          p_exam: string;
+          p_locale: string;
+          p_metrics: Json;
+          p_task_id: string;
+          p_transcript: string;
+          p_user_id: string;
+        };
+        Returns: Json;
+      };
       mpk_claim_writing_jobs: {
         Args: { p_limit: number };
         Returns: {
