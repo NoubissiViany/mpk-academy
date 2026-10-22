@@ -19,7 +19,9 @@ The page always shows the transcript ("This is what we heard"), pace and pauses,
 
 **Browsers:** recording needs `MediaRecorder` (current Chrome, Edge, Firefox, Safari). Safari records AAC in MP4 and may ignore the requested bitrate; long answers then stop at the size limit and can still be sent. Learners who refuse the microphone or use an older browser get timed self-practice instead.
 
-**Not yet:** the TEF section B interlocutor's objections played at set times, and a spoken model answer for each task. Both need generated audio (Phase 4).
+**TEF section B objections:** the person being convinced objects three times, at 1:00, 2:30 and 4:00 into the answer (`objections` on the task, `OBJECTION_TIMES` in `src/config/speaking.ts`). Each objection appears on screen and plays once in that person's voice once its clip exists (`npm run content:audio`). Recording continues during the objection. The browser reports which objections played and when, and the server removes the words heard in those windows before the review, since speakers can be picked up by the microphone. The reviewer is told which objections were raised and judges whether the learner answered them. Self-practice shows the objections at the same times.
+
+**Model answers:** every speaking practice task has a model answer: a dialogue for role-plays, a monologue otherwise. It can be read and heard after answering, on the practice page and on the feedback page.
 
 ## Limits and free-plan budget
 

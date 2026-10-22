@@ -83,6 +83,33 @@ describe("speaking feedback worker", () => {
     expect(user.content).toContain(`<transcript>\n${transcript}`);
   });
 
+  it("tells the reviewer which objections the other person raised", () => {
+    const [, user] = buildSpeakingMessages(
+      job({ metrics: { audioSeconds: 200, objections: [0, 2] } }),
+      {
+        id: "tef-speaking-section-b-001",
+        taskType: "section-b",
+        title: "Un défi de lecture",
+        scenario: "Convaincre un ami.",
+        instructions: "Répondez à ses objections.",
+        candidateRole: "Personne qui propose",
+        interlocutorRole: "Ami pressé",
+        objections: {
+          voice: "male",
+          lines: [
+            "Je n’ai pas le temps.",
+            "Je préfère les séries.",
+            "Et si j’abandonne ?",
+          ],
+        },
+      } as never,
+    );
+    expect(user.content).toContain("not the learner's words");
+    expect(user.content).toContain("- Je n’ai pas le temps.");
+    expect(user.content).toContain("- Et si j’abandonne ?");
+    expect(user.content).not.toContain("Je préfère les séries.");
+  });
+
   it("matches quotes loosely and drops spelling and punctuation fixes", async () => {
     const { client, rpc } = fakeClient([job()]);
     const chat: ChatFunction = async () => ({

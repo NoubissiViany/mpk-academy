@@ -153,6 +153,19 @@ describe("content validation", () => {
     ).toThrow("tef-mock-listening-a2-001: a 55s clip leaves under 10s");
   });
 
+  it("expects role-play model answers as dialogues", () => {
+    const task = structuredClone(
+      items.find((i) => i.id === "tef-speaking-section-b-001")!,
+    );
+    if (task.kind === "speaking")
+      task.correction.modelResponse = "Je te propose un défi de lecture.";
+    expect(() =>
+      validate({ items: items.map((i) => (i.id === task.id ? task : i)) }),
+    ).toThrow(
+      "tef-speaking-section-b-001: the model answer should be a dialogue",
+    );
+  });
+
   it("requires French teaching text", () => {
     const item = mcq("tef-reading-a2-001");
     delete item.correction.explanationFr;

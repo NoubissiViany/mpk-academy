@@ -49,6 +49,11 @@ export interface ProductiveTask extends Metadata {
   objectives: string[];
   durationSeconds: number;
   preparationSeconds: number;
+  /**
+   * TEF section B: what the other person objects, played or shown during the
+   * answer at set times, in the voice of the person being convinced.
+   */
+  objections?: { voice: "female" | "male"; lines: string[] };
   wordCount?: { min: number; max?: number };
   correction: {
     guidance: string;
@@ -184,8 +189,13 @@ export type PublicLessonContent = Omit<
 };
 
 /** A productive task as sent to the browser: the model response is fetched after review. */
-export type PublicProductiveTask = Omit<ProductiveTask, "correction"> & {
+export type PublicProductiveTask = Omit<
+  ProductiveTask,
+  "correction" | "objections"
+> & {
   correction: Omit<ProductiveTask["correction"], "modelResponse"> & {
     hasModelResponse: boolean;
   };
+  /** TEF section B: when each objection comes, in seconds into the answer. */
+  objections?: { at: number; text: string; audio?: string; seconds?: number }[];
 };

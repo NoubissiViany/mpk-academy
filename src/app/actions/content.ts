@@ -142,11 +142,13 @@ export async function checkLessonCheckpointAction(
 
 export async function getModelResponseAction(
   taskId: string,
-): Promise<{ ok: true; modelResponse: string } | Failure> {
+): Promise<{ ok: true; modelResponse: string; audio?: string } | Failure> {
   if (!/^[a-z0-9-]{1,100}$/.test(taskId)) return fail("invalid");
   const learner = await access("get_model_response");
   if (!learner.ok) return learner;
   if (!hasPlanFeature(learner.planAccess, "practice")) return fail("locked");
-  const modelResponse = getModelResponse(learner.exam ?? "TEF Canada", taskId);
-  return modelResponse ? { ok: true, modelResponse } : fail("not_found");
+  const model = getModelResponse(learner.exam ?? "TEF Canada", taskId);
+  return model
+    ? { ok: true, modelResponse: model.text, audio: model.audio }
+    : fail("not_found");
 }

@@ -21,9 +21,15 @@ const {
 const { mockItems } = require("../../src/content/mock-catalog.ts");
 const { sampleItems } = require("../../src/content/sample.ts");
 const {
+  speakerIds,
   textFingerprint,
   transcriptTurns,
 } = require("../../src/content/shared/audio.ts");
+const {
+  modelAnswerClipId,
+  objectionClipId,
+} = require("../../src/content/clips.ts");
+const speakerGenders = require("../../src/content/audio-speakers.json");
 
 const root = path.resolve(__dirname, "../..");
 const manifestPath = path.join(root, "src/content/audio-manifest.json");
@@ -128,32 +134,74 @@ function buildSsml(item, voices) {
   return `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="${voices[0].slice(0, 5)}">${body}</speak>`;
 }
 
+// Speaking practice tasks: the model answer read aloud (a dialogue for
+// role-plays), and TEF section B objections in the other person's voice.
+// They take the shape of a listening question so voices and SSML are shared.
+const spoken = (id, item, transcript, genders) => ({
+  id: item.id,
+  exam: item.exam,
+  level: item.level,
+  audio: {
+    id,
+    transcript,
+    speakers: speakerIds(transcript).map((speaker, index) => ({
+      id: speaker,
+      ...(genders?.[index]
+        ? { gender: genders[index] === "F" ? "female" : "male" }
+        : {}),
+    })),
+  },
+});
+const taskClips = practiceItems
+  .filter((item) => item.kind === "speaking")
+  .flatMap((task) => [
+    ...(task.correction.modelResponse
+      ? [
+          spoken(
+            modelAnswerClipId(task.id),
+            task,
+            task.correction.modelResponse,
+            speakerGenders[task.id],
+          ),
+        ]
+      : []),
+    ...(task.objections?.lines ?? []).map((line, index) =>
+      spoken(
+        objectionClipId(task.id, index),
+        { ...task, id: `${task.id}-objections` },
+        line,
+        task.objections.voice === "female" ? "F" : "M",
+      ),
+    ),
+  ]);
+
 const mockIds = new Set(mockItems.map((item) => item.id));
 const clips = [
-  ...diagnosticItems,
-  ...practiceItems,
-  ...mockItems,
-  ...sampleItems,
-]
-  .filter((item) => item.kind === "mcq" && item.audio)
-  .map((item) => {
-    const voices = chooseVoices(item);
-    const ssml = buildSsml(item, voices);
-    const source = sha(`${FORMAT}\n${ssml}`);
-    const mock = mockIds.has(item.id);
-    const exam = item.exam.toLowerCase();
-    return {
-      id: item.audio.id,
-      item,
-      voices,
-      ssml,
-      source,
-      path: mock ? `${exam}/${source}.mp3` : `/audio/${source}.mp3`,
-      file: mock
-        ? path.join(cacheDir, exam, `${source}.mp3`)
-        : path.join(publicDir, `${source}.mp3`),
-    };
-  });
+  ...[
+    ...diagnosticItems,
+    ...practiceItems,
+    ...mockItems,
+    ...sampleItems,
+  ].filter((item) => item.kind === "mcq" && item.audio),
+  ...taskClips,
+].map((item) => {
+  const voices = chooseVoices(item);
+  const ssml = buildSsml(item, voices);
+  const source = sha(`${FORMAT}\n${ssml}`);
+  const mock = mockIds.has(item.id);
+  const exam = item.exam.toLowerCase();
+  return {
+    id: item.audio.id,
+    item,
+    voices,
+    ssml,
+    source,
+    path: mock ? `${exam}/${source}.mp3` : `/audio/${source}.mp3`,
+    file: mock
+      ? path.join(cacheDir, exam, `${source}.mp3`)
+      : path.join(publicDir, `${source}.mp3`),
+  };
+});
 
 const manifest = fs.existsSync(manifestPath)
   ? JSON.parse(fs.readFileSync(manifestPath, "utf8"))

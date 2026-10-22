@@ -8,6 +8,12 @@
   "tcf-mock-listening-b2-003": "M",
   "tcf-mock-listening-b2-006": "FM",
   "tcf-mock-listening-b2-011": "M",
+  "tcf-speaking-task-1-001": "F",
+  "tcf-speaking-task-1-002": "M",
+  "tcf-speaking-task-2-001": "MF",
+  "tcf-speaking-task-2-002": "FM",
+  "tcf-speaking-task-3-001": "F",
+  "tcf-speaking-task-3-002": "M",
   "tef-listening-a2-002": "M",
   "tef-listening-b2-002": "F",
   "tef-listening-c1-002": "F",
@@ -17,5 +23,9 @@
   "tef-mock-listening-b2-003": "M",
   "tef-mock-listening-b2-012": "F",
   "tef-mock-listening-c1-001": "M",
-  "tef-mock-listening-c1-002": "M"
+  "tef-mock-listening-c1-002": "M",
+  "tef-speaking-section-a-001": "MF",
+  "tef-speaking-section-a-002": "FM",
+  "tef-speaking-section-b-001": "FM",
+  "tef-speaking-section-b-002": "MF"
 }

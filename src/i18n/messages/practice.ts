@@ -85,6 +85,7 @@ const en = {
     reviewTitle: "Self-review · MPK practice feedback",
     modelResponse: "Original MPK model response",
     loadingModel: "Loading model response…",
+    modelAudio: "Listen to the model answer",
     save: "Save practice completion",
   },
   results: {
@@ -201,6 +202,7 @@ const fr: typeof en = {
     reviewTitle: "Autoévaluation · retour d’entraînement MPK",
     modelResponse: "Modèle de réponse MPK original",
     loadingModel: "Chargement du modèle de réponse…",
+    modelAudio: "Écouter le modèle de réponse",
     save: "Enregistrer l’entraînement",
   },
   results: {

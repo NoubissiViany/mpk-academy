@@ -11,6 +11,8 @@ import {
   unbalancedPositions,
   wordCount,
 } from "./quality";
+import { OBJECTION_TIMES } from "../config/speaking";
+import { speakerIds } from "./shared/audio";
 import { competencyIds } from "./shared/competencies";
 import { levels } from "./shared/levels";
 import type {
@@ -347,19 +349,52 @@ function qualityErrors(
           );
     }
 
-  // Speaker voices chosen in src/content/audio-speakers.json fit the clip.
+  // Speaker voices chosen in src/content/audio-speakers.json fit the clip
+  // (a listening document or a spoken model answer).
   for (const [id, genders] of Object.entries(
     speakerGenders as Record<string, string>,
   )) {
-    const item = mcqs.find((i) => i.id === id);
-    if (!item?.audio)
+    const item = items.find((i) => i.id === id);
+    const spoken =
+      item?.kind === "mcq"
+        ? item.audio?.transcript
+        : item?.kind === "speaking"
+          ? item.correction.modelResponse
+          : undefined;
+    if (!spoken)
       errors.push(`${id}: listed in audio-speakers.json but has no audio`);
     else if (
       !/^[FM]+$/.test(genders) ||
-      genders.length !== item.audio.speakers.length
+      genders.length !== speakerIds(spoken).length
     )
       errors.push(
-        `${id}: audio-speakers.json needs one F or M per speaker (${item.audio.speakers.length})`,
+        `${id}: audio-speakers.json needs one F or M per speaker (${speakerIds(spoken).length})`,
+      );
+  }
+
+  // Spoken model answers: role-plays as dialogues, monologues as one voice.
+  // Objections belong to TEF section B only.
+  for (const task of items.filter(isTask)) {
+    if (task.kind !== "speaking") continue;
+    const model = task.correction.modelResponse;
+    if (model) {
+      const roleplay = ["section-a", "section-b", "task-2"].includes(
+        task.taskType,
+      );
+      if (roleplay !== speakerIds(model).length > 1)
+        errors.push(
+          `${task.id}: the model answer should be ${roleplay ? 'a dialogue ("A : … B : …")' : "a monologue"}`,
+        );
+    }
+    if (
+      task.objections &&
+      (task.taskType !== "section-b" ||
+        !task.objections.lines.length ||
+        task.objections.lines.length > OBJECTION_TIMES.length ||
+        task.objections.lines.some((line) => !line.trim()))
+    )
+      errors.push(
+        `${task.id}: objections are for TEF section B, ${OBJECTION_TIMES.length} at most`,
       );
   }
 

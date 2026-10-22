@@ -7,7 +7,9 @@ import {
   lessons,
   practiceItems,
 } from "@/content/catalog";
+import { modelAnswerClipId, objectionClipId, readyClip } from "@/content/clips";
 import { mockItems } from "@/content/mock-catalog";
+import { OBJECTION_TIMES } from "@/config/speaking";
 import { sampleItems } from "@/content/sample";
 import type {
   LearningLesson,
@@ -192,8 +194,22 @@ export function getPublicProductiveTasks(
 ): PublicProductiveTask[] {
   return findPractice(examCode(exam), skill)
     .filter(isProductive)
-    .map(({ correction, ...task }) => ({
+    .map(({ correction, objections, ...task }) => ({
       ...task,
+      // Objections are part of the task, not an answer: they are sent ahead
+      // and revealed at their time while the learner answers.
+      ...(objections
+        ? {
+            objections: objections.lines.map((text, index) => {
+              const clip = readyClip(objectionClipId(task.id, index), text);
+              return {
+                at: OBJECTION_TIMES[index],
+                text,
+                ...(clip ? { audio: clip.path, seconds: clip.seconds } : {}),
+              };
+            }),
+          }
+        : {}),
       correction: {
         guidance: correction.guidance,
         guidanceFr: correction.guidanceFr,
@@ -235,13 +251,16 @@ export const getWritingTaskTitles = () => productiveTitles("writing");
 /** Titles of every speaking task, for lists of past recordings. */
 export const getSpeakingTaskTitles = () => productiveTitles("speaking");
 
+/** A task's model answer, with its recording for speaking tasks once made. */
 export function getModelResponse(exam: ExamId, taskId: string) {
   const item = practiceItems.find(
     (candidate) => candidate.id === taskId && candidate.exam === examCode(exam),
   );
-  return item && isProductive(item)
-    ? (item.correction.modelResponse ?? null)
-    : null;
+  const text =
+    item && isProductive(item) ? item.correction.modelResponse : undefined;
+  if (!text) return null;
+  const clip = readyClip(modelAnswerClipId(taskId), text);
+  return { text, ...(clip ? { audio: clip.path } : {}) };
 }
 
 const optionLabelsById = new Map(

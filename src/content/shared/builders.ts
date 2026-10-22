@@ -1,9 +1,9 @@
-import audioManifest from "../audio-manifest.json";
 import speakerGenders from "../audio-speakers.json";
+import { readyClip } from "../clips";
 import type { AudioAsset, MCQ, ContentExam } from "./types";
 import { difficultyByLevel, type ContentLevel } from "./levels";
 import type { ContentCompetency } from "./competencies";
-import { speakerIds, textFingerprint, type AudioManifest } from "./audio";
+import { speakerIds } from "./audio";
 // Authoring helper only: every row supplies its own original document and distractors.
 export type QuestionSeed = [
   id: string,
@@ -89,7 +89,7 @@ function listeningAudio(id: string, transcript: string): AudioAsset {
         }
       : {}),
   }));
-  const clip = (audioManifest as AudioManifest)[audioId];
+  const clip = readyClip(audioId, transcript);
   const base = {
     id: audioId,
     speakers,
@@ -99,7 +99,7 @@ function listeningAudio(id: string, transcript: string): AudioAsset {
       Math.ceil(transcript.split(/\s+/).length / 2.3),
     ),
   };
-  return clip?.text === textFingerprint(transcript)
+  return clip
     ? {
         ...base,
         status: "ready",
