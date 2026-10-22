@@ -57,6 +57,7 @@ function feedbackFor(
   answer: string,
   locale: Locale,
 ): AnswerFeedback {
+  const audio = question.metadata?.audio;
   return {
     correct:
       answer.trim().toLowerCase() ===
@@ -64,6 +65,8 @@ function feedbackFor(
     correctAnswer: question.correctAnswer,
     explanation:
       (locale === "fr" && question.explanationFr) || question.explanation,
+    // The transcript is withheld while listening, and shown after answering.
+    ...(audio?.status === "ready" ? { transcript: audio.transcript } : {}),
   };
 }
 

@@ -1,5 +1,6 @@
 "use client";
 import { useI18n } from "@/i18n/client";
+import { transcriptTurns } from "@/content/shared/audio";
 import { competencyLabel } from "@/i18n/format";
 import { cn } from "@/lib/utils";
 import type { AnswerFeedback, PublicQuestion } from "@/types/domain";
@@ -142,6 +143,23 @@ export function QuestionCard({
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
             {feedback.explanation}
           </p>
+          {feedback.transcript && (
+            <details className="mt-3 text-sm">
+              <summary className="cursor-pointer font-semibold text-primary">
+                {copy.showTranscript}
+              </summary>
+              <div lang="fr" className="mt-2 space-y-1 leading-6">
+                {transcriptTurns(feedback.transcript).map(
+                  (turn, index, turns) => (
+                    <p key={index}>
+                      {turns.length > 1 && `${turn.speaker} : `}
+                      {turn.text}
+                    </p>
+                  ),
+                )}
+              </div>
+            </details>
+          )}
           {question.competencies[0] && (
             <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               {copy.competency(competencyLabel(t, question.competencies[0]))}

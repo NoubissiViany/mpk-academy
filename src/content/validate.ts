@@ -1,3 +1,4 @@
+import speakerGenders from "./audio-speakers.json";
 import debtFile from "./debt.json";
 import {
   allowedLongestCorrect,
@@ -314,6 +315,22 @@ function qualityErrors(
             `${item.id}: a ${item.audio.intendedDuration}s clip leaves under ${LISTENING_ANSWER_SECONDS}s to answer in its ${Math.floor(slot)}s`,
           );
     }
+
+  // Speaker voices chosen in src/content/audio-speakers.json fit the clip.
+  for (const [id, genders] of Object.entries(
+    speakerGenders as Record<string, string>,
+  )) {
+    const item = mcqs.find((i) => i.id === id);
+    if (!item?.audio)
+      errors.push(`${id}: listed in audio-speakers.json but has no audio`);
+    else if (
+      !/^[FM]+$/.test(genders) ||
+      genders.length !== item.audio.speakers.length
+    )
+      errors.push(
+        `${id}: audio-speakers.json needs one F or M per speaker (${item.audio.speakers.length})`,
+      );
+  }
 
   // Teaching text in French as well as English.
   for (const item of mcqs) {

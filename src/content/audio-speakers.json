@@ -1,0 +1,21 @@
+{
+  "diagnostic-listening-b1-001": "MF",
+  "diagnostic-listening-c1-001": "F",
+  "tef-listening-a2-002": "M",
+  "tef-listening-b2-002": "F",
+  "tef-listening-c1-002": "F",
+  "tcf-listening-b2-002": "FM",
+  "tcf-listening-c1-002": "F",
+  "tef-mock-listening-a2-002": "F",
+  "tef-mock-listening-b1-007": "M",
+  "tef-mock-listening-b2-002": "M",
+  "tef-mock-listening-b2-003": "M",
+  "tef-mock-listening-b2-012": "F",
+  "tef-mock-listening-c1-001": "M",
+  "tef-mock-listening-c1-002": "M",
+  "tcf-mock-listening-a2-002": "F",
+  "tcf-mock-listening-b1-006": "M",
+  "tcf-mock-listening-b2-003": "M",
+  "tcf-mock-listening-b2-006": "FM",
+  "tcf-mock-listening-b2-011": "M"
+}

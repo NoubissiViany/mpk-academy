@@ -24,7 +24,7 @@ export interface Metadata {
 export type AudioAsset = {
   id: string;
   intendedDuration: number;
-  speakers: { id: string; role: string }[];
+  speakers: { id: string; role: string; gender?: "female" | "male" }[];
   transcript: string;
 } & ({ status: "pending"; path?: never } | { status: "ready"; path: string });
 export interface MCQ extends Metadata {
