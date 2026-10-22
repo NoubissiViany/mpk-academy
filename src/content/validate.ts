@@ -210,17 +210,58 @@ const isMcq = (item: ContentItem): item is MCQ => item.kind === "mcq";
 const isTask = (item: ContentItem): item is ProductiveTask =>
   item.kind !== "mcq";
 
-/** The set of questions a learner meets together, named for messages and the debt file. */
-function poolName(
-  item: MCQ,
-  mockOf: Map<string, string>,
-  practice: Set<string>,
+/**
+ * Questions a learner meets together (a mock section, a practice skill, the
+ * diagnostic), named as in messages and the debt file.
+ */
+function questionPools(
+  mcqs: MCQ[],
+  manifests: MockManifest[],
+  practiceIds: string[],
 ) {
-  const mock = mockOf.get(item.id);
-  if (mock) return `${mock} ${item.skill}`;
-  return practice.has(item.id)
-    ? `practice ${item.exam} ${item.skill}`
-    : `diagnostic ${item.skill}`;
+  const mockOf = new Map(
+    manifests.flatMap((m) =>
+      m.sections.flatMap((s) => s.itemIds.map((id) => [id, m.id] as const)),
+    ),
+  );
+  const practice = new Set(practiceIds);
+  const pools = new Map<string, MCQ[]>();
+  for (const item of mcqs) {
+    const mock = mockOf.get(item.id);
+    const name = mock
+      ? `${mock} ${item.skill}`
+      : practice.has(item.id)
+        ? `practice ${item.exam} ${item.skill}`
+        : `diagnostic ${item.skill}`;
+    pools.set(name, [...(pools.get(name) ?? []), item]);
+  }
+  return pools;
+}
+
+/**
+ * The debt list after content changes: fixed problems leave it, and nothing
+ * is ever added (a new problem must fail validation instead).
+ */
+export function shrinkDebt(
+  debt: ContentDebt,
+  items: ContentItem[],
+  manifests: MockManifest[],
+  practiceIds: string[],
+): ContentDebt {
+  const mcqs = items.filter(isMcq);
+  const short = new Set(mcqs.filter(isShortDocument).map((item) => item.id));
+  const pools = questionPools(mcqs, manifests, practiceIds);
+  const longestCorrect: Record<string, number> = {};
+  for (const [name, known] of Object.entries(debt.longestCorrect)) {
+    const pool = pools.get(name) ?? [];
+    const count = pool.filter(correctIsLongest).length;
+    if (count > allowedLongestCorrect(pool.length))
+      longestCorrect[name] = Math.min(known, count);
+  }
+  return {
+    shortDocuments: debt.shortDocuments.filter((id) => short.has(id)),
+    longestCorrect,
+  };
 }
 
 function qualityErrors(
@@ -247,17 +288,7 @@ function qualityErrors(
       );
 
   // No answer-length cue, and answers spread evenly over a, b, c and d.
-  const mockOf = new Map(
-    manifests.flatMap((m) =>
-      m.sections.flatMap((s) => s.itemIds.map((id) => [id, m.id] as const)),
-    ),
-  );
-  const practice = new Set(practiceIds);
-  const pools = new Map<string, MCQ[]>();
-  for (const item of mcqs) {
-    const name = poolName(item, mockOf, practice);
-    pools.set(name, [...(pools.get(name) ?? []), item]);
-  }
+  const pools = questionPools(mcqs, manifests, practiceIds);
   for (const [name, pool] of pools) {
     const longest = pool.filter(correctIsLongest).length;
     const allowed = allowedLongestCorrect(pool.length);

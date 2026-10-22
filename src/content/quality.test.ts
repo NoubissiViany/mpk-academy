@@ -9,7 +9,12 @@ import {
   unbalancedPositions,
 } from "./quality";
 import type { MCQ } from "./shared/types";
-import { contentDebt, validateContent, type ContentDebt } from "./validate";
+import {
+  contentDebt,
+  shrinkDebt,
+  validateContent,
+  type ContentDebt,
+} from "./validate";
 
 const items = [...diagnosticItems, ...practiceItems, ...mockItems];
 const practiceIds = practiceItems.map((item) => item.id);
@@ -100,6 +105,19 @@ describe("content validation", () => {
         items: items.map((i) => (i.id === item.id ? item : i)),
       }),
     ).toThrow("tef-reading-b2-001: no longer a short document");
+  });
+
+  it("shrinks the debt list as items are fixed, and never grows it", () => {
+    const item = mcq("tef-reading-b2-001");
+    item.passage = words(120);
+    const fixed = items.map((i) => (i.id === item.id ? item : i));
+    const debt = shrinkDebt(contentDebt, fixed, manifests, practiceIds);
+    expect(debt.shortDocuments).not.toContain(item.id);
+    expect(debt.shortDocuments).toHaveLength(
+      contentDebt.shortDocuments.length - 1,
+    );
+    expect(debt.longestCorrect).toEqual(contentDebt.longestCorrect);
+    expect(() => validate({ items: fixed, debt })).not.toThrow();
   });
 
   it("rejects a mock section where the longest option is too often right", () => {

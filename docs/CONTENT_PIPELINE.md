@@ -1,0 +1,120 @@
+# Content pipeline: drafting, review, audio and release
+
+All questions, lessons and tasks live in `src/content` as typed source. The database holds a copy of what scoring needs (answer keys, audio status, lesson list, mock manifests), loaded by migrations. This document covers how new content is drafted, reviewed, given audio, and released.
+
+Nothing a language model drafts reaches learners until a person accepts it. Gemini only ever sees content prompts, never learner data.
+
+## One-time setup
+
+Put these in `.env.local` on the machine that makes content. They are for the scripts only: **never add them to Vercel.**
+
+**Azure AI Speech (listening audio, free F0 tier)**
+
+1. In the Azure portal, create a resource of type **Speech** (Azure AI services). A card is required to sign up; F0 itself charges nothing.
+2. Choose pricing tier **Free F0** and a region that offers the French voices, for example `canadacentral` or `eastus`.
+3. From **Keys and Endpoint**, copy a key and the region:
+   ```
+   AZURE_SPEECH_KEY=…
+   AZURE_SPEECH_REGION=canadacentral
+   ```
+
+F0 includes 500,000 characters of neural speech a month. The 103 clips that exist today use about 17,000.
+
+**Gemini (drafting, free tier)**
+
+1. At aistudio.google.com, choose **Get API key** (you must be 18 or over).
+2. Add it as `GEMINI_API_KEY=…`. The default model is `gemini-3.8-flash`; set `GEMINI_MODEL` to change it.
+
+On the free tier Google may use what is sent to improve its products. That is acceptable for content drafts only, which is the only thing the drafting script sends.
+
+## The rules every question must pass
+
+`npm run validate:content` (also run in CI) checks the following:
+
+| Rule                      | Detail                                                                                                                                                               |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Document length per level | Reading at least 30 / 60 / 100 / 140 words at A2 / B1 / B2 / C1. Listening at least 20 / 35 / 55 / 75.                                                               |
+| No answer-length cue      | In each mock section, practice skill and the diagnostic, the correct option may be the longest one no more often than chance plus one standard deviation (13 of 40). |
+| Balanced answer positions | Each of a–d holds about a quarter of a pool of 20 or more.                                                                                                           |
+| No near-duplicates        | No two questions (document and question) or tasks share half their wording.                                                                                          |
+| Mock clips fit their time | A clip leaves at least 10 seconds to answer within its share of the listening section.                                                                               |
+| French teaching text      | Every explanation, lesson body, checkpoint and task guidance has a French version.                                                                                   |
+
+**Content debt.** When the rules were introduced, 201 of the 208 reading and listening documents were shorter than these minimums. All documents, mock exams included, were at most 40 words, even at C1. In addition, four mock sections favoured the longest option, in 15 to 19 of their 39–40 questions. These cases are recorded in `src/content/debt.json`. New content must pass, and the list can only shrink: when an item is fixed, validation asks for it to be removed. `npm run content:accept` removes it for you.
+
+## Drafting
+
+```bash
+# New practice questions (5 per request to the model)
+npm run content:draft -- new --exam TEF --skill reading --level B2 --count 10
+npm run content:draft -- new --exam TCF --skill listening --level B1 --count 10 --topic "logement"
+
+# Rewrite published questions that are in the debt list: same id, longer document, fixed options
+npm run content:draft -- rewrite --prefix tef-mock-reading-b2 --count 10
+```
+
+Drafts are written to `content/drafts/<date>-<label>.json`, with the problems the automatic checks found on each one: length, longest option, voices, near-duplicates, an untranslated explanation. `--provider groq` uses `openai/gpt-oss-20b` on the app's Groq account instead. The app does not use that model, but its French is weaker; it is for testing the pipeline.
+
+**Priorities:**
+
+1. Rewrite the mock exams first. They cannot open until their audio exists, and the audio should be made from the final text.
+2. Then rewrite the practice items.
+3. Then add new practice items toward the targets that `validate:content` prints.
+
+## Review
+
+1. `npm run content:review` writes `content/drafts/review.html`, listing every pending draft. A rewrite is shown beside the question it replaces.
+2. First pass (you): in the JSON file, set `"review": "accepted"` or `"rejected"`, and correct any text in place.
+3. `npm run content:review -- --teacher` writes `teacher-review.html`. It contains every accepted mock question and a fixed one in five of the other accepted drafts. After the teacher checks it, set `"teacher": "approved"` or `"rejected"` on those drafts.
+4. `npm run content:accept` merges what is ready:
+   - Accepted drafts that need no teacher check.
+   - Drafts the teacher approved.
+
+   A rewrite replaces its question in place; a new question is added to its exam's practice file. The step also records listening voices, shrinks the debt list, runs validation, and changes nothing if validation fails.
+
+Commit the draft files along with the content: they record what was reviewed and by whom.
+
+## Audio
+
+```bash
+npm run content:audio -- --dry-run   # which clips would be made, and the characters used
+npm run content:audio                # make new or changed clips
+```
+
+How the clips are made:
+
+- **Format and pacing:** MP3 at 32 kbps mono, one request at a time. A2 and B1 are read slightly slower.
+- **Voices:** they alternate between Canadian French (Sylvie, Jean, Antoine, Thierry) and France French, with two distinct voices in a dialogue.
+- **Gender:** a speaker's gender is chosen at random unless `src/content/audio-speakers.json` fixes it. Fix it whenever the text depends on it, for example _la chroniqueuse_ or "she says". Drafts carry the speakers' genders, and accepting a draft records them.
+- **Ready status:** `src/content/audio-manifest.json` records each clip against a fingerprint of its transcript. A question is "ready" only while its transcript is unchanged. Editing the transcript sends it back to pending until the clip is remade.
+
+Where the files go:
+
+- **Practice, diagnostic and landing-sample clips** go to `public/audio/<hash>.mp3`. Vercel serves them, cached for good, since the name changes when the content does. Commit them.
+- **Mock clips** go to `.audio-cache/`, which is not committed. Upload them to the private `mock-audio` bucket of each project:
+  ```bash
+  npm run content:upload-mock-audio                                   # project in .env.local (staging)
+  npm run content:upload-mock-audio -- --env-file .env.production.local
+  ```
+  The second file holds the production `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`. Delete it afterwards if you do not keep it.
+
+During a mock exam, learners get a link signed for the clip's length plus two minutes. The link is created before the single play is spent, so a storage error does not use up their listen.
+
+## Releasing content to the database
+
+`npm run content:sql` compares the content with `supabase/content-lock.json`. It then writes `supabase/migrations/<timestamp>_content_sync.sql`, which upserts only the changed rows, such as new questions, new answer keys, `audio_status` changed to ready, or real clip durations. CI fails if content changed without that migration.
+
+Release in this order:
+
+1. Merge drafts (`content:accept`), then make the audio (`content:audio`).
+2. Upload mock clips to **staging and production** (`content:upload-mock-audio`).
+3. Run `npm run content:sql`, then commit the content, audio files, manifest, lock and migration together.
+4. After the merge to `main`, push the migration as usual:
+   - `npx supabase db push --dry-run`
+   - `npx supabase db push` for staging, then production.
+
+Step 2 must come before step 4. Otherwise a project's mock exam opens with clips that are missing from its bucket.
+
+## Thèmes récurrents
+
+The monthly public page `/themes` is driven by `src/content/themes.ts`. Each month adds one entry with original prompts on the themes that keep coming back. Write your own prompts. Never copy or reconstruct real exam questions, and keep the notice that these are practice prompts.

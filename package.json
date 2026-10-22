@@ -20,6 +20,9 @@
     "content:sql": "node scripts/content/generate-sql.cjs",
     "content:audio": "node scripts/content/generate-audio.cjs",
     "content:upload-mock-audio": "node scripts/content/upload-mock-audio.cjs",
+    "content:draft": "node scripts/content/draft.cjs",
+    "content:review": "node scripts/content/review-sheet.cjs",
+    "content:accept": "node scripts/content/accept-drafts.cjs",
     "check:bundle": "node scripts/check-client-bundle.cjs",
     "test:db": "bash scripts/db/test-migrations.sh"
   },
