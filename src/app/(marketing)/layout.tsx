@@ -33,12 +33,20 @@ export default async function MarketingLayout({
             <p className="mt-3 text-sm leading-6 text-muted-foreground">
               {footer.canadaCopy}
             </p>
-            <Link
-              href="/privacy"
-              className="mt-3 inline-block text-sm font-semibold text-primary hover:underline"
-            >
-              {t.common.nav.privacy}
-            </Link>
+            <div className="mt-3 flex flex-col items-start gap-2">
+              <Link
+                href="/themes"
+                className="text-sm font-semibold text-primary hover:underline"
+              >
+                {t.common.nav.themes}
+              </Link>
+              <Link
+                href="/privacy"
+                className="text-sm font-semibold text-primary hover:underline"
+              >
+                {t.common.nav.privacy}
+              </Link>
+            </div>
           </div>
         </div>
         <div className="border-t py-5 text-center text-xs text-muted-foreground">

@@ -55,7 +55,9 @@ describe("QuestionCard", () => {
       />,
     );
     fireEvent.click(screen.getByText("Read what was said"));
-    expect(screen.getByText("Tu viens demain ?", { exact: false })).toBeVisible();
+    expect(
+      screen.getByText("Tu viens demain ?", { exact: false }),
+    ).toBeVisible();
     expect(screen.getByText("B : Oui, vers midi.")).toBeVisible();
   });
 
