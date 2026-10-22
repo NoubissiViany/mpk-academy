@@ -5,6 +5,7 @@
 //
 //   node scripts/content/draft.cjs new --exam TEF --skill reading --level B1 --count 10 [--topic "logement"]
 //   node scripts/content/draft.cjs rewrite --prefix tef-mock-reading-b2 [--count 10]
+//   node scripts/content/draft.cjs check    re-run the checks after editing drafts by hand
 //
 // "rewrite" lengthens published questions listed as short in
 // src/content/debt.json, or fixes a correct option that is the longest.
@@ -199,7 +200,48 @@ function plan() {
   throw Error("First argument: new or rewrite. See the comment at the top.");
 }
 
+/** Re-checks every draft still under review, for example after hand edits. */
+function checkAll() {
+  const files = fs.existsSync(draftsDir)
+    ? fs.readdirSync(draftsDir).filter((name) => name.endsWith(".json"))
+    : [];
+  const drafts = files.map((name) => ({
+    name,
+    data: JSON.parse(fs.readFileSync(path.join(draftsDir, name), "utf8")),
+  }));
+  const open = drafts.flatMap((file) =>
+    file.data.items.filter((item) =>
+      ["pending", "accepted"].includes(item.review),
+    ),
+  );
+  const replaced = new Set(open.filter((i) => i.replaces).map((i) => i.id));
+  const others = [
+    ...published
+      .filter((item) => !replaced.has(item.id))
+      .map((item) => ({
+        id: item.id,
+        text: `${documentText(item)} ${item.prompt}`,
+      })),
+    ...open.map((item) => ({
+      id: item.id,
+      text: `${item.document} ${item.prompt}`,
+    })),
+  ];
+  let flagged = 0;
+  for (const item of open) {
+    item.problems = drafting.draftProblems(item, others);
+    if (item.problems.length) flagged += 1;
+  }
+  for (const file of drafts)
+    fs.writeFileSync(
+      path.join(draftsDir, file.name),
+      JSON.stringify(file.data, null, 2) + "\n",
+    );
+  console.log(`${open.length} drafts checked; ${flagged} with problems.`);
+}
+
 async function main() {
+  if (mode === "check") return checkAll();
   const work = plan();
   const providerName = option("provider", "gemini");
   const provider = providers[providerName];

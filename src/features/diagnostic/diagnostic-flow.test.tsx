@@ -148,7 +148,9 @@ describe("DiagnosticFlow", () => {
     expect(start).toBeEnabled();
     await user.click(start);
 
-    expect(screen.getByText("Question 1 of 20")).toBeVisible();
+    expect(
+      screen.getByText(`Question 1 of ${publicQuestions.length}`),
+    ).toBeVisible();
     expect(screen.getByText("Competency · Reading")).toBeVisible();
     expect(
       screen.getByText(

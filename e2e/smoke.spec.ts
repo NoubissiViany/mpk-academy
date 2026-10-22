@@ -20,15 +20,18 @@ async function completeGuestAssessment(page: import("@playwright/test").Page) {
   await page.getByLabel("I know some French").check();
   await start.click();
 
-  for (let index = 1; index <= 20; index += 1) {
-    await expect(page.getByText(`Question ${index} of 20`)).toBeVisible();
+  const progress = page.getByText(/^Question 1 of \d+$/);
+  await expect(progress).toBeVisible();
+  const total = Number((await progress.textContent())!.split(" of ")[1]);
+  for (let index = 1; index <= total; index += 1) {
+    await expect(page.getByText(`Question ${index} of ${total}`)).toBeVisible();
     const radio = page.locator('input[type="radio"]').first();
     if (await radio.count())
       await radio.evaluate((element: HTMLInputElement) => element.click());
     else await page.getByPlaceholder("Votre réponse").fill("lirais");
     await page
       .getByRole("button", {
-        name: index === 20 ? "Finish assessment" : "Next",
+        name: index === total ? "Finish assessment" : "Next",
         exact: true,
       })
       .click();

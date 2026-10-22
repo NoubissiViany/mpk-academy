@@ -20,6 +20,7 @@ import { Progress } from "@/components/ui/progress";
 import { recommendedPaidPlanId } from "@/config/product";
 import { defaultState } from "@/data/mock-state";
 import { useI18n } from "@/i18n/client";
+import { diagnosticMinutes } from "@/lib/domain/diagnostic";
 import { applyDiagnosticResult } from "@/lib/domain/onboarding";
 import { trackFunnelStep } from "@/lib/track-funnel";
 import { guestAssessmentRepository } from "@/repositories/guest-assessment";
@@ -280,14 +281,16 @@ function DiagnosticExperience({ questions }: { questions: PublicQuestion[] }) {
               {copy.intro.body}
             </p>
             <ul className="mt-7 grid gap-3 text-sm font-semibold sm:grid-cols-2 lg:grid-cols-1">
-              {copy.intro.facts.map((item) => (
-                <li key={item} className="flex items-center gap-3">
-                  <span className="grid size-6 place-items-center rounded-full bg-primary/10 text-primary">
-                    <Check className="size-4" aria-hidden="true" />
-                  </span>
-                  {item}
-                </li>
-              ))}
+              {copy.intro
+                .facts(questions.length, diagnosticMinutes(questions.length))
+                .map((item) => (
+                  <li key={item} className="flex items-center gap-3">
+                    <span className="grid size-6 place-items-center rounded-full bg-primary/10 text-primary">
+                      <Check className="size-4" aria-hidden="true" />
+                    </span>
+                    {item}
+                  </li>
+                ))}
             </ul>
             <div className="mt-8 rounded-2xl bg-ink p-6 text-white">
               <p className="text-sm font-bold uppercase tracking-[.14em] text-white/55">

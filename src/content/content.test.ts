@@ -6,33 +6,45 @@ import { candidateItem } from "./shared/types";
 import { toQuestion } from "./adapters";
 import { scoreDiagnostic } from "@/lib/domain/diagnostic";
 const items = [...diagnosticItems, ...practiceItems, ...mockItems];
-describe("original MPK seed", () => {
-  it("has the exact approved distribution and complete valid manifests", () => {
+// Counts grow as reviewed content is merged, so these tests check structure,
+// not totals.
+const pendingListening = (list: typeof items) =>
+  list.filter(
+    (i) =>
+      i.kind === "mcq" &&
+      i.skill === "listening" &&
+      i.audio?.status !== "ready",
+  );
+
+describe("MPK content", () => {
+  it("validates, with a diagnostic covering every level and skill, and complete manifests", () => {
     const report = validateContent(
       items,
       lessons,
       manifests,
       practiceItems.map((i) => i.id),
     );
-    expect(report).toMatchObject({ items: 248, lessons: 24, mocks: 2 });
-    expect(report.pendingAudio).toHaveLength(103);
-    expect(
-      Object.fromEntries(
-        ["A2", "B1", "B2", "C1"].map((l) => [
-          l,
-          diagnosticItems.filter((i) => i.level === l).length,
-        ]),
-      ),
-    ).toEqual({ A2: 4, B1: 6, B2: 6, C1: 4 });
-    expect(
-      Object.fromEntries(
-        ["reading", "listening", "grammar", "vocabulary"].map((s) => [
-          s,
-          diagnosticItems.filter((i) => i.skill === s).length,
-        ]),
-      ),
-    ).toEqual({ reading: 6, listening: 4, grammar: 6, vocabulary: 4 });
-    for (const m of manifests) expect(mockReady(m.id)).toBe(false);
+    expect(report).toMatchObject({
+      items: items.length,
+      lessons: lessons.length,
+      mocks: 2,
+    });
+    expect(report.pendingAudio).toEqual(
+      pendingListening(items).map((i) => i.id),
+    );
+    for (const level of ["A2", "B1", "B2", "C1"])
+      expect(diagnosticItems.some((i) => i.level === level)).toBe(true);
+    for (const skill of ["reading", "listening", "grammar", "vocabulary"])
+      expect(
+        diagnosticItems.filter((i) => i.skill === skill).length,
+      ).toBeGreaterThanOrEqual(4);
+    // A full mock opens only once every listening clip in it is ready.
+    for (const m of manifests) {
+      const ids = new Set(m.sections.flatMap((section) => section.itemIds));
+      expect(mockReady(m.id)).toBe(
+        pendingListening(mockItems).every((i) => !ids.has(i.id)),
+      );
+    }
   });
   it("rejects malformed options, IDs, word limits and speaking timers", () => {
     const bad = structuredClone(items);
@@ -62,12 +74,28 @@ describe("original MPK seed", () => {
     }
   });
   it("excludes transcript answers from scores and competency evidence", () => {
-    const qs = diagnosticItems.map(toQuestion);
+    // Pending audio is a fixture here, whatever clips exist.
+    const qs = diagnosticItems.map(toQuestion).map((q) =>
+      q.metadata?.audio
+        ? {
+            ...q,
+            metadata: {
+              ...q.metadata,
+              audio: {
+                ...q.metadata.audio,
+                status: "pending" as const,
+                path: undefined,
+              },
+            },
+          }
+        : q,
+    );
     const answers = Object.fromEntries(qs.map((q) => [q.id, q.correctAnswer]));
     const perfect = scoreDiagnostic(qs, answers);
     expect(perfect).toMatchObject({
       score: 100,
-      assessedItemCount: 16,
+      assessedItemCount: qs.filter((q) => q.diagnosticSkill !== "listening")
+        .length,
       languageFoundation: 100,
       skillScores: { listening: null },
       algorithmVersion: "mpk-diagnostic-v2",
@@ -96,7 +124,7 @@ describe("original MPK seed", () => {
       qs,
       Object.fromEntries(qs.map((q) => [q.id, q.correctAnswer])),
     );
-    expect(result.assessedItemCount).toBe(20);
+    expect(result.assessedItemCount).toBe(qs.length);
     expect(result.skillScores.listening).toBe(100);
   });
 });

@@ -21,7 +21,11 @@ import { contactEmail, isBetaMode } from "@/config/product";
 import { TrackFunnelStep } from "@/components/track-funnel-step";
 import { SampleQuiz } from "@/features/marketing/sample-quiz";
 import { getMessages } from "@/i18n/server";
-import { getPublicSampleQuestions } from "@/lib/server/content";
+import { diagnosticMinutes } from "@/lib/domain/diagnostic";
+import {
+  getPublicDiagnosticQuestions,
+  getPublicSampleQuestions,
+} from "@/lib/server/content";
 
 const differenceIcons = [Languages, Brain, Target];
 const skillIcons = {
@@ -39,6 +43,7 @@ export async function generateMetadata() {
 export default async function HomePage() {
   const t = await getMessages();
   const copy = t.landing;
+  const diagnosticCount = getPublicDiagnosticQuestions().length;
   const beta = isBetaMode();
   const email = contactEmail();
   const faq = [...copy.faq.items, beta ? copy.faq.beta : copy.faq.paid];
@@ -78,7 +83,10 @@ export default async function HomePage() {
               </Button>
             </div>
             <p className="mt-4 text-xs text-muted-foreground">
-              {copy.hero.facts}
+              {copy.hero.facts(
+                diagnosticCount,
+                diagnosticMinutes(diagnosticCount),
+              )}
             </p>
           </div>
           <SampleQuiz questions={getPublicSampleQuestions()} />

@@ -21,7 +21,8 @@ export type DraftExam = "TEF" | "TCF";
 
 export interface DraftItem {
   id: string;
-  exam: DraftExam;
+  /** "shared" for diagnostic questions, which serve both exams. */
+  exam: DraftExam | "shared";
   skill: DraftSkill;
   level: ContentLevel;
   competency: ContentCompetency;
@@ -37,6 +38,8 @@ export interface DraftItem {
   speakers?: string;
   /** The draft rewrites the published question with the same id. */
   replaces?: boolean;
+  /** Where a new question goes: practice (default) or the diagnostic. */
+  target?: "diagnostic";
   /** pending → accepted or rejected by a reviewer → merged by accept-drafts. */
   review: "pending" | "accepted" | "rejected" | "merged";
   /** The teacher's decision, for drafts that need one (see needsTeacher). */
@@ -56,11 +59,13 @@ export interface DraftFile {
 }
 
 /**
- * A teacher checks every mock-exam question and a fixed one in five of the
- * others before they reach learners.
+ * A teacher checks every mock-exam and diagnostic question, and a fixed one
+ * in five of the others, before they reach learners.
  */
 export const needsTeacher = (id: string, mock: boolean) =>
-  mock || parseInt(textFingerprint(id), 16) % 5 === 0;
+  mock ||
+  id.startsWith("diagnostic-") ||
+  parseInt(textFingerprint(id), 16) % 5 === 0;
 
 /** Longest document a draft may use: twice the minimum, and short enough for a mock clip. */
 export const maximumWords: Record<DraftSkill, Record<ContentLevel, number>> = {

@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-require-imports -- CommonJS bootstrap loads typed content without another runtime dependency. */
 // Merges drafts marked "accepted" in content/drafts/*.json into the content
-// files, once the teacher has approved those that need it (every mock
-// question and one in five others). A rewrite replaces the question with the
-// same id; a new question is added to its exam's practice file. It records
+// files, once the teacher has approved those that need it (every mock and
+// diagnostic question, and one in five others). A rewrite replaces the
+// question with the same id; a new question is added to its exam's practice
+// file, or to the diagnostic. It records
 // listening voices, shrinks src/content/debt.json, and keeps nothing unless
 // validation passes.
 //
@@ -118,7 +119,9 @@ for (const { item } of accepted) {
   } else {
     const file = path.join(
       root,
-      `src/content/${item.exam.toLowerCase()}/practice/${item.skill}.ts`,
+      item.target === "diagnostic"
+        ? `src/content/diagnostic/${item.skill}.ts`
+        : `src/content/${item.exam.toLowerCase()}/practice/${item.skill}.ts`,
     );
     const call = find(
       parse(file),

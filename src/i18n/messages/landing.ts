@@ -7,7 +7,8 @@ const en = {
     primary: "Start free assessment",
     secondary: "How it works",
     secondaryPaid: "Explore plans",
-    facts: "Free · 20 questions · About 12–15 minutes · No card required",
+    facts: (questions: number, minutes: number) =>
+      `Free · ${questions} questions · About ${minutes} minutes · No card required`,
   },
   sample: {
     eyebrow: "Try four questions",
@@ -156,8 +157,8 @@ const fr: typeof en = {
     primary: "Commencer l’évaluation gratuite",
     secondary: "Fonctionnement",
     secondaryPaid: "Voir les formules",
-    facts:
-      "Gratuit · 20 questions · Environ 12 à 15 minutes · Sans carte bancaire",
+    facts: (questions: number, minutes: number) =>
+      `Gratuit · ${questions} questions · Environ ${minutes} minutes · Sans carte bancaire`,
   },
   sample: {
     eyebrow: "Essayez quatre questions",
