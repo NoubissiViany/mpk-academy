@@ -1,9 +1,11 @@
 import { z } from "zod";
 import type { NclcTarget } from "@/types/domain";
 
-// The contract between the AI reviewer and the app. The model's answer is
-// parsed with `rawFeedbackSchema`, then `verifyFeedback` keeps only what the
-// essay supports: quotes must appear in it, corrections must be small edits.
+// The contract between the AI reviewer and the app. The provider is asked only
+// for the shape (no enum lists, which make it reject whole answers); the model's
+// answer is parsed leniently with `rawFeedbackSchema`, then `verifyFeedback`
+// normalises ids, levels, and categories and keeps only what the essay
+// supports: quotes must appear in it, corrections must be small edits.
 
 export const criterionIds = [
   "task",
@@ -12,7 +14,7 @@ export const criterionIds = [
   "grammar",
 ] as const;
 export type CriterionId = (typeof criterionIds)[number];
-export const bands = ["A2", "B1", "B2", "C1"] as const;
+export const bands = ["A1", "A2", "B1", "B2", "C1"] as const;
 export type Band = (typeof bands)[number];
 export const fixCategories = [
   "grammar",
@@ -27,8 +29,8 @@ export const fixCategories = [
 export const rawFeedbackSchema = z.object({
   criteria: z.array(
     z.object({
-      id: z.enum(criterionIds),
-      band: z.enum(bands),
+      id: z.string(),
+      band: z.string(),
       evidence: z.string(),
       comment: z.string(),
     }),
@@ -38,7 +40,7 @@ export const rawFeedbackSchema = z.object({
       quote: z.string(),
       correction: z.string(),
       explanation: z.string(),
-      category: z.enum(fixCategories),
+      category: z.string(),
     }),
   ),
   rewrite: z.object({ original: z.string(), improved: z.string() }),
@@ -59,8 +61,8 @@ export const feedbackJsonSchema = {
         additionalProperties: false,
         required: ["id", "band", "evidence", "comment"],
         properties: {
-          id: { type: "string", enum: [...criterionIds] },
-          band: { type: "string", enum: [...bands] },
+          id: { type: "string" },
+          band: { type: "string" },
           evidence: { type: "string" },
           comment: { type: "string" },
         },
@@ -76,7 +78,7 @@ export const feedbackJsonSchema = {
           quote: { type: "string" },
           correction: { type: "string" },
           explanation: { type: "string" },
-          category: { type: "string", enum: [...fixCategories] },
+          category: { type: "string" },
         },
       },
     },
@@ -123,7 +125,14 @@ export const storedFeedbackSchema = z.object({
       comment: z.string(),
     }),
   ),
-  fixes: rawFeedbackSchema.shape.fixes,
+  fixes: z.array(
+    z.object({
+      quote: z.string(),
+      correction: z.string(),
+      explanation: z.string(),
+      category: z.enum(fixCategories),
+    }),
+  ),
   rewrite: z.object({ original: z.string(), improved: z.string() }).nullable(),
   summary: z.string(),
   dropped: z.number(),
@@ -146,6 +155,10 @@ export const normalizeForMatch = (text: string) =>
     .normalize("NFC")
     .replace(/['‘’ʼ]/g, "'")
     .replace(/[“”«»]/g, '"')
+    // Hyphen and dash variants, soft hyphens, and zero-width characters look
+    // alike to a learner, so a "correction" that only swaps them is no change.
+    .replace(/[\u2010-\u2013\u2212]/g, "-")
+    .replace(/[\u00ad\u200b-\u200d\u2060\ufeff]/g, "")
     .replace(/[  \s]+/g, " ")
     .trim();
 
@@ -169,6 +182,25 @@ function editDistance(left: string, right: string) {
 
 const clip = (text: string, length: number) => text.trim().slice(0, length);
 
+/** "B1+", "b1", "C2", and similar become a supported level; nonsense is null. */
+export function normalizeBand(value: string): Band | null {
+  const match = value.toUpperCase().match(/\b([ABC])\s*([12])/);
+  if (!match) return null;
+  const level = `${match[1]}${match[2]}`;
+  return level === "C2"
+    ? "C1"
+    : (bands as readonly string[]).includes(level)
+      ? (level as Band)
+      : null;
+}
+
+const categoryFor = (value: string): (typeof fixCategories)[number] => {
+  const key = value.trim().toLowerCase();
+  return (fixCategories as readonly string[]).includes(key)
+    ? (key as (typeof fixCategories)[number])
+    : "grammar";
+};
+
 export function verifyFeedback(
   essay: string,
   raw: RawFeedback,
@@ -181,8 +213,11 @@ export function verifyFeedback(
   let dropped = 0;
 
   const criteria = criterionIds.flatMap((id) => {
-    const criterion = raw.criteria.find((item) => item.id === id);
-    if (!criterion) return [];
+    const criterion = raw.criteria.find(
+      (item) => item.id.trim().toLowerCase() === id,
+    );
+    const band = criterion ? normalizeBand(criterion.band) : null;
+    if (!criterion || !band) return [];
     const evidence = appears(criterion.evidence)
       ? clip(criterion.evidence, 300)
       : null;
@@ -190,7 +225,7 @@ export function verifyFeedback(
     return [
       {
         id,
-        band: criterion.band,
+        band,
         evidence,
         comment: clip(criterion.comment, 400),
       },
@@ -237,7 +272,7 @@ export function verifyFeedback(
       quote: fix.quote.trim(),
       correction: fix.correction.trim(),
       explanation: clip(fix.explanation, 300),
-      category: fix.category,
+      category: categoryFor(fix.category),
     })),
     rewrite,
     summary: clip(raw.summary, 600),

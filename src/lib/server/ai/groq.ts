@@ -97,8 +97,22 @@ export const groqChat: ChatFunction = async ({
     throw new GroqError("auth", null, response.status);
   if (response.status === 400 || response.status === 422) {
     const body = (await response.json().catch(() => null)) as {
-      error?: { code?: string };
+      error?: { code?: string; failed_generation?: string };
     } | null;
+    // Groq checks structured output after generating it and rejects answers
+    // that miss the schema, but returns what the model wrote. The caller
+    // validates leniently, so use it instead of paying for another attempt.
+    const generated = body?.error?.failed_generation;
+    if (body?.error?.code === "json_validate_failed" && generated)
+      return {
+        content: generated,
+        // Usage is not reported on errors: estimate prompt plus output.
+        totalTokens: 900 + Math.ceil(generated.length / 3),
+        remainingTokens: numberHeader(
+          response.headers,
+          "x-ratelimit-remaining-tokens",
+        ),
+      };
     throw new GroqError(
       body?.error?.code === "json_validate_failed"
         ? "invalid_output"
