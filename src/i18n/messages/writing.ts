@@ -49,6 +49,7 @@ const en = {
     failedTitle: "We could not review this text",
     failedBody:
       "The AI service did not return usable feedback after three tries. This text does not count toward your daily limit.",
+    retry: "Try again",
   },
   feedback: {
     eyebrow: "AI FEEDBACK",
@@ -203,6 +204,7 @@ const fr: typeof en = {
     failedTitle: "Nous n’avons pas pu corriger ce texte",
     failedBody:
       "Le service d’IA n’a pas fourni de correction utilisable après trois essais. Ce texte ne compte pas dans votre limite quotidienne.",
+    retry: "Réessayer",
   },
   feedback: {
     eyebrow: "CORRECTION PAR IA",

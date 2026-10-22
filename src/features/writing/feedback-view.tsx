@@ -22,6 +22,7 @@ import {
 } from "@/lib/domain/writing-feedback";
 import type { WritingSubmission } from "@/lib/supabase/writing";
 import { cn } from "@/lib/utils";
+import { RequestAiFeedback } from "./request-feedback";
 
 const POLL_MS = 5_000;
 const POLL_LIMIT = 180; // 15 minutes
@@ -83,6 +84,18 @@ export function WritingFeedbackView({
         />
       ) : (
         <StatusCard status={status} ahead={ahead} capReached={capReached} />
+      )}
+      {status === "failed" && (
+        <div className="mt-4 space-y-4">
+          <TextPanel title={copy.feedback.original} text={submission.body} />
+          <RequestAiFeedback
+            compact
+            label={copy.status.retry}
+            taskId={submission.taskId}
+            text={submission.body}
+            parentId={submission.parentId ?? undefined}
+          />
+        </div>
       )}
       {parentBody && (
         <section className="mt-8" aria-labelledby="compare-title">
