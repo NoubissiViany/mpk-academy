@@ -131,9 +131,20 @@ describe("content validation", () => {
   });
 
   it("rejects a mock section where the longest option is too often right", () => {
-    const debt = { ...contentDebt, longestCorrect: {} };
-    expect(() => validate({ debt })).toThrow(
-      "tef-mock-01 reading: the correct answer is the longest option in 18 of 40 questions; chance allows 13",
+    const biased = items.map((item) => {
+      if (item.kind !== "mcq" || !item.id.startsWith("tef-mock-reading"))
+        return item;
+      const copy = structuredClone(item);
+      const correct = copy.options.find(
+        (o) => o.id === copy.correction.answer,
+      )!;
+      correct.label = `${correct.label} Cette réponse est nettement plus longue.`;
+      return copy;
+    });
+    expect(() =>
+      validate({ items: biased, debt: { ...contentDebt, longestCorrect: {} } }),
+    ).toThrow(
+      "tef-mock-01 reading: the correct answer is the longest option in 40 of 40 questions; chance allows 13",
     );
   });
 
