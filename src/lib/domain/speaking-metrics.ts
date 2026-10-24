@@ -60,6 +60,38 @@ export function cleanTranscript(
   return { text, words: keptWords };
 }
 
+/**
+ * Removes what was said while another voice played (TEF section B objections
+ * heard through the speakers), so the review sees only the learner. A segment
+ * cut in part keeps its remaining words, without punctuation.
+ */
+export function withoutSpans(
+  segments: TranscriptSegment[],
+  words: TimedWord[],
+  spans: { start: number; end: number }[],
+) {
+  if (!spans.length) return { segments, words };
+  const inSpan = (time: number) =>
+    spans.some((span) => time >= span.start && time <= span.end);
+  const keptWords = words.filter((word) => !inSpan(word.start));
+  const keptSegments = segments.flatMap((segment) => {
+    const own = words.filter(
+      (word) =>
+        word.start >= segment.start - 0.05 && word.end <= segment.end + 0.05,
+    );
+    const remaining = own.filter((word) => !inSpan(word.start));
+    if (remaining.length === own.length) return [segment];
+    if (!remaining.length) return [];
+    return [
+      {
+        ...segment,
+        text: remaining.map((word) => word.word.trim()).join(" "),
+      },
+    ];
+  });
+  return { segments: keptSegments, words: keptWords };
+}
+
 const round1 = (value: number) => Math.round(value * 10) / 10;
 
 export function measureSpeech(

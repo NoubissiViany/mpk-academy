@@ -206,6 +206,8 @@ export interface AnswerFeedback {
   correct: boolean;
   correctAnswer: string;
   explanation: string;
+  /** For a listening question with real audio: what was said, once answered. */
+  transcript?: string;
 }
 
 export interface Attempt {

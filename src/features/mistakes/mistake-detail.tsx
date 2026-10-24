@@ -13,9 +13,12 @@ import { getMistakeDetail } from "@/lib/domain/personalization";
 export function MistakeDetail({
   mistakeId,
   optionLabels = {},
+  explanations = {},
 }: {
   mistakeId: string;
   optionLabels?: Record<string, Record<string, string>>;
+  /** Explanations in the learner's language, by question id. */
+  explanations?: Record<string, string>;
 }) {
   const { state } = useApp();
   const { t, locale } = useI18n();
@@ -81,7 +84,7 @@ export function MistakeDetail({
                   </p>
                 </div>
                 <p className="text-sm leading-6 text-muted-foreground md:col-span-2">
-                  {example.explanation}
+                  {explanations[example.questionId] ?? example.explanation}
                 </p>
               </CardContent>
             </Card>

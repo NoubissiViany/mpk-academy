@@ -3,6 +3,7 @@ import {
   cleanTranscript,
   measureSpeech,
   paceFor,
+  withoutSpans,
   type TimedWord,
 } from "./speaking-metrics";
 
@@ -96,5 +97,41 @@ describe("speaking metrics", () => {
       "C'est",
       "tout",
     ]);
+  });
+});
+
+describe("objections heard in the recording", () => {
+  it("drops what was said while an objection played", () => {
+    const timed = words(
+      ["Tu", 1, 1.2],
+      ["devrais", 1.2, 1.6],
+      ["venir.", 1.6, 2],
+      ["Mais", 10.2, 10.4],
+      ["je", 10.4, 10.5],
+      ["suis", 10.5, 10.7],
+      ["occupé.", 10.7, 11.2],
+      ["Justement,", 14, 14.6],
+      ["écoute.", 14.6, 15],
+    );
+    const segments = [
+      { start: 0, end: 9, text: "Tu devrais venir." },
+      { start: 9, end: 16, text: "Mais je suis occupé. Justement, écoute." },
+    ];
+    const result = withoutSpans(segments, timed, [{ start: 9.5, end: 12.5 }]);
+    expect(result.words.map((w) => w.word)).toEqual([
+      "Tu",
+      "devrais",
+      "venir.",
+      "Justement,",
+      "écoute.",
+    ]);
+    expect(result.segments.map((segment) => segment.text)).toEqual([
+      "Tu devrais venir.",
+      "Justement, écoute.",
+    ]);
+    expect(withoutSpans(segments, timed, [])).toEqual({
+      segments,
+      words: timed,
+    });
   });
 });

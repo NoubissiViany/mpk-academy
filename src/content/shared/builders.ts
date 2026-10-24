@@ -1,6 +1,9 @@
-import type { MCQ, ContentExam } from "./types";
+import speakerGenders from "../audio-speakers.json";
+import { readyClip } from "../clips";
+import type { AudioAsset, MCQ, ContentExam } from "./types";
 import { difficultyByLevel, type ContentLevel } from "./levels";
 import type { ContentCompetency } from "./competencies";
+import { speakerIds } from "./audio";
 // Authoring helper only: every row supplies its own original document and distractors.
 export type QuestionSeed = [
   id: string,
@@ -15,6 +18,7 @@ export type QuestionSeed = [
   wrong2: string,
   wrong3: string,
   explanation: string,
+  explanationFr?: string,
 ];
 export function questions(
   exam: ContentExam,
@@ -33,7 +37,7 @@ export function questions(
       correct,
       ...rest
     ]) => {
-      const [wrong1, wrong2, wrong3, explanation] = rest;
+      const [wrong1, wrong2, wrong3, explanation, explanationFr] = rest;
       // Stable ID-based placement avoids authoring-position identifiers and answer-position bias.
       const position = [...id].reduce((sum, c) => sum + c.charCodeAt(0), 0) % 4;
       const labels = [wrong1, wrong2, wrong3];
@@ -52,27 +56,55 @@ export function questions(
         questionType,
         prompt,
         ...(skill === "listening"
-          ? {
-              audio: {
-                id: `${id}-audio`,
-                status: "pending" as const,
-                intendedDuration: Math.max(
-                  12,
-                  Math.ceil(document.split(/\s+/).length / 2.3),
-                ),
-                speakers: document.includes("B :")
-                  ? [
-                      { id: "A", role: "Premier interlocuteur" },
-                      { id: "B", role: "Deuxième interlocuteur" },
-                    ]
-                  : [{ id: "A", role: "Locuteur" }],
-                transcript: document,
-              },
-            }
+          ? { audio: listeningAudio(id, document) }
           : { passage: document }),
         options: labels.map((label, i) => ({ id: "abcd"[i], label })),
-        correction: { answer: "abcd"[position], explanation },
+        correction: {
+          answer: "abcd"[position],
+          explanation,
+          ...(explanationFr ? { explanationFr } : {}),
+        },
       };
     },
   );
+}
+
+const roles = ["Premier", "Deuxième", "Troisième", "Quatrième"];
+
+/**
+ * A clip is ready once scripts/content/generate-audio.cjs has made it from
+ * this exact transcript; editing the transcript sends it back to pending.
+ */
+function listeningAudio(id: string, transcript: string): AudioAsset {
+  const audioId = `${id}-audio`;
+  const ids = speakerIds(transcript);
+  const genders = (speakerGenders as Record<string, string>)[id] ?? "";
+  const speakers = ids.map((speaker, index) => ({
+    id: speaker,
+    role: ids.length > 1 ? `${roles[index]} interlocuteur` : "Locuteur",
+    ...(genders[index]
+      ? {
+          gender:
+            genders[index] === "F" ? ("female" as const) : ("male" as const),
+        }
+      : {}),
+  }));
+  const clip = readyClip(audioId, transcript);
+  const base = {
+    id: audioId,
+    speakers,
+    transcript,
+    intendedDuration: Math.max(
+      12,
+      Math.ceil(transcript.split(/\s+/).length / 2.3),
+    ),
+  };
+  return clip
+    ? {
+        ...base,
+        status: "ready",
+        path: clip.path,
+        intendedDuration: Math.ceil(clip.seconds),
+      }
+    : { ...base, status: "pending" };
 }

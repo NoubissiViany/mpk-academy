@@ -14,6 +14,7 @@ import { metadata } from "./metadata";
 import { mistakes } from "./mistakes";
 import { practice } from "./practice";
 import { speaking } from "./speaking";
+import { themes } from "./themes";
 import { writing } from "./writing";
 
 const namespaces = {
@@ -32,6 +33,7 @@ const namespaces = {
   mistakes,
   practice,
   speaking,
+  themes,
   writing,
 };
 

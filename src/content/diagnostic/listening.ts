@@ -13,6 +13,7 @@ export const items = questions("shared", "listening", [
     "Le jour de la consultation.",
     "Le nom du médecin.",
     "The speaker explicitly keeps the appointment time and changes only the floor.",
+    "La personne confirme l’heure du rendez-vous ; seul l’étage du cabinet change.",
   ],
   [
     "diagnostic-listening-b1-001",
@@ -27,6 +28,7 @@ export const items = questions("shared", "listening", [
     "De reporter la livraison.",
     "De partir avec son voisin.",
     "Keeping the parcel at home is an offer to receive it during the absence.",
+    "Garder le colis chez soi, c’est proposer de le recevoir pendant l’absence du voisin.",
   ],
   [
     "diagnostic-listening-b2-001",
@@ -41,6 +43,7 @@ export const items = questions("shared", "listening", [
     "Pour modifier le prix du service.",
     "Pour attendre une autorisation municipale.",
     "The remaining week is assigned to user testing, not technical recruitment.",
+    "La semaine supplémentaire sert à tester le formulaire avec les usagers, pas à recruter des techniciens.",
   ],
   [
     "diagnostic-listening-c1-001",
@@ -55,5 +58,6 @@ export const items = questions("shared", "listening", [
     "Accuser les volontaires de mentir.",
     "Annoncer l'abandon du programme.",
     "She acknowledges the positive findings but questions whether they generalize beyond motivated volunteers.",
+    "Elle reconnaît les résultats positifs, mais doute qu’ils s’appliquent au-delà de volontaires déjà motivés.",
   ],
 ]);

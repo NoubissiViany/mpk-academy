@@ -24,7 +24,7 @@ export interface Metadata {
 export type AudioAsset = {
   id: string;
   intendedDuration: number;
-  speakers: { id: string; role: string }[];
+  speakers: { id: string; role: string; gender?: "female" | "male" }[];
   transcript: string;
 } & ({ status: "pending"; path?: never } | { status: "ready"; path: string });
 export interface MCQ extends Metadata {
@@ -49,8 +49,19 @@ export interface ProductiveTask extends Metadata {
   objectives: string[];
   durationSeconds: number;
   preparationSeconds: number;
+  /**
+   * TEF section B: what the other person objects, played or shown during the
+   * answer at set times, in the voice of the person being convinced.
+   */
+  objections?: { voice: "female" | "male"; lines: string[] };
   wordCount?: { min: number; max?: number };
-  correction: { guidance: string; rubric: string[]; modelResponse?: string };
+  correction: {
+    guidance: string;
+    /** French version of the guidance, shown when the interface is in French. */
+    guidanceFr?: string;
+    rubric: string[];
+    modelResponse?: string;
+  };
 }
 export interface LearningLesson extends Metadata {
   kind: "lesson";
@@ -73,7 +84,11 @@ export interface LearningLesson extends Metadata {
 }
 export interface LessonCheckpoint {
   prompt: string;
+  /** French prompt, when `prompt` is in English. */
+  promptFr?: string;
   options: string[];
+  /** French options in the same order, when `options` are in English. */
+  optionsFr?: string[];
   answer: number;
   explanation: string;
   explanationFr?: string;
@@ -174,8 +189,13 @@ export type PublicLessonContent = Omit<
 };
 
 /** A productive task as sent to the browser: the model response is fetched after review. */
-export type PublicProductiveTask = Omit<ProductiveTask, "correction"> & {
+export type PublicProductiveTask = Omit<
+  ProductiveTask,
+  "correction" | "objections"
+> & {
   correction: Omit<ProductiveTask["correction"], "modelResponse"> & {
     hasModelResponse: boolean;
   };
+  /** TEF section B: when each objection comes, in seconds into the answer. */
+  objections?: { at: number; text: string; audio?: string; seconds?: number }[];
 };

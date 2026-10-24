@@ -44,7 +44,7 @@ const withExtra = {
 
 describe("lesson checkpoints", () => {
   it("shuffles options on the server but keeps each original index", () => {
-    const content = toPublicLesson(withExtra, () => 0);
+    const content = toPublicLesson(withExtra, "en", () => 0);
     expect(content).not.toHaveProperty("checkpoint");
     expect(content.checkpoints).toHaveLength(2);
     for (const [position, checkpoint] of content.checkpoints.entries()) {
@@ -72,6 +72,23 @@ describe("lesson checkpoints", () => {
     expect(
       checkLessonCheckpoint(lesson.id, 0, checkpoint.options.length, "en"),
     ).toBeNull();
+  });
+
+  it("asks English-only checkpoints in French for French learners", () => {
+    const tef = getLessonContent("tef-lesson-005")!;
+    const { checkpoint } = tef;
+    const content = toPublicLesson(tef, "fr", () => 0);
+    expect(content.checkpoints[0].prompt).toBe(checkpoint.promptFr);
+    for (const option of content.checkpoints[0].options)
+      expect(option.label).toBe(checkpoint.optionsFr![option.index]);
+    expect(checkLessonCheckpoint(tef.id, 0, checkpoint.answer, "fr")).toEqual({
+      correct: true,
+      correctAnswer: checkpoint.optionsFr![checkpoint.answer],
+      explanation: checkpoint.explanationFr,
+    });
+    expect(toPublicLesson(tef, "en").checkpoints[0].prompt).toBe(
+      checkpoint.prompt,
+    );
   });
 
   it("completes only after every checkpoint is answered", async () => {

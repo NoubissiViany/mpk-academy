@@ -21,6 +21,11 @@ const en = {
     practiseWithout: "Practise without recording",
     checking: "Checking today’s recorded answers…",
   },
+  objections: {
+    hint: (times: string) =>
+      `As in the exam, the other person will object, at about ${times}. Answer each objection, then keep convincing.`,
+    says: "The other person:",
+  },
   errors: {
     unauthenticated: "Your session has expired. Sign in again.",
     consent_required: "Agree to AI feedback before sending your recording.",
@@ -114,6 +119,11 @@ const fr: typeof en = {
       "L’enregistrement s’est arrêté à la taille maximale. Vous pouvez envoyer ce qui a été enregistré.",
     practiseWithout: "S’entraîner sans enregistrer",
     checking: "Vérification des réponses enregistrées du jour…",
+  },
+  objections: {
+    hint: (times: string) =>
+      `Comme à l’examen, l’autre personne fera des objections, vers ${times}. Répondez à chacune, puis continuez à convaincre.`,
+    says: "L’autre personne :",
   },
   errors: {
     unauthenticated: "Votre session a expiré. Reconnectez-vous.",

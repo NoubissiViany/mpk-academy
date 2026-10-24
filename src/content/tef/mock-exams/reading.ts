@@ -13,6 +13,7 @@ export const items = questions("TEF", "reading", [
     "Le dernier dimanche du mois.",
     "Tous les jours de la semaine.",
     "The free-entry exception applies only to the first Sunday.",
+    "L’entrée gratuite ne concerne que le premier dimanche du mois.",
   ],
   [
     "tef-mock-reading-a2-002",
@@ -27,6 +28,7 @@ export const items = questions("TEF", "reading", [
     "L'installation d'un deuxième ascenseur.",
     "Un changement du numéro d'étage.",
     "The lift stops for maintenance and resumes at noon.",
+    "L’ascenseur s’arrête pour l’entretien et reprend à midi : l’interruption est temporaire.",
   ],
   [
     "tef-mock-reading-a2-003",
@@ -41,6 +43,7 @@ export const items = questions("TEF", "reading", [
     "Vendre un casque pour enfant.",
     "Louer un casque pour une sortie.",
     "The proposed exchange is an adult helmet for a child's helmet.",
+    "La personne propose d’échanger un casque pour adulte contre un casque pour enfant.",
   ],
   [
     "tef-mock-reading-a2-004",
@@ -55,6 +58,7 @@ export const items = questions("TEF", "reading", [
     "Le pain.",
     "Le dessert.",
     "Only soup is identified as needing reheating.",
+    "Seule la soupe doit être réchauffée.",
   ],
   [
     "tef-mock-reading-a2-005",
@@ -69,6 +73,7 @@ export const items = questions("TEF", "reading", [
     "Les deux types de documents.",
     "Aucun document.",
     "Books may be borrowed; magazines must stay on site.",
+    "On peut emprunter les livres ; les magazines restent sur place.",
   ],
   [
     "tef-mock-reading-a2-006",
@@ -83,6 +88,7 @@ export const items = questions("TEF", "reading", [
     "Le nom de la rue actuelle.",
     "Le prix des produits.",
     "The announcement gives a new address and explicitly retains the phone number.",
+    "L’annonce donne une nouvelle adresse et précise que le numéro de téléphone ne change pas.",
   ],
   [
     "tef-mock-reading-a2-007",
@@ -97,6 +103,7 @@ export const items = questions("TEF", "reading", [
     "Une chaise.",
     "Un ballon.",
     "Towels are requested; mats are supplied.",
+    "Il faut apporter une serviette ; les tapis sont fournis.",
   ],
   [
     "tef-mock-reading-a2-008",
@@ -111,6 +118,7 @@ export const items = questions("TEF", "reading", [
     "De laisser la porte ouverte.",
     "De rentrer les bacs dans le hall.",
     "The note redirects waste bags from the doorway to the designated bins.",
+    "La note demande de déposer les sacs dans les bacs prévus plutôt que devant la porte.",
   ],
   [
     "tef-mock-reading-b1-001",
@@ -125,6 +133,7 @@ export const items = questions("TEF", "reading", [
     "Uniquement les samedis matin.",
     "Deux matinées et tous les dimanches.",
     "The ad specifies two evenings weekly and alternate Saturdays.",
+    "L’annonce demande deux soirs par semaine et un samedi sur deux.",
   ],
   [
     "tef-mock-reading-b1-002",
@@ -139,6 +148,7 @@ export const items = questions("TEF", "reading", [
     "La distance à parcourir.",
     "La date des inscriptions.",
     "The race moves from afternoon to morning without a location change.",
+    "La course passe de l’après-midi au matin ; le lieu ne change pas.",
   ],
   [
     "tef-mock-reading-b1-003",
@@ -153,6 +163,7 @@ export const items = questions("TEF", "reading", [
     "Seulement les jours fériés.",
     "Seulement les fins de semaine.",
     "Ouvrables refers to working days rather than every calendar day.",
+    "Les jours ouvrables sont les jours travaillés, pas tous les jours du calendrier.",
   ],
   [
     "tef-mock-reading-b1-004",
@@ -167,6 +178,7 @@ export const items = questions("TEF", "reading", [
     "La visite de la librairie.",
     "La consultation du programme.",
     "Reservation is required for the workshop, not the open meeting.",
+    "La réservation est obligatoire pour l’atelier, pas pour la rencontre libre.",
   ],
   [
     "tef-mock-reading-b1-005",
@@ -181,6 +193,7 @@ export const items = questions("TEF", "reading", [
     "Le paiement immédiat de l'intervention.",
     "L'achat d'un robinet de remplacement.",
     "Access permission is needed if the tenant cannot be there.",
+    "Si le locataire ne peut pas être présent, il doit donner son accord pour qu’on accède au logement.",
   ],
   [
     "tef-mock-reading-b1-006",
@@ -195,6 +208,7 @@ export const items = questions("TEF", "reading", [
     "Acheter un billet spécial.",
     "Attendre la fin des travaux pour voyager.",
     "The temporary change affects the stop, not fares or schedules.",
+    "Le changement temporaire concerne l’arrêt, pas les tarifs ni les horaires.",
   ],
   [
     "tef-mock-reading-b1-007",
@@ -209,6 +223,7 @@ export const items = questions("TEF", "reading", [
     "La fermeture du local jusqu'en janvier.",
     "Une vente de toutes ses étagères.",
     "Only donation intake is paused; loans continue.",
+    "Seule la réception des dons est suspendue ; les prêts continuent.",
   ],
   [
     "tef-mock-reading-b1-008",
@@ -223,6 +238,7 @@ export const items = questions("TEF", "reading", [
     "Masquer.",
     "Reproduire.",
     "Rereading is intended to detect errors, not hide or reproduce them.",
+    "On relit pour repérer les erreurs, pas pour les cacher ni les recopier.",
   ],
   [
     "tef-mock-reading-b1-009",
@@ -237,6 +253,7 @@ export const items = questions("TEF", "reading", [
     "Pour rencontrer les musiciens après.",
     "Pour éviter une salle trop grande.",
     "The choice accommodates uncertainty about finishing work early.",
+    "La séance tardive tient compte d’une incertitude : la personne n’est pas sûre de finir le travail tôt.",
   ],
   [
     "tef-mock-reading-b1-010",
@@ -251,6 +268,7 @@ export const items = questions("TEF", "reading", [
     "Ajouter trente minutes de cuisson.",
     "Éteindre le four avant de commencer.",
     "The next stated step is taking the dough out ten minutes before rolling.",
+    "L’étape suivante consiste à sortir la pâte dix minutes avant de l’étaler.",
   ],
   [
     "tef-mock-reading-b1-011",
@@ -265,6 +283,7 @@ export const items = questions("TEF", "reading", [
     "À une personne souhaitant réparer son ordinateur.",
     "À une personne cherchant à créer sa première adresse.",
     "Prior email use is required; organization and filters are the focus.",
+    "Il faut déjà utiliser une messagerie ; l’atelier porte sur le classement et les filtres.",
   ],
   [
     "tef-mock-reading-b1-012",
@@ -279,6 +298,7 @@ export const items = questions("TEF", "reading", [
     "Vendre des boissons aux touristes.",
     "Passer un examen de langue.",
     "The final sentence states the purpose: relaxed French conversation.",
+    "La dernière phrase donne l’objectif : converser en français dans un cadre détendu.",
   ],
   [
     "tef-mock-reading-b2-001",
@@ -293,6 +313,7 @@ export const items = questions("TEF", "reading", [
     "Une réduction du nombre de marchés.",
     "Une interdiction des dons privés.",
     "The author identifies transport and staffing as prerequisites for effective donations.",
+    "L’auteur présente le transport et le personnel comme des conditions pour que les dons soient utiles.",
   ],
   [
     "tef-mock-reading-b2-002",
@@ -307,6 +328,7 @@ export const items = questions("TEF", "reading", [
     "Une augmentation du nombre de réunions.",
     "Une disparition de toute communication.",
     "The paragraph balances better focus against reduced knowledge of colleagues' difficulties.",
+    "Le paragraphe met en balance une meilleure concentration et une moindre connaissance des difficultés des collègues.",
   ],
   [
     "tef-mock-reading-b2-003",
@@ -321,6 +343,7 @@ export const items = questions("TEF", "reading", [
     "Chargée de nombreux accessoires.",
     "Fondée sur des changements rapides.",
     "Dépouillée describes deliberate simplicity, not incompleteness.",
+    "« Dépouillée » décrit une simplicité voulue, pas un travail inachevé.",
   ],
   [
     "tef-mock-reading-b2-004",
@@ -335,6 +358,7 @@ export const items = questions("TEF", "reading", [
     "Le justificatif n'est plus nécessaire.",
     "La décision précédente est automatiquement annulée.",
     "Reexamination is possible, but its outcome is explicitly not guaranteed.",
+    "Un nouvel examen est possible, mais le texte précise que son résultat n’est pas garanti.",
   ],
   [
     "tef-mock-reading-b2-005",
@@ -349,6 +373,7 @@ export const items = questions("TEF", "reading", [
     "Les capteurs ne fonctionnent plus.",
     "La circulation a totalement disparu.",
     "Traffic relocation means local improvement may coexist with problems nearby.",
+    "La circulation s’est déplacée : l’amélioration locale peut aller de pair avec de nouveaux problèmes dans les rues voisines.",
   ],
   [
     "tef-mock-reading-b2-006",
@@ -363,6 +388,7 @@ export const items = questions("TEF", "reading", [
     "L'équipement suffit à lui seul.",
     "Les deux mesures sont incompatibles.",
     "The argument calls for equipment plus guidance rather than either alone.",
+    "L’auteur demande à la fois du matériel et un accompagnement, et non l’un sans l’autre.",
   ],
   [
     "tef-mock-reading-b2-007",
@@ -377,6 +403,7 @@ export const items = questions("TEF", "reading", [
     "Séparer définitivement les participants.",
     "Réserver l'activité aux sportifs expérimentés.",
     "Two route lengths accommodate different abilities while preserving social contact.",
+    "Deux longueurs de parcours permettent à chacun de participer selon ses capacités tout en gardant le lien social.",
   ],
   [
     "tef-mock-reading-b2-008",
@@ -391,6 +418,7 @@ export const items = questions("TEF", "reading", [
     "Enthousiaste et reconnaissant.",
     "Indifférent et détaché.",
     "Formal politeness frames a renewed request about an overdue refund.",
+    "La politesse formelle encadre une nouvelle demande au sujet d’un remboursement en retard.",
   ],
   [
     "tef-mock-reading-b2-009",
@@ -405,6 +433,7 @@ export const items = questions("TEF", "reading", [
     "Il sert uniquement au stockage.",
     "Il empêche les commandes ultérieures.",
     "Trying products in person can contribute to later online purchases.",
+    "Essayer les produits sur place peut mener à des achats en ligne par la suite.",
   ],
   [
     "tef-mock-reading-b2-010",
@@ -419,6 +448,7 @@ export const items = questions("TEF", "reading", [
     "Le manque de publicité pour les artistes.",
     "L'augmentation des places disponibles.",
     "Poor transport access illustrates a non-price barrier.",
+    "La difficulté d’accès en transport illustre un obstacle qui n’est pas lié au prix.",
   ],
   [
     "tef-mock-reading-b2-011",
@@ -433,6 +463,7 @@ export const items = questions("TEF", "reading", [
     "Se fournir auprès de.",
     "Faire connaître.",
     "The contrast with compléter makes remplacer the intended meaning.",
+    "L’opposition avec « compléter » montre que « se substituer à » veut dire remplacer.",
   ],
   [
     "tef-mock-reading-b2-012",
@@ -447,6 +478,7 @@ export const items = questions("TEF", "reading", [
     "Les déclarations des participants sont forcément fausses.",
     "Une amélioration objective a été démontrée.",
     "Self-reports without objective measures or a comparison group limit causal conclusions.",
+    "Des témoignages, sans mesure objective ni groupe de comparaison, ne suffisent pas à prouver un effet causal.",
   ],
   [
     "tef-mock-reading-c1-001",
@@ -461,6 +493,7 @@ export const items = questions("TEF", "reading", [
     "La préférence des habitants pour les décisions secrètes.",
     "L'impossibilité de parvenir à un accord local.",
     "The author links meaningful influence to trust in future consultations.",
+    "L’auteur lie une influence réelle sur la décision à la confiance dans les futures consultations.",
   ],
   [
     "tef-mock-reading-c1-002",
@@ -475,6 +508,7 @@ export const items = questions("TEF", "reading", [
     "La disponibilité permanente réduit le temps travaillé.",
     "La flexibilité supprime nécessairement la hiérarchie.",
     "Flexible hours can become an obligation to remain available continuously.",
+    "Des horaires flexibles peuvent se transformer en obligation de rester disponible en permanence.",
   ],
   [
     "tef-mock-reading-c1-003",
@@ -489,6 +523,7 @@ export const items = questions("TEF", "reading", [
     "Il écarte toute dimension historique.",
     "Il répète les arguments habituels.",
     "Déplacer les termes means reframing the debate from ownership to narrative authority.",
+    "« Déplacer les termes » du débat, c’est le reformuler : on passe de la propriété à l’autorité sur le récit.",
   ],
   [
     "tef-mock-reading-c1-004",
@@ -503,6 +538,7 @@ export const items = questions("TEF", "reading", [
     "Il interdit toute comparaison entre services.",
     "Il augmente nécessairement avec la qualité.",
     "Removing complex cases from the calculation improves the average without improving their care.",
+    "Retirer les cas complexes du calcul améliore la moyenne sans améliorer leur prise en charge.",
   ],
   [
     "tef-mock-reading-c1-005",
@@ -517,6 +553,7 @@ export const items = questions("TEF", "reading", [
     "Les habitants souhaitent tous quitter le quartier.",
     "La mémoire dépend uniquement des archives.",
     "The author contrasts preserved buildings with displacement of the community that gave them meaning.",
+    "L’auteur oppose la conservation des bâtiments au départ de la communauté qui leur donnait leur sens.",
   ],
   [
     "tef-mock-reading-c1-006",
@@ -531,6 +568,7 @@ export const items = questions("TEF", "reading", [
     "Les classements garantissent une neutralité absolue.",
     "Les informations rares sont toujours plus fiables.",
     "Abundance increases the importance of attention allocation, which rankings influence despite an appearance of neutrality.",
+    "L’abondance rend l’attention plus précieuse, et les classements l’orientent malgré leur apparente neutralité.",
   ],
   [
     "tef-mock-reading-c1-007",
@@ -545,6 +583,7 @@ export const items = questions("TEF", "reading", [
     "L'inutilité de toute action personnelle.",
     "La priorité exclusive aux campagnes publicitaires.",
     "Individual action can support change but cannot replace collective infrastructure.",
+    "L’action individuelle peut soutenir le changement, mais elle ne remplace pas les infrastructures collectives.",
   ],
   [
     "tef-mock-reading-c1-008",
@@ -559,5 +598,6 @@ export const items = questions("TEF", "reading", [
     "Rejeter systématiquement les résultats négatifs.",
     "Étendre les résultats à toutes les populations.",
     "The passage distinguishes nondetection under specific conditions from universal proof of no effect.",
+    "Le texte distingue l’absence d’effet détecté dans des conditions précises d’une preuve générale qu’il n’y a aucun effet.",
   ],
 ]);

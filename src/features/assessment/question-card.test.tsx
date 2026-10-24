@@ -42,6 +42,25 @@ describe("QuestionCard", () => {
     expect(screen.getByText(feedback.explanation)).toBeInTheDocument();
   });
 
+  it("offers the transcript of a real recording once answered", () => {
+    render(
+      <QuestionCard
+        question={question}
+        value="z"
+        onChange={() => undefined}
+        feedback={{
+          ...feedback,
+          transcript: "A : Tu viens demain ? B : Oui, vers midi.",
+        }}
+      />,
+    );
+    fireEvent.click(screen.getByText("Read what was said"));
+    expect(
+      screen.getByText("Tu viens demain ?", { exact: false }),
+    ).toBeVisible();
+    expect(screen.getByText("B : Oui, vers midi.")).toBeVisible();
+  });
+
   it("suppresses instructional feedback in exam mode", () => {
     render(
       <QuestionCard

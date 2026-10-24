@@ -7,10 +7,13 @@ import {
   lessons,
   practiceItems,
 } from "@/content/catalog";
+import { modelAnswerClipId, objectionClipId, readyClip } from "@/content/clips";
 import { mockItems } from "@/content/mock-catalog";
+import { OBJECTION_TIMES } from "@/config/speaking";
 import { sampleItems } from "@/content/sample";
 import type {
   LearningLesson,
+  LessonCheckpoint,
   MCQ,
   ProductiveTask,
   PublicLessonContent,
@@ -56,6 +59,7 @@ function feedbackFor(
   answer: string,
   locale: Locale,
 ): AnswerFeedback {
+  const audio = question.metadata?.audio;
   return {
     correct:
       answer.trim().toLowerCase() ===
@@ -63,6 +67,8 @@ function feedbackFor(
     correctAnswer: question.correctAnswer,
     explanation:
       (locale === "fr" && question.explanationFr) || question.explanation,
+    // The transcript is withheld while listening, and shown after answering.
+    ...(audio?.status === "ready" ? { transcript: audio.transcript } : {}),
   };
 }
 
@@ -132,21 +138,34 @@ const lessonCheckpoints = (lesson: LearningLesson) => [
   ...(lesson.extraCheckpoints ?? []),
 ];
 
+/** A checkpoint's prompt and options in the learner's language. */
+const localCheckpoint = (checkpoint: LessonCheckpoint, locale: Locale) =>
+  locale === "fr"
+    ? {
+        prompt: checkpoint.promptFr ?? checkpoint.prompt,
+        options: checkpoint.optionsFr ?? checkpoint.options,
+      }
+    : checkpoint;
+
 export function toPublicLesson(
   lesson: LearningLesson,
+  locale: Locale = "en",
   random: () => number = Math.random,
 ): PublicLessonContent {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars -- answers stay on the server
   const { checkpoint, extraCheckpoints, ...rest } = lesson;
   return {
     ...rest,
-    checkpoints: lessonCheckpoints(lesson).map((item) => ({
-      prompt: item.prompt,
-      options: shuffle(
-        item.options.map((label, index) => ({ index, label })),
-        random,
-      ),
-    })),
+    checkpoints: lessonCheckpoints(lesson).map((item) => {
+      const { prompt, options } = localCheckpoint(item, locale);
+      return {
+        prompt,
+        options: shuffle(
+          options.map((label, index) => ({ index, label })),
+          random,
+        ),
+      };
+    }),
   };
 }
 
@@ -161,7 +180,9 @@ export function checkLessonCheckpoint(
   if (!checkpoint || answerIndex >= checkpoint.options.length) return null;
   return {
     correct: answerIndex === checkpoint.answer,
-    correctAnswer: checkpoint.options[checkpoint.answer],
+    correctAnswer: localCheckpoint(checkpoint, locale).options[
+      checkpoint.answer
+    ],
     explanation:
       (locale === "fr" && checkpoint.explanationFr) || checkpoint.explanation,
   };
@@ -173,10 +194,25 @@ export function getPublicProductiveTasks(
 ): PublicProductiveTask[] {
   return findPractice(examCode(exam), skill)
     .filter(isProductive)
-    .map(({ correction, ...task }) => ({
+    .map(({ correction, objections, ...task }) => ({
       ...task,
+      // Objections are part of the task, not an answer: they are sent ahead
+      // and revealed at their time while the learner answers.
+      ...(objections
+        ? {
+            objections: objections.lines.map((text, index) => {
+              const clip = readyClip(objectionClipId(task.id, index), text);
+              return {
+                at: OBJECTION_TIMES[index],
+                text,
+                ...(clip ? { audio: clip.path, seconds: clip.seconds } : {}),
+              };
+            }),
+          }
+        : {}),
       correction: {
         guidance: correction.guidance,
+        guidanceFr: correction.guidanceFr,
         rubric: correction.rubric,
         hasModelResponse: Boolean(correction.modelResponse),
       },
@@ -215,13 +251,16 @@ export const getWritingTaskTitles = () => productiveTitles("writing");
 /** Titles of every speaking task, for lists of past recordings. */
 export const getSpeakingTaskTitles = () => productiveTitles("speaking");
 
+/** A task's model answer, with its recording for speaking tasks once made. */
 export function getModelResponse(exam: ExamId, taskId: string) {
   const item = practiceItems.find(
     (candidate) => candidate.id === taskId && candidate.exam === examCode(exam),
   );
-  return item && isProductive(item)
-    ? (item.correction.modelResponse ?? null)
-    : null;
+  const text =
+    item && isProductive(item) ? item.correction.modelResponse : undefined;
+  if (!text) return null;
+  const clip = readyClip(modelAnswerClipId(taskId), text);
+  return { text, ...(clip ? { audio: clip.path } : {}) };
 }
 
 const optionLabelsById = new Map(
@@ -234,6 +273,33 @@ const optionLabelsById = new Map(
       ),
     ]),
 );
+
+const explanationsById = new Map(
+  [...diagnosticItems, ...practiceItems, ...mockItems]
+    .filter(isMcq)
+    .map((item) => [item.id, item.correction] as const),
+);
+
+/**
+ * Explanations in the learner's language for questions they answered. Saved
+ * mistakes keep a copy of the English explanation from the answer bank.
+ */
+export function getExplanations(questionIds: string[], locale: Locale) {
+  return Object.fromEntries(
+    questionIds.flatMap((id) => {
+      const correction = explanationsById.get(id);
+      return correction
+        ? [
+            [
+              id,
+              (locale === "fr" && correction.explanationFr) ||
+                correction.explanation,
+            ],
+          ]
+        : [];
+    }),
+  ) as Record<string, string>;
+}
 
 /** Option text for questions a learner already answered, keyed by option id. */
 export function getOptionLabels(questionIds: string[]) {

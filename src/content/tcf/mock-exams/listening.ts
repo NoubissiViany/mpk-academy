@@ -13,6 +13,7 @@ export const items = questions("TCF", "listening", [
     "Les deux bassins.",
     "Aucun bassin.",
     "Adults may use the large pool immediately.",
+    "Les adultes peuvent utiliser le grand bassin tout de suite.",
   ],
   [
     "tcf-mock-listening-a2-002",
@@ -27,6 +28,7 @@ export const items = questions("TCF", "listening", [
     "Au bureau.",
     "Dans une librairie.",
     "The speaker explicitly says she will join her friend on the terrace.",
+    "Anna dit clairement qu’elle rejoint son amie à la terrasse.",
   ],
   [
     "tcf-mock-listening-a2-003",
@@ -41,6 +43,7 @@ export const items = questions("TCF", "listening", [
     "Les stylos.",
     "Les sacs.",
     "The promotion applies to notebooks and explicitly excludes planners.",
+    "La promotion concerne les cahiers et exclut explicitement les agendas.",
   ],
   [
     "tcf-mock-listening-a2-004",
@@ -55,6 +58,7 @@ export const items = questions("TCF", "listening", [
     "De prendre un taxi.",
     "De rentrer chez elle.",
     "The speaker proposes waiting where they are for the imminent bus.",
+    "La personne propose d’attendre à cet arrêt, car le bus arrive bientôt.",
   ],
   [
     "tcf-mock-listening-a2-005",
@@ -69,6 +73,7 @@ export const items = questions("TCF", "listening", [
     "Pour laisser entrer le soleil.",
     "Pour signaler une absence.",
     "The request is motivated by solar heat in the room.",
+    "Il faut fermer les volets à cause de la chaleur du soleil dans la pièce.",
   ],
   [
     "tcf-mock-listening-a2-006",
@@ -83,6 +88,7 @@ export const items = questions("TCF", "listening", [
     "Devant la porte.",
     "Dans le couloir.",
     "The instruction places bags under the table.",
+    "La consigne demande de mettre son sac sous la table.",
   ],
   [
     "tcf-mock-listening-a2-007",
@@ -97,6 +103,7 @@ export const items = questions("TCF", "listening", [
     "D'aller seule au cinéma.",
     "De rester au travail demain.",
     "The person suggests tomorrow instead of tonight.",
+    "La personne propose de sortir demain plutôt que ce soir.",
   ],
   [
     "tcf-mock-listening-a2-008",
@@ -111,6 +118,7 @@ export const items = questions("TCF", "listening", [
     "Un ticket rouge.",
     "Un ticket bleu.",
     "Collection uses green tickets; sending uses white.",
+    "Pour retirer un colis, il faut un ticket vert ; le ticket blanc sert aux envois.",
   ],
   [
     "tcf-mock-listening-b1-001",
@@ -125,6 +133,7 @@ export const items = questions("TCF", "listening", [
     "À un ancien salarié.",
     "À la mairie.",
     "The instruction directs applications to the store manager rather than headquarters.",
+    "La candidature doit être adressée à la responsable du magasin, et non au siège.",
   ],
   [
     "tcf-mock-listening-b1-002",
@@ -139,6 +148,7 @@ export const items = questions("TCF", "listening", [
     "Qu'ils achètent toutes les boissons.",
     "Qu'ils réservent un restaurant.",
     "Participants supply food while organizers handle furniture and drinks.",
+    "Les participants apportent un plat ; les organisateurs s’occupent des tables et des boissons.",
   ],
   [
     "tcf-mock-listening-b1-003",
@@ -153,6 +163,7 @@ export const items = questions("TCF", "listening", [
     "Réserver une place supplémentaire sur place.",
     "Assister à une seconde conférence demain.",
     "The physical event is full; the online stream is open.",
+    "La salle est complète, mais on peut encore suivre la conférence en ligne.",
   ],
   [
     "tcf-mock-listening-b1-004",
@@ -167,6 +178,7 @@ export const items = questions("TCF", "listening", [
     "Celui de dix heures.",
     "Celui de onze heures.",
     "The chosen departure is nine; ten is office opening time.",
+    "La personne prend le train de neuf heures ; dix heures est l’heure d’ouverture du bureau.",
   ],
   [
     "tcf-mock-listening-b1-005",
@@ -181,6 +193,7 @@ export const items = questions("TCF", "listening", [
     "Elle fournit un professeur particulier.",
     "Elle réduit la durée du programme.",
     "The contrast is between interruptions at home and more focused study elsewhere.",
+    "La personne oppose les interruptions à la maison à un travail plus concentré à la bibliothèque.",
   ],
   [
     "tcf-mock-listening-b1-006",
@@ -195,6 +208,7 @@ export const items = questions("TCF", "listening", [
     "Une procuration suffit.",
     "Aucun document n'est nécessaire.",
     "Personal collection with ID is required.",
+    "Le retrait doit se faire en personne, avec une pièce d’identité.",
   ],
   [
     "tcf-mock-listening-b1-007",
@@ -209,6 +223,7 @@ export const items = questions("TCF", "listening", [
     "Tous les entraînements.",
     "Celui du dimanche.",
     "Only the Wednesday session moves to Thursday.",
+    "Seul l’entraînement du mercredi passe au jeudi.",
   ],
   [
     "tcf-mock-listening-b1-008",
@@ -223,6 +238,7 @@ export const items = questions("TCF", "listening", [
     "Une décision sur les demandes de logement.",
     "Une traduction certifiée de tous les actes.",
     "Volunteers explain letters and procedures without exercising decision authority.",
+    "Les bénévoles expliquent les courriers et les démarches, mais ne prennent aucune décision.",
   ],
   [
     "tcf-mock-listening-b1-009",
@@ -237,6 +253,7 @@ export const items = questions("TCF", "listening", [
     "Par un chèque envoyé au voisin.",
     "Avec un bon obligatoire.",
     "The refund goes to the original payment card.",
+    "Le remboursement est fait sur la carte utilisée pour le paiement.",
   ],
   [
     "tcf-mock-listening-b1-010",
@@ -251,6 +268,7 @@ export const items = questions("TCF", "listening", [
     "Par une fermeture du bureau.",
     "Par un changement définitif de poste.",
     "Reciprocal call coverage enables attendance.",
+    "Des collègues se relaient pour assurer les appels, ce qui permet d’y participer.",
   ],
   [
     "tcf-mock-listening-b1-011",
@@ -265,6 +283,7 @@ export const items = questions("TCF", "listening", [
     "La durée de chaque partie.",
     "L'achat d'un nouveau jeu.",
     "The notice asks borrowers to report preexisting missing pieces at checkout.",
+    "Au moment de l’emprunt, il faut signaler les pièces qui manquent déjà.",
   ],
   [
     "tcf-mock-listening-b1-012",
@@ -279,6 +298,7 @@ export const items = questions("TCF", "listening", [
     "Le jour de la rencontre.",
     "Le nombre d'invités.",
     "The picnic moves indoors while the food arrangement remains.",
+    "Le pique-nique a lieu à l’intérieur ; l’organisation du repas ne change pas.",
   ],
   [
     "tcf-mock-listening-b2-001",
@@ -293,6 +313,7 @@ export const items = questions("TCF", "listening", [
     "L'interdiction des enregistrements.",
     "Des vidéos systématiquement plus longues.",
     "The speaker values catch-up access but wants concise decision summaries.",
+    "La personne apprécie de pouvoir rattraper les réunions, mais veut des résumés courts des décisions.",
   ],
   [
     "tcf-mock-listening-b2-002",
@@ -307,6 +328,7 @@ export const items = questions("TCF", "listening", [
     "La demande a complètement disparu.",
     "Les habitants n'aiment pas s'asseoir.",
     "Heavy use can indicate unmet demand rather than sufficient provision.",
+    "Une forte utilisation peut révéler un besoin non couvert, plutôt qu’une offre suffisante.",
   ],
   [
     "tcf-mock-listening-b2-003",
@@ -321,6 +343,7 @@ export const items = questions("TCF", "listening", [
     "Il annonce l'impossibilité de réparer.",
     "Il garantit qu'aucun entretien ne sera plus nécessaire.",
     "The technician separates current repair from nonurgent wear elsewhere.",
+    "Le technicien distingue la réparation à faire maintenant d’une usure non urgente ailleurs.",
   ],
   [
     "tcf-mock-listening-b2-004",
@@ -335,6 +358,7 @@ export const items = questions("TCF", "listening", [
     "Leur ancienneté obligatoire.",
     "Leur fabrication par des artistes célèbres.",
     "Personal and neighborhood narratives give the objects value beyond market price.",
+    "Les histoires personnelles et celles du quartier donnent aux objets une valeur au-delà de leur prix.",
   ],
   [
     "tcf-mock-listening-b2-005",
@@ -349,6 +373,7 @@ export const items = questions("TCF", "listening", [
     "Toutes les séances.",
     "Aucune séance.",
     "Only the final group simulation requires physical attendance.",
+    "Seule la dernière séance, une simulation en groupe, demande de se déplacer.",
   ],
   [
     "tcf-mock-listening-b2-006",
@@ -363,6 +388,7 @@ export const items = questions("TCF", "listening", [
     "La suppression des frais de transport.",
     "L'absence de tout problème.",
     "Responsive problem resolution outweighs slower delivery for this customer.",
+    "Pour ce client, la réactivité en cas de problème compte plus qu’une livraison rapide.",
   ],
   [
     "tcf-mock-listening-b2-007",
@@ -377,6 +403,7 @@ export const items = questions("TCF", "listening", [
     "L'absence de toute consigne.",
     "Le choix systématique de grands groupes.",
     "Clear roles prevent uneven participation and support cooperation.",
+    "Des rôles clairs évitent une participation inégale et favorisent la coopération.",
   ],
   [
     "tcf-mock-listening-b2-008",
@@ -391,6 +418,7 @@ export const items = questions("TCF", "listening", [
     "D'annuler toutes les activités.",
     "De proposer dix activités sans encadrement.",
     "The response prioritizes a feasible offer over an ambitious but unsupported one.",
+    "La réponse privilégie une offre réalisable plutôt qu’une offre ambitieuse sans les moyens nécessaires.",
   ],
   [
     "tcf-mock-listening-b2-009",
@@ -405,6 +433,7 @@ export const items = questions("TCF", "listening", [
     "Un manque de composteurs dans les jardins.",
     "Une interdiction municipale de composter.",
     "Residents mistakenly believe access is restricted, reducing use.",
+    "Les habitants croient à tort que l’accès est réservé, et ils l’utilisent donc moins.",
   ],
   [
     "tcf-mock-listening-b2-010",
@@ -419,6 +448,7 @@ export const items = questions("TCF", "listening", [
     "Un refus de chercher par elle-même.",
     "Une réduction de ses responsabilités.",
     "Early, focused questions replace prolonged isolated searching.",
+    "La personne pose maintenant des questions précises tôt, au lieu de chercher longtemps seule.",
   ],
   [
     "tcf-mock-listening-b2-011",
@@ -433,6 +463,7 @@ export const items = questions("TCF", "listening", [
     "L'achat est obligatoire dès aujourd'hui.",
     "Le paiement intégral est exigé par téléphone.",
     "A deposit secures reservation; availability without it is uncertain.",
+    "Un acompte garantit la réservation ; sans lui, la disponibilité n’est pas assurée.",
   ],
   [
     "tcf-mock-listening-b2-012",
@@ -447,6 +478,7 @@ export const items = questions("TCF", "listening", [
     "L'interdiction des vélos au carrefour.",
     "Le manque de cyclistes expérimentés.",
     "An unsafe gap can undermine the usefulness of otherwise good infrastructure.",
+    "Un passage dangereux peut réduire l’utilité d’un aménagement par ailleurs de qualité.",
   ],
   [
     "tcf-mock-listening-c1-001",
@@ -461,6 +493,7 @@ export const items = questions("TCF", "listening", [
     "Considérer une seule explication comme certaine.",
     "Cesser définitivement la recherche.",
     "Multiple plausible explanations mean correlation alone does not justify immediate causal advice.",
+    "Plusieurs explications sont possibles : une simple corrélation ne justifie pas un conseil immédiat de cause à effet.",
   ],
   [
     "tcf-mock-listening-c1-002",
@@ -475,6 +508,7 @@ export const items = questions("TCF", "listening", [
     "Toute possibilité de coordination.",
     "Le besoin d'autonomie locale.",
     "The speaker rejects an either-or framing and proposes intermediate arrangements.",
+    "La personne refuse l’alternative « tout ou rien » et propose des solutions intermédiaires.",
   ],
   [
     "tcf-mock-listening-c1-003",
@@ -489,6 +523,7 @@ export const items = questions("TCF", "listening", [
     "L'interdiction de toute automatisation.",
     "L'absence de préférences personnelles.",
     "The concern is maintaining awareness of decisions made by automated systems.",
+    "L’enjeu est de rester conscient des décisions prises par des systèmes automatisés.",
   ],
   [
     "tcf-mock-listening-c1-004",
@@ -503,6 +538,7 @@ export const items = questions("TCF", "listening", [
     "Pour remplacer les documents originaux.",
     "Pour supprimer les recherches personnelles.",
     "Availability alone does not ensure meaningful access without context.",
+    "Rendre les documents disponibles ne suffit pas : sans contexte, on ne les comprend pas vraiment.",
   ],
   [
     "tcf-mock-listening-c1-005",
@@ -517,6 +553,7 @@ export const items = questions("TCF", "listening", [
     "Réduire le temps de formation.",
     "Attribuer la difficulté aux seuls nouveaux.",
     "The speaker identifies undocumented knowledge as the problem and calls for transferability.",
+    "Le problème vient des savoirs non documentés ; il faut les rendre transmissibles.",
   ],
   [
     "tcf-mock-listening-c1-006",
@@ -531,6 +568,7 @@ export const items = questions("TCF", "listening", [
     "Une égalité garantie par la seule entrée libre.",
     "Une suppression nécessaire de tous les usages.",
     "Social norms and welcome can create barriers even without physical restrictions.",
+    "Les normes sociales et l’accueil peuvent créer des obstacles, même sans restriction matérielle.",
   ],
   [
     "tcf-mock-listening-c1-007",
@@ -545,5 +583,6 @@ export const items = questions("TCF", "listening", [
     "La popularité du responsable.",
     "Le budget de l'année suivante.",
     "Meeting lowered targets must be interpreted in light of changing criteria.",
+    "Atteindre des objectifs revus à la baisse doit s’interpréter en tenant compte de critères qui ont changé.",
   ],
 ]);

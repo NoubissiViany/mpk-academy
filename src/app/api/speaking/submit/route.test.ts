@@ -10,6 +10,7 @@ const mocks = vi.hoisted(() => ({
   after: vi.fn(),
   consent: { value: "" },
   existing: { value: null as { id: string } | null },
+  objectionSeconds: { value: undefined as number | undefined },
 }));
 
 vi.mock("next/server", () => ({ after: mocks.after }));
@@ -30,6 +31,26 @@ vi.mock("@/lib/server/ai/groq", async (original) => ({
   ...(await original<typeof import("@/lib/server/ai/groq")>()),
   groqTranscribe: mocks.transcribe,
 }));
+// Real tasks, with a clip length for the objections when a test sets one.
+vi.mock("@/lib/server/content", async (original) => {
+  const actual = await original<typeof import("@/lib/server/content")>();
+  return {
+    ...actual,
+    getPublicSpeakingTask: (exam: never, id: string) => {
+      const task = actual.getPublicSpeakingTask(exam, id);
+      return task?.objections && mocks.objectionSeconds.value
+        ? {
+            ...task,
+            objections: task.objections.map((o) => ({
+              ...o,
+              audio: "/audio/objection.mp3",
+              seconds: mocks.objectionSeconds.value,
+            })),
+          }
+        : task;
+    },
+  };
+});
 vi.mock("@/lib/supabase/learner", () => ({
   getLearnerAccess: mocks.access,
   requireUserId: mocks.requireUser,
@@ -66,8 +87,14 @@ function upload(
   audio: Blob = new Blob([new Uint8Array(4000)], {
     type: "audio/webm;codecs=opus",
   }),
+  objections?: unknown,
 ) {
   const form = new FormData();
+  if (objections !== undefined)
+    form.append(
+      "objections",
+      typeof objections === "string" ? objections : JSON.stringify(objections),
+    );
   form.append("audio", audio, "answer");
   form.append("taskId", "tef-speaking-section-b-001");
   form.append("clientKey", "6f1c5f3e-2d7a-4b1e-9c4a-1d2e3f4a5b6c");
@@ -89,6 +116,7 @@ describe("speaking upload", () => {
     mocks.access.mockResolvedValue(complete);
     mocks.consent.value = aiFeedbackNoticeVersion;
     mocks.existing.value = null;
+    mocks.objectionSeconds.value = undefined;
     mocks.requireUser.mockResolvedValue({
       userId: "user-1",
       supabase: {
@@ -163,6 +191,42 @@ describe("speaking upload", () => {
       expect.objectContaining({ p_skill: "speaking" }),
     );
     expect(mocks.after).toHaveBeenCalledTimes(1);
+  });
+
+  it("removes an objection heard in the recording and tells the reviewer", async () => {
+    // Words 1.0–1.4, 2.5–2.9, 4.0–4.4 …: the second objection plays at 4 s.
+    const response = await upload(undefined, [
+      { index: 0, at: 4, played: true },
+      { index: 1, at: 10, played: false },
+    ]);
+    expect(response.status).toBe(200);
+    const call = mocks.adminRpc.mock.calls.find(
+      ([name]) => name === "mpk_submit_speaking",
+    )!;
+    const args = call[1] as { p_transcript: string; p_metrics: object };
+    expect(args.p_metrics).toMatchObject({ objections: [0, 1] });
+    // Without a clip there is nothing to cut; the reviewer still hears of it.
+    expect(args.p_transcript).toBe(spoken);
+  });
+
+  it("cuts the words said while an objection's audio played", async () => {
+    mocks.objectionSeconds.value = 2;
+    // Word n starts at 1 + 1.5n: the clip at 4 s (window 3.5–7 s) covers
+    // words 2 to 4 ("voudrais te proposer").
+    await upload(undefined, [{ index: 0, at: 4, played: true }]);
+    const args = mocks.adminRpc.mock.calls.find(
+      ([name]) => name === "mpk_submit_speaking",
+    )![1] as { p_transcript: string };
+    expect(args.p_transcript).toBe(
+      "Bonjour je un défi de lecture avec moi ce mois-ci parce que",
+    );
+  });
+
+  it("rejects malformed objection reports", async () => {
+    expect((await upload(undefined, "not json")).status).toBe(400);
+    expect(
+      (await upload(undefined, [{ index: 9, at: 1, played: true }])).status,
+    ).toBe(400);
   });
 
   it("refuses before transcribing when today's answer is used", async () => {

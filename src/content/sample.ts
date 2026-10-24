@@ -4,15 +4,6 @@ import "server-only";
 import { questions } from "./shared/builders";
 import type { MCQ } from "./shared/types";
 
-const explanationsFr: Record<string, string> = {
-  "sample-reading-b1-001":
-    "Seul le prêt des livres numériques change (de deux à trois semaines) ; les livres papier étaient déjà prêtés pour vingt et un jours.",
-  "sample-grammar-b1-001":
-    "Depuis relie un point de départ passé à une situation toujours vraie aujourd’hui.",
-  "sample-vocabulary-b2-001":
-    "Reporter un vote, c’est le remettre à plus tard : les résidents voulaient plus de temps pour étudier le projet.",
-};
-
 export const sampleItems: MCQ[] = [
   ...questions("shared", "reading", [
     [
@@ -21,13 +12,31 @@ export const sampleItems: MCQ[] = [
       "specific_detail",
       "Bibliothèque",
       "avis",
-      "Bibliothèque de quartier : à partir du 3 novembre, le prêt de livres numériques passe de deux à trois semaines. Les livres papier restent prêtés pour vingt et un jours.",
+      "Bibliothèque de quartier – Nouveautés de l’automne. À partir du 3 novembre, le prêt de livres numériques passe de deux à trois semaines, comme l’avaient demandé de nombreux abonnés. Les livres papier restent prêtés pour vingt et un jours, et les horaires d’ouverture ne changent pas. Vous pouvez toujours emprunter dix documents à la fois. Pour toute question, adressez-vous à l’accueil ou écrivez-nous en ligne.",
       "Qu'est-ce qui change le 3 novembre ?",
       "La durée du prêt des livres numériques.",
       "La durée du prêt des livres papier.",
       "Les horaires d'ouverture de la bibliothèque.",
       "Le nombre de livres qu'on peut emprunter.",
-      "Only digital loans change (from two to three weeks); paper loans already last twenty-one days.",
+      "Only digital loans change (from two to three weeks); paper loans already last twenty-one days, and the opening hours and the ten-item limit stay the same.",
+      "Seul le prêt des livres numériques change (de deux à trois semaines) ; les livres papier étaient déjà prêtés pour vingt et un jours, et les horaires comme la limite de dix documents restent les mêmes.",
+    ],
+  ]),
+  ...questions("shared", "listening", [
+    [
+      "sample-listening-b1-001",
+      "B1",
+      "specific_detail",
+      "Logement",
+      "appel",
+      "A : Bonjour, je vous appelle au sujet de l’appartement du troisième étage. Il est toujours disponible ? B : Oui, mais la visite de samedi est complète. Je peux vous proposer jeudi soir, vers dix-huit heures. A : Jeudi, je finis tard. Vendredi midi, c’est possible ? B : Très bien, vendredi à midi, alors.",
+      "Quand la personne visitera-t-elle l’appartement ?",
+      "Vendredi à midi.",
+      "Samedi matin.",
+      "Jeudi vers dix-huit heures.",
+      "Jeudi après le travail.",
+      "Saturday's visit is full and Thursday evening does not suit the caller, so they agree on Friday at noon.",
+      "La visite de samedi est complète et le jeudi soir ne convient pas : ils fixent la visite au vendredi midi.",
     ],
   ]),
   ...questions("shared", "grammar", [
@@ -44,6 +53,7 @@ export const sampleItems: MCQ[] = [
       "il y a",
       "dans",
       "Depuis links a past starting point to a situation that is still true.",
+      "Depuis relie un point de départ passé à une situation toujours vraie aujourd’hui.",
     ],
   ]),
   ...questions("shared", "vocabulary", [
@@ -60,9 +70,7 @@ export const sampleItems: MCQ[] = [
       "Raconter à la presse.",
       "Organiser plus vite.",
       "Reporter un vote means postponing it; residents wanted more time to study the project.",
+      "Reporter un vote, c’est le remettre à plus tard : les résidents voulaient plus de temps pour étudier le projet.",
     ],
   ]),
-].map((item) => ({
-  ...item,
-  correction: { ...item.correction, explanationFr: explanationsFr[item.id] },
-}));
+];

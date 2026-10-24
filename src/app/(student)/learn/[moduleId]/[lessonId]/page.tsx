@@ -3,7 +3,7 @@ import { LockedContent } from "@/components/shared";
 import { allLessons as archivedLessons } from "@/content/legacy/course";
 import { allLessons, getCourseModules } from "@/data/course";
 import { LessonView } from "@/features/learn/lesson-view";
-import { getMessages } from "@/i18n/server";
+import { getLocale, getMessages } from "@/i18n/server";
 import { canAccessLesson } from "@/lib/domain/access";
 import { getLessonContent, toPublicLesson } from "@/lib/server/content";
 import { getLearnerAccess } from "@/lib/supabase/learner";
@@ -14,9 +14,10 @@ export default async function LessonPage({
   params: Promise<{ moduleId: string; lessonId: string }>;
 }) {
   const { moduleId, lessonId } = await params;
-  const [{ planAccess, exam }, t] = await Promise.all([
+  const [{ planAccess, exam }, t, locale] = await Promise.all([
     getLearnerAccess(),
     getMessages(),
+    getLocale(),
   ]);
   const copy = t.learn.lesson;
   const lesson = allLessons.find(
@@ -67,7 +68,7 @@ export default async function LessonPage({
   return (
     <LessonView
       lesson={lesson}
-      content={toPublicLesson(content)}
+      content={toPublicLesson(content, locale)}
       next={next ? { id: next.id, moduleId: next.moduleId } : null}
     />
   );

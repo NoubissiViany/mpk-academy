@@ -4,7 +4,11 @@ import { aiFeedbackNoticeVersion } from "@/config/privacy";
 import { MAX_AUDIO_BYTES } from "@/config/speaking";
 import { hasPlanFeature } from "@/config/product";
 import { getLocale, getMessages } from "@/i18n/server";
-import { cleanTranscript, measureSpeech } from "@/lib/domain/speaking-metrics";
+import {
+  cleanTranscript,
+  measureSpeech,
+  withoutSpans,
+} from "@/lib/domain/speaking-metrics";
 import { countWords } from "@/lib/domain/writing-checks";
 import {
   GroqError,
@@ -77,7 +81,28 @@ const fieldsSchema = z.object({
   clientKey: z.uuid(),
   durationSeconds: z.number().min(1).max(900),
   practiceSubmissionId: z.uuid().optional(),
+  // TEF section B objections the learner was given: when, and whether their
+  // audio played (and so may be in the recording).
+  objections: z
+    .array(
+      z.object({
+        index: z.number().int().min(0).max(5),
+        at: z.number().min(0).max(900),
+        played: z.boolean(),
+      }),
+    )
+    .max(6)
+    .default([]),
 });
+
+const parseJson = (value: FormDataEntryValue | null | undefined) => {
+  if (typeof value !== "string") return undefined;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return null;
+  }
+};
 
 const allowanceStatus: Record<string, number> = {
   consent_required: 403,
@@ -112,6 +137,7 @@ export async function POST(request: Request) {
       clientKey: form?.get("clientKey"),
       durationSeconds: Number(form?.get("durationSeconds")),
       practiceSubmissionId: form?.get("practiceSubmissionId") || undefined,
+      objections: parseJson(form?.get("objections")),
     });
     if (!fields.success || !(audio instanceof Blob))
       return failure("invalid", 400);
@@ -182,13 +208,33 @@ export async function POST(request: Request) {
         operation: "submit_speaking",
       });
 
-    const cleaned = cleanTranscript(
+    // Objections that played aloud may have been recorded: drop what was
+    // said from just before each one starts until just after it ends.
+    const objections = fields.data.objections.filter(
+      (o) => task.objections?.[o.index],
+    );
+    const spans = objections.flatMap((o) => {
+      const seconds = task.objections![o.index].seconds;
+      return o.played && seconds
+        ? [{ start: o.at - 0.5, end: o.at + seconds + 1 }]
+        : [];
+    });
+    const learnerOnly = withoutSpans(
       transcription.segments,
       transcription.words,
+      spans,
     );
-    const transcript = (cleaned.text || transcription.text).trim();
+    const cleaned = cleanTranscript(learnerOnly.segments, learnerOnly.words);
+    const transcript = (
+      cleaned.text || (spans.length ? "" : transcription.text)
+    ).trim();
     if (countWords(transcript) < 10) return failure("too_short", 422);
-    const metrics = measureSpeech(cleaned.words, audioSeconds);
+    const metrics = {
+      ...measureSpeech(cleaned.words, audioSeconds),
+      ...(objections.length
+        ? { objections: objections.map((o) => o.index) }
+        : {}),
+    };
 
     if (fields.data.practiceSubmissionId) {
       const { error } = await supabase.rpc("mpk_submit_practice", {

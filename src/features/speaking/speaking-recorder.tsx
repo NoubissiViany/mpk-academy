@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Mic, Square } from "lucide-react";
 import { toast } from "sonner";
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import type { PublicProductiveTask } from "@/content/shared/types";
 import { AiConsent } from "@/features/writing/request-feedback";
 import { useI18n } from "@/i18n/client";
+import { Objections, type RaisedObjection } from "./objections";
 import { useRecorder } from "./use-recorder";
 
 type Allowance =
@@ -42,6 +43,9 @@ export function SpeakingRecorder({
   const [allowance, setAllowance] = useState<Allowance>("checking");
   const [clientKey, setClientKey] = useState(() => crypto.randomUUID());
   const [sending, setSending] = useState(false);
+  // Objections raised during this recording, sent so their audio can be
+  // removed from the transcript.
+  const raised = useRef<RaisedObjection[]>([]);
   const recorder = useRecorder({
     maxSeconds: task.durationSeconds,
     preparationSeconds: task.preparationSeconds,
@@ -93,6 +97,8 @@ export function SpeakingRecorder({
     form.append("clientKey", clientKey);
     form.append("durationSeconds", String(recorder.recording.seconds));
     form.append("practiceSubmissionId", practiceSubmissionId);
+    if (raised.current.length)
+      form.append("objections", JSON.stringify(raised.current));
     const response = await fetch("/api/speaking/submit", {
       method: "POST",
       body: form,
@@ -121,6 +127,7 @@ export function SpeakingRecorder({
 
   const recordAgain = () => {
     recorder.reset();
+    raised.current = [];
     setClientKey(crypto.randomUUID());
   };
 
@@ -133,6 +140,16 @@ export function SpeakingRecorder({
         </p>
         <p className="mt-1 text-xs text-muted-foreground">{copy.limit}</p>
       </div>
+
+      {task.objections &&
+        (recorder.state === "idle" || recorder.state === "recording") && (
+          <Objections
+            objections={task.objections}
+            elapsed={recorder.elapsed}
+            active={recorder.state === "recording"}
+            onRaised={(objection) => raised.current.push(objection)}
+          />
+        )}
 
       {recorder.state === "idle" && (
         <Button onClick={() => void recorder.start()}>

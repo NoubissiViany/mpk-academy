@@ -1,14 +1,50 @@
+import speakerGenders from "./audio-speakers.json";
+import debtFile from "./debt.json";
+import {
+  allowedLongestCorrect,
+  correctIsLongest,
+  documentText,
+  isShortDocument,
+  MIN_POOL_FOR_SHARES,
+  minimumWords,
+  nearDuplicates,
+  unbalancedPositions,
+  wordCount,
+} from "./quality";
+import { OBJECTION_TIMES } from "../config/speaking";
+import { speakerIds } from "./shared/audio";
 import { competencyIds } from "./shared/competencies";
 import { levels } from "./shared/levels";
-import type { ContentItem, LearningLesson, MockManifest } from "./shared/types";
-export function wordCount(value: string) {
-  return value.trim().split(/\s+/u).filter(Boolean).length;
+import type {
+  ContentItem,
+  LearningLesson,
+  MCQ,
+  MockManifest,
+  ProductiveTask,
+} from "./shared/types";
+
+/**
+ * Known problems in published content, being fixed. Validation fails on any
+ * new case, and when a listed problem is fixed it asks for the list to
+ * shrink, so the debt can only go down.
+ */
+export interface ContentDebt {
+  /** Items whose document is shorter than their level needs. */
+  shortDocuments: string[];
+  /** Pools where the correct answer is too often the longest option: the current count. */
+  longestCorrect: Record<string, number>;
 }
+export const contentDebt: ContentDebt = debtFile;
+
+/** Time a listener needs after a mock clip ends to choose an answer. */
+export const LISTENING_ANSWER_SECONDS = 10;
+
 export function validateContent(
   items: ContentItem[],
   lessons: LearningLesson[],
   manifests: MockManifest[],
   practiceIds: string[],
+  debt: ContentDebt = contentDebt,
 ) {
   const errors: string[] = [];
   const seen = new Set<string>();
@@ -160,6 +196,7 @@ export function validateContent(
       }
     }
   }
+  errors.push(...qualityErrors(items, lessons, manifests, practiceIds, debt));
   if (errors.length) throw new Error(errors.join("\n"));
   return {
     items: items.length,
@@ -169,4 +206,223 @@ export function validateContent(
       .filter((i) => i.kind === "mcq" && i.audio?.status === "pending")
       .map((i) => i.id),
   };
+}
+
+const isMcq = (item: ContentItem): item is MCQ => item.kind === "mcq";
+const isTask = (item: ContentItem): item is ProductiveTask =>
+  item.kind !== "mcq";
+
+/**
+ * Questions a learner meets together (a mock section, a practice skill, the
+ * diagnostic), named as in messages and the debt file.
+ */
+function questionPools(
+  mcqs: MCQ[],
+  manifests: MockManifest[],
+  practiceIds: string[],
+) {
+  const mockOf = new Map(
+    manifests.flatMap((m) =>
+      m.sections.flatMap((s) => s.itemIds.map((id) => [id, m.id] as const)),
+    ),
+  );
+  const practice = new Set(practiceIds);
+  const pools = new Map<string, MCQ[]>();
+  for (const item of mcqs) {
+    const mock = mockOf.get(item.id);
+    const name = mock
+      ? `${mock} ${item.skill}`
+      : practice.has(item.id)
+        ? `practice ${item.exam} ${item.skill}`
+        : `diagnostic ${item.skill}`;
+    pools.set(name, [...(pools.get(name) ?? []), item]);
+  }
+  return pools;
+}
+
+/**
+ * The debt list after content changes: fixed problems leave it, and nothing
+ * is ever added (a new problem must fail validation instead).
+ */
+export function shrinkDebt(
+  debt: ContentDebt,
+  items: ContentItem[],
+  manifests: MockManifest[],
+  practiceIds: string[],
+): ContentDebt {
+  const mcqs = items.filter(isMcq);
+  const short = new Set(mcqs.filter(isShortDocument).map((item) => item.id));
+  const pools = questionPools(mcqs, manifests, practiceIds);
+  const longestCorrect: Record<string, number> = {};
+  for (const [name, known] of Object.entries(debt.longestCorrect)) {
+    const pool = pools.get(name) ?? [];
+    const count = pool.filter(correctIsLongest).length;
+    if (count > allowedLongestCorrect(pool.length))
+      longestCorrect[name] = Math.min(known, count);
+  }
+  return {
+    shortDocuments: debt.shortDocuments.filter((id) => short.has(id)),
+    longestCorrect,
+  };
+}
+
+function qualityErrors(
+  items: ContentItem[],
+  lessons: LearningLesson[],
+  manifests: MockManifest[],
+  practiceIds: string[],
+  debt: ContentDebt,
+) {
+  const errors: string[] = [];
+  const mcqs = items.filter(isMcq);
+
+  // Documents long enough for their level.
+  const short = new Set(mcqs.filter(isShortDocument).map((item) => item.id));
+  for (const item of mcqs)
+    if (short.has(item.id) && !debt.shortDocuments.includes(item.id))
+      errors.push(
+        `${item.id}: ${wordCount(documentText(item))}-word document; ${item.level} ${item.skill} needs at least ${minimumWords[item.skill as "reading" | "listening"][item.level]}`,
+      );
+  for (const id of debt.shortDocuments)
+    if (!short.has(id))
+      errors.push(
+        `${id}: no longer a short document; remove it from src/content/debt.json`,
+      );
+
+  // No answer-length cue, and answers spread evenly over a, b, c and d.
+  const pools = questionPools(mcqs, manifests, practiceIds);
+  for (const [name, pool] of pools) {
+    const longest = pool.filter(correctIsLongest).length;
+    const allowed = allowedLongestCorrect(pool.length);
+    const known = debt.longestCorrect[name];
+    if (
+      pool.length >= MIN_POOL_FOR_SHARES &&
+      longest > Math.max(allowed, known ?? 0)
+    )
+      errors.push(
+        `${name}: the correct answer is the longest option in ${longest} of ${pool.length} questions; chance allows ${allowed}`,
+      );
+    if (known !== undefined && longest < known)
+      errors.push(
+        `${name}: ${longest} questions now have the longest option correct; ${longest > allowed ? `lower its count in src/content/debt.json to ${longest}` : "remove it from src/content/debt.json"}`,
+      );
+    if (pool.length >= MIN_POOL_FOR_SHARES) {
+      const skewed = unbalancedPositions(pool);
+      if (skewed.length)
+        errors.push(
+          `${name}: answer positions unbalanced (${skewed.join(", ")})`,
+        );
+    }
+  }
+  for (const name of Object.keys(debt.longestCorrect))
+    if (!pools.has(name))
+      errors.push(`${name}: unknown pool in src/content/debt.json`);
+
+  // No question or task that repeats another with a few words changed.
+  const texts = [
+    ...mcqs.map((item) => ({
+      id: item.id,
+      text: `${documentText(item)} ${item.prompt}`,
+    })),
+    ...items
+      .filter(isTask)
+      .map((task) => ({ id: task.id, text: task.scenario })),
+  ];
+  for (const pair of nearDuplicates(texts))
+    errors.push(
+      `${pair.b}: near-duplicate of ${pair.a} (${Math.round(pair.similarity * 100)}% of its wording)`,
+    );
+
+  // Each mock clip leaves time to answer within its share of the section.
+  for (const manifest of manifests)
+    for (const section of manifest.sections.filter(
+      (s) => s.skill === "listening",
+    )) {
+      const slot = section.durationSeconds / section.itemIds.length;
+      for (const item of mcqs.filter((i) => section.itemIds.includes(i.id)))
+        if (
+          item.audio &&
+          item.audio.intendedDuration > slot - LISTENING_ANSWER_SECONDS
+        )
+          errors.push(
+            `${item.id}: a ${item.audio.intendedDuration}s clip leaves under ${LISTENING_ANSWER_SECONDS}s to answer in its ${Math.floor(slot)}s`,
+          );
+    }
+
+  // Speaker voices chosen in src/content/audio-speakers.json fit the clip
+  // (a listening document or a spoken model answer).
+  for (const [id, genders] of Object.entries(
+    speakerGenders as Record<string, string>,
+  )) {
+    const item = items.find((i) => i.id === id);
+    const spoken =
+      item?.kind === "mcq"
+        ? item.audio?.transcript
+        : item?.kind === "speaking"
+          ? item.correction.modelResponse
+          : undefined;
+    if (!spoken)
+      errors.push(`${id}: listed in audio-speakers.json but has no audio`);
+    else if (
+      !/^[FM]+$/.test(genders) ||
+      genders.length !== speakerIds(spoken).length
+    )
+      errors.push(
+        `${id}: audio-speakers.json needs one F or M per speaker (${speakerIds(spoken).length})`,
+      );
+  }
+
+  // Spoken model answers: role-plays as dialogues, monologues as one voice.
+  // Objections belong to TEF section B only.
+  for (const task of items.filter(isTask)) {
+    if (task.kind !== "speaking") continue;
+    const model = task.correction.modelResponse;
+    if (model) {
+      const roleplay = ["section-a", "section-b", "task-2"].includes(
+        task.taskType,
+      );
+      if (roleplay !== speakerIds(model).length > 1)
+        errors.push(
+          `${task.id}: the model answer should be ${roleplay ? 'a dialogue ("A : … B : …")' : "a monologue"}`,
+        );
+    }
+    if (
+      task.objections &&
+      (task.taskType !== "section-b" ||
+        !task.objections.lines.length ||
+        task.objections.lines.length > OBJECTION_TIMES.length ||
+        task.objections.lines.some((line) => !line.trim()))
+    )
+      errors.push(
+        `${task.id}: objections are for TEF section B, ${OBJECTION_TIMES.length} at most`,
+      );
+  }
+
+  // Teaching text in French as well as English.
+  for (const item of mcqs) {
+    const fr = item.correction.explanationFr?.trim();
+    if (!fr || fr === item.correction.explanation.trim())
+      errors.push(`${item.id}: missing French explanation`);
+  }
+  for (const task of items.filter(isTask))
+    if (!task.correction.guidanceFr?.trim())
+      errors.push(`${task.id}: missing French guidance`);
+  for (const lesson of lessons) {
+    const missing = [
+      lesson.titleFr && lesson.titleFr !== lesson.title ? "" : "title",
+      lesson.explanationFr ? "" : "explanation",
+      lesson.guidedApplicationFr ? "" : "guided application",
+      lesson.commonErrorsFr?.length === lesson.commonErrors.length
+        ? ""
+        : "common errors",
+      [lesson.checkpoint, ...(lesson.extraCheckpoints ?? [])].every(
+        (checkpoint) => checkpoint.explanationFr,
+      )
+        ? ""
+        : "checkpoint explanations",
+    ].filter(Boolean);
+    if (missing.length)
+      errors.push(`${lesson.id}: missing French ${missing.join(", ")}`);
+  }
+  return errors;
 }

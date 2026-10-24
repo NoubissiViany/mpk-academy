@@ -27,9 +27,9 @@ const en = {
     title: "Check your French level",
     lead: "Find out where you are today and what you should focus on next.",
     body: "This quick assessment helps MPK Academy understand your strengths and weaknesses.",
-    facts: [
-      "About 12–15 minutes",
-      "20 questions · updated MPK assessment",
+    facts: (questions: number, minutes: number) => [
+      `About ${minutes} minutes`,
+      `${questions} questions · updated MPK assessment`,
       "Free",
       "No payment required",
     ],
@@ -213,9 +213,9 @@ const fr: typeof en = {
     title: "Évaluez votre niveau de français",
     lead: "Découvrez où vous en êtes aujourd’hui et sur quoi vous concentrer ensuite.",
     body: "Cette courte évaluation aide MPK Academy à comprendre vos forces et vos faiblesses.",
-    facts: [
-      "Environ 12 à 15 minutes",
-      "20 questions · évaluation MPK mise à jour",
+    facts: (questions: number, minutes: number) => [
+      `Environ ${minutes} minutes`,
+      `${questions} questions · évaluation MPK mise à jour`,
       "Gratuite",
       "Aucun paiement requis",
     ],

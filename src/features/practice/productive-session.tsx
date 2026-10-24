@@ -2,15 +2,16 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { getModelResponseAction } from "@/app/actions/content";
 import { submitPracticeAction } from "@/app/actions/learner";
 import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
 import type { PublicProductiveTask } from "@/content/shared/types";
+import { Objections } from "@/features/speaking/objections";
 import { SpeakingRecorder } from "@/features/speaking/speaking-recorder";
 import { RequestAiFeedback } from "@/features/writing/request-feedback";
 import { useI18n } from "@/i18n/client";
 import type { ExamId } from "@/types/domain";
+import { ModelAnswer } from "./model-answer";
 
 const wordCount = (value: string) =>
   value.trim() ? value.trim().split(/\s+/).length : 0;
@@ -38,7 +39,7 @@ function TaskSession({
   aiFeedback,
   aiSpeaking,
 }: SessionProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const copy = t.practice.productive;
   const [submissionId] = useState(() => crypto.randomUUID());
   const [index, setIndex] = useState(0);
@@ -47,8 +48,6 @@ function TaskSession({
   const [now, setNow] = useState(0);
   const [review, setReview] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [modelResponse, setModelResponse] = useState<string | null>(null);
-  const [loadingModel, setLoadingModel] = useState(false);
   const [withoutRecording, setWithoutRecording] = useState(false);
   const task = tasks[index];
   const router = useRouter();
@@ -68,15 +67,6 @@ function TaskSession({
     started !== null &&
     task.preparationSeconds > 0 &&
     now - started < task.preparationSeconds * 1000;
-
-  // The model answer is fetched only when the learner opens it after reviewing.
-  const loadModelResponse = async () => {
-    if (modelResponse || loadingModel) return;
-    setLoadingModel(true);
-    const result = await getModelResponseAction(task.id);
-    setLoadingModel(false);
-    if (result.ok) setModelResponse(result.modelResponse);
-  };
 
   const elapsedSeconds =
     started === null
@@ -114,7 +104,6 @@ function TaskSession({
           setIndex(Number(e.target.value));
           setResponse("");
           setReview(false);
-          setModelResponse(null);
         }}
       >
         {tasks.map((item, i) => (
@@ -137,10 +126,12 @@ function TaskSession({
       )}
     </div>
   );
+  const guidanceText =
+    (locale === "fr" && task.correction.guidanceFr) || task.correction.guidance;
   const guidance = (
     <details>
       <summary>{copy.guidance}</summary>
-      <p className="mt-3">{task.correction.guidance}</p>
+      <p className="mt-3">{guidanceText}</p>
       <ul className="mt-3 list-inside list-disc" lang="fr">
         {task.correction.rubric.map((item) => (
           <li key={item}>{item}</li>
@@ -181,6 +172,13 @@ function TaskSession({
         {preparing ? copy.preparation : copy.response} ·{" "}
         {Math.floor(remaining / 60)}:{String(remaining % 60).padStart(2, "0")}
       </p>
+      {task.objections && !reviewing && (
+        <Objections
+          objections={task.objections}
+          elapsed={elapsedSeconds}
+          active={started !== null}
+        />
+      )}
       {started === null ? (
         <Button
           onClick={() => {
@@ -207,7 +205,7 @@ function TaskSession({
       )}
       <details>
         <summary>{copy.guidance}</summary>
-        <p className="mt-3">{task.correction.guidance}</p>
+        <p className="mt-3">{guidanceText}</p>
       </details>
       <Button
         disabled={started === null || reviewing}
@@ -224,16 +222,7 @@ function TaskSession({
             ))}
           </ul>
           {task.correction.hasModelResponse && (
-            <details
-              onToggle={(event) => {
-                if (event.currentTarget.open) void loadModelResponse();
-              }}
-            >
-              <summary>{copy.modelResponse}</summary>
-              <p lang="fr" className="mt-4 whitespace-pre-line">
-                {loadingModel ? copy.loadingModel : modelResponse}
-              </p>
-            </details>
+            <ModelAnswer key={task.id} taskId={task.id} />
           )}
           {skill === "writing" && aiFeedback && (
             <div className="rounded-xl border bg-card p-5">

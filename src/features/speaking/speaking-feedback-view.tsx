@@ -18,6 +18,7 @@ import {
   TextPanel,
   useReviewStatus,
 } from "@/features/feedback/ai-feedback";
+import { ModelAnswer } from "@/features/practice/model-answer";
 import { useI18n } from "@/i18n/client";
 import { paceFor, type SpeakingMetrics } from "@/lib/domain/speaking-metrics";
 import type { SpeakingSubmission } from "@/lib/supabase/speaking";
@@ -25,9 +26,11 @@ import type { SpeakingSubmission } from "@/lib/supabase/speaking";
 export function SpeakingFeedbackView({
   submission,
   taskTitle,
+  hasModelResponse = false,
 }: {
   submission: SpeakingSubmission;
   taskTitle: string;
+  hasModelResponse?: boolean;
 }) {
   const { t } = useI18n();
   const copy = t.speaking;
@@ -90,6 +93,11 @@ export function SpeakingFeedbackView({
             failedBody: copy.status.failedBody,
           }}
         />
+      )}
+      {hasModelResponse && (
+        <div className="mt-8 rounded-xl border p-5">
+          <ModelAnswer taskId={submission.taskId} />
+        </div>
       )}
       <div className="mt-8 flex flex-wrap gap-3">
         {status === "failed" && (

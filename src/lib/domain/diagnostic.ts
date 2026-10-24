@@ -94,3 +94,7 @@ export function scoreDiagnostic(
     recommendedModuleId: diagnosticSkillModules[priority],
   };
 }
+
+/** A rough duration for the assessment: about 0.8 minute a question, to 5. */
+export const diagnosticMinutes = (questions: number) =>
+  Math.max(10, Math.round((questions * 0.8) / 5) * 5);

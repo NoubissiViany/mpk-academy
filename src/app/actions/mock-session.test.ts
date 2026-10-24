@@ -1,8 +1,10 @@
 import { beforeEach, describe, it, expect, vi } from "vitest";
-const mocks = vi.hoisted(() => ({ rpc: vi.fn() }));
+const mocks = vi.hoisted(() => ({ rpc: vi.fn(), sign: vi.fn() }));
 vi.mock("@/lib/supabase/learner", () => ({
   requireUserId: async () => ({ supabase: { rpc: mocks.rpc } }),
 }));
+vi.mock("@/lib/server/mock-audio", () => ({ signMockAudio: mocks.sign }));
+vi.mock("@/lib/server/diagnostics", () => ({ logServerError: vi.fn() }));
 vi.mock("@/content/mock-catalog", () => ({
   manifests: [
     {
@@ -32,7 +34,7 @@ vi.mock("@/content/mock-catalog", () => ({
       audio: {
         id: "test-audio",
         status: "ready",
-        path: "/test-only/fixture.wav",
+        path: "tcf/fixture.mp3",
         intendedDuration: 2,
         transcript: "SECRET TRANSCRIPT",
         speakers: [{ id: "a", role: "speaker" }],
@@ -56,6 +58,8 @@ const state = {
 };
 beforeEach(() => {
   mocks.rpc.mockReset();
+  mocks.sign.mockReset();
+  mocks.sign.mockResolvedValue("https://storage.test/signed/fixture.mp3");
 });
 describe("mock candidate boundary", () => {
   it("hides TCF question, transcript and corrections before playback", async () => {
@@ -70,7 +74,7 @@ describe("mock candidate boundary", () => {
     expect(result.data.item?.audio?.path).toBeUndefined();
     expect(JSON.stringify(result)).not.toContain("SECRET");
   });
-  it("releases a path only for a server-authorized first play", async () => {
+  it("releases a signed link only for a server-authorized first play", async () => {
     mocks.rpc.mockResolvedValue({
       data: {
         id,
@@ -89,7 +93,10 @@ describe("mock candidate boundary", () => {
       itemId: "fixture-listening",
     });
     if (!first.ok) throw Error("fixture failed");
-    expect(first.data.item?.audio?.path).toBe("/test-only/fixture.wav");
+    expect(mocks.sign).toHaveBeenCalledWith("tcf/fixture.mp3", 2);
+    expect(first.data.item?.audio?.path).toBe(
+      "https://storage.test/signed/fixture.mp3",
+    );
     expect(first.data.item?.options).toBeUndefined();
     mocks.rpc.mockResolvedValue({
       data: {
@@ -121,6 +128,23 @@ describe("mock candidate boundary", () => {
     });
     if (!result.ok) throw Error("fixture failed");
     expect(result.data.item?.audio?.path).toBeUndefined();
+  });
+  it("keeps the listen unspent when the clip cannot be signed", async () => {
+    mocks.sign.mockRejectedValue(new Error("storage down"));
+    const result = await mockSessionEvent(id, "fixture", {
+      type: "play",
+      itemId: "fixture-listening",
+    });
+    expect(result).toMatchObject({ ok: false });
+    expect(mocks.rpc).not.toHaveBeenCalled();
+  });
+  it("never sends the private bucket key", async () => {
+    mocks.rpc.mockResolvedValue({
+      data: { id, manifestId: "fixture", state, audioGranted: false },
+      error: null,
+    });
+    const result = await mockSessionEvent(id, "fixture", { type: "resume" });
+    expect(JSON.stringify(result)).not.toContain("tcf/fixture.mp3");
   });
   it("reports pending audio without returning a candidate", async () => {
     mocks.rpc.mockResolvedValue({ data: null, error: { code: "55000" } });

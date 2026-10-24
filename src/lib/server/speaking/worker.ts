@@ -71,6 +71,14 @@ export function buildSpeakingMessages(
     job.target in targetBandFor ? job.target : "I'm not sure"
   ) as NclcTarget;
   const pace = metric(job.metrics, "wordsPerMinute");
+  const raised = metric(job.metrics, "objections");
+  const objections = Array.isArray(raised)
+    ? raised.flatMap((index) =>
+        typeof index === "number" && task.objections?.lines[index]
+          ? [`- ${task.objections.lines[index]}`]
+          : [],
+      )
+    : [];
   return [
     { role: "system", content: SPEAKING_REVIEW_PROMPT },
     {
@@ -86,6 +94,12 @@ export function buildSpeakingMessages(
         `Recording length: ${metric(job.metrics, "audioSeconds") ?? "unknown"} seconds`,
         `Pace: ${typeof pace === "number" ? `${pace} words per minute` : "not measured"}`,
         `Pauses of 2 seconds or more: ${metric(job.metrics, "longPauses") ?? "unknown"}`,
+        ...(objections.length
+          ? [
+              "Objections the other person raised during the answer (not the learner's words; judge whether the learner answers them):",
+              ...objections,
+            ]
+          : []),
         `Rewrite level: ${targetBandFor[target]}`,
         `Feedback language: ${job.locale === "fr" ? "French" : "English"}`,
         "",

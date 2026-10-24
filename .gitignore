@@ -8,3 +8,9 @@ test-results/
 *.tsbuildinfo
 .DS_Store
 .vercel
+
+# Mock-exam clips waiting for upload to the private bucket
+.audio-cache/
+
+# Generated draft review sheets
+content/drafts/*.html

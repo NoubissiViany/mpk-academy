@@ -30,6 +30,8 @@ export const items: ProductiveTask[] = [
     correction: {
       guidance:
         "Open politely, ask about conditions, timing, costs, and practical arrangements, then follow up on replies. Vary your question forms rather than reading a fixed list. Use the five minutes to obtain information, not to persuade.",
+      guidanceFr:
+        "Commencez poliment, posez des questions sur les conditions, les horaires, les coûts et l’organisation pratique, puis rebondissez sur les réponses. Variez la forme de vos questions au lieu de lire une liste toute prête. Les cinq minutes servent à obtenir des informations, pas à convaincre.",
       rubric: [
         "Réalisation des objectifs de communication",
         "Interaction et adaptation au rôle",
@@ -72,6 +74,8 @@ export const items: ProductiveTask[] = [
     correction: {
       guidance:
         "Present the proposal and connect its benefits to this person’s concerns. Prepare two arguments with examples and respond to the stated objections. Invite the other person to react; persuasion remains an exchange, not an uninterrupted ten-minute speech.",
+      guidanceFr:
+        "Présentez la proposition et reliez ses avantages aux préoccupations de cette personne. Préparez deux arguments avec des exemples et répondez aux objections annoncées. Laissez l’autre personne réagir : convaincre reste un échange, pas un discours de dix minutes sans interruption.",
       rubric: [
         "Réalisation des objectifs de communication",
         "Interaction et adaptation au rôle",

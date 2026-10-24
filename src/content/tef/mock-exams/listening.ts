@@ -13,6 +13,7 @@ export const items = questions("TEF", "listening", [
     "Revenir dans quinze minutes.",
     "Déposer leurs achats à l'accueil.",
     "The announcement asks customers to go to checkout before closing.",
+    "L’annonce demande aux clients d’aller aux caisses avant la fermeture.",
   ],
   [
     "tef-mock-listening-a2-002",
@@ -27,6 +28,7 @@ export const items = questions("TEF", "listening", [
     "À gauche de la pharmacie.",
     "Derrière la pharmacie.",
     "The speaker locates herself to the right of the pharmacy.",
+    "La personne dit qu’elle se trouve à droite de la pharmacie.",
   ],
   [
     "tef-mock-listening-a2-003",
@@ -41,6 +43,7 @@ export const items = questions("TEF", "listening", [
     "Le numéro de la ligne.",
     "L'heure du premier départ.",
     "The announcement changes the route's endpoint.",
+    "L’annonce modifie le terminus : le bus s’arrêtera devant l’hôpital.",
   ],
   [
     "tef-mock-listening-a2-004",
@@ -55,6 +58,7 @@ export const items = questions("TEF", "listening", [
     "Son adresse.",
     "La date du prochain cours.",
     "Only the first name is requested before starting the exercise.",
+    "Avant de commencer l’exercice, on demande seulement d’écrire son prénom.",
   ],
   [
     "tef-mock-listening-a2-005",
@@ -69,6 +73,7 @@ export const items = questions("TEF", "listening", [
     "Pour proposer un trajet.",
     "Pour annoncer une panne.",
     "The call warns about rain entering through an open car window.",
+    "La personne prévient que la pluie risque d’entrer par une fenêtre de voiture restée ouverte.",
   ],
   [
     "tef-mock-listening-a2-006",
@@ -83,6 +88,7 @@ export const items = questions("TEF", "listening", [
     "Du thé sucré.",
     "Du café au lait.",
     "The requested beverage is explicitly unsweetened tea.",
+    "La personne demande clairement un thé sans sucre.",
   ],
   [
     "tef-mock-listening-a2-007",
@@ -97,6 +103,7 @@ export const items = questions("TEF", "listening", [
     "La réserve des livres.",
     "La salle de réunion.",
     "Reading tables are available before the computer room opens.",
+    "Les tables de lecture sont déjà disponibles ; la salle informatique ouvre plus tard.",
   ],
   [
     "tef-mock-listening-a2-008",
@@ -111,6 +118,7 @@ export const items = questions("TEF", "listening", [
     "D'acheter des billets pour son frère.",
     "De regarder le match demain.",
     "The speaker offers the spare ticket and companionship at tonight's match.",
+    "La personne propose le billet en trop et d’aller ensemble au match ce soir.",
   ],
   [
     "tef-mock-listening-b1-001",
@@ -125,6 +133,7 @@ export const items = questions("TEF", "listening", [
     "L'heure.",
     "Le poste proposé.",
     "The interview remains at the same time and day but moves online.",
+    "L’entretien garde le même jour et la même heure, mais il se fera en ligne.",
   ],
   [
     "tef-mock-listening-b1-002",
@@ -139,6 +148,7 @@ export const items = questions("TEF", "listening", [
     "Des livres pour bébés uniquement.",
     "Des meubles pour la salle.",
     "The announcement redirects donations toward the unmet need for teen books.",
+    "L’annonce oriente les dons vers les livres pour adolescents, qui manquent.",
   ],
   [
     "tef-mock-listening-b1-003",
@@ -153,6 +163,7 @@ export const items = questions("TEF", "listening", [
     "Parce que les bus sont gratuits.",
     "Parce que le pont est réservé aux cyclistes.",
     "The cycle route avoids the congestion near the bridge.",
+    "L’itinéraire à vélo évite les embouteillages près du pont.",
   ],
   [
     "tef-mock-listening-b1-004",
@@ -167,6 +178,7 @@ export const items = questions("TEF", "listening", [
     "Envoyer le courriel.",
     "Imprimer le texte.",
     "Saving precedes emailing to preserve the latest changes.",
+    "Il faut d’abord enregistrer le document pour garder les dernières modifications, puis l’envoyer.",
   ],
   [
     "tef-mock-listening-b1-005",
@@ -181,6 +193,7 @@ export const items = questions("TEF", "listening", [
     "Le propriétaire refuse son dossier.",
     "Le loyer actuel vient d'augmenter.",
     "The decision is based on commute time, despite finding a larger apartment.",
+    "Malgré un appartement plus grand, la personne renonce à cause du temps de trajet.",
   ],
   [
     "tef-mock-listening-b1-006",
@@ -195,6 +208,7 @@ export const items = questions("TEF", "listening", [
     "Pendant le film.",
     "Le lendemain matin.",
     "The discussion follows the screening at around 21:30.",
+    "La discussion suit la projection, vers 21 h 30.",
   ],
   [
     "tef-mock-listening-b1-007",
@@ -209,6 +223,7 @@ export const items = questions("TEF", "listening", [
     "La commande d'une pièce.",
     "Une nouvelle description de la panne.",
     "The part is available; authorization of the quoted work is still needed.",
+    "La pièce est disponible ; il manque l’accord du client sur le devis.",
   ],
   [
     "tef-mock-listening-b1-008",
@@ -223,6 +238,7 @@ export const items = questions("TEF", "listening", [
     "À organiser une compétition sportive.",
     "À vendre des logements.",
     "The walks orient newcomers to local services and people.",
+    "Les promenades font découvrir aux nouveaux arrivants les services et les habitants du quartier.",
   ],
   [
     "tef-mock-listening-b1-009",
@@ -237,6 +253,7 @@ export const items = questions("TEF", "listening", [
     "Les vêtements de rechange.",
     "La serviette.",
     "The life jacket is supplied; footwear and spare clothing must be brought.",
+    "Le gilet de sauvetage est fourni ; il faut apporter ses chaussures et des vêtements de rechange.",
   ],
   [
     "tef-mock-listening-b1-010",
@@ -251,6 +268,7 @@ export const items = questions("TEF", "listening", [
     "Le déjeuner est annulé pour tout le monde.",
     "Le dossier sera terminé demain.",
     "The deadline prevents today's lunch, while tomorrow's invitation is welcome.",
+    "À cause d’une échéance, la personne ne peut pas déjeuner aujourd’hui, mais elle accepte volontiers pour demain.",
   ],
   [
     "tef-mock-listening-b1-011",
@@ -265,6 +283,7 @@ export const items = questions("TEF", "listening", [
     "La date d'une nouvelle commande.",
     "Le changement de produit commandé.",
     "The caller provides an alternative entrance because of building work.",
+    "À cause des travaux, la personne indique une autre entrée pour récupérer la commande.",
   ],
   [
     "tef-mock-listening-b1-012",
@@ -279,6 +298,7 @@ export const items = questions("TEF", "listening", [
     "Uniquement si la réunion est annulée.",
     "Sans aucune démarche.",
     "Childcare is free but requires advance registration.",
+    "La garde d’enfants est gratuite, mais il faut s’inscrire à l’avance.",
   ],
   [
     "tef-mock-listening-b2-001",
@@ -293,6 +313,7 @@ export const items = questions("TEF", "listening", [
     "D'augmenter les objectifs dès aujourd'hui.",
     "De supprimer la formation.",
     "The speaker anticipates eventual benefits but recommends a lower workload during learning.",
+    "La personne prévoit des bénéfices à terme, mais conseille d’alléger la charge de travail pendant l’apprentissage.",
   ],
   [
     "tef-mock-listening-b2-002",
@@ -307,6 +328,7 @@ export const items = questions("TEF", "listening", [
     "Indifférente à la fréquentation.",
     "Favorable seulement à l'interdiction des livraisons.",
     "He accepts delivery inconvenience in exchange for benefits and would not reverse the change.",
+    "Il accepte la gêne pour les livraisons en échange des avantages et ne reviendrait pas en arrière.",
   ],
   [
     "tef-mock-listening-b2-003",
@@ -321,6 +343,7 @@ export const items = questions("TEF", "listening", [
     "Le déplacement doit être gratuit.",
     "Les artistes connus refusent tous d'y venir.",
     "The commentator argues that unfamiliar artists give the festival a distinctive purpose.",
+    "Pour le chroniqueur, faire découvrir des artistes peu connus donne au festival sa raison d’être.",
   ],
   [
     "tef-mock-listening-b2-004",
@@ -335,6 +358,7 @@ export const items = questions("TEF", "listening", [
     "Attendre la livraison suivante.",
     "Faire réparer le modèle gris.",
     "Only the blue replacement is immediately available.",
+    "Seul le modèle bleu de remplacement est disponible tout de suite.",
   ],
   [
     "tef-mock-listening-b2-005",
@@ -349,6 +373,7 @@ export const items = questions("TEF", "listening", [
     "L'absence d'expérience utile.",
     "Le refus des autres étudiants.",
     "The speaker benefits from work experience but struggles with consistent study habits.",
+    "La personne profite de son expérience professionnelle, mais a du mal à étudier avec régularité.",
   ],
   [
     "tef-mock-listening-b2-006",
@@ -363,6 +388,7 @@ export const items = questions("TEF", "listening", [
     "Une hausse des tarifs.",
     "Une impossibilité de sonder les usagers.",
     "Nonresponse may affect representativeness; the speaker does not claim responses are false.",
+    "Les non-réponses peuvent nuire à la représentativité ; la personne ne dit pas que les réponses sont fausses.",
   ],
   [
     "tef-mock-listening-b2-007",
@@ -377,6 +403,7 @@ export const items = questions("TEF", "listening", [
     "La certification professionnelle immédiate.",
     "La suppression du besoin d'outils.",
     "Participants gain and share repair skills beyond the repaired object.",
+    "Au-delà de l’objet réparé, les participants acquièrent et transmettent un savoir-faire.",
   ],
   [
     "tef-mock-listening-b2-008",
@@ -391,6 +418,7 @@ export const items = questions("TEF", "listening", [
     "Le nombre maximal de participants.",
     "L'absence de compte rendu.",
     "Clear task allocation may justify a slightly longer meeting and save later clarification.",
+    "Répartir clairement les tâches peut justifier une réunion un peu plus longue et éviter des clarifications plus tard.",
   ],
   [
     "tef-mock-listening-b2-009",
@@ -405,6 +433,7 @@ export const items = questions("TEF", "listening", [
     "La couleur de l'appareil.",
     "Le prix initial le plus bas.",
     "Replaceable batteries support longevity despite a higher purchase price.",
+    "Des batteries remplaçables prolongent la durée d’usage, malgré un prix d’achat plus élevé.",
   ],
   [
     "tef-mock-listening-b2-010",
@@ -419,6 +448,7 @@ export const items = questions("TEF", "listening", [
     "Une nouvelle date déjà confirmée.",
     "La suppression des bénévoles.",
     "The request concerns resources needed to assess feasibility before scheduling.",
+    "L’association demande quelles ressources sont nécessaires pour évaluer la faisabilité avant de fixer une date.",
   ],
   [
     "tef-mock-listening-b2-011",
@@ -433,6 +463,7 @@ export const items = questions("TEF", "listening", [
     "Un vélo personnel chaque année.",
     "Uniquement le premier trajet du mois.",
     "The benefit applies to the first thirty minutes of each bike trip.",
+    "L’avantage couvre les trente premières minutes de chaque trajet à vélo.",
   ],
   [
     "tef-mock-listening-b2-012",
@@ -447,6 +478,7 @@ export const items = questions("TEF", "listening", [
     "L'inutilité de toute description écrite.",
     "Une fréquentation réservée aux spécialistes.",
     "Audio descriptions support more visitors than the initial accessibility target.",
+    "L’audiodescription sert à plus de visiteurs que le public visé au départ.",
   ],
   [
     "tef-mock-listening-c1-001",
@@ -461,6 +493,7 @@ export const items = questions("TEF", "listening", [
     "Le service n'a réalisé aucun progrès.",
     "Les critères sont inconnus de tous.",
     "The speaker questions completeness rather than denying progress or alleging fraud.",
+    "L’intervenant s’interroge sur ce que le classement laisse de côté, sans nier les progrès ni parler de fraude.",
   ],
   [
     "tef-mock-listening-c1-002",
@@ -475,6 +508,7 @@ export const items = questions("TEF", "listening", [
     "Supprimer toutes les interfaces.",
     "Comparer uniquement les prix de vente.",
     "The commentator urges examining where work has moved, not assuming it disappeared.",
+    "Le chroniqueur invite à chercher où le travail s’est déplacé, plutôt que de supposer qu’il a disparu.",
   ],
   [
     "tef-mock-listening-c1-003",
@@ -489,6 +523,7 @@ export const items = questions("TEF", "listening", [
     "Le maintien du secret sur la méthode.",
     "L'abandon de toute nouvelle expérience.",
     "Publishing negative results and methods can prevent redundant effort.",
+    "Publier les résultats négatifs et les méthodes peut éviter que d’autres refassent le même travail.",
   ],
   [
     "tef-mock-listening-c1-004",
@@ -503,6 +538,7 @@ export const items = questions("TEF", "listening", [
     "Entre bâtiment neuf et ancien.",
     "Entre public local et touristes étrangers.",
     "High attendance does not establish reaching previously uninvolved groups.",
+    "Une forte fréquentation ne prouve pas qu’on a touché des publics qui ne venaient pas auparavant.",
   ],
   [
     "tef-mock-listening-c1-005",
@@ -517,6 +553,7 @@ export const items = questions("TEF", "listening", [
     "La réduction automatique du travail.",
     "L'excès de temps consacré aux pauses.",
     "If everything is urgent, urgency no longer helps rank tasks.",
+    "Si tout est urgent, l’urgence ne permet plus de classer les tâches par ordre d’importance.",
   ],
   [
     "tef-mock-listening-c1-006",
@@ -531,6 +568,7 @@ export const items = questions("TEF", "listening", [
     "Le film comporte trop d'explications.",
     "Le rythme est nécessairement trop rapide.",
     "The critic distinguishes meaningful silence from unsupported ambiguity.",
+    "La critique distingue un silence qui a du sens d’une ambiguïté que le récit ne soutient pas.",
   ],
   [
     "tef-mock-listening-c1-007",
@@ -545,6 +583,7 @@ export const items = questions("TEF", "listening", [
     "Pour augmenter les rappels chaque jour.",
     "Pour mesurer uniquement le coût des affiches.",
     "The follow-up tests persistence after prompts are removed.",
+    "Le suivi vérifie si le changement dure une fois les rappels supprimés.",
   ],
   [
     "tef-mock-listening-c1-008",
@@ -559,5 +598,6 @@ export const items = questions("TEF", "listening", [
     "L'action exige de nier les obstacles.",
     "Tous les obstacles se résolvent de la même façon.",
     "Understanding constraints helps identify realistic interventions and unavoidable limitations.",
+    "Comprendre les contraintes aide à repérer les actions réalistes et les limites qu’on ne peut pas éviter.",
   ],
 ]);

@@ -13,6 +13,7 @@ export const items = questions("TCF", "listening", [
     "À 20 h.",
     "À 20 h 30.",
     "The reservation is 19:30; 20:00 is the late-arrival threshold.",
+    "La réservation est à 19 h 30 ; 20 h est l’heure limite pour un retard.",
   ],
   [
     "tcf-listening-a2-002",
@@ -27,6 +28,7 @@ export const items = questions("TCF", "listening", [
     "La livraison gratuite des courses.",
     "L'ouverture du rayon plus tôt.",
     "Prepared baskets near checkout replace access to the closed fruit department.",
+    "Le rayon fruits est fermé ; des paniers préparés sont proposés près des caisses.",
   ],
   [
     "tcf-listening-b1-001",
@@ -41,6 +43,7 @@ export const items = questions("TCF", "listening", [
     "Le contrat précédent.",
     "La lettre de candidature.",
     "The diploma may be a copy, but the identity document must be original.",
+    "Le diplôme peut être une copie, mais la pièce d’identité doit être l’original.",
   ],
   [
     "tcf-listening-b1-002",
@@ -55,6 +58,7 @@ export const items = questions("TCF", "listening", [
     "Demander un paiement.",
     "Changer de lieu de rendez-vous.",
     "The school needs two additional parent volunteers.",
+    "L’école cherche deux parents de plus pour accompagner la sortie.",
   ],
   [
     "tcf-listening-b1-003",
@@ -69,6 +73,7 @@ export const items = questions("TCF", "listening", [
     "Changer d'emploi.",
     "Suivre deux cours par semaine.",
     "The person keeps taking the course but switches from Tuesday to Thursday.",
+    "La personne continue le cours, mais passe du mardi au jeudi.",
   ],
   [
     "tcf-listening-b2-001",
@@ -83,6 +88,7 @@ export const items = questions("TCF", "listening", [
     "L'obligation professionnelle de réparer.",
     "Le manque de magasins dans son quartier.",
     "Personal attachment and preference for familiar clothing are explicit motivations beyond cost.",
+    "Au-delà du prix, la personne cite son attachement à certains vêtements et sa préférence pour ce qu’elle connaît.",
   ],
   [
     "tcf-listening-b2-002",
@@ -97,6 +103,7 @@ export const items = questions("TCF", "listening", [
     "Les enregistrements des entretiens.",
     "Les photographies des participants.",
     "The speaker distinguishes ready numerical tables from testimonials requiring consent.",
+    "L’intervenant distingue les tableaux chiffrés, déjà prêts, des témoignages qui demandent un accord.",
   ],
   [
     "tcf-listening-b2-003",
@@ -111,6 +118,7 @@ export const items = questions("TCF", "listening", [
     "Une réparation garantie le jour même.",
     "Une formation à l'entretien.",
     "A loan device provides continuity without promising an immediate repair.",
+    "Un appareil prêté assure la continuité, sans promettre une réparation immédiate.",
   ],
   [
     "tcf-listening-c1-001",
@@ -125,6 +133,7 @@ export const items = questions("TCF", "listening", [
     "Il prouve que le parc est inutile.",
     "Il empêche de connaître les horaires.",
     "Visit totals do not distinguish repeat visitors from broad access across residents.",
+    "Le nombre de visites ne distingue pas les habitués d’un accès réel pour l’ensemble des habitants.",
   ],
   [
     "tcf-listening-c1-002",
@@ -139,5 +148,6 @@ export const items = questions("TCF", "listening", [
     "Remplacer tous les membres de l'équipe.",
     "Abandonner les résultats du projet pilote.",
     "Scaling may require formalizing coordination that worked informally in a small team.",
+    "Étendre le projet demandera sans doute d’organiser formellement une coordination qui fonctionnait de façon informelle dans une petite équipe.",
   ],
 ]);
