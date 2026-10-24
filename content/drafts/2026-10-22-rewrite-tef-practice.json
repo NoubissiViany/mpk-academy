@@ -19,11 +19,15 @@
       "document": "Piscine Laurier – Horaires d’hiver. Du lundi au vendredi, la piscine ouvre à 7 h et ferme à 18 h. La dernière entrée est possible à 17 h 15, pour laisser le temps de nager avant la fermeture. Les abonnés doivent également respecter cet horaire. Le samedi, la piscine est réservée aux cours.",
       "prompt": "À quelle heure peut-on entrer au plus tard en semaine ?",
       "correct": "À 17 h 15.",
-      "wrong": ["À 17 h 30.", "À 18 h.", "À 7 h."],
+      "wrong": [
+        "À 17 h 30.",
+        "À 18 h.",
+        "À 7 h."
+      ],
       "explanation": "The last admission is 5:15 p.m., including for members.",
       "explanationFr": "La dernière entrée est fixée à 17 h 15, y compris pour les abonnés.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -34,7 +38,7 @@
       "competency": "main_idea",
       "topic": "Vente",
       "documentType": "annonce",
-      "document": "Petite annonce – À donner. Petite table de cuisine en bois, en bon état, avec deux chaises. Je déménage et je ne peux pas l’emporter. La table est à récupérer samedi matin, entre 9 h et midi, au 45, rue Champlain. Aucun service de livraison : prévoyez une voiture. Écrivez-moi avant vendredi. Lucie",
+      "document": "Petite annonce – À donner. Table de cuisine en bois, en bon état, avec deux chaises. Je déménage et je ne peux pas l’emporter. La table est à récupérer samedi matin, entre 9 h et midi, au 45, rue Champlain. Aucun service de livraison : prévoyez une voiture. Écrivez-moi avant vendredi. Lucie",
       "prompt": "Que propose l’annonce ?",
       "correct": "Un meuble gratuit à venir chercher.",
       "wrong": [
@@ -45,7 +49,7 @@
       "explanation": "« À donner » means free, and the table must be collected since there is no delivery.",
       "explanationFr": "« À donner » signifie gratuit ; la table doit être récupérée sur place, car il n’y a pas de livraison.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -67,7 +71,7 @@
       "explanation": "On Saturday, only coats will be handed out; sorting is on Friday and the rest next month.",
       "explanationFr": "Samedi, seuls les manteaux seront distribués ; le tri a lieu vendredi et les autres articles le mois prochain.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -89,7 +93,7 @@
       "explanation": "« Doublons » are duplicate records: the same client entered several times.",
       "explanationFr": "Les « doublons » sont des fiches en double : le même client enregistré plusieurs fois.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -102,7 +106,7 @@
       "documentType": "message",
       "document": "Message aux résidents du 230, avenue des Pins. Bonjour à tous, je vous remercie d’avoir déplacé vos vélos, qui étaient rangés dans le hall d’entrée. Le passage est maintenant libre pour les poussettes et les fauteuils roulants, et le hall est beaucoup plus propre. Pourriez-vous continuer à utiliser les supports extérieurs, derrière l’immeuble ? Ils sont couverts et protégés de la pluie. Merci de votre collaboration ! Le concierge",
       "prompt": "Quel est l’objectif du message ?",
-      "correct": "Garder une nouvelle habitude.",
+      "correct": "Encourager une nouvelle habitude.",
       "wrong": [
         "Annoncer l’installation d’un ascenseur.",
         "Interdire tous les vélos dans la rue.",
@@ -111,7 +115,7 @@
       "explanation": "The caretaker thanks residents and asks them to keep using the outdoor racks.",
       "explanationFr": "Le concierge remercie les résidents et leur demande de continuer à utiliser les supports extérieurs.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -133,7 +137,7 @@
       "explanation": "Many viewers work evenings or nights: the morning show meets a broader need than planned.",
       "explanationFr": "Beaucoup de spectateurs travaillent le soir ou la nuit : la séance du matin répond à un besoin plus large que prévu.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -144,7 +148,7 @@
       "competency": "argumentation",
       "topic": "Environnement",
       "documentType": "opinion",
-      "document": "Opinion – Des gourdes, oui, mais d’abord des fontaines. La Ville prévoit de distribuer dix mille gourdes réutilisables cet été pour réduire les bouteilles en plastique jetées dans les parcs. Distribuer des gourdes ne réduira pourtant les bouteilles jetables que si l’on peut les remplir facilement. Or le centre-ville compte aujourd’hui moins de dix fontaines, souvent en panne. Un promeneur qui a terminé sa gourde à midi n’aura d’autre choix que d’acheter une bouteille. Les commerçants pourraient aussi offrir de l’eau gratuitement. La Ville devrait donc installer et entretenir des fontaines avant de lancer sa campagne, faute de quoi les gourdes finiront au fond des placards.",
+      "document": "Opinion – Des gourdes, oui, mais d’abord des fontaines. La Ville prévoit de distribuer dix mille gourdes réutilisables cet été pour réduire les bouteilles en plastique jetées dans les parcs. Distribuer des gourdes ne réduira pourtant les bouteilles jetables que si l’on peut remplir facilement ces gourdes. Or le centre-ville compte aujourd’hui moins de dix fontaines, souvent en panne. Un promeneur qui a terminé sa gourde à midi n’aura d’autre choix que d’acheter une bouteille. Les commerçants pourraient aussi offrir de l’eau gratuitement. La Ville devrait donc installer et entretenir des fontaines avant de lancer sa campagne, faute de quoi les gourdes finiront au fond des placards.",
       "prompt": "Quel rôle joue la phrase qui commence par « Distribuer des gourdes » ?",
       "correct": "Elle fixe une condition à l’efficacité.",
       "wrong": [
@@ -155,7 +159,7 @@
       "explanation": "The sentence sets a condition: bottles will only decrease if refilling is easy.",
       "explanationFr": "La phrase pose une condition : les bouteilles ne diminueront que si l’on peut remplir facilement les gourdes.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -177,7 +181,7 @@
       "explanation": "Sympathy and formal phrases soften a clear refusal to change a non-modifiable ticket.",
       "explanationFr": "La compréhension et les formules polies adoucissent un refus clair de modifier un billet non modifiable.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -199,7 +203,7 @@
       "explanation": "The author accepts that demand creates pressure but rejects the idea that policy has no room to respond.",
       "explanationFr": "L’auteur admet la pression de la demande, mais refuse l’idée que les pouvoirs publics n’auraient aucune marge d’action.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -221,7 +225,7 @@
       "explanation": "The omitted cost is users' time spent fixing errors that no agent can now resolve directly.",
       "explanationFr": "Le coût oublié est le temps que les usagers passent à corriger des erreurs qu’aucun agent ne peut plus régler directement.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -237,14 +241,14 @@
       "correct": "Le numéro d’appartement.",
       "wrong": [
         "Le nom de la ville.",
-        "Le numéro de téléphone du client.",
+        "Le numéro de téléphone de la cliente.",
         "La date de la commande."
       ],
       "explanation": "The courier could not deliver because the apartment number was missing.",
       "explanationFr": "Le livreur n’a pas pu livrer, car le numéro d’appartement manquait.",
       "speakers": "FM",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -267,7 +271,7 @@
       "explanationFr": "La sortie est maintenue, mais chacun doit apporter son repas, car la cuisine du refuge est fermée.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -290,7 +294,7 @@
       "explanationFr": "Le conseil est d’envoyer tout de suite un message pour réserver la date, et les détails plus tard.",
       "speakers": "MF",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -301,7 +305,7 @@
       "competency": "inference",
       "topic": "Quartier",
       "documentType": "interview",
-      "document": "Au début, je venais au jardin communautaire seulement pour mes tomates et mes fines herbes. Je restais vingt minutes, j’arrosais et je repartais. Maintenant, je passe même quand je n’ai rien à arroser. On discute, on échange des recettes, on s’entraide pour les petits travaux. L’été dernier, mes voisins ont même gardé mon carré pendant mes vacances.",
+      "document": "Au début, je venais au jardin communautaire seulement pour mes tomates et mes fines herbes. Je restais vingt minutes, j’arrosais et je repartais. Maintenant, je passe même quand je n’ai rien à arroser. On discute, on échange des recettes, on s’entraide pour les petits travaux. L’été dernier, mes voisins se sont même occupés de mon carré pendant mes vacances.",
       "prompt": "Qu’apporte surtout le jardin à cette personne aujourd’hui ?",
       "correct": "Des liens avec ses voisins.",
       "wrong": [
@@ -313,7 +317,7 @@
       "explanationFr": "Il vient désormais pour les échanges : discuter, partager des recettes et s’entraider.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -324,7 +328,7 @@
       "competency": "speaker_intention",
       "topic": "Service",
       "documentType": "appel",
-      "document": "Bonjour Monsieur, je comprends tout à fait que le délai vous semble long : votre demande est arrivée il y a trois semaines. Mais votre dossier est incomplet : il manque le relevé de notes de votre dernière année d’études. Si vous me l’envoyez aujourd’hui par courriel, je pourrai transmettre le dossier complet demain. Sans ce document, je ne peux malheureusement pas lancer l’examen.",
+      "document": "Bonjour Monsieur, je comprends tout à fait que le délai vous semble long : votre demande est arrivée il y a trois semaines. Mais votre dossier est incomplet : il manque le relevé de notes de votre dernière année d’études. Si vous me l’envoyez aujourd’hui par courriel, je pourrai transmettre le dossier complet demain. Sans ce document, je ne peux malheureusement pas lancer l’examen de votre demande.",
       "prompt": "Que fait l’employée ?",
       "correct": "Elle dit ce qui manque au dossier.",
       "wrong": [
@@ -336,7 +340,7 @@
       "explanationFr": "Elle explique qu’un document manque et comment compléter le dossier, sans promettre une réponse favorable.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -359,7 +363,7 @@
       "explanationFr": "Limiter la durée libérerait des places occupées toute la journée par les mêmes voitures, pour plus de clients.",
       "speakers": "MF",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -382,7 +386,7 @@
       "explanationFr": "La direction réclame de l’autonomie, mais l’accumulation des validations rend l’initiative impossible en pratique.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -405,7 +409,7 @@
       "explanationFr": "Elle apprécie les œuvres prises une à une, mais ne voit pas le fil conducteur qui les relie.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     }
   ]

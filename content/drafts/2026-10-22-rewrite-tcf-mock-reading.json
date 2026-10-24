@@ -27,7 +27,7 @@
       "explanation": "Online orders are collected at the counter at the back; payment for purchases is at the entrance.",
       "explanationFr": "Les commandes en ligne se retirent au comptoir du fond ; on paie ses achats aux caisses de l’entrée.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -41,11 +41,15 @@
       "document": "Cours de dessin pour adultes – Mercredi. Le cours commence à 16 h et finit à 18 h. Arrivez dix minutes avant le début pour préparer votre matériel : papier, crayons et gomme sont fournis par le centre. Apportez seulement un tablier, car nous utiliserons aussi de la peinture.",
       "prompt": "À quelle heure faut-il arriver ?",
       "correct": "À 15 h 50.",
-      "wrong": ["À 16 h 10.", "À 15 h 40.", "À 18 h."],
+      "wrong": [
+        "À 16 h 10.",
+        "À 15 h 40.",
+        "À 18 h."
+      ],
       "explanation": "The class starts at 4 p.m.; arriving ten minutes early means 3:50 p.m.",
       "explanationFr": "Le cours commence à 16 h ; arriver dix minutes avant, c’est arriver à 15 h 50.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -67,7 +71,7 @@
       "explanation": "The notice tells the owner of found keys how to get them back at the sports centre.",
       "explanationFr": "L’avis explique comment récupérer des clés trouvées, à l’accueil du centre sportif.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -89,7 +93,7 @@
       "explanation": "The drink costs extra ($2.50); soup, sandwich and bread are included.",
       "explanationFr": "La boisson est en supplément (2,50 $) ; la soupe, le sandwich et le pain sont compris.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -100,7 +104,7 @@
       "competency": "speaker_intention",
       "topic": "Famille",
       "documentType": "message",
-      "document": "Émilie, je finis tard ce soir, vers 19 h. Pourrais-tu acheter du lait en rentrant de l’école ? Il reste du pain et des œufs, inutile d’en prendre. L’argent est sur la table de la cuisine. Merci ma chérie ! Maman",
+      "document": "Émilie, je finis tard ce soir, vers 19 h. Pourrais-tu acheter du lait en rentrant de l’école ? Il reste du pain et des œufs, inutile d’en prendre. L’argent est sur la table de la cuisine. Merci, ma chérie ! Maman",
       "prompt": "Que demande le message ?",
       "correct": "D’acheter du lait.",
       "wrong": [
@@ -111,7 +115,7 @@
       "explanation": "Émilie is asked to buy milk; there is still bread and eggs.",
       "explanationFr": "On demande à Émilie d’acheter du lait ; il reste du pain et des œufs.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -133,7 +137,7 @@
       "explanation": "Leashed dogs are allowed on trails and in the parking lot, not in the playground or on the beach.",
       "explanationFr": "Les chiens en laisse sont admis sur les sentiers et au stationnement, pas dans l’aire de jeux ni sur la plage.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -155,7 +159,7 @@
       "explanation": "Morning crossings are cancelled; noon is when new information will be posted, not a confirmed restart.",
       "explanationFr": "Les départs du matin sont annulés ; midi est l’heure de la prochaine information, pas une reprise confirmée.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -177,7 +181,7 @@
       "explanation": "The meeting point stays in front of the greenhouse even if it rains; the workshop then moves inside.",
       "explanationFr": "Le rendez-vous reste devant la serre même s’il pleut ; l’atelier a alors lieu à l’intérieur.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -188,7 +192,7 @@
       "competency": "specific_detail",
       "topic": "Bénévolat",
       "documentType": "courriel",
-      "document": "Objet : repas communautaire du 20 novembre. Bonjour à tous, merci pour vos nombreuses réponses ! Nous avons maintenant assez de personnes pour servir les repas pendant le dîner. Les menus sont prêts et les ingrédients seront livrés par l’épicerie du quartier. Il nous manque surtout des volontaires pour installer les tables et les chaises à 10 h, et pour ranger la salle à 15 h. Si vous êtes disponible, répondez à ce courriel. Merci ! Sophie, coordonnatrice",
+      "document": "Objet : repas communautaire du 20 novembre. Bonjour à tous, merci pour vos nombreuses réponses ! Nous avons maintenant assez de personnes pour servir les repas pendant le dîner. Les menus sont prêts et les ingrédients seront livrés par l’épicerie du quartier. Il nous manque surtout des volontaires pour installer les tables et les chaises à 10 h, et pour ranger la salle à 15 h. Si vous êtes disponibles, répondez à ce courriel. Merci ! Sophie, coordonnatrice",
       "prompt": "Quel besoin reste à couvrir ?",
       "correct": "L’installation et le rangement.",
       "wrong": [
@@ -199,7 +203,7 @@
       "explanation": "Serving is covered; volunteers are still needed to set up at 10 a.m. and tidy up at 3 p.m.",
       "explanationFr": "Le service est assuré ; il manque des bénévoles pour l’installation à 10 h et le rangement à 15 h.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -221,7 +225,7 @@
       "explanation": "Late registration is possible only while places remain, with no extra fee.",
       "explanationFr": "On peut s’inscrire en retard seulement s’il reste des places, sans frais supplémentaires.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -243,7 +247,7 @@
       "explanation": "Non-urgent requests go into a shared document checked twice a day; urgent ones still come by phone.",
       "explanationFr": "Les demandes non urgentes passent par un document partagé consulté deux fois par jour ; les urgences restent signalées par téléphone.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -257,11 +261,15 @@
       "document": "Fort de la Pointe – Visites guidées. La visite guidée du fort dure une heure et part toutes les heures de l’accueil, de 10 h à 16 h. Les enfants de moins de douze ans doivent être accompagnés d’un adulte. Les poussettes sont autorisées partout, sauf dans la tour, où l’escalier est étroit. Vous pouvez les laisser gratuitement à l’accueil. Les jardins sont en accès libre.",
       "prompt": "Où les poussettes ne sont-elles pas admises ?",
       "correct": "Dans la tour.",
-      "wrong": ["Dans tout le fort.", "À l’accueil.", "Dans les jardins."],
+      "wrong": [
+        "Dans tout le fort.",
+        "À l’accueil.",
+        "Dans les jardins."
+      ],
       "explanation": "Strollers go everywhere except the tower, whose staircase is narrow.",
       "explanationFr": "Les poussettes sont admises partout, sauf dans la tour, dont l’escalier est étroit.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -283,7 +291,7 @@
       "explanation": "After Friday 8 p.m., the products go back on the shelves and the payment is refunded.",
       "explanationFr": "Après vendredi 20 h, les produits retournent en rayon et la cliente est remboursée.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -294,7 +302,7 @@
       "competency": "speaker_intention",
       "topic": "Voisinage",
       "documentType": "lettre",
-      "document": "Madame, Monsieur, nous habitons au numéro 14 et nous apprécions beaucoup votre jardin fleuri, qui égaie toute la rue. Certaines branches de votre lilas dépassent toutefois sur le trottoir. Elles gênent les passants, surtout les parents avec des poussettes, qui doivent marcher sur la rue. Pourriez-vous les tailler dans les prochaines semaines ? Nous pouvons vous prêter un sécateur si besoin. Cordialement, Famille Bouchard",
+      "document": "Madame, Monsieur, nous habitons au numéro 14 et nous apprécions beaucoup votre jardin fleuri, qui égaie toute la rue. Certaines branches de votre lilas dépassent toutefois sur le trottoir. Elles gênent les passants, surtout les parents avec des poussettes, qui doivent marcher sur la chaussée. Pourriez-vous les tailler dans les prochaines semaines ? Nous pouvons vous prêter un sécateur si besoin. Cordialement, Famille Bouchard",
       "prompt": "Quel est le but de la lettre ?",
       "correct": "Demander de tailler des branches.",
       "wrong": [
@@ -305,7 +313,7 @@
       "explanation": "After a compliment, the neighbours ask for the overhanging lilac branches to be trimmed.",
       "explanationFr": "Après un compliment, les voisins demandent de tailler les branches du lilas qui dépassent sur le trottoir.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -327,7 +335,7 @@
       "explanation": "« Réapprovisionnement » means restocking: the customer is told when the boots are back.",
       "explanationFr": "Le « réapprovisionnement », c’est le retour du produit en stock : le client est prévenu quand les bottes reviennent.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -349,7 +357,7 @@
       "explanation": "Neighbours share tools they rarely use instead of each buying them.",
       "explanationFr": "Les voisins partagent des outils dont ils se servent rarement, au lieu que chacun les achète.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -371,7 +379,7 @@
       "explanation": "Students with connection problems must tell the teacher before the Monday-noon deadline.",
       "explanationFr": "En cas de problème de connexion, il faut prévenir l’enseignante avant l’échéance de lundi midi.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -393,7 +401,7 @@
       "explanation": "No licence is required, since trips are on foot or by public transit, and knowing the area is valued.",
       "explanationFr": "Le permis n’est pas exigé, car les déplacements se font à pied ou en transport en commun, et la connaissance du quartier est appréciée.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -415,7 +423,7 @@
       "explanation": "Training moves indoors because the field is wet, so players need clean indoor shoes.",
       "explanationFr": "L’entraînement a lieu au gymnase car le terrain est humide : il faut des chaussures propres pour la salle.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -437,7 +445,7 @@
       "explanation": "Open rehearsals show the process before the show (tries, mistakes, choices) and allow discussion with the team.",
       "explanationFr": "Les répétitions ouvertes montrent le travail qui précède le spectacle et permettent d’échanger avec l’équipe.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -459,7 +467,7 @@
       "explanation": "Longer hours won't help if transfers involve 40-minute waits: the author calls for coordinated schedules.",
       "explanationFr": "Allonger les horaires ne suffira pas si les correspondances imposent quarante minutes d’attente : il faut coordonner les lignes.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -481,7 +489,7 @@
       "explanation": "Arriving early to get the same desk shows attachment to a stable, familiar workspace.",
       "explanationFr": "Arriver plus tôt pour retrouver le même bureau montre un attachement à un espace de travail stable.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -495,11 +503,15 @@
       "document": "Rapport d’évaluation – Programme de mentorat pour nouveaux arrivants. Les premiers résultats du programme sont prometteurs : après six mois, onze des quinze participants ont trouvé un emploi dans leur domaine, contre environ un sur deux dans la population comparable. Les participants se disent aussi plus confiants dans leurs démarches. Le coût du programme reste modeste. Ces résultats doivent toutefois être interprétés avec circonspection, l’échantillon étant réduit et les participants ayant été choisis parmi les plus motivés. Avant d’étendre le programme à toute la région, nous recommandons une seconde évaluation, dès l’an prochain, sur un groupe plus large et sélectionné au hasard.",
       "prompt": "Quelle attitude le rapport recommande-t-il ?",
       "correct": "La prudence.",
-      "wrong": ["L’enthousiasme.", "L’indifférence.", "La certitude."],
+      "wrong": [
+        "L’enthousiasme.",
+        "L’indifférence.",
+        "La certitude."
+      ],
       "explanation": "« Circonspection » means caution, justified by the small, self-selected sample.",
       "explanationFr": "La « circonspection », c’est la prudence, justifiée par un échantillon réduit et des participants choisis parmi les plus motivés.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -521,7 +533,7 @@
       "explanation": "Smaller first servings with seconds cut leftovers nearly in half without students reporting more hunger.",
       "explanationFr": "Des portions plus petites, avec la possibilité de se resservir, ont presque réduit de moitié les restes sans que les élèves aient plus faim.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -543,7 +555,7 @@
       "explanation": "The comments are added to the file for the council, but they do not stop the ongoing procedure.",
       "explanationFr": "Les remarques sont jointes au dossier pour le conseil, mais elles n’arrêtent pas la procédure en cours.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -565,7 +577,7 @@
       "explanation": "The « support » label made some students feel they were failing; a neutral, visible place increased attendance.",
       "explanationFr": "L’étiquette « soutien » donnait l’impression d’être en échec ; un lieu neutre et visible a fait augmenter la participation.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -587,7 +599,7 @@
       "explanation": "Mature trees provide shade and water absorption that young plants cannot replace for decades.",
       "explanationFr": "Les arbres matures assurent de l’ombre et absorbent l’eau, ce que de jeunes plants ne remplacent pas avant des décennies.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -609,7 +621,7 @@
       "explanation": "The phrase softens the reminder by allowing that the sender may be mistaken.",
       "explanationFr": "L’expression adoucit la relance en admettant que l’expéditeur peut se tromper.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -631,7 +643,7 @@
       "explanation": "Few buy on the day, but many come back later with a project: the workshops create later sales.",
       "explanationFr": "Peu de visiteurs achètent le jour même, mais beaucoup reviennent ensuite avec un projet : les ateliers créent des ventes différées.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -653,7 +665,7 @@
       "explanation": "The critic finds the plot predictable but praises the subtle, believable relationships between the sisters.",
       "explanationFr": "La critique juge l’intrigue prévisible, mais salue la justesse des relations entre les sœurs.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -675,7 +687,7 @@
       "explanation": "Walk-in mornings handle quick requests while longer cases are booked, balancing easy access and proper support.",
       "explanationFr": "Les matinées sans rendez-vous servent aux démarches rapides et les dossiers longs se font sur réservation : accès facile et accompagnement approfondi.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -697,7 +709,7 @@
       "explanation": "The students who took the workshop already attended class more, which may explain part of the gap.",
       "explanationFr": "Les étudiants de l’atelier étaient déjà les plus assidus, ce qui peut expliquer une partie de l’écart.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -719,7 +731,7 @@
       "explanation": "The text separates living near one another from the conditions that make real encounters possible.",
       "explanationFr": "Le texte distingue le fait d’habiter à proximité des conditions qui rendent de vraies rencontres possibles.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -741,7 +753,7 @@
       "explanation": "Personalisation may treat past choices as limits on future curiosity, reducing the chance encounters that broaden tastes.",
       "explanationFr": "La personnalisation peut transformer nos choix passés en limites pour nos curiosités futures, en raréfiant les rencontres imprévues.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -763,7 +775,7 @@
       "explanation": "« Circonscrire la portée » means limiting the scope: the argument may hold for office jobs but not for 24-hour services.",
       "explanationFr": "« Circonscrire la portée », c’est limiter le champ d’application : l’argument peut valoir pour les bureaux, pas pour les services continus.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -785,7 +797,7 @@
       "explanation": "Individual metrics miss the cooperative work, like training colleagues, that improves the group's performance.",
       "explanationFr": "Les indicateurs individuels ignorent le travail de coopération, comme former ses collègues, qui améliore la performance du groupe.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -807,7 +819,7 @@
       "explanation": "The author accepts some deliberate strangeness to preserve cultural difference, without demanding word-for-word translation.",
       "explanationFr": "L’auteur accepte une part d’étrangeté voulue pour préserver la différence culturelle, sans exiger une traduction mot à mot.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -829,7 +841,7 @@
       "explanation": "The author urges checking what the measured success really covers, since files may be closed without being solved.",
       "explanationFr": "L’auteur invite à examiner ce que recouvre la réussite chiffrée, car des dossiers peuvent être clos sans être réglés.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -851,7 +863,7 @@
       "explanation": "Cutting excess and giving up essentials are not the same sacrifice, so efforts should depend on situations and needs.",
       "explanationFr": "Réduire le superflu et renoncer à l’essentiel ne sont pas le même sacrifice : l’effort doit tenir compte des situations et des besoins.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     }
   ]

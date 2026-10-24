@@ -19,11 +19,15 @@
       "document": "Boulangerie du Village – Horaires. La boulangerie est ouverte du mardi au dimanche, de 7 h à 14 h. Elle est fermée le lundi. Le samedi et le dimanche, les croissants sont souvent épuisés avant 11 h : pensez à venir tôt ! Commandes de gâteaux par téléphone, trois jours à l’avance.",
       "prompt": "Quel jour la boulangerie est-elle fermée ?",
       "correct": "Le lundi.",
-      "wrong": ["Le mardi.", "Le samedi.", "Le dimanche."],
+      "wrong": [
+        "Le mardi.",
+        "Le samedi.",
+        "Le dimanche."
+      ],
       "explanation": "The notice says the bakery is closed on Mondays.",
       "explanationFr": "L’affiche indique que la boulangerie est fermée le lundi.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -45,7 +49,7 @@
       "explanation": "Inès tells Karim his book is with the caretaker and when to collect it.",
       "explanationFr": "Inès indique à Karim que son livre est chez la gardienne et jusqu’à quelle heure le récupérer.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -56,7 +60,7 @@
       "competency": "specific_detail",
       "topic": "Formation",
       "documentType": "annonce",
-      "document": "Café réparation – Samedi 16 novembre. Votre grille-pain ne chauffe plus ? Votre lampe ne s’allume pas ? Venez la réparer avec l’aide de nos bénévoles, de 10 h à 16 h, à la salle paroissiale. L’atelier est gratuit, mais l’inscription est obligatoire, en ligne ou par téléphone. Chaque participant apporte un petit appareil à réparer ; les outils et les pièces simples sont fournis sur place. Café et biscuits offerts !",
+      "document": "Café réparation – Samedi 16 novembre. Votre grille-pain ne chauffe plus ? Votre lampe ne s’allume pas ? Venez les réparer avec l’aide de nos bénévoles, de 10 h à 16 h, à la salle paroissiale. L’atelier est gratuit, mais l’inscription est obligatoire, en ligne ou par téléphone. Chaque participant apporte un petit appareil à réparer ; les outils et les pièces simples sont fournis sur place. Café et biscuits offerts !",
       "prompt": "Que doivent apporter les participants ?",
       "correct": "Un appareil à réparer.",
       "wrong": [
@@ -67,7 +71,7 @@
       "explanation": "The workshop is free and tools are supplied; participants bring the device to fix.",
       "explanationFr": "L’atelier est gratuit et les outils sont fournis : les participants apportent l’appareil à réparer.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -78,7 +82,7 @@
       "competency": "vocabulary_in_context",
       "topic": "Location",
       "documentType": "contrat",
-      "document": "Bail de location – Article 6 : état des lieux. Avant la remise des clés, un état des lieux sera réalisé conjointement par le propriétaire et la locataire. Ensemble, ils visiteront chaque pièce et noteront l’état des murs, des sols, des fenêtres et des appareils. Le document sera signé par les deux parties, qui en garderont chacune une copie. Il servira de référence au départ de la locataire pour le remboursement du dépôt de garantie.",
+      "document": "Contrat de location – Article 6 : état des lieux. Avant la remise des clés, un état des lieux sera réalisé conjointement par le propriétaire et la locataire. Ensemble, ils visiteront chaque pièce et noteront l’état des murs, des sols, des fenêtres et des appareils. Le document sera signé par les deux parties, qui en garderont chacune une copie. Il servira de référence au départ de la locataire pour le remboursement du dépôt de garantie.",
       "prompt": "Comment sera réalisé l’état des lieux ?",
       "correct": "Par les deux parties ensemble.",
       "wrong": [
@@ -89,7 +93,7 @@
       "explanation": "« Conjointement » means together: owner and tenant do the inspection jointly.",
       "explanationFr": "« Conjointement » signifie ensemble : le propriétaire et la locataire font l’état des lieux tous les deux.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -111,7 +115,7 @@
       "explanation": "Only the route changes this week; the starting point and distance stay the same.",
       "explanationFr": "Seul l’itinéraire change cette semaine ; le lieu de départ et la distance restent les mêmes.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -133,7 +137,7 @@
       "explanation": "Unplanned shoppers often have no containers with them, so returnable packaging remains useful.",
       "explanationFr": "Les clients qui achètent sans l’avoir prévu n’ont souvent pas de contenant : les emballages consignés leur restent utiles.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -155,7 +159,7 @@
       "explanation": "The author balances quiet and collaboration by creating separate zones.",
       "explanationFr": "L’auteur concilie calme et échanges en créant des zones distinctes selon les usages.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -177,7 +181,7 @@
       "explanation": "Friday remote work stays; staff should note their office presence by Wednesday so visitors can be welcomed.",
       "explanationFr": "Le télétravail du vendredi reste permis ; il faut indiquer sa présence au bureau avant mercredi pour organiser l’accueil.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -188,7 +192,7 @@
       "competency": "inference",
       "topic": "Patrimoine",
       "documentType": "essai",
-      "document": "Essai – Restaurer sans effacer. La vieille halle du marché va bientôt être restaurée. Construite au XIXe siècle, elle a successivement abrité un marché aux grains, un garage, une salle de bal, puis un entrepôt. Chaque époque a laissé ses traces : une fresque à demi effacée, des rails dans le sol, des fenêtres murées. Le projet présenté par la Ville prévoit de tout ramener à l’état d’origine. C’est oublier que restaurer un bâtiment ne consiste pas nécessairement à effacer les traces de ses usages successifs. Ces cicatrices sont aussi du patrimoine. Un bâtiment qui a changé d’usage cinq fois raconte une ville qui a changé, elle aussi. Elles méritent d’être expliquées plutôt que cachées. À trop rechercher une unité imaginaire, on risque de fabriquer un passé plus cohérent qu’il ne l’a jamais été, et de priver les visiteurs de la véritable histoire du lieu, faite de changements et de réemplois.",
+      "document": "Essai – Restaurer sans effacer. La vieille halle du marché va bientôt être restaurée. Construite au XIXe siècle, elle a successivement abrité un marché aux grains, un garage, une salle de bal, puis un entrepôt. Chaque époque a laissé ses traces : une fresque à demi effacée, des rails dans le sol, des fenêtres murées. Le projet présenté par la Ville prévoit de tout ramener à l’état d’origine. C’est oublier que restaurer un bâtiment ne consiste pas nécessairement à effacer les traces de ses usages successifs. Ces cicatrices sont aussi du patrimoine : elles méritent d’être expliquées plutôt que cachées. Un bâtiment qui a changé trois fois d’usage raconte une ville qui a changé, elle aussi. À trop rechercher une unité imaginaire, on risque de fabriquer un passé plus cohérent qu’il ne l’a jamais été, et de priver les visiteurs de la véritable histoire du lieu, faite de changements et de réemplois.",
       "prompt": "Quel risque l’auteur souligne-t-il ?",
       "correct": "Inventer un passé plus uniforme que le vrai.",
       "wrong": [
@@ -199,7 +203,7 @@
       "explanation": "Erasing the traces of successive uses could create a misleadingly unified past.",
       "explanationFr": "Effacer les traces des usages successifs risque de fabriquer un passé trompeusement uniforme.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -221,7 +225,7 @@
       "explanation": "The author separates bounded uncertainty, knowing where knowledge stops, from knowing nothing.",
       "explanationFr": "L’auteur distingue une incertitude délimitée, savoir où s’arrête la connaissance, d’une ignorance totale.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -244,7 +248,7 @@
       "explanationFr": "Le rayon fruits est fermé : des paniers de fruits préparés sont proposés près des caisses.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -267,7 +271,7 @@
       "explanationFr": "Une copie du diplôme suffit, mais il faut l’original de la pièce d’identité pour entrer dans le bâtiment.",
       "speakers": "MF",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -290,7 +294,7 @@
       "explanationFr": "L’école cherche encore deux parents pour accompagner la sortie de jeudi.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -313,7 +317,7 @@
       "explanationFr": "La personne continue le cours, mais passe du mardi au jeudi à cause de son nouvel horaire de travail.",
       "speakers": "MF",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -336,7 +340,7 @@
       "explanationFr": "Au-delà des économies, elle tient à certains vêtements et préfère les réparer plutôt que les remplacer.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -347,7 +351,7 @@
       "competency": "specific_detail",
       "topic": "Réunion",
       "documentType": "discussion",
-      "document": "A : Est-ce qu’on peut publier les résultats de l’enquête vendredi, comme prévu ? B : Les chiffres sont prêts, oui. Mais les personnes interrogées doivent encore autoriser la diffusion de leurs témoignages, et nous n’avons reçu que la moitié des accords. Sans cela, publions uniquement les tableaux vendredi. Les témoignages pourront suivre dans quelques semaines.",
+      "document": "A : Est-ce qu’on peut publier les résultats de l’enquête vendredi, comme prévu ? B : Les chiffres sont prêts, oui. Mais les personnes interrogées doivent encore autoriser la diffusion de leurs témoignages, et nous n’avons reçu que la moitié des accords. En attendant, publions uniquement les tableaux vendredi. Les témoignages pourront suivre dans quelques semaines.",
       "prompt": "Que pourrait-on publier sans autorisation supplémentaire ?",
       "correct": "Les tableaux chiffrés.",
       "wrong": [
@@ -359,7 +363,7 @@
       "explanationFr": "Les chiffres sont prêts ; les témoignages demandent un accord, donc seuls les tableaux peuvent être publiés vendredi.",
       "speakers": "FM",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -382,7 +386,7 @@
       "explanationFr": "Pendant le diagnostic, un ordinateur prêté lui permet de continuer à travailler, sans promesse de réparation immédiate.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -405,7 +409,7 @@
       "explanationFr": "Le nombre de visites ne montre pas si le parc profite à tous les habitants ou toujours aux mêmes habitués.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -428,7 +432,7 @@
       "explanationFr": "Ce qui fonctionnait de façon informelle dans une petite équipe devra être organisé explicitement avant d’étendre le projet.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     }
   ]

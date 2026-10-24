@@ -27,7 +27,7 @@
       "explanation": "Only the return box near the main entrance can be used at any hour; loans, computers and help are available during opening hours.",
       "explanationFr": "Seule la boîte de retour près de l’entrée est accessible à toute heure ; le prêt, les ordinateurs et l’aide sont disponibles pendant les heures d’ouverture.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -49,7 +49,7 @@
       "explanation": "The ad says the first lesson is free; the following ones cost $12 each.",
       "explanationFr": "L’annonce précise que le premier cours est gratuit ; les suivants coûtent 12 $ chacun.",
       "target": "diagnostic",
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -71,7 +71,7 @@
       "explanation": "The message moves the plumbing work from Tuesday to Thursday and explains what that changes for residents.",
       "explanationFr": "Le message déplace les travaux de plomberie du mardi au jeudi et explique ce que cela change pour les résidents.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -93,7 +93,7 @@
       "explanation": "Keeping only the budget and the schedule and postponing the rest reduces the number of topics; the start time does not change.",
       "explanationFr": "Garder seulement le budget et le calendrier, et reporter le reste, réduit le nombre de sujets ; l’heure de début ne change pas.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -115,7 +115,7 @@
       "explanation": "Asking for more bike racks after opposing the project suggests the merchants now see it more favourably; it does not prove that all their customers cycle.",
       "explanationFr": "Demander davantage d’arceaux après s’être opposés au projet montre que les commerçants le voient plus favorablement, sans prouver que tous leurs clients viennent à vélo.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -137,7 +137,7 @@
       "explanation": "The author welcomes free courses but argues that childcare, schedules and transport must also be addressed for them to reach those who need them.",
       "explanationFr": "L’auteur salue la gratuité, mais soutient qu’il faut aussi régler la garde des enfants, les horaires et les transports pour que les cours profitent à ceux qui en ont besoin.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -159,7 +159,7 @@
       "explanation": "Enrolment shows the programme's appeal; completion rates and assessment results would be needed to show it works.",
       "explanationFr": "Les inscriptions montrent l’attrait du programme ; il faudrait les taux d’achèvement et les résultats aux évaluations pour prouver son efficacité.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -181,7 +181,7 @@
       "explanation": "The author agrees there should be fewer cars but argues that alternatives must come first, or a ban would penalize people who have no choice.",
       "explanationFr": "L’auteur souhaite moins de voitures, mais soutient qu’il faut d’abord offrir des alternatives ; sinon, l’interdiction pénaliserait ceux qui n’ont pas le choix.",
       "target": "diagnostic",
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -204,7 +204,7 @@
       "explanationFr": "L’heure du rendez-vous ne change pas ; seul l’étage du cabinet change, dans le même immeuble.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -218,12 +218,16 @@
       "document": "Votre attention, s’il vous plaît. Le train de 17 h 40 pour Montréal partira avec quinze minutes de retard. Il partira toujours de la voie trois. Nous nous excusons pour ce retard.",
       "prompt": "À quelle heure partira le train ?",
       "correct": "À 17 h 55.",
-      "wrong": ["À 17 h 40.", "À 17 h 15.", "À 18 h 15."],
+      "wrong": [
+        "À 17 h 40.",
+        "À 17 h 15.",
+        "À 18 h 15."
+      ],
       "explanation": "The 17:40 train leaves fifteen minutes late, at 17:55, from the same platform.",
       "explanationFr": "Le train de 17 h 40 part avec quinze minutes de retard, donc à 17 h 55, de la même voie.",
       "speakers": "M",
       "target": "diagnostic",
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -238,15 +242,15 @@
       "prompt": "Que propose la deuxième personne ?",
       "correct": "De recevoir le colis.",
       "wrong": [
-        "De conduire son voisin à Québec.",
+        "De conduire son ami à Québec.",
         "De reporter la livraison.",
-        "De partir avec son voisin."
+        "De partir avec lui à Québec."
       ],
       "explanation": "Léa works from home tomorrow and offers to keep the parcel; the delivery date could not be changed.",
       "explanationFr": "Léa travaille de chez elle demain et propose de garder le colis ; la date de livraison n’a pas pu être changée.",
       "speakers": "MF",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -269,7 +273,7 @@
       "explanationFr": "Le cours du mercredi est annulé, car le professeur est malade, et il peut être rattrapé samedi matin.",
       "speakers": "F",
       "target": "diagnostic",
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -292,7 +296,7 @@
       "explanationFr": "La partie technique est terminée ; la semaine sert à tester le formulaire avec de vrais usagers avant le lancement.",
       "speakers": "FM",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -315,7 +319,7 @@
       "explanationFr": "L’hygiène est le principal défi : des bénévoles vérifient le frigo deux fois par jour, mais il en faudrait davantage, surtout le week-end.",
       "speakers": "MF",
       "target": "diagnostic",
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -338,7 +342,7 @@
       "explanationFr": "Elle reconnaît des résultats encourageants, mais rappelle que des volontaires ne représentent pas tous les employés : il faut vérifier les effets avant d’étendre le programme.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -361,7 +365,7 @@
       "explanationFr": "Il reconnaît que le télétravail évite les trajets, mais soutient que, sans règles de déconnexion ni limites aux réunions, il devient une disponibilité permanente.",
       "speakers": "M",
       "target": "diagnostic",
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     }
   ]

@@ -27,7 +27,7 @@
       "explanation": "Entry is free for everyone only on the first Sunday of each month; children under 12 are free every day.",
       "explanationFr": "L’entrée est gratuite pour tous seulement le premier dimanche du mois ; les enfants de moins de 12 ans entrent gratuitement tous les jours.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -49,7 +49,7 @@
       "explanation": "The lift stops for its annual maintenance and runs again from noon: the interruption is temporary.",
       "explanationFr": "L’ascenseur s’arrête pour son entretien annuel et fonctionne de nouveau à partir de midi : l’interruption est temporaire.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -71,7 +71,7 @@
       "explanation": "Amélie wants to swap her adult helmet for a child's helmet; she does not want to sell it.",
       "explanationFr": "Amélie veut échanger son casque d’adulte contre un casque d’enfant ; elle ne souhaite pas le vendre.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -82,14 +82,18 @@
       "competency": "specific_detail",
       "topic": "Repas",
       "documentType": "message",
-      "document": "Luc, je suis au travail jusqu’à 19 h 30. Le dîner est dans le réfrigérateur. Réchauffe la soupe deux minutes au micro-ondes, mais mange la salade froide, c’est meilleur. Il y a aussi du pain sur la table. Garde le dessert pour ce soir : on le mangera ensemble. Je rentre vers vingt heures. Maman",
+      "document": "Luc, je suis au travail jusqu’à 19 h 30. Ton repas est dans le réfrigérateur. Réchauffe la soupe deux minutes au micro-ondes, mais mange la salade froide, c’est meilleur. Il y a aussi du pain sur la table. Garde le dessert pour ce soir : on le mangera ensemble. Je rentre vers vingt heures. Maman",
       "prompt": "Que faut-il réchauffer ?",
       "correct": "La soupe.",
-      "wrong": ["La salade.", "Le pain.", "Le dessert."],
+      "wrong": [
+        "La salade.",
+        "Le pain.",
+        "Le dessert."
+      ],
       "explanation": "Only the soup should be reheated; the salad is eaten cold and the dessert is kept for later.",
       "explanationFr": "Seule la soupe doit être réchauffée ; la salade se mange froide et le dessert est gardé pour le soir.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -100,14 +104,18 @@
       "competency": "specific_detail",
       "topic": "Bibliothèque",
       "documentType": "règlement",
-      "document": "Bibliothèque du quartier – Règlement du prêt. Les livres se prêtent pour trois semaines. Vous pouvez emprunter cinq livres à la fois avec votre carte. Les revues et les journaux se consultent uniquement sur place, dans la salle de lecture. Les ordinateurs sont réservés pour une heure par jour.",
+      "document": "Bibliothèque du quartier – Règlement du prêt. Les livres se prêtent pour trois semaines. Vous pouvez emprunter cinq livres à la fois avec votre carte. Les revues et les journaux se consultent uniquement sur place, dans la salle de lecture. Les ordinateurs peuvent être réservés une heure par jour.",
       "prompt": "Que peut-on emporter chez soi ?",
       "correct": "Les livres.",
-      "wrong": ["Les revues.", "Les journaux.", "Les ordinateurs."],
+      "wrong": [
+        "Les revues.",
+        "Les journaux.",
+        "Les ordinateurs."
+      ],
       "explanation": "Books can be borrowed for three weeks; magazines and newspapers stay in the reading room.",
       "explanationFr": "On peut emprunter les livres pour trois semaines ; les revues et les journaux restent dans la salle de lecture.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -129,7 +137,7 @@
       "explanation": "The bakery moves to 18 rue des Pins; its opening hours and phone number stay the same.",
       "explanationFr": "La boulangerie déménage au 18, rue des Pins ; ses horaires et son numéro de téléphone ne changent pas.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -151,7 +159,7 @@
       "explanation": "Participants bring a towel (and water); mats are lent and the form is filled in on site.",
       "explanationFr": "Les participants apportent une serviette (et de l’eau) ; les tapis sont prêtés et la fiche se remplit sur place.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -162,7 +170,7 @@
       "competency": "speaker_intention",
       "topic": "Voisinage",
       "documentType": "note",
-      "document": "Message du syndic à tous les résidents. Depuis quelques jours, des sacs de déchets sont déposés devant la porte d’entrée. Cela attire les animaux et gêne le passage. Merci de ne plus laisser vos sacs devant la porte. Les bacs se trouvent dans la cour, derrière le local à vélos.",
+      "document": "Message de la gestion de l’immeuble à tous les résidents. Depuis quelques jours, des sacs de déchets sont déposés devant la porte d’entrée. Cela attire les animaux et gêne le passage. Merci de ne plus laisser vos sacs devant la porte. Les bacs se trouvent dans la cour, derrière le local à vélos.",
       "prompt": "Que demande cette note ?",
       "correct": "De mettre les sacs dans les bacs.",
       "wrong": [
@@ -173,7 +181,7 @@
       "explanation": "The note asks residents to stop leaving bags at the door and to use the bins in the courtyard.",
       "explanationFr": "La note demande de ne plus laisser les sacs devant la porte et d’utiliser les bacs de la cour.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -195,7 +203,7 @@
       "explanation": "The job requires two evenings a week (5 to 9 p.m.) and every other Saturday.",
       "explanationFr": "Le poste demande deux soirs par semaine (de 17 h à 21 h) et un samedi sur deux.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -217,7 +225,7 @@
       "explanation": "Because of the heat, the race moves from 2 p.m. to 8:30 a.m.; the place stays the same.",
       "explanationFr": "À cause de la chaleur, la course passe de 14 h à 8 h 30 ; le lieu ne change pas.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -239,7 +247,7 @@
       "explanation": "Working days exclude Saturdays, Sundays and holidays, when the offices are closed.",
       "explanationFr": "Les jours ouvrables excluent le samedi, le dimanche et les jours fériés, quand les bureaux sont fermés.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -261,7 +269,7 @@
       "explanation": "Only the writing workshop, limited to fifteen people, must be booked online; the talk is open to all.",
       "explanationFr": "Seul l’atelier d’écriture, limité à quinze personnes, demande une réservation en ligne ; la rencontre est libre d’accès.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -283,7 +291,7 @@
       "explanation": "If he is away, the tenant must allow the caretaker to let the plumber in; the owner pays for the part.",
       "explanationFr": "S’il est absent, le locataire doit autoriser la gardienne à ouvrir au plombier ; la pièce est à la charge du propriétaire.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -305,7 +313,7 @@
       "explanation": "During the work, the stop is moved 200 metres to the post office stop; times and fares do not change.",
       "explanationFr": "Pendant les travaux, l’arrêt est déplacé de 200 mètres, à l’arrêt de la poste ; les horaires et les tarifs ne changent pas.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -327,7 +335,7 @@
       "explanation": "The association stops collecting books until January to sort them; lending continues as usual.",
       "explanationFr": "L’association suspend la collecte de livres jusqu’en janvier pour les trier ; le prêt continue normalement.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -341,11 +349,15 @@
       "document": "Note à l’équipe commerciale. À partir de lundi, nous changeons notre façon d’envoyer les devis aux clients. Avant de transmettre un devis, faites-le relire par un ou une collègue afin de déceler les éventuelles erreurs de prix ou de quantité. Le mois dernier, trois devis contenaient des erreurs, et nous avons dû les corriger après leur envoi, ce qui a donné une mauvaise image de l’entreprise. Cette relecture ne prend que quelques minutes. Merci de votre collaboration. Karine, directrice",
       "prompt": "Que signifie « déceler » ?",
       "correct": "Repérer.",
-      "wrong": ["Justifier.", "Masquer.", "Reproduire."],
+      "wrong": [
+        "Justifier.",
+        "Masquer.",
+        "Reproduire."
+      ],
       "explanation": "Rereading aims to spot (detect) errors before sending, not to hide or reproduce them.",
       "explanationFr": "On relit pour repérer les erreurs avant l’envoi, pas pour les cacher ni les reproduire.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -367,7 +379,7 @@
       "explanation": "Clara chose the late show because Inès might not finish work early; both shows cost the same.",
       "explanationFr": "Clara a choisi la séance tardive parce qu’Inès ne finira peut-être pas tôt ; les deux séances coûtent le même prix.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -389,7 +401,7 @@
       "explanation": "The dough comes out of the fridge ten minutes before rolling so that it is softer.",
       "explanationFr": "On sort la pâte du réfrigérateur dix minutes avant de l’étaler pour qu’elle soit plus souple.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -411,7 +423,7 @@
       "explanation": "The workshop assumes basic email skills and teaches folders and filters, not how to open an account.",
       "explanationFr": "L’atelier suppose qu’on sait déjà utiliser une messagerie et enseigne le classement et les filtres, pas l’ouverture d’un compte.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -433,7 +445,7 @@
       "explanation": "The group meets to practise French informally: no teacher, no exercises, no purchase required.",
       "explanationFr": "Le groupe se retrouve pour pratiquer le français sans cadre formel : ni professeur, ni exercice, ni achat obligatoire.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -455,7 +467,7 @@
       "explanation": "The author argues that donations only work with transport and volunteers: the logistics are the missing link.",
       "explanationFr": "Selon l’auteur, les dons ne fonctionnent qu’avec un transport et des bénévoles : la logistique est le maillon manquant.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -477,7 +489,7 @@
       "explanation": "Employees concentrate better but know less about colleagues' problems: a gain with a loss.",
       "explanationFr": "Les salariés se concentrent mieux, mais connaissent moins les difficultés de leurs collègues : un gain accompagné d’une perte.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -489,7 +501,7 @@
       "topic": "Culture",
       "documentType": "critique",
       "document": "Critique – « Les Heures claires » au Théâtre de la Rive. Ceux qui attendent des décors somptueux et des effets spéciaux seront déçus : ce spectacle les évite soigneusement. Sur scène, une table, deux chaises et une lumière qui change lentement au fil des heures. Sa force réside précisément dans cette mise en scène dépouillée, qui laisse toute leur place aux silences et au jeu remarquable des deux comédiennes. Pendant une heure et demie, le public retient son souffle. Certains trouveront le rythme trop lent ; pour notre part, nous y avons vu l’une des pièces les plus fortes de la saison.",
-      "prompt": "Comment est la mise en scène ?",
+      "prompt": "Comment le critique décrit-il la mise en scène ?",
       "correct": "Simple et sans décor superflu.",
       "wrong": [
         "Inachevée, faute de répétitions.",
@@ -499,7 +511,7 @@
       "explanation": "« Dépouillée » means stripped back: a table, two chairs and slow lighting, chosen on purpose.",
       "explanationFr": "« Dépouillée » signifie simple, sans ornement : une table, deux chaises et une lumière lente, par choix.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -521,7 +533,7 @@
       "explanation": "The file can be re-examined with an updated document, but that does not guarantee approval.",
       "explanationFr": "Le dossier peut être réexaminé avec un justificatif à jour, mais cela ne garantit pas son acceptation.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -543,7 +555,7 @@
       "explanation": "Noise fell near the school, but some traffic moved to nearby streets: the problem partly shifted.",
       "explanationFr": "Le bruit a baissé près de l’école, mais une partie du trafic s’est reportée sur les rues voisines : le problème s’est en partie déplacé.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -565,7 +577,7 @@
       "explanation": "Lending computers removes a material barrier, but support and training are needed too: they complement each other.",
       "explanationFr": "Prêter des ordinateurs lève un obstacle matériel, mais il faut aussi un accompagnement : les deux se complètent.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -587,7 +599,7 @@
       "explanation": "Two route lengths let everyone take part at their own level while meeting at the end.",
       "explanationFr": "Deux parcours permettent à chacun de participer selon ses capacités, tout en se retrouvant à l’arrivée.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -609,7 +621,7 @@
       "explanation": "Formal politeness (« je me permets », « je vous serais reconnaissante ») with a deadline and a possible complaint: polite but firm.",
       "explanationFr": "Une politesse formelle (« je me permets », « je vous serais reconnaissante ») accompagnée d’un délai et d’un recours possible : un ton poli mais ferme.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -631,7 +643,7 @@
       "explanation": "Customers try bikes at the workshop and often order online afterwards: it supports online sales.",
       "explanationFr": "Les clients essaient les vélos à l’atelier et commandent souvent en ligne ensuite : l’atelier soutient les ventes à distance.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -653,7 +665,7 @@
       "explanation": "The concerts are free, but late hours and poor bus service exclude people without a car: access is not only about price.",
       "explanationFr": "Les concerts sont gratuits, mais l’horaire tardif et le manque d’autobus excluent ceux qui n’ont pas de voiture : l’accès ne dépend pas que du prix.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -667,11 +679,15 @@
       "document": "Un nouveau marché à Saint-Roch. Dès le mois prochain, un marché de producteurs s’installera le jeudi et le samedi sur la place du quartier. Certains commerçants s’en inquiètent : l’épicerie fine et la fromagerie craignent de perdre une partie de leur clientèle. La conseillère municipale responsable du projet se veut rassurante. Selon elle, le nouveau marché ne vise pas à se substituer aux commerces du quartier, mais à compléter leur offre certains jours, avec des produits de saison qu’ils ne vendent pas. Elle rappelle aussi que les marchés attirent souvent de nouveaux clients dans les rues voisines, ce qui profite à tous les commerçants.",
       "prompt": "Que signifie « se substituer à » ?",
       "correct": "Remplacer.",
-      "wrong": ["S’associer à.", "Se fournir auprès de.", "Faire connaître."],
+      "wrong": [
+        "S’associer à.",
+        "Se fournir auprès de.",
+        "Faire connaître."
+      ],
       "explanation": "The contrast with « compléter » shows that « se substituer à » means to replace.",
       "explanationFr": "L’opposition avec « compléter » montre que « se substituer à » signifie remplacer.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -693,7 +709,7 @@
       "explanation": "Self-reports without objective measurement or a comparison group cannot show that the workshop caused the improvement.",
       "explanationFr": "Des déclarations, sans mesure objective ni groupe de comparaison, ne permettent pas d’attribuer l’amélioration à l’atelier.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -713,9 +729,9 @@
         "Le coût trop élevé des consultations en ligne."
       ],
       "explanation": "Consulting people on decisions already taken wears out the trust future consultations need; participation must have real influence.",
-      "explanationFr": "Consulter sur des décisions déjà prises use la confiance dont les consultations futures auront besoin : la participation doit peser réellement.",
+      "explanationFr": "Consulter sur des décisions déjà prises épuise la confiance dont les consultations futures auront besoin : la participation doit peser réellement.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -737,7 +753,7 @@
       "explanation": "Flexibility looks like freedom, but when it means being reachable at all hours it extends the availability that is demanded.",
       "explanationFr": "La flexibilité ressemble à une liberté, mais quand elle impose d’être joignable à toute heure, elle étend la disponibilité exigée.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -748,7 +764,7 @@
       "competency": "vocabulary_in_context",
       "topic": "Culture",
       "documentType": "critique",
-      "document": "Critique – « À qui appartient le passé ? ». Le nouvel essai de l’historien Marc Lévesque s’attaque à une question brûlante : faut-il rendre aux communautés d’origine les objets conservés dans les musées ? Le débat, on le sait, oppose depuis des années les défenseurs du retour des œuvres à ceux qui invoquent la mission universelle des collections. Le mérite du livre est de ne pas choisir un camp. L’auteur ne tranche pas le débat ; il en déplace les termes, en demandant moins qui possède l’objet que qui peut en raconter l’histoire. À travers une dizaine d’exemples précis, il montre que les conflits portent souvent sur le récit associé aux objets plus que sur leur propriété juridique. Il donne aussi la parole aux conservateurs comme aux communautés concernées. On pourra regretter quelques longueurs, mais l’ouvrage renouvelle une discussion qui tournait en rond depuis trop longtemps.",
+      "document": "Critique – « À qui appartient le passé ? » Le nouvel essai de l’historien Marc Lévesque s’attaque à une question brûlante : faut-il rendre aux communautés d’origine les objets conservés dans les musées ? Le débat, on le sait, oppose depuis des années les défenseurs du retour des œuvres à ceux qui invoquent la mission universelle des collections. Le mérite du livre est de ne pas choisir un camp. L’auteur ne tranche pas le débat ; il en déplace les termes, en demandant moins qui possède l’objet que qui peut en raconter l’histoire. À travers une dizaine d’exemples précis, il montre que les conflits portent souvent sur le récit associé aux objets plus que sur leur propriété juridique. Il donne aussi la parole aux conservateurs comme aux communautés concernées. On pourra regretter quelques longueurs, mais l’ouvrage renouvelle une discussion qui tournait en rond depuis trop longtemps.",
       "prompt": "Que fait l’auteur, selon cette critique ?",
       "correct": "Il reformule la question au cœur du débat.",
       "wrong": [
@@ -759,7 +775,7 @@
       "explanation": "« Déplacer les termes » means reframing the question: from who owns the object to who may tell its story.",
       "explanationFr": "« Déplacer les termes » du débat, c’est le reformuler : on passe de la propriété de l’objet au droit d’en raconter l’histoire.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -781,7 +797,7 @@
       "explanation": "Redirecting complex cases removes them from the calculation, so the average improves without better care for them.",
       "explanationFr": "Réorienter les cas complexes les retire du calcul : la moyenne s’améliore sans que leur prise en charge progresse.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -803,7 +819,7 @@
       "explanation": "Restored buildings can hide a social break: the residents who gave the place meaning have been pushed out.",
       "explanationFr": "La restauration des bâtiments peut masquer une rupture sociale : les habitants qui donnaient son sens au quartier en sont partis.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -825,7 +841,7 @@
       "explanation": "With abundant information, attention becomes the scarce resource, and seemingly neutral automated rankings steer it.",
       "explanationFr": "Avec l’abondance d’informations, l’attention devient rare, et des classements automatiques en apparence neutres l’orientent.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -847,7 +863,7 @@
       "explanation": "Individual actions can prepare collective change but cannot replace infrastructure that requires a coordinated effort.",
       "explanationFr": "Les gestes individuels peuvent préparer les changements collectifs, mais ne remplacent pas les infrastructures qui exigent un effort coordonné.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -869,7 +885,7 @@
       "explanation": "No measurable effect in this study only limits conclusions to its conditions and detection power; it does not prove there is no effect.",
       "explanationFr": "L’absence d’effet mesurable limite les conclusions aux conditions de l’étude et à ce qu’elle pouvait détecter ; elle ne prouve pas qu’il n’y a aucun effet.",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     }
   ]

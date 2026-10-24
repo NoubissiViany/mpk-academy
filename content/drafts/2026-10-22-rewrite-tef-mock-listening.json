@@ -28,7 +28,7 @@
       "explanationFr": "L’annonce demande aux clients d’aller aux caisses avant la fermeture ; les cabines d’essayage sont déjà fermées.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -51,7 +51,7 @@
       "explanationFr": "Julie dit qu’elle est devant la porte bleue, à droite de la pharmacie.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -74,7 +74,7 @@
       "explanationFr": "À cause des travaux, l’autobus termine son trajet devant l’hôpital au lieu du terminus habituel.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -88,12 +88,16 @@
       "document": "Bonjour à tous. Prenez une feuille blanche et un stylo. Écrivez votre prénom en haut de la feuille, à gauche. Ne commencez pas encore l’exercice : je vais d’abord vous expliquer les consignes. Vous aurez ensuite vingt minutes.",
       "prompt": "Que faut-il écrire maintenant ?",
       "correct": "Son prénom.",
-      "wrong": ["La réponse à l’exercice.", "Son adresse.", "La date du jour."],
+      "wrong": [
+        "La réponse à l’exercice.",
+        "Son adresse.",
+        "La date du jour."
+      ],
       "explanation": "Students write only their first name now; the exercise starts after the instructions.",
       "explanationFr": "Les élèves écrivent seulement leur prénom maintenant ; l’exercice commence après les consignes.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -106,7 +110,7 @@
       "documentType": "message",
       "document": "Bonsoir, c’est votre voisine du numéro 8. Je vous appelle parce que la fenêtre de votre voiture est restée ouverte. Il commence à pleuvoir, alors je préférais vous prévenir. La voiture est garée devant chez moi.",
       "prompt": "Pourquoi la voisine appelle-t-elle ?",
-      "correct": "À cause d’une fenêtre ouverte.",
+      "correct": "Pour signaler une fenêtre ouverte.",
       "wrong": [
         "Pour demander les clés de la voiture.",
         "Pour proposer de partager un trajet.",
@@ -116,7 +120,7 @@
       "explanationFr": "Elle prévient que la fenêtre de la voiture est ouverte alors qu’il commence à pleuvoir.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -139,7 +143,7 @@
       "explanationFr": "La deuxième personne choisit un thé sans sucre et accepte aussi un verre d’eau.",
       "speakers": "FM",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -162,7 +166,7 @@
       "explanationFr": "La salle informatique ouvre à onze heures à cause d’une réparation ; les tables de lecture sont déjà accessibles.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -185,7 +189,7 @@
       "explanationFr": "Hugo a un billet en trop et invite Karim à l’accompagner au match de ce soir.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -208,7 +212,7 @@
       "explanationFr": "L’entretien garde le même jour et la même heure, mais il se fera en visioconférence.",
       "speakers": "MF",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -231,7 +235,7 @@
       "explanationFr": "Il y a assez de jouets ; les livres pour adolescents sont ce qui manque le plus à l’association.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -254,7 +258,7 @@
       "explanationFr": "La circulation est bloquée près du pont, et la piste cyclable le long de la rivière évite ce secteur.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -277,7 +281,7 @@
       "explanationFr": "Il faut d’abord enregistrer le document, puis l’envoyer ; sinon, on risque de perdre les dernières modifications.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -300,7 +304,7 @@
       "explanationFr": "Malgré un appartement plus grand, la personne reste, car elle perdrait presque deux heures par jour en trajet.",
       "speakers": "FM",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -323,7 +327,7 @@
       "explanationFr": "La discussion avec la réalisatrice a lieu après le film, vers 21 h 30.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -346,7 +350,7 @@
       "explanationFr": "La pièce est arrivée ; le réparateur attend l’accord du client sur le devis de 65 $ avant de commencer.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -369,7 +373,7 @@
       "explanationFr": "Les promenades font découvrir aux nouveaux arrivants les commerces et les services du quartier.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -392,7 +396,7 @@
       "explanationFr": "Le club prête les gilets de sauvetage ; les participants apportent chaussures, vêtements de rechange et serviette.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -415,7 +419,7 @@
       "explanationFr": "Elle refuse aujourd’hui à cause d’une échéance, mais demande qu’on lui garde une place demain.",
       "speakers": "MF",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -428,7 +432,7 @@
       "documentType": "appel",
       "document": "Bonjour, ici Nathalie, de la quincaillerie Lebrun. Votre commande de peinture est prête depuis ce matin. Attention : notre entrée principale, sur la rue Notre-Dame, est fermée pour travaux jusqu’à vendredi. Utilisez plutôt la porte de la rue latérale, à côté du stationnement. Nous sommes ouverts jusqu’à dix-huit heures.",
       "prompt": "Quelle précision donne Nathalie ?",
-      "correct": "Par quelle porte entrer.",
+      "correct": "La porte à utiliser pour entrer.",
       "wrong": [
         "Le montant d’un remboursement.",
         "La date d’une nouvelle commande.",
@@ -438,7 +442,7 @@
       "explanationFr": "L’entrée principale est fermée pour travaux : il faut passer par la porte de la rue latérale pour récupérer la commande.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -461,7 +465,7 @@
       "explanationFr": "La garde est gratuite pendant la réunion, mais il faut inscrire les enfants avant mardi.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -484,7 +488,7 @@
       "explanationFr": "Elle prévoit des bénéfices à terme, mais propose moins de dossiers par personne pendant l’apprentissage de l’outil.",
       "speakers": "MF",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -507,7 +511,7 @@
       "explanationFr": "Il voit plus de clients et vend davantage ; les livraisons sont plus difficiles, mais il ne reviendrait pas en arrière.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -530,7 +534,7 @@
       "explanationFr": "Pour le chroniqueur, faire découvrir des artistes peu connus donne au festival sa raison d’être.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -546,14 +550,14 @@
       "correct": "Prendre le modèle bleu.",
       "wrong": [
         "Demander le modèle gris.",
-        "Attendre la prochaine livraison.",
+        "Se faire rembourser tout de suite.",
         "Faire réparer l’ancien appareil."
       ],
       "explanation": "Only the blue model can be exchanged immediately; the grey one arrives in about ten days.",
       "explanationFr": "Seul le modèle bleu peut être échangé tout de suite ; le gris arrivera dans une dizaine de jours.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -576,7 +580,7 @@
       "explanationFr": "Son expérience l’aide ; le plus difficile est de retrouver une méthode de travail régulière.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -599,7 +603,7 @@
       "explanationFr": "Seuls 200 usagers sur 3 000 ont répondu ; les non-réponses peuvent fausser le résultat, sans que les réponses soient fausses.",
       "speakers": "MF",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -622,7 +626,7 @@
       "explanationFr": "Les participants apprennent à réparer avec les bénévoles, puis transmettent ce savoir-faire à leur tour.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -645,7 +649,7 @@
       "explanationFr": "Quelques minutes de plus pour répartir clairement les tâches font gagner du temps ensuite.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -668,7 +672,7 @@
       "explanationFr": "La batterie remplaçable devrait permettre de garder l’ordinateur plusieurs années, malgré un prix plus élevé.",
       "speakers": "FM",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -691,7 +695,7 @@
       "explanationFr": "L’association soutient l’idée, mais demande le matériel, la salle et le nombre de bénévoles avant de fixer une date.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -714,7 +718,7 @@
       "explanationFr": "Les vélos restent payants à part, mais les trente premières minutes de chaque trajet sont offertes aux abonnés.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -737,7 +741,7 @@
       "explanationFr": "Les descriptions sonores, prévues pour les visiteurs malvoyants, servent aussi à beaucoup d’autres publics.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -752,7 +756,7 @@
       "prompt": "Quelle réserve l’intervenant exprime-t-il ?",
       "correct": "Le classement ne mesure qu’une partie du service.",
       "wrong": [
-        "Le classement a sans doute été falsifié par la ville.",
+        "Le classement a sans doute été falsifié par la Ville.",
         "Le service n’a fait aucun progrès depuis un an.",
         "Personne ne connaît les critères du classement."
       ],
@@ -760,7 +764,7 @@
       "explanationFr": "Il apprécie le classement, mais rappelle qu’il repose sur trois critères faciles à améliorer et ne mesure pas la qualité de l’accompagnement.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -772,7 +776,7 @@
       "topic": "Numérique",
       "documentType": "chronique",
       "document": "On nous vante sans cesse la simplicité des nouvelles applications : un bouton pour commander, un autre pour être livré. Mais la simplicité d’une interface peut cacher la complexité du travail déplacé en coulisses. Quelqu’un prépare la commande, quelqu’un la transporte, quelqu’un répond quand elle se perd. Le travail n’a pas disparu ; il a seulement changé de mains. Avant de parler de suppression des tâches, demandons-nous qui les réalise désormais, à quel prix et dans quelles conditions.",
-      "prompt": "Quel examen le chroniqueur propose-t-il ?",
+      "prompt": "Que propose le chroniqueur ?",
       "correct": "Chercher qui fait désormais le travail.",
       "wrong": [
         "Compter seulement le nombre de boutons.",
@@ -783,7 +787,7 @@
       "explanationFr": "Le chroniqueur invite à chercher où le travail s’est déplacé et qui le fait, plutôt que de supposer qu’il a disparu.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -806,7 +810,7 @@
       "explanationFr": "Elle soutient qu’un résultat négatif, publié avec sa méthode, évite à d’autres équipes de refaire le même travail.",
       "speakers": "MF",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -829,7 +833,7 @@
       "explanationFr": "Une forte fréquentation ne prouve pas que le centre a attiré des habitants qui n’allaient jamais dans les lieux culturels.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -852,7 +856,7 @@
       "explanationFr": "Si tout est urgent, l’urgence ne permet plus de classer les tâches.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -875,7 +879,7 @@
       "explanationFr": "Elle accepte la lenteur et les silences, mais reproche des ambiguïtés que le récit ne permet pas d’interpréter.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -898,7 +902,7 @@
       "explanationFr": "Le suivi vérifie si la baisse de consommation se maintient une fois les rappels arrêtés.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     },
     {
@@ -921,7 +925,7 @@
       "explanationFr": "Nommer ce qui résiste permet de distinguer les obstacles qu’on peut lever de ceux qu’il faut accepter : l’action devient plus réaliste.",
       "speakers": "MF",
       "replaces": true,
-      "review": "pending",
+      "review": "accepted",
       "problems": []
     }
   ]
