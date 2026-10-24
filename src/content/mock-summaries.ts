@@ -3,7 +3,7 @@ export const mockSummaries = [
   {
     "id": "tef-mock-01",
     "exam": "TEF",
-    "ready": false,
+    "ready": true,
     "sections": [
       {
         "skill": "reading",
@@ -30,7 +30,7 @@ export const mockSummaries = [
   {
     "id": "tcf-mock-01",
     "exam": "TCF",
-    "ready": false,
+    "ready": true,
     "sections": [
       {
         "skill": "reading",
