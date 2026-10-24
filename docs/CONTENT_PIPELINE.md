@@ -63,23 +63,34 @@ Drafts are written to `content/drafts/<date>-<label>.json`, with the problems th
 
 ## Review
 
-1. `npm run content:review` writes `content/drafts/review.html`, listing every pending draft. A rewrite is shown beside the question it replaces.
-2. First pass (you): record decisions with `npm run content:mark`, and correct any text directly in the JSON file. A target is a draft file, an id, or the start of ids:
-   ```bash
-   npm run content:mark -- accepted 2026-10-22-rewrite-tef-mock-reading --except tef-mock-reading-b2-004
-   npm run content:mark -- rejected tef-mock-reading-b2-004
-   ```
-   After editing a draft by hand, `npm run content:draft -- check` re-runs the automatic checks.
-3. `npm run content:review -- --teacher` writes `teacher-review.html`. It contains every accepted mock and diagnostic question and a fixed one in five of the other accepted drafts. After the teacher checks it, record their decisions:
-   ```bash
-   npm run content:mark -- teacher-approved tef-mock tcf-mock diagnostic --except tcf-mock-reading-c1-003
-   npm run content:mark -- teacher-rejected tcf-mock-reading-c1-003
-   ```
-4. `npm run content:accept` merges what is ready:
+Every draft goes through two checks before it reaches learners:
+
+- **Your review**, for every draft. You read it and accept it, fix it, or reject it.
+- **The teacher's review**, for every accepted mock-exam and diagnostic question, and a fixed one in five of the other accepted drafts. A qualified French teacher confirms the French, that exactly one answer is defensible, the level, and the explanations.
+
+Both happen on a review page that runs on your computer:
+
+1. Run `npm run content:review`, then open http://localhost:4400. Stop it with Ctrl+C.
+2. **Your review** tab: read each question. A rewrite is shown next to the version learners see today.
+   - **Accept** marks it good.
+   - **Reject** drops it; the published question stays as it is.
+   - **Edit text** corrects the wording, re-runs the automatic checks, and shows any remaining problem in red.
+   - **Undo** reverses a decision. The note field is optional.
+3. **Send the teacher their share.** `npm run content:review -- --print --teacher` writes `content/drafts/teacher-review.html`, a printable sheet with tick boxes. Send it to the teacher (or save it as a PDF). It only contains drafts you have accepted.
+4. **Teacher** tab: record what the teacher decided with **Teacher approved** or **Teacher rejected**. Fix the text first with **Edit text** if they asked for a change.
+5. `npm run content:accept` merges what is ready:
    - Accepted drafts that need no teacher check.
    - Drafts the teacher approved.
 
    A rewrite replaces its question in place; a new question is added to its exam's practice file. The step also records listening voices, shrinks the debt list, runs validation, and changes nothing if validation fails.
+
+For many decisions at once, `npm run content:mark` does the same from the terminal. A target is a draft file, an id, or the start of ids:
+
+```bash
+npm run content:mark -- accepted 2026-10-22-rewrite-tef-mock-reading
+npm run content:mark -- accepted tef-mock-listening --except tef-mock-listening-b2-004,tef-mock-listening-c1-002
+npm run content:mark -- teacher-approved tef-mock tcf-mock diagnostic
+```
 
 Commit the draft files along with the content: they record what was reviewed and by whom.
 
@@ -103,7 +114,7 @@ Where the files go:
 - **Mock clips** go to `.audio-cache/`, which is not committed. Upload them to the private `mock-audio` bucket of each project:
   ```bash
   npm run content:upload-mock-audio                                   # project in .env.local (staging)
-  npm run content:upload-mock-audio -- --env-file .env.production.local
+  npm run content:upload-mock-audio -- --env .env.production.local
   ```
   The second file holds the production `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`. Delete it afterwards if you do not keep it.
 

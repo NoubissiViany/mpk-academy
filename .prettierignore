@@ -5,3 +5,9 @@ supabase/migrations/20261002000200_content_v2_catalog.sql
 
 # Supabase CLI state (gitignored)
 supabase/.temp
+
+# Written by the content scripts (npm run content:*)
+content/drafts/
+src/content/audio-manifest.json
+src/content/debt.json
+supabase/content-lock.json

@@ -6,7 +6,7 @@
 // clips ready, or that project's mock exam would point at missing files.
 //
 //   node scripts/content/upload-mock-audio.cjs                  # uses .env.local
-//   node scripts/content/upload-mock-audio.cjs --env-file <file>
+//   node scripts/content/upload-mock-audio.cjs --env <file>
 //
 // Needs NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY for the target.
 const fs = require("node:fs");
@@ -15,13 +15,21 @@ const { createClient } = require("@supabase/supabase-js");
 
 const root = path.resolve(__dirname, "../..");
 const BUCKET = "mock-audio";
-const envIndex = process.argv.indexOf("--env-file");
+// Not --env-file: Node reads that flag itself, even after the script name.
+const envIndex = process.argv.indexOf("--env");
 const envFile = path.resolve(
   root,
   envIndex >= 0 ? process.argv[envIndex + 1] : ".env.local",
 );
 
 async function main() {
+  if (!fs.existsSync(envFile))
+    throw Error(
+      `${path.relative(root, envFile)} does not exist. Create it with two lines for the target project:\n` +
+        "  NEXT_PUBLIC_SUPABASE_URL=https://<project ref>.supabase.co\n" +
+        "  SUPABASE_SERVICE_ROLE_KEY=<that project's service role key>\n" +
+        "(Supabase dashboard of the project, Project Settings > API, or the project's Vercel environment variables.)",
+    );
   process.loadEnvFile(envFile);
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
