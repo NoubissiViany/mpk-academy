@@ -64,8 +64,17 @@ Drafts are written to `content/drafts/<date>-<label>.json`, with the problems th
 ## Review
 
 1. `npm run content:review` writes `content/drafts/review.html`, listing every pending draft. A rewrite is shown beside the question it replaces.
-2. First pass (you): in the JSON file, set `"review": "accepted"` or `"rejected"`, and correct any text in place.
-3. `npm run content:review -- --teacher` writes `teacher-review.html`. It contains every accepted mock question and a fixed one in five of the other accepted drafts. After the teacher checks it, set `"teacher": "approved"` or `"rejected"` on those drafts.
+2. First pass (you): record decisions with `npm run content:mark`, and correct any text directly in the JSON file. A target is a draft file, an id, or the start of ids:
+   ```bash
+   npm run content:mark -- accepted 2026-10-22-rewrite-tef-mock-reading --except tef-mock-reading-b2-004
+   npm run content:mark -- rejected tef-mock-reading-b2-004
+   ```
+   After editing a draft by hand, `npm run content:draft -- check` re-runs the automatic checks.
+3. `npm run content:review -- --teacher` writes `teacher-review.html`. It contains every accepted mock and diagnostic question and a fixed one in five of the other accepted drafts. After the teacher checks it, record their decisions:
+   ```bash
+   npm run content:mark -- teacher-approved tef-mock tcf-mock diagnostic --except tcf-mock-reading-c1-003
+   npm run content:mark -- teacher-rejected tcf-mock-reading-c1-003
+   ```
 4. `npm run content:accept` merges what is ready:
    - Accepted drafts that need no teacher check.
    - Drafts the teacher approved.
