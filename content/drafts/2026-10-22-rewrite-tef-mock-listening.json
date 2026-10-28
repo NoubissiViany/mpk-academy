@@ -28,8 +28,10 @@
       "explanationFr": "L’annonce demande aux clients d’aller aux caisses avant la fermeture ; les cabines d’essayage sont déjà fermées.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Customers are explicitly directed to the tills before closing; fitting rooms have already closed. Waiting outside, returning later and trying clothes conflict with the announcement.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-a2-002",
@@ -51,8 +53,10 @@
       "explanationFr": "Julie dit qu’elle est devant la porte bleue, à droite de la pharmacie.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Julie locates herself at the blue door to the pharmacy's right. Inside, left and behind are distinct unsupported positions; arrivée and the female voice agree.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-a2-003",
@@ -74,8 +78,10 @@
       "explanationFr": "À cause des travaux, l’autobus termine son trajet devant l’hôpital au lieu du terminus habituel.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The hospital replaces the usual terminus while other stops remain unchanged. Fare, line number and first departure time are not altered.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-a2-004",
@@ -88,13 +94,19 @@
       "document": "Bonjour à tous. Prenez une feuille blanche et un stylo. Écrivez votre prénom en haut de la feuille, à gauche. Ne commencez pas encore l’exercice : je vais d’abord vous expliquer les consignes. Vous aurez ensuite vingt minutes.",
       "prompt": "Que faut-il écrire maintenant ?",
       "correct": "Son prénom.",
-      "wrong": ["La réponse à l’exercice.", "Son adresse.", "La date du jour."],
+      "wrong": [
+        "La réponse à l’exercice.",
+        "Son adresse.",
+        "La date du jour."
+      ],
       "explanation": "Students write only their first name now; the exercise starts after the instructions.",
       "explanationFr": "Les élèves écrivent seulement leur prénom maintenant ; l’exercice commence après les consignes.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The immediate writing task is the first name; exercise answers must wait for instructions. Address and date are not requested, so the temporal distinction is unambiguous.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-a2-005",
@@ -106,7 +118,7 @@
       "documentType": "message",
       "document": "Bonsoir, c’est votre voisine du numéro 8. Je vous appelle parce que la fenêtre de votre voiture est restée ouverte. Il commence à pleuvoir, alors je préférais vous prévenir. La voiture est garée devant chez moi.",
       "prompt": "Pourquoi la voisine appelle-t-elle ?",
-      "correct": "À cause d’une fenêtre ouverte.",
+      "correct": "Pour signaler une fenêtre ouverte.",
       "wrong": [
         "Pour demander les clés de la voiture.",
         "Pour proposer de partager un trajet.",
@@ -116,8 +128,10 @@
       "explanationFr": "Elle prévient que la fenêtre de la voiture est ouverte alors qu’il commence à pleuvoir.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The neighbour calls to warn of the open car window as rain starts. No request for keys, shared journey or mechanical repair is made; voisine matches the female voice.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-a2-006",
@@ -139,8 +153,10 @@
       "explanationFr": "La deuxième personne choisit un thé sans sucre et accepte aussi un verre d’eau.",
       "speakers": "FM",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The second speaker selects unsweetened tea and subsequently accepts water. The other listed choices alter the drink or sugar condition; the extra glass does not create a competing answer.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-a2-007",
@@ -162,8 +178,10 @@
       "explanationFr": "La salle informatique ouvre à onze heures à cause d’une réparation ; les tables de lecture sont déjà accessibles.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Reading tables are already usable, while the computer room opens later at eleven. Other rooms are not identified as accessible, and ordinary book loans do not imply access to the reserve.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-a2-008",
@@ -185,8 +203,10 @@
       "explanationFr": "Hugo a un billet en trop et invite Karim à l’accompagner au match de ce soir.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Hugo offers Karim the ticket freed by his brother's absence. Attending together is distinct from joining a team, buying for the brother or watching television.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-b1-001",
@@ -208,8 +228,10 @@
       "explanationFr": "L’entretien garde le même jour et la même heure, mais il se fera en visioconférence.",
       "speakers": "MF",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The recruiter explicitly preserves Tuesday at ten but changes an in-person interview to videoconference. The form of the meeting alone changes; the MF turn assignment is consistent.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-b1-002",
@@ -231,8 +253,10 @@
       "explanationFr": "Il y a assez de jouets ; les livres pour adolescents sont ce qui manque le plus à l’association.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The association has enough toys and names adolescent books as its greatest shortage. Winter clothing is welcome but is not the main request; the offered alternatives miss the age group or requested goods.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-b1-003",
@@ -254,8 +278,10 @@
       "explanationFr": "La circulation est bloquée près du pont, et la piste cyclable le long de la rivière évite ce secteur.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Marc chooses a riverside cycle route to bypass the accident-blocked bridge area. Group exercise, bus prices and a bicycle-only bridge do not explain his choice.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-b1-004",
@@ -265,7 +291,7 @@
       "competency": "specific_detail",
       "topic": "Formation",
       "documentType": "consigne",
-      "document": "Pour terminer l’exercice, voici les étapes. Enregistrez d’abord votre document sur l’ordinateur, dans le dossier « Formation ». Envoyez-le ensuite par courriel à votre formatrice. Attention : si vous l’envoyez sans l’enregistrer, vous risquez de perdre vos dernières modifications. Vous pourrez imprimer le texte à la fin du cours.",
+      "document": "Pour terminer l’exercice, voici les étapes. Enregistrez d’abord votre document sur l’ordinateur, dans le dossier « Formation ». Envoyez-le ensuite par courriel à votre formatrice. Attention : sans cet enregistrement, le fichier joint risque de ne pas contenir vos dernières modifications. Vous pourrez imprimer le texte à la fin du cours.",
       "prompt": "Que faut-il faire en premier ?",
       "correct": "Enregistrer le document.",
       "wrong": [
@@ -273,12 +299,14 @@
         "Imprimer le texte à la fin.",
         "Fermer tous les autres fichiers."
       ],
-      "explanation": "First save the document, then send it; sending without saving may lose the latest changes.",
-      "explanationFr": "Il faut d’abord enregistrer le document, puis l’envoyer ; sinon, on risque de perdre les dernières modifications.",
+      "explanation": "Save the document first, then email it, so the attachment contains the latest changes.",
+      "explanationFr": "Il faut d’abord enregistrer le document, puis l’envoyer, pour que la pièce jointe contienne les dernières modifications.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: document, explanation, explanationFr. Saving precedes emailing. Corrected the claim that sending itself loses edits: the concrete risk is that an unsaved attachment omits the latest changes, while the sequence and correct answer stay the same.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-b1-005",
@@ -288,7 +316,7 @@
       "competency": "inference",
       "topic": "Logement",
       "documentType": "conversation",
-      "document": "A : Alors, tu as trouvé un appartement plus grand ? B : Oui, un très beau quatre et demie, avec un balcon. Mais finalement, je vais rester ici. A : Pourquoi ? B : Le nouveau serait trop loin de mon travail : avec les embouteillages, je perdrais presque deux heures par jour dans la voiture.",
+      "document": "A : Alors, tu as trouvé un appartement plus grand ? B : Oui, un très beau quatre et demi, avec un balcon. Mais finalement, je vais rester ici. A : Pourquoi ? B : Le nouveau serait trop loin de mon travail : avec les embouteillages, je perdrais presque deux heures par jour dans la voiture.",
       "prompt": "Pourquoi la personne renonce-t-elle à l’appartement ?",
       "correct": "Le trajet serait trop long.",
       "wrong": [
@@ -300,8 +328,10 @@
       "explanationFr": "Malgré un appartement plus grand, la personne reste, car elle perdrait presque deux heures par jour en trajet.",
       "speakers": "FM",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: document. The prospective two-hour commute outweighs the attractive larger apartment. Corrected the Quebec apartment expression to un quatre et demi; size, landlord rejection and a current rent increase do not explain the decision.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-b1-006",
@@ -323,8 +353,10 @@
       "explanationFr": "La discussion avec la réalisatrice a lieu après le film, vers 21 h 30.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The discussion follows the film at approximately 21 h 30. The announcement distinguishes it from the 20 h screening and offers no next-day or mid-film discussion.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-b1-007",
@@ -346,8 +378,10 @@
       "explanationFr": "La pièce est arrivée ; le réparateur attend l’accord du client sur le devis de 65 $ avant de commencer.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The part has already arrived, but repair waits for approval of the 65-dollar quote. Delivery and diagnosis are not the outstanding request; Jean matches the male voice.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-b1-008",
@@ -369,8 +403,10 @@
       "explanationFr": "Les promenades font découvrir aux nouveaux arrivants les commerces et les services du quartier.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. A guided neighbourhood walk introduces newcomers to shops and services and allows questions. Competition, rankings and property sales are not its purpose.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-b1-009",
@@ -392,8 +428,10 @@
       "explanationFr": "Le club prête les gilets de sauvetage ; les participants apportent chaussures, vêtements de rechange et serviette.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The club supplies life jackets; footwear, spare clothing and towels must be brought by participants. All four options refer to equipment in the script and distinguish supply from personal preparation.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-b1-010",
@@ -415,8 +453,10 @@
       "explanationFr": "Elle refuse aujourd’hui à cause d’une échéance, mais demande qu’on lui garde une place demain.",
       "speakers": "MF",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The deadline explains today's refusal, while asking for a place tomorrow preserves interest in eating with colleagues. The deadline is today, and the group's lunch is not cancelled; the second female voice matches both explanations.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-b1-011",
@@ -428,7 +468,7 @@
       "documentType": "appel",
       "document": "Bonjour, ici Nathalie, de la quincaillerie Lebrun. Votre commande de peinture est prête depuis ce matin. Attention : notre entrée principale, sur la rue Notre-Dame, est fermée pour travaux jusqu’à vendredi. Utilisez plutôt la porte de la rue latérale, à côté du stationnement. Nous sommes ouverts jusqu’à dix-huit heures.",
       "prompt": "Quelle précision donne Nathalie ?",
-      "correct": "Par quelle porte entrer.",
+      "correct": "La porte à utiliser pour entrer.",
       "wrong": [
         "Le montant d’un remboursement.",
         "La date d’une nouvelle commande.",
@@ -438,8 +478,10 @@
       "explanationFr": "L’entrée principale est fermée pour travaux : il faut passer par la porte de la rue latérale pour récupérer la commande.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Nathalie warns that construction closes the usual entrance and identifies the side-street door. The message contains neither refund amount, new order date nor paint colour.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-b1-012",
@@ -461,8 +503,10 @@
       "explanationFr": "La garde est gratuite pendant la réunion, mais il faut inscrire les enfants avant mardi.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Free childcare during the meeting is conditional on registration before Tuesday. No payment is required, and doing nothing does not secure a place.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-b2-001",
@@ -484,8 +528,10 @@
       "explanationFr": "Elle prévoit des bénéfices à terme, mais propose moins de dossiers par personne pendant l’apprentissage de l’outil.",
       "speakers": "MF",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The second speaker recommends a temporary reduction in files during software training, with normal workload resuming Monday. She does not reject the software, raise targets or cancel training.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-b2-002",
@@ -507,8 +553,10 @@
       "explanationFr": "Il voit plus de clients et vend davantage ; les livraisons sont plus difficiles, mais il ne reviendrait pas en arrière.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Higher sales and more families outweigh the delivery inconvenience for this merchant, who explicitly rejects returning to the old arrangement. The mixed but favourable assessment is unique.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-b2-003",
@@ -530,8 +578,10 @@
       "explanationFr": "Pour le chroniqueur, faire découvrir des artistes peu connus donne au festival sa raison d’être.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The commentator argues that discovery distinguishes the festival from radio and major venues and justifies travelling. Celebrity, free transport and refusal by known artists are not his argument; chroniqueur matches the male voice.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-b2-004",
@@ -546,15 +596,17 @@
       "correct": "Prendre le modèle bleu.",
       "wrong": [
         "Demander le modèle gris.",
-        "Attendre la prochaine livraison.",
+        "Se faire rembourser tout de suite.",
         "Faire réparer l’ancien appareil."
       ],
       "explanation": "Only the blue model can be exchanged immediately; the grey one arrives in about ten days.",
       "explanationFr": "Seul le modèle bleu peut être échangé tout de suite ; le gris arrivera dans une dizaine de jours.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Only the blue replacement is offered immediately at the same price; grey requires a delivery wait. Refund and repair are not offered alternatives in the call.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-b2-005",
@@ -576,8 +628,10 @@
       "explanationFr": "Son expérience l’aide ; le plus difficile est de retrouver une méthode de travail régulière.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Professional experience aids understanding, while regular revision and organized notes remain difficult. The alternatives either contradict her experience or introduce an unmentioned social barrier.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-b2-006",
@@ -591,16 +645,18 @@
       "prompt": "Que souligne la deuxième personne ?",
       "correct": "Une limite liée aux personnes qui n’ont pas répondu.",
       "wrong": [
-        "Une erreur dans toutes les réponses reçues au questionnaire.",
-        "Une hausse prochaine des tarifs du service.",
-        "L’impossibilité de mener un sondage auprès des usagers."
+        "Une erreur dans le calcul du pourcentage des répondants satisfaits.",
+        "Une insatisfaction certaine des usagers qui n’ont pas répondu.",
+        "Une satisfaction identique chez les répondants et les autres."
       ],
-      "explanation": "Only 200 of 3,000 users answered; nonresponse may bias the result, without claiming the answers are false.",
-      "explanationFr": "Seuls 200 usagers sur 3 000 ont répondu ; les non-réponses peuvent fausser le résultat, sans que les réponses soient fausses.",
+      "explanation": "Only 200 of more than 3,000 users responded; nonresponse may bias the result, without implying that the answers received are false.",
+      "explanationFr": "Seuls 200 usagers sur plus de 3 000 ont répondu ; les non-réponses peuvent fausser le résultat, sans que les réponses reçues soient fausses.",
       "speakers": "MF",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: wrong, explanation, explanationFr. The second speaker questions representativeness because most users did not respond, without proving their dissatisfaction. Preserved more than 3,000 in both explanations and replaced disconnected distractors with plausible statistical misinterpretations.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-b2-007",
@@ -622,8 +678,10 @@
       "explanationFr": "Les participants apprennent à réparer avec les bénévoles, puis transmettent ce savoir-faire à leur tour.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Repairing alongside volunteers gives participants reusable skills that they can teach others. The additional benefit is knowledge transfer, not new-product sales, certification or eliminating tools.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-b2-008",
@@ -645,8 +703,10 @@
       "explanationFr": "Quelques minutes de plus pour répartir clairement les tâches font gagner du temps ensuite.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The speaker values explicit task ownership and deadlines over maximum brevity. Extra participants and eliminating written records are not proposed priorities.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-b2-009",
@@ -668,8 +728,10 @@
       "explanationFr": "La batterie remplaçable devrait permettre de garder l’ordinateur plusieurs années, malgré un prix plus élevé.",
       "speakers": "FM",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The buyer accepts an extra hundred dollars for a replaceable battery to extend the computer's life. Lowest price, delivery speed and appearance are not the stated decision criteria.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-b2-010",
@@ -691,8 +753,10 @@
       "explanationFr": "L’association soutient l’idée, mais demande le matériel, la salle et le nombre de bénévoles avant de fixer une date.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The association asks about equipment, room and volunteers before scheduling, while explicitly supporting the idea. This is a feasibility request, not rejection or confirmation of a replacement date.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-b2-011",
@@ -714,8 +778,10 @@
       "explanationFr": "Les vélos restent payants à part, mais les trente premières minutes de chaque trajet sont offertes aux abonnés.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Each bicycle trip includes its first thirty minutes, with later fifteen-minute periods charged separately. It is neither one free monthly trip nor unlimited use nor ownership of a bicycle.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-b2-012",
@@ -737,8 +803,10 @@
       "explanationFr": "Les descriptions sonores, prévues pour les visiteurs malvoyants, servent aussi à beaucoup d’autres publics.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. An aid designed for visually impaired visitors also serves children, people with reading difficulties and listeners by preference. That broader benefit does not make written descriptions useless.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-c1-001",
@@ -752,16 +820,18 @@
       "prompt": "Quelle réserve l’intervenant exprime-t-il ?",
       "correct": "Le classement ne mesure qu’une partie du service.",
       "wrong": [
-        "Le classement a sans doute été falsifié par la ville.",
+        "Le classement a sans doute été falsifié par la Ville.",
         "Le service n’a fait aucun progrès depuis un an.",
         "Personne ne connaît les critères du classement."
       ],
       "explanation": "He welcomes the ranking but notes it rests on three criteria the service could improve, leaving quality of support unmeasured.",
-      "explanationFr": "Il apprécie le classement, mais rappelle qu’il repose sur trois critères faciles à améliorer et ne mesure pas la qualité de l’accompagnement.",
+      "explanationFr": "Il apprécie le classement, mais rappelle qu’il repose sur trois critères que le service avait les moyens d’améliorer, sans mesurer la qualité de l’accompagnement.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: explanationFr. The ranking omits support quality and covers only three measurable dimensions. Corrected the French explanation's unsupported claim that those dimensions were easy to improve: the speaker says the service had the means to improve them.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-c1-002",
@@ -772,7 +842,7 @@
       "topic": "Numérique",
       "documentType": "chronique",
       "document": "On nous vante sans cesse la simplicité des nouvelles applications : un bouton pour commander, un autre pour être livré. Mais la simplicité d’une interface peut cacher la complexité du travail déplacé en coulisses. Quelqu’un prépare la commande, quelqu’un la transporte, quelqu’un répond quand elle se perd. Le travail n’a pas disparu ; il a seulement changé de mains. Avant de parler de suppression des tâches, demandons-nous qui les réalise désormais, à quel prix et dans quelles conditions.",
-      "prompt": "Quel examen le chroniqueur propose-t-il ?",
+      "prompt": "Que propose le chroniqueur ?",
       "correct": "Chercher qui fait désormais le travail.",
       "wrong": [
         "Compter seulement le nombre de boutons.",
@@ -783,8 +853,10 @@
       "explanationFr": "Le chroniqueur invite à chercher où le travail s’est déplacé et qui le fait, plutôt que de supposer qu’il a disparu.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The commentator contrasts interface simplicity with labour transferred to unseen workers. His proposal is to examine who performs it and under what conditions, not merely button counts, prices or banning apps.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-c1-003",
@@ -803,11 +875,13 @@
         "L’abandon de toute nouvelle expérience."
       ],
       "explanation": "She argues that a negative result, published with its methods, can save other teams from repeating the same work.",
-      "explanationFr": "Elle soutient qu’un résultat négatif, publié avec sa méthode, évite à d’autres équipes de refaire le même travail.",
+      "explanationFr": "Elle soutient qu’un résultat négatif, publié avec sa méthode, peut éviter à d’autres équipes de refaire le même travail.",
       "speakers": "MF",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: explanationFr. The second speaker defends publishing a negative result with reproducible methods so others can avoid redundant work. Qualified the French explanation with peut to match the English possibility rather than guarantee prevention.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-c1-004",
@@ -821,16 +895,18 @@
       "prompt": "Quelle distinction l’intervenante établit-elle ?",
       "correct": "Entre affluence et diversité du public.",
       "wrong": [
-        "Entre gratuité et rentabilité du centre.",
-        "Entre bâtiments neufs et bâtiments anciens.",
-        "Entre public local et touristes étrangers."
+        "Entre nombre de visites et coût de la programmation.",
+        "Entre qualité des spectacles et notoriété des artistes.",
+        "Entre fréquentation du centre et fréquentation des musées."
       ],
       "explanation": "High attendance does not show that the centre reached people who never went to cultural venues.",
       "explanationFr": "Une forte fréquentation ne prouve pas que le centre a attiré des habitants qui n’allaient jamais dans les lieux culturels.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: wrong. High attendance by established cultural audiences does not demonstrate reaching previously absent residents. Replaced disconnected building/tourism distractors with plausible distinctions about programme cost, artistic reputation and venue attendance.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-c1-005",
@@ -844,16 +920,18 @@
       "prompt": "Quelle conséquence la chroniqueuse dénonce-t-elle ?",
       "correct": "On ne peut plus classer les tâches.",
       "wrong": [
-        "Les équipes ne reçoivent plus aucune demande.",
-        "Le travail diminue de lui-même avec le temps.",
-        "Les salariés passent trop de temps en pause."
+        "Les demandes récentes correspondent toujours aux tâches les plus importantes.",
+        "Les équipes retardent les urgences pour privilégier les projets de fond.",
+        "Les courriels marqués prioritaires permettent de mieux répartir les efforts."
       ],
       "explanation": "If everything is labelled urgent, urgency no longer helps teams rank their tasks.",
       "explanationFr": "Si tout est urgent, l’urgence ne permet plus de classer les tâches.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: wrong. Labelling every request urgent destroys urgency's usefulness for prioritizing and crowds out important long-term work. Replaced unrelated workload/break distractors with misreadings of recency, strategic tasks and priority labels.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-c1-006",
@@ -875,8 +953,10 @@
       "explanationFr": "Elle accepte la lenteur et les silences, mais reproche des ambiguïtés que le récit ne permet pas d’interpréter.",
       "speakers": "F",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The critic accepts long shots and some silences but objects to obscurity unsupported by narrative clues. Excess explanation, excessive speed and silence itself are not her criticism.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-c1-007",
@@ -890,16 +970,18 @@
       "prompt": "Pourquoi poursuivre le suivi ?",
       "correct": "Pour voir si le changement va durer.",
       "wrong": [
-        "Pour prouver que la baisse n’a jamais existé.",
-        "Pour envoyer encore plus de rappels.",
-        "Pour mesurer seulement le coût des affiches."
+        "Pour vérifier si les rappels ont été lus pendant la campagne.",
+        "Pour comparer les dépenses d’eau avec le coût des affiches.",
+        "Pour déterminer quels compteurs installer avant la fin de l’opération."
       ],
       "explanation": "The follow-up checks whether lower consumption lasts once the weekly reminders stop.",
       "explanationFr": "Le suivi vérifie si la baisse de consommation se maintient une fois les rappels arrêtés.",
       "speakers": "M",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: wrong. A six-month follow-up tests whether lower water use survives withdrawal of reminders. Revised distractors to distinguish that persistence question from message readership, costs and premature meter installation.",
+      "teacher": "approved"
     },
     {
       "id": "tef-mock-listening-c1-008",
@@ -921,8 +1003,10 @@
       "explanationFr": "Nommer ce qui résiste permet de distinguer les obstacles qu’on peut lever de ceux qu’il faut accepter : l’action devient plus réaliste.",
       "speakers": "MF",
       "replaces": true,
-      "review": "pending",
-      "problems": []
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Identifying removable obstacles and lasting constraints enables realistic action rather than surrender. The other options deny obstacles, treat them uniformly or equate difficulty with abandonment; the two voices and pronouns are consistent.",
+      "teacher": "approved"
     }
   ]
 }

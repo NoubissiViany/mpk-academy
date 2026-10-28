@@ -45,15 +45,15 @@ const cases = [
 ];
 for (const [n, scenario] of cases.entries()) {
   const questions = diagnosticItems.map(toQuestion).map((q, i) =>
-    q.metadata?.audio && scenario.ready(q, i)
+    q.metadata?.audio
       ? {
           ...q,
           metadata: {
             ...q.metadata,
             audio: {
               ...q.metadata.audio,
-              status: "ready",
-              path: "/test-only/parity.wav",
+              status: scenario.ready(q, i) ? "ready" : "pending",
+              path: scenario.ready(q, i) ? "/test-only/parity.wav" : undefined,
             },
           },
         }

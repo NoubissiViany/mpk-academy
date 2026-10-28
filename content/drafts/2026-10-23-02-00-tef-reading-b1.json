@@ -1,0 +1,59 @@
+{
+  "createdAt": "2026-10-23T02:00:21.954Z",
+  "provider": "gemini",
+  "model": "gemini-3.8-flash",
+  "promptVersion": "2026-10-22",
+  "request": {
+    "mode": "new",
+    "exam": "TEF",
+    "skill": "reading",
+    "level": "B1",
+    "count": 2
+  },
+  "items": [
+    {
+      "id": "tef-reading-b1-004",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "B1",
+      "competency": "speaker_intention",
+      "topic": "Petite enfance",
+      "documentType": "Courriel d’information",
+      "document": "Bonjour à tous les parents, en raison de la baisse importante des températures prévue cette semaine à Gatineau, nous ajustons notre horaire habituel pour les sorties extérieures des enfants. Dès demain, la période de jeu dans la cour aura lieu en début d’après-midi, de 13 h à 13 h 45, au moment le plus doux de la journée, plutôt qu’en matinée. Nous vous demandons donc de vérifier chaque matin que vos tout-petits portent une tuque chaude, des mitaines imperméables ainsi qu’un cache-cou adapté. Si le thermomètre descend sous la barre des moins vingt degrés, les activités physiques se dérouleront entièrement dans notre gymnase intérieur. Merci de votre précieuse collaboration. L’équipe du CPE Les Petits Castors",
+      "prompt": "Quel est l’objectif principal de ce courriel ?",
+      "correct": "Annoncer un changement d’horaire.",
+      "wrong": [
+        "Demander des vêtements de rechange.",
+        "Annuler les jeux dehors pour tout l’hiver.",
+        "Inviter les parents à une réunion."
+      ],
+      "explanation": "The daycare writes to explain that outdoor play hours are being adjusted because of extreme cold forecasts. The other options misinterpret clothing advice, invent an outright permanent cancellation, or suggest a meeting that is never mentioned.",
+      "explanationFr": "Le CPE écrit pour avertir d’un changement d’horaire pour les sorties extérieures (« nous ajustons notre horaire habituel ») en raison du grand froid. Les autres options déforment les consignes vestimentaires ou imaginent une annulation définitive ou une réunion inexistante.",
+      "review": "accepted",
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The main announcement moves outdoor play to the afternoon because of colder weather. Clothing reminders and the conditional indoor alternative do not imply replacement clothes, winter-long cancellation or a parent meeting.",
+      "teacher": "approved"
+    },
+    {
+      "id": "tef-reading-b1-005",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "B1",
+      "competency": "inference",
+      "topic": "Finances personnelles",
+      "documentType": "Avis aux usagers",
+      "document": "Chère cliente, cher client, À l’approche de la date limite de cotisation pour le Régime enregistré d’épargne-retraite (REER), notre succursale de Moncton élargit ses heures d’ouverture. Jusqu’au 1er mars, nos conseillers financiers vous accueilleront sans rendez-vous tous les jeudis jusqu’à 19 h 30. Profitez de cette période pour maximiser vos déductions fiscales et évaluer vos projets d’avenir. Si vous préférez éviter les déplacements, nos services de consultation téléphonique et en ligne restent pleinement accessibles depuis votre espace client. N’attendez pas les derniers jours : les délais de traitement des virements bancaires peuvent être plus longs à l’approche de la date limite. L’équipe de votre caisse populaire",
+      "prompt": "Que peut-on déduire de ce message concernant les cotisations au REER ?",
+      "correct": "Il vaut mieux cotiser sans trop attendre.",
+      "wrong": [
+        "Il faut cotiser en personne à la succursale.",
+        "Les conseillers sont payants le jeudi soir.",
+        "La date limite a été reportée d’un mois."
+      ],
+      "explanation": "The text warns clients not to wait until the last days because transfer processing times may be longer (« N’attendez pas les derniers jours : les délais de traitement [...] peuvent être plus longs »), which implies one should act early. The other options contradict the document or add false information.",
+      "explanationFr": "L’avis recommande d’agir rapidement (« N’attendez pas les derniers jours ») pour que les virements soient bien traités à temps. Les autres options contredisent la possibilité de faire les démarches en ligne ou inventent des frais et un report de date.",
+      "review": "merged",
+      "problems": []
+    }
+  ]
+}

@@ -1,4 +1,7 @@
 import { expect, test } from "@playwright/test";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import audioManifest from "../src/content/audio-manifest.json";
 
 const betaMode = process.env.NEXT_PUBLIC_BETA_MODE !== "false";
 
@@ -36,10 +39,12 @@ async function completeGuestAssessment(page: import("@playwright/test").Page) {
       })
       .click();
   }
+  return total;
 }
 
 async function expectGuestAssessmentStored(
   page: import("@playwright/test").Page,
+  questionCount: number,
 ) {
   const storedGuest = await page.evaluate(() =>
     JSON.parse(
@@ -50,7 +55,7 @@ async function expectGuestAssessmentStored(
     status: "active",
     intake: { goal: "TEF Canada", target: "NCLC 7" },
   });
-  expect(Object.keys(storedGuest.answers)).toHaveLength(20);
+  expect(Object.keys(storedGuest.answers)).toHaveLength(questionCount);
   expect(Date.parse(storedGuest.expiresAt)).toBeGreaterThan(Date.now());
 }
 
@@ -72,6 +77,28 @@ test("the landing sample is checked by the server", async ({ page }) => {
   await sample.locator('input[type="radio"]').first().check({ force: true });
   await sample.getByRole("button", { name: "Check answer" }).click();
   await expect(sample.getByRole("status")).toBeVisible({ timeout: 15_000 });
+
+  await sample.getByRole("button", { name: "Next question" }).click();
+  const audio = sample.locator("audio");
+  await expect(audio).toBeVisible();
+  await expect
+    .poll(() =>
+      audio.evaluate((element: HTMLAudioElement) => element.readyState),
+    )
+    .toBeGreaterThan(0);
+  const source = await audio.getAttribute("src");
+  expect(source).toMatch(/^\/audio\/[a-f0-9]+\.mp3$/);
+  const clip = await page.request.get(source!);
+  expect(clip.ok()).toBe(true);
+  expect(clip.headers()["content-type"]).toContain("audio/mpeg");
+  expect((await clip.body()).length).toBeGreaterThan(1000);
+  await expect(sample.getByText("Read what was said")).toHaveCount(0);
+  await expect(sample.getByText(/Bonjour, je vous appelle/)).toHaveCount(0);
+
+  await sample.locator('input[type="radio"]').first().check({ force: true });
+  await sample.getByRole("button", { name: "Check answer" }).click();
+  await sample.getByText("Read what was said").click();
+  await expect(sample.getByText(/Bonjour, je vous appelle/)).toBeVisible();
 });
 
 test("the interface switches to French", async ({ page }) => {
@@ -89,6 +116,20 @@ test("the interface switches to French", async ({ page }) => {
   await expect(page.locator("html")).toHaveAttribute("lang", "fr");
 });
 
+test("public listening and model-answer clips are served intact", async ({
+  request,
+}) => {
+  for (const [id, clip] of Object.entries(audioManifest)) {
+    if (!clip.path.startsWith("/audio/")) continue;
+    const response = await request.get(clip.path);
+    expect(response.ok(), id).toBe(true);
+    expect(response.headers()["content-type"], id).toContain("audio/mpeg");
+    expect(response.headers()["cache-control"], id).toContain("immutable");
+    const expected = readFileSync(resolve("public", clip.path.slice(1)));
+    expect((await response.body()).equals(expected), id).toBe(true);
+  }
+});
+
 test("admin tools are invisible to visitors", async ({ page }) => {
   const response = await page.goto("/admin");
   expect(response?.status()).toBe(404);
@@ -102,14 +143,19 @@ test.describe("closed beta", () => {
   }) => {
     test.setTimeout(90_000);
     await page.goto("/diagnostic");
-    await completeGuestAssessment(page);
+    const questionCount = await completeGuestAssessment(page);
     await expect(page).toHaveURL(/diagnostic\/results/, { timeout: 15_000 });
     await expect(
       page.getByRole("heading", { name: "Your French Assessment" }),
     ).toBeVisible();
-    await expect(page.getByText(/Listening — Not assessed yet/)).toBeVisible();
     await expect(
-      page.getByText(/Provisional MPK estimate based on 16/),
+      page.getByRole("progressbar", { name: /^Listening:/ }),
+    ).toBeVisible();
+    await expect(page.getByText(/Listening — Not assessed yet/)).toHaveCount(0);
+    await expect(
+      page.getByText(
+        new RegExp(`Provisional MPK estimate based on ${questionCount} `),
+      ),
     ).toBeVisible();
     await expect(page.getByText(/\$\d/)).toHaveCount(0);
 
@@ -120,7 +166,7 @@ test.describe("closed beta", () => {
     await expect(page.getByLabel("What are you preparing for?")).toHaveValue(
       "TEF Canada",
     );
-    await expectGuestAssessmentStored(page);
+    await expectGuestAssessmentStored(page, questionCount);
   });
 
   test("pricing and checkout do not exist during the beta", async ({
@@ -145,15 +191,18 @@ test.describe("paid mode", () => {
   }) => {
     test.setTimeout(90_000);
     await page.goto("/diagnostic");
-    await completeGuestAssessment(page);
+    const questionCount = await completeGuestAssessment(page);
     await expect(page).toHaveURL(/diagnostic\/results/, { timeout: 15_000 });
-    const recommendation = page.getByLabel("Recommended plan: Complete");
-    await expect(recommendation).toBeVisible();
-    await recommendation
-      .getByRole("link", { name: "Continue with Complete" })
-      .click();
+    await expect(page.getByText("Recommended for you")).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Complete", exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("progressbar", { name: /^Listening:/ }),
+    ).toBeVisible();
+    await page.getByRole("link", { name: "Continue with Complete" }).click();
     await expect(page).toHaveURL(/register\?plan=complete/);
-    await expectGuestAssessmentStored(page);
+    await expectGuestAssessmentStored(page, questionCount);
   });
 
   test("paid plans remain visible while checkout requires an account", async ({
