@@ -206,12 +206,15 @@ export function AuthForm({
           ? nextPath
           : undefined;
       router.push(
-        checkoutPlanId
-          ? `/checkout?plan=${checkoutPlanId}`
-          : resolveOnboardingDestination(
-              cloudState,
-              registering ? undefined : safeNextPath,
-            ),
+        guestSession?.intake.writingSample ||
+          safeNextPath === "/diagnostic/results"
+          ? "/diagnostic/results"
+          : checkoutPlanId
+            ? `/checkout?plan=${checkoutPlanId}`
+            : resolveOnboardingDestination(
+                cloudState,
+                registering ? undefined : safeNextPath,
+              ),
       );
       router.refresh();
     } catch (error) {

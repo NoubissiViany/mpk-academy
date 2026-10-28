@@ -4,6 +4,7 @@ import { z } from "zod";
 import { hasPlanFeature } from "@/config/product";
 import { lessonSummaries } from "@/content/summaries";
 import { getLocale, getMessages } from "@/i18n/server";
+import { isDiagnosticWritingSample } from "@/lib/domain/diagnostic-writing";
 import { canAccessLesson } from "@/lib/domain/access";
 import {
   checkLessonCheckpoint,
@@ -66,9 +67,11 @@ const answersSchema = z
 /** Guests are scored on the server so the answer key never reaches the browser. */
 export async function scoreGuestDiagnosticAction(
   answers: Record<string, string>,
+  writingSample: unknown,
 ): Promise<{ ok: true; result: DiagnosticResult } | Failure> {
   const parsed = answersSchema.safeParse(answers);
-  if (!parsed.success) return fail("invalid");
+  if (!parsed.success || !isDiagnosticWritingSample(writingSample))
+    return fail("invalid");
   return { ok: true, result: scoreGuestDiagnostic(parsed.data) };
 }
 

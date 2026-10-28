@@ -37,12 +37,32 @@ describe("diagnostic scoring", () => {
     ]);
   });
   it("calculates a skill-specific priority without changing overall thresholds", () => {
+    const questions = (
+      ["reading", "listening", "grammar", "vocabulary"] as const
+    ).map((skill) => {
+      const question = diagnosticQuestions.find(
+        (q) => q.diagnosticSkill === skill,
+      )!;
+      return question.metadata?.audio
+        ? {
+            ...question,
+            metadata: {
+              ...question.metadata,
+              audio: {
+                ...question.metadata.audio,
+                status: "ready" as const,
+                path: "/test-only/audio.mp3",
+              },
+            },
+          }
+        : question;
+    });
     const answers = Object.fromEntries(
-      diagnosticQuestions
+      questions
         .filter((question) => question.diagnosticSkill !== "vocabulary")
         .map((question) => [question.id, question.correctAnswer]),
     );
-    const result = scoreDiagnostic(diagnosticQuestions, answers);
+    const result = scoreDiagnostic(questions, answers);
     expect(result.skillScores.vocabulary).toBe(0);
     expect(result.priority).toBe("vocabulary");
     expect(result.level).toBe("B2");

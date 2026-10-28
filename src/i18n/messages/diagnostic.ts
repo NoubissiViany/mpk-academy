@@ -29,7 +29,7 @@ const en = {
     body: "This quick assessment helps MPK Academy understand your strengths and weaknesses.",
     facts: (questions: number, minutes: number) => [
       `About ${minutes} minutes`,
-      `${questions} questions · updated MPK assessment`,
+      `${questions} questions + a required writing sample`,
       "Free",
       "No payment required",
     ],
@@ -62,6 +62,31 @@ const en = {
     finishing: "Saving assessment…",
     disclaimer:
       "Independent MPK practice content · not official TEF/TCF questions",
+  },
+  writing: {
+    title: "Your writing sample",
+    instructions:
+      "Write 80–120 words in French. Allow about 10 minutes; there is no automatic time limit. Use your own words without translation tools.",
+    label: "Your message in French",
+    continue: "Continue to writing",
+    count: (words: number) => `${words} words · 80–120 required`,
+    privacy:
+      "Your sample is saved with your assessment. Guests: it is stored on this device; sign in within seven days to transfer it to your account. Nothing is sent to AI until you sign in and give separate consent. Avoid personal or sensitive details.",
+    resultTitle: "Writing — separate provisional result",
+    resultBody:
+      "This short sample receives its own provisional AI feedback. It does not change your quiz score or represent an official exam result. Diagnostic feedback is available after sign-in, within the daily writing-feedback limits.",
+    guest:
+      "Sign in or create an account to save your sample and request writing feedback.",
+    signIn: "Sign in for writing feedback",
+    register: "Create an account",
+    load: "Loading your saved writing sample…",
+    unavailable:
+      "Writing feedback is unavailable right now. Your sample is saved; try again later.",
+    request: "Get my writing feedback",
+    retry: "Retry writing feedback",
+    reload: "Reload writing feedback",
+    savedText: "Your saved sample",
+    separate: "Writing — see your separate result below",
   },
   toasts: {
     updated:
@@ -185,6 +210,31 @@ const en = {
 };
 
 const fr: typeof en = {
+  writing: {
+    title: "Votre échantillon écrit",
+    instructions:
+      "Écrivez de 80 à 120 mots en français. Prévoyez environ 10 minutes ; aucun arrêt automatique n’est imposé. Utilisez vos propres mots, sans outil de traduction.",
+    label: "Votre message en français",
+    continue: "Passer à l’expression écrite",
+    count: (words: number) => `${words} mots · de 80 à 120 requis`,
+    privacy:
+      "Votre texte est conservé avec votre évaluation. Sans compte, il est enregistré sur cet appareil ; connectez-vous dans les sept jours pour le transférer à votre compte. Aucun texte n’est envoyé à l’IA avant votre connexion et votre consentement distinct. Évitez les renseignements personnels ou sensibles.",
+    resultTitle: "Expression écrite — résultat provisoire distinct",
+    resultBody:
+      "Ce court texte reçoit un retour provisoire de l’IA. Il ne modifie pas le résultat du questionnaire et ne constitue pas un résultat officiel d’examen. Ce retour est accessible après connexion, dans les limites quotidiennes de correction écrite.",
+    guest:
+      "Connectez-vous ou créez un compte pour conserver votre texte et demander un retour sur votre expression écrite.",
+    signIn: "Me connecter pour obtenir un retour",
+    register: "Créer un compte",
+    load: "Chargement de votre texte enregistré…",
+    unavailable:
+      "Le retour écrit est momentanément indisponible. Votre texte est enregistré ; réessayez plus tard.",
+    request: "Obtenir mon retour écrit",
+    retry: "Relancer le retour écrit",
+    reload: "Recharger le retour écrit",
+    savedText: "Votre texte enregistré",
+    separate: "Expression écrite — résultat distinct ci-dessous",
+  },
   step: (step: number) => `Étape ${step} sur 3`,
   activityLabel: "Évaluation terminée",
   activityDetail: (level: string) => `Niveau estimé ${level}`,
@@ -215,7 +265,7 @@ const fr: typeof en = {
     body: "Cette courte évaluation aide MPK Academy à comprendre vos forces et vos faiblesses.",
     facts: (questions: number, minutes: number) => [
       `Environ ${minutes} minutes`,
-      `${questions} questions · évaluation MPK mise à jour`,
+      `${questions} questions et un échantillon écrit obligatoire`,
       "Gratuite",
       "Aucun paiement requis",
     ],

@@ -1,4 +1,5 @@
 import "server-only";
+import { diagnosticWritingVersion } from "@/lib/domain/diagnostic-writing";
 
 import {
   storedFeedbackSchema,
@@ -71,6 +72,7 @@ export async function listWritingSubmissions() {
   const { data, error } = await supabase
     .from("writing_submissions")
     .select("id, task_id, parent_id, status, word_count, created_at")
+    .neq("task_id", diagnosticWritingVersion)
     .order("created_at", { ascending: false })
     .limit(50);
   if (error) throw error;

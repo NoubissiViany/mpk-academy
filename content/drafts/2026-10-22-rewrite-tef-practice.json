@@ -49,7 +49,7 @@
       "explanation": "« À donner » means free, and the table must be collected since there is no delivery.",
       "explanationFr": "« À donner » signifie gratuit ; la table doit être récupérée sur place, car il n’y a pas de livraison.",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. À donner and the explicit absence of delivery together establish a free item to collect. The new, rental and transport-service alternatives conflict with the advertisement.",
       "teacher": "approved"
@@ -73,7 +73,7 @@
       "explanation": "On Saturday, only coats will be handed out; sorting is on Friday and the rest next month.",
       "explanationFr": "Samedi, seuls les manteaux seront distribués ; le tri a lieu vendredi et les autres articles le mois prochain.",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Saturday is reserved for distributing coats; sorting is Friday and other garments are distributed next month. The question, answer and bilingual explanations agree on that schedule.",
       "teacher": "approved"
@@ -185,7 +185,7 @@
       "explanation": "Sympathy and formal phrases soften a clear refusal to change a non-modifiable ticket.",
       "explanationFr": "La compréhension et les formules polies adoucissent un refus clair de modifier un billet non modifiable.",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Empathy and formal closing formulas accompany an explicit refusal to modify the ticket. No paid exception, request for information or refund promise is offered, making the register distinction defensible.",
       "teacher": "approved"
@@ -300,7 +300,7 @@
       "explanationFr": "Le conseil est d’envoyer tout de suite un message pour réserver la date, et les détails plus tard.",
       "speakers": "MF",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The first speaker advises announcing the date immediately and sending details later. Cancellation, a larger venue and waiting for confirmation each contradict the advice; the dialogue turns and MF voices agree.",
       "teacher": "approved"
@@ -348,7 +348,7 @@
       "explanationFr": "Elle explique qu’un document manque et comment compléter le dossier, sans promettre une réponse favorable.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The employee identifies one missing transcript and explains how to complete the file. Sending it onward tomorrow is not an approval promise; neither rejection nor replacement of every document is stated.",
       "teacher": "approved"
@@ -396,7 +396,7 @@
       "explanationFr": "La direction réclame de l’autonomie, mais l’accumulation des validations rend l’initiative impossible en pratique.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The contrast between demanded autonomy and three successive approvals supports the organizational contradiction. The speaker accepts some controls, so the explanation must not imply rejection of all oversight.",
       "teacher": "approved"

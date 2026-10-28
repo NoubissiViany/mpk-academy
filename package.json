@@ -17,6 +17,7 @@
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
     "validate:content": "node scripts/content/validate.cjs && node scripts/content/generate-sql.cjs --check",
+    "check:phase4": "npm run validate:content && node scripts/content/phase4-status.cjs",
     "content:sql": "node scripts/content/generate-sql.cjs",
     "content:audio": "node scripts/content/generate-audio.cjs",
     "content:upload-mock-audio": "node scripts/content/upload-mock-audio.cjs",

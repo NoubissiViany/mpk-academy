@@ -28,7 +28,7 @@
       "explanationFr": "Le petit bassin est réservé aux enfants jusqu’à midi ; les adultes peuvent utiliser le grand bassin tout de suite.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Children's lessons occupy the small pool until noon, while adults can use the large pool now. The choices distinguish those two pools, both, and neither without ambiguity.",
       "teacher": "approved"
@@ -53,7 +53,7 @@
       "explanationFr": "Anna indique qu’elle arrivera à la terrasse du café.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: prompt, explanationFr. Anna explicitly names the café terrace as her destination. Removed an unsupported assumption about the recipient's gender from the question and French explanation; Anna's own feminine agreement remains consistent with her voice.",
       "teacher": "approved"
@@ -78,7 +78,7 @@
       "explanationFr": "La promotion concerne les cahiers et exclut les agendas et les stylos.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The buy-two-get-one offer applies only to notebooks; planners and pens are explicitly excluded, and schoolbags are not included. The announcement and bilingual explanations agree.",
       "teacher": "approved"
@@ -103,7 +103,7 @@
       "explanationFr": "Le bus arrive dans cinq minutes : elle propose d’attendre à cet arrêt plutôt que de marcher.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The speaker explicitly proposes waiting at the present stop for the bus due in five minutes. Walking to the next stop is rejected, and neither a taxi nor walking home is suggested.",
       "teacher": "approved"
@@ -128,7 +128,7 @@
       "explanationFr": "Le soleil chauffe le salon l’après-midi : fermer les volets permet de limiter la chaleur.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Afternoon sun heats the living room, so closing the shutters limits heat before visitors arrive. Window repair, admitting sunlight and concealing the house are not stated motives.",
       "teacher": "approved"
@@ -153,7 +153,7 @@
       "explanationFr": "La consigne demande de mettre les sacs sous la table, et non sur les chaises.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Bags belong under the table, not on chairs; only notebooks and pencils stay in front of pupils. The door and corridor are not alternative storage instructions.",
       "teacher": "approved"
@@ -178,7 +178,7 @@
       "explanationFr": "Elle est trop fatiguée ce soir et propose d’y aller demain soir.",
       "speakers": "MF",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The second speaker declines tonight because she is tired and offers tomorrow evening instead. She does not change the film, propose going alone or accept work tomorrow; fatiguée matches the second female voice.",
       "teacher": "approved"
@@ -203,7 +203,7 @@
       "explanationFr": "Pour retirer un colis, il faut un ticket vert ; le ticket blanc sert aux envois.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Green tickets are for collecting parcels; white ones are for sending. Red and no-ticket options do not follow the stated service split.",
       "teacher": "approved"
@@ -228,7 +228,7 @@
       "explanationFr": "La candidature doit être envoyée directement à la responsable du magasin, dont l’adresse figure sur l’annonce, et non au siège.",
       "speakers": "MF",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The caller must address the application directly to Mme Paquette, the store manager, rather than head office. CV and letter are supporting documents, not alternative recipients.",
       "teacher": "approved"
@@ -253,7 +253,7 @@
       "explanationFr": "Les participants apportent un plat ; les organisateurs s’occupent des tables, des chaises et des boissons.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Each participant supplies a dish, while organizers handle furniture and drinks. The indoor rain alternative does not ask participants to reserve the room.",
       "teacher": "approved"
@@ -278,7 +278,7 @@
       "explanationFr": "La salle est complète, mais on peut suivre la conférence en direct sur le site, gratuitement et sans inscription.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The full venue rules out attending or booking tonight, but a free unregistered livestream remains available immediately. Next week's recording is a separate later option.",
       "teacher": "approved"
@@ -303,7 +303,7 @@
       "explanationFr": "La deuxième personne prend le train de neuf heures ; dix heures est l’heure d’ouverture des bureaux et l’heure du train de la première personne.",
       "speakers": "FM",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The second speaker explicitly chooses the nine o'clock train. Eight is the rejected earlier departure, while ten is both office opening time and the first speaker's departure, making careful speaker attribution necessary.",
       "teacher": "approved"
@@ -328,7 +328,7 @@
       "explanationFr": "À la maison, elle était sans cesse interrompue ; le calme de la bibliothèque lui permet de se concentrer.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The change removes home interruptions and improves concentration. No private tutor, childcare or replacement of online lessons is offered by the library; interrompue matches the female speaker.",
       "teacher": "approved"
@@ -353,7 +353,7 @@
       "explanationFr": "La carte doit être retirée en personne, avec une pièce d’identité ; personne d’autre ne peut la retirer, même avec une procuration.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. This office requires the holder to collect the card with photo identification and expressly rejects collection by proxy. Mailing to a neighbour and document-free collection contradict the message.",
       "teacher": "approved"
@@ -378,7 +378,7 @@
       "explanationFr": "Seul l’entraînement du mercredi passe au jeudi ; celui du samedi ne change pas.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The usual Wednesday practice moves to Thursday, retaining its time and location, while Saturday stays unchanged. The question asks which existing practice is being moved.",
       "teacher": "approved"
@@ -403,7 +403,7 @@
       "explanationFr": "Les bénévoles expliquent les courriers et les démarches et aident à remplir les papiers, sans décider à la place des personnes.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Volunteers explain administrative correspondence and help complete forms while leaving decisions to residents. They neither issue official documents nor determine housing applications or certify translations.",
       "teacher": "approved"
@@ -428,7 +428,7 @@
       "explanationFr": "Le remboursement est fait sur la carte de crédit utilisée pour l’achat, dans les trois jours ouvrables.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The refund returns to the same credit card within three working days, with no shop visit required. Cash, cheque and voucher alternatives contradict the explicitly named method.",
       "teacher": "approved"
@@ -453,7 +453,7 @@
       "explanationFr": "Une collègue prend ses appels vendredi, et elle lui rendra le même service la semaine suivante.",
       "speakers": "MF",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Reciprocal call coverage permits each colleague to attend training on a different week. Work continues and neither office closure nor a permanent job change is involved; the second female voice matches the explanations.",
       "teacher": "approved"
@@ -478,7 +478,7 @@
       "explanationFr": "Il faut signaler une pièce déjà manquante au moment de l’emprunt, sinon on pourrait la réclamer au retour.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. A piece already missing must be reported at checkout to avoid being held responsible on return. Player names, game duration and purchasing a new game are not requested.",
       "teacher": "approved"
@@ -503,7 +503,7 @@
       "explanationFr": "À cause de la pluie, le pique-nique a lieu dans la salle commune ; l’heure et l’organisation du repas ne changent pas.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Rain changes the venue from the park to the school's common room. Saturday, noon and bringing one's own meal explicitly remain the same.",
       "teacher": "approved"
@@ -528,7 +528,7 @@
       "explanationFr": "Elle apprécie les enregistrements, mais voudrait un court résumé écrit des décisions pour trouver vite l’essentiel.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The speaker values recordings but needs concise decisions and named responsibilities without watching two hours of video. Faster access to essentials, not banning meetings or lengthening recordings, captures the request.",
       "teacher": "approved"
@@ -553,7 +553,7 @@
       "explanationFr": "Une forte utilisation peut révéler un besoin non couvert plutôt qu’une offre suffisante.",
       "speakers": "MF",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: wrong. A constantly occupied bench can indicate unmet seating demand rather than sufficient provision. Replaced unrelated closure and no-seating distractors with plausible but unproposed relocation, exclusive access and removal responses.",
       "teacher": "approved"
@@ -578,7 +578,7 @@
       "explanationFr": "Il distingue la réparation de la fuite, faite aujourd’hui, du remplacement non urgent du thermostat.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The technician separates today's leak repair from thermostat replacement that can wait until maintenance. He does not demand immediate replacement of the whole heater or promise no further maintenance.",
       "teacher": "approved"
@@ -603,7 +603,7 @@
       "explanationFr": "Les histoires personnelles et celles du quartier donnent aux objets leur valeur, au-delà de leur prix.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The objects' significance comes from accompanying residents' stories about neighbourhood life. Price, age alone and artistic fame are not the selection rationale.",
       "teacher": "approved"
@@ -628,7 +628,7 @@
       "explanationFr": "Seule la dernière séance, une mise en situation en groupe, demande de se déplacer.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The first five sessions are available remotely at a chosen time; only the final group simulation requires presence at the centre. First/all/none alternatives confuse that explicit exception.",
       "teacher": "approved"
@@ -653,7 +653,7 @@
       "explanationFr": "Pour ce client, la réactivité en cas de problème compte plus qu’une livraison rapide.",
       "speakers": "FM",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Prompt resolution of problems outweighs delivery speed for the customer. A past damaged item disproves the absence-of-problems distractor; free delivery is not claimed, and the male second voice matches ce client.",
       "teacher": "approved"
@@ -678,7 +678,7 @@
       "explanationFr": "Des rôles clairs évitent qu’un seul élève fasse tout et favorisent une vraie coopération.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Explicit secretary, timekeeper and spokesperson roles support shared participation rather than leaving one student to do everything. Larger groups and absent guidance are not the stated conditions.",
       "teacher": "approved"
@@ -703,7 +703,7 @@
       "explanationFr": "Avec seulement quatre bénévoles, elle propose de commencer par trois activités réalisables.",
       "speakers": "MF",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Four volunteers with limited evening availability can reliably run three activities before expanding. The recommendation matches provision to resources without cancelling the programme or hiring staff.",
       "teacher": "approved"
@@ -728,7 +728,7 @@
       "explanationFr": "Les habitants croient à tort que les composteurs sont réservés au jardin communautaire, et ils les utilisent donc moins.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Residents mistakenly think the bins are restricted to community-garden members. The identified barrier is perceived eligibility, not a shortage of waste or bins or a ban on home composting.",
       "teacher": "approved"
@@ -753,7 +753,7 @@
       "explanationFr": "Elle pose désormais des questions précises tôt, au lieu de chercher seule pendant des heures.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The speaker still tries independently, then asks an earlier and more precise question. She does not outsource every decision or claim fewer files; seule and the female voice agree.",
       "teacher": "approved"
@@ -778,7 +778,7 @@
       "explanationFr": "Un acompte garantit la réservation ; sans lui, la disponibilité samedi n’est pas assurée.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. A hundred-dollar deposit is the condition for reservation; without it Saturday availability is uncertain. The seller does not demand full payment or say that a Saturday sale is certain.",
       "teacher": "approved"
@@ -803,7 +803,7 @@
       "explanationFr": "Une interruption avant le carrefour le plus dangereux réduit l’intérêt d’une piste par ailleurs de qualité.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The well-designed path ends before a dangerous crossing, so a critical gap undermines the route. The criticism concerns continuity, not excessive width, poor lighting or a stated prohibition.",
       "teacher": "approved"
@@ -828,7 +828,7 @@
       "explanationFr": "Une corrélation compatible avec plusieurs explications ne justifie pas encore une recommandation fondée sur une cause.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: document. Alternative explanations such as sleep and family circumstances prevent a causal conclusion from this association. Replaced the mechanism wording with an explicit unestablished causal link, matching the question and avoiding confusion between causality and knowing its mechanism.",
       "teacher": "approved"
@@ -853,7 +853,7 @@
       "explanationFr": "Elle refuse l’alternative « tout ou rien » et propose des solutions intermédiaires, comme un budget commun.",
       "speakers": "MF",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The second speaker accepts better park maintenance but rejects the centralized-versus-isolated binary. A shared budget with local decisions and a mixed committee demonstrates her intermediate proposal.",
       "teacher": "approved"
@@ -878,7 +878,7 @@
       "explanationFr": "L’enjeu est de garder les décisions automatisées visibles pour identifier et modifier les choix faits en notre nom.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: correct, wrong, explanationFr. The argument requires both visibility and the ability to change automated choices. Completed the answer to include both, improved the French explanation and replaced weak distractors with parallel alternatives about speed, abolishing automation and adapting users to suggestions.",
       "teacher": "approved"
@@ -903,7 +903,7 @@
       "explanationFr": "Mettre les documents en ligne ne suffit pas : sans contexte, la plupart des gens ne peuvent pas vraiment s’en servir.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: wrong. Commented routes supply the historical context that bare online availability lacks. Revised distractors to distinguish explanation from dispensing with source reading, imposing one interpretation and popularity-based classification.",
       "teacher": "approved"
@@ -928,7 +928,7 @@
       "explanationFr": "Le problème vient de savoirs jamais écrits : il faut documenter les procédures pour les rendre transmissibles.",
       "speakers": "MF",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: wrong. Departures exposed undocumented procedures, so the proposed remedy is to make knowledge transferable in writing. Replaced simplistic blame alternatives with plausible but unproposed recalls, case simplification and waiting for memorization.",
       "teacher": "approved"
@@ -953,7 +953,7 @@
       "explanationFr": "Les règles tacites et l’accueil peuvent exclure, même sans barrière matérielle.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The centre is physically and financially open, yet tacit rules and reception can intimidate newcomers. Staff outreach addresses social access as well as material access, not exclusion of newcomers or removal of every existing practice.",
       "teacher": "approved"
@@ -978,7 +978,7 @@
       "explanationFr": "Les objectifs ont été revus à la baisse en cours d’année : il faut juger le résultat en tenant compte de ce changement.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: wrong. Reducing the target from fifty to thirty changes the meaning of reported success. Replaced unrelated publicity and popularity distractors with final-output-only assessment, renewal speed and future targets, each missing the changing historical benchmark.",
       "teacher": "approved"

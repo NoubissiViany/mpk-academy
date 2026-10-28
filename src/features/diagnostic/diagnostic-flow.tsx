@@ -21,6 +21,13 @@ import { recommendedPaidPlanId } from "@/config/product";
 import { defaultState } from "@/data/mock-state";
 import { useI18n } from "@/i18n/client";
 import { diagnosticMinutes } from "@/lib/domain/diagnostic";
+import {
+  diagnosticWritingMinutes,
+  diagnosticWritingPrompt,
+  diagnosticWritingVersion,
+  isDiagnosticWritingSample,
+} from "@/lib/domain/diagnostic-writing";
+import { countWords } from "@/lib/domain/writing-checks";
 import { applyDiagnosticResult } from "@/lib/domain/onboarding";
 import { trackFunnelStep } from "@/lib/track-funnel";
 import { guestAssessmentRepository } from "@/repositories/guest-assessment";
@@ -132,16 +139,26 @@ function DiagnosticExperience({ questions }: { questions: PublicQuestion[] }) {
   const formatError = (message: string, reference?: string) =>
     reference ? t.common.errorReference(message, reference) : message;
   const submissionId = useRef<string | null>(null);
-  const [stage, setStage] = useState<"intro" | "questions">("intro");
+  const [stage, setStage] = useState<"intro" | "questions" | "writing">(
+    "intro",
+  );
   const [index, setIndex] = useState(0);
   const [finishing, setFinishing] = useState(false);
   const [intake, setIntake] = useState<Partial<DiagnosticIntake>>(() => ({
     goal: state.diagnosticIntake?.goal ?? state.user?.goal.exam,
     target: state.diagnosticIntake?.target ?? state.user?.goal.target,
     frenchExperience: state.diagnosticIntake?.frenchExperience,
+    writingSample: state.diagnosticResult
+      ? undefined
+      : state.diagnosticIntake?.writingSample,
   }));
   const question = questions[index];
   const answers = state.diagnosticAnswers;
+  const writingSample = {
+    version: diagnosticWritingVersion,
+    text: intake.writingSample?.text ?? "",
+  };
+  const writingValid = isDiagnosticWritingSample(writingSample);
 
   const intakeComplete = Boolean(
     intake.goal && intake.target && intake.frenchExperience,
@@ -183,7 +200,10 @@ function DiagnosticExperience({ questions }: { questions: PublicQuestion[] }) {
 
   /** Scores on the server and keeps the result on this device until sign-in. */
   const saveAsGuest = async (completedIntake: DiagnosticIntake) => {
-    const scored = await scoreGuestDiagnosticAction(answers);
+    const scored = await scoreGuestDiagnosticAction(
+      answers,
+      completedIntake.writingSample,
+    );
     if (!scored.ok)
       throw new Error(formatError(scored.message, scored.reference));
     const activity = activityFor(scored.result);
@@ -198,15 +218,23 @@ function DiagnosticExperience({ questions }: { questions: PublicQuestion[] }) {
   };
 
   const finish = async () => {
+    if (!writingValid) return;
     setFinishing(true);
-    const completedIntake =
-      state.diagnosticIntake ?? (intake as DiagnosticIntake);
+    const completedIntake = {
+      ...(state.diagnosticIntake ?? (intake as DiagnosticIntake)),
+      writingSample,
+    };
     if (state.user) {
       const saved = await submitDiagnosticAction({
         submissionId: (submissionId.current ??= crypto.randomUUID()),
         intake: completedIntake,
         answers,
-      });
+      }).catch(() => ({
+        ok: false as const,
+        reason: "unavailable" as const,
+        message: copy.toasts.saveFailed,
+        reference: "",
+      }));
       if (saved.ok) {
         const result = saved.data.result;
         setState((current) =>
@@ -282,7 +310,11 @@ function DiagnosticExperience({ questions }: { questions: PublicQuestion[] }) {
             </p>
             <ul className="mt-7 grid gap-3 text-sm font-semibold sm:grid-cols-2 lg:grid-cols-1">
               {copy.intro
-                .facts(questions.length, diagnosticMinutes(questions.length))
+                .facts(
+                  questions.length,
+                  diagnosticMinutes(questions.length) +
+                    diagnosticWritingMinutes,
+                )
                 .map((item) => (
                   <li key={item} className="flex items-center gap-3">
                     <span className="grid size-6 place-items-center rounded-full bg-primary/10 text-primary">
@@ -373,6 +405,67 @@ function DiagnosticExperience({ questions }: { questions: PublicQuestion[] }) {
     );
   }
 
+  if (stage === "writing")
+    return (
+      <div className="mx-auto max-w-3xl">
+        <StepMarker step={2} />
+        <h1 className="text-3xl font-bold">{copy.writing.title}</h1>
+        <p className="mt-3 leading-7">{copy.writing.instructions}</p>
+        <p lang="fr" className="my-6 rounded-xl border bg-card p-5 leading-7">
+          {diagnosticWritingPrompt}
+        </p>
+        <label htmlFor="diagnostic-writing" className="font-semibold">
+          {copy.writing.label}
+        </label>
+        <textarea
+          id="diagnostic-writing"
+          lang="fr"
+          required
+          rows={10}
+          maxLength={4000}
+          value={writingSample.text}
+          aria-describedby="diagnostic-writing-help diagnostic-writing-count"
+          onChange={(event) => {
+            const next: Partial<DiagnosticIntake> = {
+              ...intake,
+              writingSample: {
+                version: diagnosticWritingVersion,
+                text: event.target.value,
+              },
+            };
+            setIntake(next);
+            setState((current) => ({
+              ...current,
+              diagnosticIntake: next as DiagnosticIntake,
+            }));
+          }}
+          className="mt-2 w-full rounded-xl border bg-background p-4 focus-visible:outline-primary"
+        />
+        <p id="diagnostic-writing-count" role="status" className="mt-2 text-sm">
+          {copy.writing.count(countWords(writingSample.text))}
+        </p>
+        <p
+          id="diagnostic-writing-help"
+          className="mt-3 text-sm text-muted-foreground"
+        >
+          {copy.writing.privacy}
+        </p>
+        <div className="mt-6 flex justify-between gap-4">
+          <Button
+            variant="ghost"
+            disabled={finishing}
+            onClick={() => setStage("questions")}
+          >
+            <ArrowLeft className="size-4" />
+            {t.common.previous}
+          </Button>
+          <Button disabled={!writingValid || finishing} onClick={finish}>
+            {finishing ? copy.question.finishing : copy.question.finish}
+          </Button>
+        </div>
+      </div>
+    );
+
   const total = questions.length;
   return (
     <div className="mx-auto max-w-3xl">
@@ -432,9 +525,9 @@ function DiagnosticExperience({ questions }: { questions: PublicQuestion[] }) {
         ) : (
           <Button
             disabled={!answers[question.id] || finishing}
-            onClick={finish}
+            onClick={() => setStage("writing")}
           >
-            {finishing ? copy.question.finishing : copy.question.finish}
+            {copy.writing.continue}
           </Button>
         )}
       </div>

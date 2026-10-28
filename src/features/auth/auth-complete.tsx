@@ -48,9 +48,11 @@ export function AuthComplete() {
         clearAnonymousState();
       }
       router.replace(
-        guest && !isBetaMode()
-          ? `/checkout?plan=${snapshot.checkoutIntentPlanId ?? guest.recommendedPlanId}`
-          : resolveOnboardingDestination(snapshot),
+        guest?.intake.writingSample
+          ? "/diagnostic/results"
+          : guest && !isBetaMode()
+            ? `/checkout?plan=${snapshot.checkoutIntentPlanId ?? guest.recommendedPlanId}`
+            : resolveOnboardingDestination(snapshot),
       );
       router.refresh();
     })();

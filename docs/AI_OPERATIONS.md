@@ -4,6 +4,16 @@ Learners on the Complete plan (everyone in the closed beta) can send a writing-p
 
 Nothing is sent before the learner agrees (`profiles.ai_feedback_consent_version` must equal `aiFeedbackNoticeVersion` in `src/config/privacy.ts`). The feature is hidden on any deployment without `GROQ_API_KEY`.
 
+## Diagnostic writing sample
+
+The diagnostic now requires a French sample of 80–120 words after its 26-question quiz. Ten minutes is suggested; no timer forces submission. The sample is saved in the assessment intake, including the prompt version, and a guest can transfer it to their account on sign-in. It is not sent to Groq automatically.
+
+After sign-in, any learner can request a separate provisional writing result with current AI consent; a paid practice entitlement is not required for this diagnostic review. Practice feedback entitlements remain unchanged. `mpk_submit_diagnostic_writing` reads only the caller's saved assessment, uses the existing two-per-user daily limit and the shared global queue, and is idempotent per assessment. Failed reviews can retry the same saved sample. The worker rechecks current consent immediately before sending a diagnostic job, including one that waited overnight.
+
+The four writing criteria, verified corrections and rewritten passage appear separately on `/diagnostic/results`. They never change quiz scoring or readiness. Diagnostic reviews are excluded from the practice-text history; that page links back to diagnostic results. Historical guest assessments without a writing sample still transfer normally.
+
+Deploy `20261028000300_diagnostic_writing.sql` before the matching application. Confirm the sample survives sign-in, consent is required, a real provider response arrives, and queued/failed states remain recoverable. Provider configuration and calibration are still required; local tests use synthetic text and mocked AI replies.
+
 ## Speaking feedback
 
 Learners on the Complete plan can record a spoken answer to a speaking task. The browser records at about 24 kbps (0.18 MB a minute) and stops itself before 4 MB, because Vercel rejects request bodies over 4.5 MB. `/api/speaking/submit` then works in this order:

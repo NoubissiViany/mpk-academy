@@ -8,7 +8,9 @@ export default defineConfig({
   workers: 1,
   use: { baseURL, trace: "on-first-retry" },
   webServer: {
-    command: "npm run dev -- --hostname 127.0.0.1 --port 3100",
+    // Match the production bundler; Turbopack's cold compilation can exceed
+    // the startup timeout on the local filesystem used for smoke tests.
+    command: "npm run dev -- --webpack --hostname 127.0.0.1 --port 3100",
     url: baseURL,
     reuseExistingServer: false,
     timeout: 120_000,

@@ -14,6 +14,7 @@ import { scoreDiagnostic } from "@/lib/domain/diagnostic";
 import { toPublicQuestion } from "@/lib/server/content";
 import { guestAssessmentRepository } from "@/repositories/guest-assessment";
 import { demoState } from "@/test/fixtures";
+import { writingSampleFixture } from "@/test/diagnostic-writing";
 import { DiagnosticFlow } from "./diagnostic-flow";
 
 const mocks = vi.hoisted(() => ({
@@ -58,11 +59,18 @@ async function completeAssessment(user: ReturnType<typeof userEvent.setup>) {
       screen.getByRole("button", {
         name:
           index === diagnosticQuestions.length - 1
-            ? /Finish assessment/
+            ? /Continue to writing/
             : /Next/,
       }),
     );
   }
+  expect(
+    screen.getByRole("button", { name: /Finish assessment/ }),
+  ).toBeDisabled();
+  fireEvent.change(screen.getByLabelText("Your message in French"), {
+    target: { value: writingSampleFixture.text },
+  });
+  await user.click(screen.getByRole("button", { name: /Finish assessment/ }));
 }
 
 afterEach(() => {
@@ -101,6 +109,13 @@ describe("DiagnosticFlow", () => {
     expect(mocks.scoreGuest).toHaveBeenCalledOnce();
     expect((await guestAssessmentRepository.getActive())?.result).toEqual(
       serverResult,
+    );
+    expect(
+      (await guestAssessmentRepository.getActive())?.intake.writingSample,
+    ).toEqual(writingSampleFixture);
+    expect(mocks.scoreGuest).toHaveBeenCalledWith(
+      expect.any(Object),
+      writingSampleFixture,
     );
   }, 10_000);
 

@@ -104,6 +104,8 @@ export interface DiagnosticIntake {
   goal: ExamType;
   target: DiagnosticTarget;
   frenchExperience: FrenchExperience;
+  /** Optional only for assessments completed before the writing sample existed. */
+  writingSample?: import("@/lib/domain/diagnostic-writing").DiagnosticWritingSample;
 }
 
 export interface User {

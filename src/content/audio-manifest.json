@@ -1,40 +1,77 @@
 {
   "diagnostic-listening-a2-001-audio": {
-    "text": "c897e656",
-    "source": "f4b8cf2f8bfe30e0",
-    "path": "/audio/f4b8cf2f8bfe30e0.mp3",
-    "seconds": 10.9,
+    "text": "10b758c5",
+    "source": "d02559fe3501340c",
+    "path": "/audio/d02559fe3501340c.mp3",
+    "seconds": 19,
     "voices": [
       "fr-CA-SylvieNeural"
     ]
   },
+  "diagnostic-listening-a2-002-audio": {
+    "text": "a29a2329",
+    "source": "fd6f33ddbe186b24",
+    "path": "/audio/fd6f33ddbe186b24.mp3",
+    "seconds": 16.8,
+    "voices": [
+      "fr-CA-JeanNeural"
+    ]
+  },
   "diagnostic-listening-b1-001-audio": {
-    "text": "58fb5d4c",
-    "source": "840419a80c4935b7",
-    "path": "/audio/840419a80c4935b7.mp3",
-    "seconds": 10.5,
+    "text": "b4d6a971",
+    "source": "5e11be751c14b9c6",
+    "path": "/audio/5e11be751c14b9c6.mp3",
+    "seconds": 24.7,
     "voices": [
       "fr-CA-ThierryNeural",
       "fr-CA-SylvieNeural"
     ]
   },
+  "diagnostic-listening-b1-002-audio": {
+    "text": "da3f1bc1",
+    "source": "aa3e78681472a757",
+    "path": "/audio/aa3e78681472a757.mp3",
+    "seconds": 22.2,
+    "voices": [
+      "fr-FR-CelesteNeural"
+    ]
+  },
   "diagnostic-listening-b2-001-audio": {
-    "text": "f408b585",
-    "source": "7bfe3182b12a4d3c",
-    "path": "/audio/7bfe3182b12a4d3c.mp3",
-    "seconds": 12.7,
+    "text": "748f9a14",
+    "source": "3913946c5e86fa3f",
+    "path": "/audio/3913946c5e86fa3f.mp3",
+    "seconds": 32.9,
     "voices": [
       "fr-CA-SylvieNeural",
       "fr-CA-ThierryNeural"
     ]
   },
+  "diagnostic-listening-b2-002-audio": {
+    "text": "cefb08af",
+    "source": "cad0f70f99189633",
+    "path": "/audio/cad0f70f99189633.mp3",
+    "seconds": 34,
+    "voices": [
+      "fr-CA-AntoineNeural",
+      "fr-CA-SylvieNeural"
+    ]
+  },
   "diagnostic-listening-c1-001-audio": {
-    "text": "199809f9",
-    "source": "71dde57ddbfe45d2",
-    "path": "/audio/71dde57ddbfe45d2.mp3",
-    "seconds": 15,
+    "text": "6d0b24bb",
+    "source": "0fe3320fd14df401",
+    "path": "/audio/0fe3320fd14df401.mp3",
+    "seconds": 30.1,
     "voices": [
       "fr-FR-CelesteNeural"
+    ]
+  },
+  "diagnostic-listening-c1-002-audio": {
+    "text": "e00e1172",
+    "source": "fc2489e9567f2844",
+    "path": "/audio/fc2489e9567f2844.mp3",
+    "seconds": 28.4,
+    "voices": [
+      "fr-FR-JeromeNeural"
     ]
   },
   "sample-listening-b1-001-audio": {
@@ -95,10 +132,10 @@
     ]
   },
   "tcf-listening-b2-001-audio": {
-    "text": "fedfe14f",
-    "source": "809f2e6cf8b2eb9f",
-    "path": "/audio/809f2e6cf8b2eb9f.mp3",
-    "seconds": 10.9,
+    "text": "79dd8f84",
+    "source": "74268a32b938111a",
+    "path": "/audio/74268a32b938111a.mp3",
+    "seconds": 23.3,
     "voices": [
       "fr-CA-SylvieNeural"
     ]
@@ -141,361 +178,363 @@
     ]
   },
   "tcf-mock-listening-a2-001-audio": {
-    "text": "9d23ecf6",
-    "source": "6d3a9bfab2afa186",
-    "path": "tcf/6d3a9bfab2afa186.mp3",
-    "seconds": 8.7,
+    "text": "ebc3cdbe",
+    "source": "68a8301bdb93c477",
+    "path": "tcf/68a8301bdb93c477.mp3",
+    "seconds": 20.4,
     "voices": [
       "fr-FR-JosephineNeural"
     ]
   },
   "tcf-mock-listening-a2-002-audio": {
-    "text": "be10f128",
-    "source": "2dfcb7a6a05f5f22",
-    "path": "tcf/2dfcb7a6a05f5f22.mp3",
-    "seconds": 9,
+    "text": "029def5a",
+    "source": "d1f5a0f34d61715b",
+    "path": "tcf/d1f5a0f34d61715b.mp3",
+    "seconds": 18.9,
     "voices": [
       "fr-CA-SylvieNeural"
     ]
   },
   "tcf-mock-listening-a2-003-audio": {
-    "text": "219d9915",
-    "source": "b100b2bf0cf86f82",
-    "path": "tcf/b100b2bf0cf86f82.mp3",
-    "seconds": 7.9,
+    "text": "b54b1fd2",
+    "source": "6cf2105c267812a3",
+    "path": "tcf/6cf2105c267812a3.mp3",
+    "seconds": 17.6,
     "voices": [
       "fr-FR-JeromeNeural"
     ]
   },
   "tcf-mock-listening-a2-004-audio": {
-    "text": "b97edd8c",
-    "source": "f692d1c8fcbb52a6",
-    "path": "tcf/f692d1c8fcbb52a6.mp3",
-    "seconds": 7.3,
+    "text": "54f51649",
+    "source": "2846ee075f221179",
+    "path": "tcf/2846ee075f221179.mp3",
+    "seconds": 15.6,
     "voices": [
-      "fr-FR-YvesNeural"
+      "fr-FR-CoralieNeural"
     ]
   },
   "tcf-mock-listening-a2-005-audio": {
-    "text": "7313df4c",
-    "source": "94863eb5fa023ca3",
-    "path": "tcf/94863eb5fa023ca3.mp3",
-    "seconds": 8.3,
+    "text": "3a3550cd",
+    "source": "cd9422979242f6b9",
+    "path": "tcf/cd9422979242f6b9.mp3",
+    "seconds": 17.5,
     "voices": [
-      "fr-CA-JeanNeural"
+      "fr-CA-SylvieNeural"
     ]
   },
   "tcf-mock-listening-a2-006-audio": {
-    "text": "2d5cd533",
-    "source": "4df0f1efb3d538c8",
-    "path": "tcf/4df0f1efb3d538c8.mp3",
-    "seconds": 6.9,
+    "text": "a56639ca",
+    "source": "3aced35b47ca5a33",
+    "path": "tcf/3aced35b47ca5a33.mp3",
+    "seconds": 17.7,
     "voices": [
-      "fr-FR-JacquelineNeural"
-    ]
-  },
-  "tcf-mock-listening-a2-007-audio": {
-    "text": "14176616",
-    "source": "ca91c5f6652be133",
-    "path": "tcf/ca91c5f6652be133.mp3",
-    "seconds": 8.1,
-    "voices": [
-      "fr-FR-CelesteNeural",
       "fr-FR-HenriNeural"
     ]
   },
+  "tcf-mock-listening-a2-007-audio": {
+    "text": "400a5940",
+    "source": "7743d30e716e48ad",
+    "path": "tcf/7743d30e716e48ad.mp3",
+    "seconds": 18,
+    "voices": [
+      "fr-FR-ClaudeNeural",
+      "fr-FR-JosephineNeural"
+    ]
+  },
   "tcf-mock-listening-a2-008-audio": {
-    "text": "0fcf302d",
-    "source": "db0e203a72d08b95",
-    "path": "tcf/db0e203a72d08b95.mp3",
-    "seconds": 8.5,
+    "text": "54077c94",
+    "source": "c364057dd0caafe3",
+    "path": "tcf/c364057dd0caafe3.mp3",
+    "seconds": 18.4,
     "voices": [
       "fr-CA-JeanNeural"
     ]
   },
   "tcf-mock-listening-b1-001-audio": {
-    "text": "aa82da40",
-    "source": "ec187a6ea0ccb52d",
-    "path": "tcf/ec187a6ea0ccb52d.mp3",
-    "seconds": 10.5,
+    "text": "8df74d87",
+    "source": "c7ff2dff2851f159",
+    "path": "tcf/c7ff2dff2851f159.mp3",
+    "seconds": 26.4,
     "voices": [
-      "fr-FR-JosephineNeural",
-      "fr-FR-MauriceNeural"
+      "fr-FR-JeromeNeural",
+      "fr-FR-CelesteNeural"
     ]
   },
   "tcf-mock-listening-b1-002-audio": {
-    "text": "05af3c28",
-    "source": "d7d5e9c80fce7610",
-    "path": "tcf/d7d5e9c80fce7610.mp3",
-    "seconds": 8.2,
+    "text": "00b4f88a",
+    "source": "e0c6317a5c1ada23",
+    "path": "tcf/e0c6317a5c1ada23.mp3",
+    "seconds": 22.2,
     "voices": [
-      "fr-FR-ClaudeNeural"
+      "fr-FR-CelesteNeural"
     ]
   },
   "tcf-mock-listening-b1-003-audio": {
-    "text": "7ed863ab",
-    "source": "f9ba5884d2754af9",
-    "path": "tcf/f9ba5884d2754af9.mp3",
-    "seconds": 6.9,
+    "text": "99d59548",
+    "source": "95ea8c852764f5bc",
+    "path": "tcf/95ea8c852764f5bc.mp3",
+    "seconds": 18,
     "voices": [
       "fr-CA-AntoineNeural"
     ]
   },
   "tcf-mock-listening-b1-004-audio": {
-    "text": "217911a2",
-    "source": "6aaed4aa27457740",
-    "path": "tcf/6aaed4aa27457740.mp3",
-    "seconds": 10.2,
+    "text": "ce15036e",
+    "source": "fb6b8ad7dc36ea6b",
+    "path": "tcf/fb6b8ad7dc36ea6b.mp3",
+    "seconds": 20.1,
     "voices": [
       "fr-CA-SylvieNeural",
       "fr-CA-AntoineNeural"
     ]
   },
   "tcf-mock-listening-b1-005-audio": {
-    "text": "2297131b",
-    "source": "62a058f33c7439e0",
-    "path": "tcf/62a058f33c7439e0.mp3",
-    "seconds": 10,
+    "text": "eddd985f",
+    "source": "8e935daedbfb5948",
+    "path": "tcf/8e935daedbfb5948.mp3",
+    "seconds": 23.1,
     "voices": [
-      "fr-CA-AntoineNeural"
+      "fr-CA-SylvieNeural"
     ]
   },
   "tcf-mock-listening-b1-006-audio": {
-    "text": "2c0fbee2",
-    "source": "89c042e7af546178",
-    "path": "tcf/89c042e7af546178.mp3",
-    "seconds": 8.2,
+    "text": "01b4c0b3",
+    "source": "38e511c31d712c85",
+    "path": "tcf/38e511c31d712c85.mp3",
+    "seconds": 20.7,
     "voices": [
       "fr-FR-JeromeNeural"
     ]
   },
   "tcf-mock-listening-b1-007-audio": {
-    "text": "f6287aeb",
-    "source": "0a65faad536eefec",
-    "path": "tcf/0a65faad536eefec.mp3",
-    "seconds": 8.3,
+    "text": "202e72fa",
+    "source": "d39499936b40ea58",
+    "path": "tcf/d39499936b40ea58.mp3",
+    "seconds": 21.7,
     "voices": [
       "fr-FR-BrigitteNeural"
     ]
   },
   "tcf-mock-listening-b1-008-audio": {
-    "text": "830ab347",
-    "source": "056bf14c6401b53c",
-    "path": "tcf/056bf14c6401b53c.mp3",
-    "seconds": 10.7,
+    "text": "a900f038",
+    "source": "87c89205b0161a6b",
+    "path": "tcf/87c89205b0161a6b.mp3",
+    "seconds": 21.9,
     "voices": [
-      "fr-FR-ClaudeNeural"
+      "fr-FR-CelesteNeural"
     ]
   },
   "tcf-mock-listening-b1-009-audio": {
-    "text": "ac31cdc8",
-    "source": "fe3a562d84f096ab",
-    "path": "tcf/fe3a562d84f096ab.mp3",
-    "seconds": 9.4,
+    "text": "e41a1045",
+    "source": "b4890c575319c2ee",
+    "path": "tcf/b4890c575319c2ee.mp3",
+    "seconds": 21,
     "voices": [
       "fr-FR-DeniseNeural"
     ]
   },
   "tcf-mock-listening-b1-010-audio": {
-    "text": "4edf8b9f",
-    "source": "7a6e6c2d3be3f652",
-    "path": "tcf/7a6e6c2d3be3f652.mp3",
-    "seconds": 10.5,
+    "text": "9796e247",
+    "source": "f217bce84647f6e4",
+    "path": "tcf/f217bce84647f6e4.mp3",
+    "seconds": 20.1,
     "voices": [
       "fr-FR-AlainNeural",
       "fr-FR-CoralieNeural"
     ]
   },
   "tcf-mock-listening-b1-011-audio": {
-    "text": "547cc252",
-    "source": "df943c157fba7a1a",
-    "path": "tcf/df943c157fba7a1a.mp3",
-    "seconds": 11.2,
+    "text": "9cf289f4",
+    "source": "3df4f878fb628abb",
+    "path": "tcf/3df4f878fb628abb.mp3",
+    "seconds": 21.5,
     "voices": [
       "fr-CA-JeanNeural"
     ]
   },
   "tcf-mock-listening-b1-012-audio": {
-    "text": "f0a059aa",
-    "source": "3827a8ba55cbb87c",
-    "path": "tcf/3827a8ba55cbb87c.mp3",
-    "seconds": 10.3,
+    "text": "b4e4b690",
+    "source": "8d8fc49e8fac0d6a",
+    "path": "tcf/8d8fc49e8fac0d6a.mp3",
+    "seconds": 20.8,
     "voices": [
       "fr-CA-SylvieNeural"
     ]
   },
   "tcf-mock-listening-b2-001-audio": {
-    "text": "351d3b04",
-    "source": "20803ba1f5f1f110",
-    "path": "tcf/20803ba1f5f1f110.mp3",
-    "seconds": 12.6,
+    "text": "11730551",
+    "source": "3f5a2fa5f05f20e9",
+    "path": "tcf/3f5a2fa5f05f20e9.mp3",
+    "seconds": 22,
     "voices": [
-      "fr-CA-AntoineNeural"
+      "fr-CA-SylvieNeural"
     ]
   },
   "tcf-mock-listening-b2-002-audio": {
-    "text": "746d3dab",
-    "source": "92b36cc8322547cb",
-    "path": "tcf/92b36cc8322547cb.mp3",
-    "seconds": 11.3,
+    "text": "d3b26eef",
+    "source": "222f37e30526b22f",
+    "path": "tcf/222f37e30526b22f.mp3",
+    "seconds": 21.6,
     "voices": [
       "fr-FR-MauriceNeural",
       "fr-FR-YvetteNeural"
     ]
   },
   "tcf-mock-listening-b2-003-audio": {
-    "text": "589314a2",
-    "source": "306be7dc27ac908d",
-    "path": "tcf/306be7dc27ac908d.mp3",
-    "seconds": 14.8,
+    "text": "7157a9c2",
+    "source": "7b3926b9df3d9d12",
+    "path": "tcf/7b3926b9df3d9d12.mp3",
+    "seconds": 26.5,
     "voices": [
       "fr-CA-JeanNeural"
     ]
   },
   "tcf-mock-listening-b2-004-audio": {
-    "text": "fc0065fa",
-    "source": "c0ae605f99987429",
-    "path": "tcf/c0ae605f99987429.mp3",
-    "seconds": 11.1,
+    "text": "d113c4c3",
+    "source": "ecbc7d48c4330a1c",
+    "path": "tcf/ecbc7d48c4330a1c.mp3",
+    "seconds": 21.3,
     "voices": [
       "fr-FR-BrigitteNeural"
     ]
   },
   "tcf-mock-listening-b2-005-audio": {
-    "text": "a2904d76",
-    "source": "1e1f9c3336cf585b",
-    "path": "tcf/1e1f9c3336cf585b.mp3",
-    "seconds": 9.4,
+    "text": "d1773698",
+    "source": "cad1858235c151dc",
+    "path": "tcf/cad1858235c151dc.mp3",
+    "seconds": 19.8,
     "voices": [
-      "fr-FR-JosephineNeural"
+      "fr-FR-MauriceNeural"
     ]
   },
   "tcf-mock-listening-b2-006-audio": {
-    "text": "27ee273c",
-    "source": "b83198272cb430f6",
-    "path": "tcf/b83198272cb430f6.mp3",
-    "seconds": 11.3,
+    "text": "52ffdef1",
+    "source": "9db896a00fb6228e",
+    "path": "tcf/9db896a00fb6228e.mp3",
+    "seconds": 21.6,
     "voices": [
       "fr-CA-SylvieNeural",
       "fr-CA-ThierryNeural"
     ]
   },
   "tcf-mock-listening-b2-007-audio": {
-    "text": "453054b1",
-    "source": "441016cfc2cf3a6f",
-    "path": "tcf/441016cfc2cf3a6f.mp3",
-    "seconds": 13,
+    "text": "a82a365a",
+    "source": "025a4ed86427b437",
+    "path": "tcf/025a4ed86427b437.mp3",
+    "seconds": 25.4,
     "voices": [
-      "fr-CA-ThierryNeural"
+      "fr-CA-SylvieNeural"
     ]
   },
   "tcf-mock-listening-b2-008-audio": {
-    "text": "a2cc4fe9",
-    "source": "023f34335a308ebe",
-    "path": "tcf/023f34335a308ebe.mp3",
-    "seconds": 11.7,
+    "text": "42b73fbf",
+    "source": "3c8a17ed6f2b9c46",
+    "path": "tcf/3c8a17ed6f2b9c46.mp3",
+    "seconds": 22.7,
     "voices": [
-      "fr-CA-SylvieNeural",
-      "fr-CA-ThierryNeural"
+      "fr-CA-AntoineNeural",
+      "fr-CA-SylvieNeural"
     ]
   },
   "tcf-mock-listening-b2-009-audio": {
-    "text": "4fd2ac7a",
-    "source": "04b11ad8c7a14e78",
-    "path": "tcf/04b11ad8c7a14e78.mp3",
-    "seconds": 10.8,
+    "text": "87e440c9",
+    "source": "7dbcf0306ce880e8",
+    "path": "tcf/7dbcf0306ce880e8.mp3",
+    "seconds": 20.5,
     "voices": [
       "fr-CA-SylvieNeural"
     ]
   },
   "tcf-mock-listening-b2-010-audio": {
-    "text": "6823db7c",
-    "source": "70dde12f1b46731c",
-    "path": "tcf/70dde12f1b46731c.mp3",
-    "seconds": 12.5,
+    "text": "f674960a",
+    "source": "5d999c3e5c0a7e79",
+    "path": "tcf/5d999c3e5c0a7e79.mp3",
+    "seconds": 20.3,
     "voices": [
-      "fr-CA-AntoineNeural"
+      "fr-CA-SylvieNeural"
     ]
   },
   "tcf-mock-listening-b2-011-audio": {
-    "text": "ed5f241a",
-    "source": "e07d8c8f0a7719b3",
-    "path": "tcf/e07d8c8f0a7719b3.mp3",
-    "seconds": 10.7,
+    "text": "809ab2c1",
+    "source": "3a75922b68dff755",
+    "path": "tcf/3a75922b68dff755.mp3",
+    "seconds": 19,
     "voices": [
       "fr-CA-ThierryNeural"
     ]
   },
   "tcf-mock-listening-b2-012-audio": {
-    "text": "d0901160",
-    "source": "08519035454481e0",
-    "path": "tcf/08519035454481e0.mp3",
-    "seconds": 12.7,
+    "text": "6f86337b",
+    "source": "8df55efc3bee66bc",
+    "path": "tcf/8df55efc3bee66bc.mp3",
+    "seconds": 22.8,
     "voices": [
       "fr-CA-ThierryNeural"
     ]
   },
   "tcf-mock-listening-c1-001-audio": {
-    "text": "f7dabe5c",
-    "source": "d0ebeab5d596a7ac",
-    "path": "tcf/d0ebeab5d596a7ac.mp3",
-    "seconds": 11.4,
-    "voices": [
-      "fr-FR-YvesNeural"
-    ]
-  },
-  "tcf-mock-listening-c1-002-audio": {
-    "text": "da8b4dc0",
-    "source": "c3fe1a20f85ba251",
-    "path": "tcf/c3fe1a20f85ba251.mp3",
-    "seconds": 12.1,
+    "text": "9a8fdd3b",
+    "source": "a2b0ff5e042c03e6",
+    "path": "tcf/a2b0ff5e042c03e6.mp3",
+    "seconds": 33.6,
     "voices": [
       "fr-FR-CelesteNeural"
     ]
   },
+  "tcf-mock-listening-c1-002-audio": {
+    "text": "dc5a4ccb",
+    "source": "600de1f5b93c1f8d",
+    "path": "tcf/600de1f5b93c1f8d.mp3",
+    "seconds": 30.4,
+    "voices": [
+      "fr-FR-HenriNeural",
+      "fr-FR-CelesteNeural"
+    ]
+  },
   "tcf-mock-listening-c1-003-audio": {
-    "text": "aa8977eb",
-    "source": "a1424237561cda7f",
-    "path": "tcf/a1424237561cda7f.mp3",
-    "seconds": 11,
+    "text": "1157bb1c",
+    "source": "da8abbbdb2d49694",
+    "path": "tcf/da8abbbdb2d49694.mp3",
+    "seconds": 25.1,
     "voices": [
       "fr-FR-YvesNeural"
     ]
   },
   "tcf-mock-listening-c1-004-audio": {
-    "text": "45897b9f",
-    "source": "b5c6a723303c6543",
-    "path": "tcf/b5c6a723303c6543.mp3",
-    "seconds": 13.4,
-    "voices": [
-      "fr-CA-AntoineNeural"
-    ]
-  },
-  "tcf-mock-listening-c1-005-audio": {
-    "text": "d68cd04f",
-    "source": "46792b0eefe86c26",
-    "path": "tcf/46792b0eefe86c26.mp3",
-    "seconds": 11.4,
+    "text": "83e2ad9f",
+    "source": "49b4fa4a2015ec8b",
+    "path": "tcf/49b4fa4a2015ec8b.mp3",
+    "seconds": 28.3,
     "voices": [
       "fr-CA-SylvieNeural"
     ]
   },
-  "tcf-mock-listening-c1-006-audio": {
-    "text": "c69de3d0",
-    "source": "4c5b08e5c9fcdf3d",
-    "path": "tcf/4c5b08e5c9fcdf3d.mp3",
-    "seconds": 10.4,
+  "tcf-mock-listening-c1-005-audio": {
+    "text": "79ed428a",
+    "source": "b94f3acbdcba6eca",
+    "path": "tcf/b94f3acbdcba6eca.mp3",
+    "seconds": 29.9,
     "voices": [
-      "fr-CA-AntoineNeural"
+      "fr-CA-JeanNeural",
+      "fr-CA-SylvieNeural"
+    ]
+  },
+  "tcf-mock-listening-c1-006-audio": {
+    "text": "0f65d9bb",
+    "source": "154ed8ae2fa5cfbd",
+    "path": "tcf/154ed8ae2fa5cfbd.mp3",
+    "seconds": 27.5,
+    "voices": [
+      "fr-CA-SylvieNeural"
     ]
   },
   "tcf-mock-listening-c1-007-audio": {
-    "text": "f7e0c41c",
-    "source": "d53881a2eea91ae8",
-    "path": "tcf/d53881a2eea91ae8.mp3",
-    "seconds": 14.4,
+    "text": "c0722ffc",
+    "source": "a1fb4baeb7bab090",
+    "path": "tcf/a1fb4baeb7bab090.mp3",
+    "seconds": 28.3,
     "voices": [
-      "fr-FR-YvetteNeural"
+      "fr-FR-MauriceNeural"
     ]
   },
   "tcf-speaking-task-1-001-model": {
@@ -592,13 +631,13 @@
     ]
   },
   "tef-listening-b1-003-audio": {
-    "text": "3c3d0cb5",
-    "source": "f52e64b220a43dd7",
-    "path": "/audio/f52e64b220a43dd7.mp3",
-    "seconds": 11.7,
+    "text": "aa18308f",
+    "source": "69d3dbad9a323da6",
+    "path": "/audio/69d3dbad9a323da6.mp3",
+    "seconds": 23.8,
     "voices": [
-      "fr-CA-SylvieNeural",
-      "fr-CA-ThierryNeural"
+      "fr-CA-ThierryNeural",
+      "fr-CA-SylvieNeural"
     ]
   },
   "tef-listening-b2-001-audio": {
@@ -611,10 +650,10 @@
     ]
   },
   "tef-listening-b2-002-audio": {
-    "text": "50e71cd2",
-    "source": "3f5468d80e17940a",
-    "path": "/audio/3f5468d80e17940a.mp3",
-    "seconds": 11.7,
+    "text": "459c7a09",
+    "source": "043c734247b2e2d1",
+    "path": "/audio/043c734247b2e2d1.mp3",
+    "seconds": 22.8,
     "voices": [
       "fr-CA-SylvieNeural"
     ]
@@ -630,10 +669,10 @@
     ]
   },
   "tef-listening-c1-001-audio": {
-    "text": "d35fd5b2",
-    "source": "97cdcdebb414e315",
-    "path": "/audio/97cdcdebb414e315.mp3",
-    "seconds": 11.9,
+    "text": "8e61b71b",
+    "source": "d77420e67b3b2c61",
+    "path": "/audio/d77420e67b3b2c61.mp3",
+    "seconds": 34.2,
     "voices": [
       "fr-CA-SylvieNeural"
     ]
@@ -648,371 +687,372 @@
     ]
   },
   "tef-mock-listening-a2-001-audio": {
-    "text": "054360ba",
-    "source": "e419d4779adba461",
-    "path": "tef/e419d4779adba461.mp3",
-    "seconds": 7.5,
+    "text": "bc2d3e76",
+    "source": "d62620fd86d17369",
+    "path": "tef/d62620fd86d17369.mp3",
+    "seconds": 18.3,
     "voices": [
-      "fr-CA-ThierryNeural"
+      "fr-CA-SylvieNeural"
     ]
   },
   "tef-mock-listening-a2-002-audio": {
-    "text": "3e67b650",
-    "source": "5372a051c1e189f2",
-    "path": "tef/5372a051c1e189f2.mp3",
-    "seconds": 7.7,
+    "text": "d4979b37",
+    "source": "410c9297e3206a00",
+    "path": "tef/410c9297e3206a00.mp3",
+    "seconds": 17.2,
     "voices": [
       "fr-FR-JosephineNeural"
     ]
   },
   "tef-mock-listening-a2-003-audio": {
-    "text": "fc1e7a23",
-    "source": "6395e7fb1f4c8c27",
-    "path": "tef/6395e7fb1f4c8c27.mp3",
-    "seconds": 8.7,
+    "text": "7f1e96f5",
+    "source": "c1d397a822d91968",
+    "path": "tef/c1d397a822d91968.mp3",
+    "seconds": 19.6,
     "voices": [
       "fr-CA-ThierryNeural"
     ]
   },
   "tef-mock-listening-a2-004-audio": {
-    "text": "81821af0",
-    "source": "b84441bb961df9e4",
-    "path": "tef/b84441bb961df9e4.mp3",
-    "seconds": 7.5,
+    "text": "1ad6d5ef",
+    "source": "136b6d993b4289c1",
+    "path": "tef/136b6d993b4289c1.mp3",
+    "seconds": 20.9,
     "voices": [
-      "fr-CA-SylvieNeural"
+      "fr-CA-JeanNeural"
     ]
   },
   "tef-mock-listening-a2-005-audio": {
-    "text": "2ad8ac09",
-    "source": "048f5d9806f07cc6",
-    "path": "tef/048f5d9806f07cc6.mp3",
-    "seconds": 8.5,
+    "text": "eb109e15",
+    "source": "dc55b17fd311d66b",
+    "path": "tef/dc55b17fd311d66b.mp3",
+    "seconds": 17,
     "voices": [
-      "fr-FR-AlainNeural"
+      "fr-FR-JosephineNeural"
     ]
   },
   "tef-mock-listening-a2-006-audio": {
-    "text": "d1e909df",
-    "source": "eb438f5c81014ccb",
-    "path": "tef/eb438f5c81014ccb.mp3",
-    "seconds": 10,
+    "text": "569bc4e0",
+    "source": "09d9db5451c6d2e9",
+    "path": "tef/09d9db5451c6d2e9.mp3",
+    "seconds": 18.2,
     "voices": [
       "fr-FR-YvetteNeural",
       "fr-FR-ClaudeNeural"
     ]
   },
   "tef-mock-listening-a2-007-audio": {
-    "text": "4137c8a9",
-    "source": "302ac8e79a8548b9",
-    "path": "tef/302ac8e79a8548b9.mp3",
-    "seconds": 7.7,
+    "text": "ee4e4a3f",
+    "source": "d3a145d2c0b3bec2",
+    "path": "tef/d3a145d2c0b3bec2.mp3",
+    "seconds": 18.1,
     "voices": [
       "fr-FR-YvetteNeural"
     ]
   },
   "tef-mock-listening-a2-008-audio": {
-    "text": "d3c6993c",
-    "source": "1f0e6d66c60a2e6b",
-    "path": "tef/1f0e6d66c60a2e6b.mp3",
-    "seconds": 7.2,
+    "text": "7639ec00",
+    "source": "aae5a623b39d234c",
+    "path": "tef/aae5a623b39d234c.mp3",
+    "seconds": 15.9,
     "voices": [
       "fr-FR-HenriNeural"
     ]
   },
   "tef-mock-listening-b1-001-audio": {
-    "text": "af93ecb5",
-    "source": "20c38816f6ff30f6",
-    "path": "tef/20c38816f6ff30f6.mp3",
-    "seconds": 12.3,
+    "text": "20a20ff4",
+    "source": "a50d2221aa20f1ee",
+    "path": "tef/a50d2221aa20f1ee.mp3",
+    "seconds": 23.7,
     "voices": [
       "fr-CA-JeanNeural",
       "fr-CA-SylvieNeural"
     ]
   },
   "tef-mock-listening-b1-002-audio": {
-    "text": "11bba65c",
-    "source": "7a52c952b00628c7",
-    "path": "tef/7a52c952b00628c7.mp3",
-    "seconds": 8.9,
+    "text": "3bd20c55",
+    "source": "e6a3426444a39f8c",
+    "path": "tef/e6a3426444a39f8c.mp3",
+    "seconds": 18.4,
     "voices": [
-      "fr-FR-ClaudeNeural"
+      "fr-FR-YvetteNeural"
     ]
   },
   "tef-mock-listening-b1-003-audio": {
-    "text": "9988121f",
-    "source": "e80f32799fef6b7e",
-    "path": "tef/e80f32799fef6b7e.mp3",
-    "seconds": 9.2,
+    "text": "889df3b2",
+    "source": "09925c6febd49837",
+    "path": "tef/09925c6febd49837.mp3",
+    "seconds": 21.3,
     "voices": [
-      "fr-CA-SylvieNeural"
+      "fr-CA-ThierryNeural"
     ]
   },
   "tef-mock-listening-b1-004-audio": {
-    "text": "e4795af2",
-    "source": "ee87d24a7b9af9c2",
-    "path": "tef/ee87d24a7b9af9c2.mp3",
-    "seconds": 12.7,
+    "text": "a5640e09",
+    "source": "77cba4cbd3f2c7fe",
+    "path": "tef/77cba4cbd3f2c7fe.mp3",
+    "seconds": 24.5,
     "voices": [
       "fr-CA-SylvieNeural"
     ]
   },
   "tef-mock-listening-b1-005-audio": {
-    "text": "5c3a8fd4",
-    "source": "9cae106b96e4b7cd",
-    "path": "tef/9cae106b96e4b7cd.mp3",
-    "seconds": 11.3,
+    "text": "b85acbbe",
+    "source": "56e98982883ca71c",
+    "path": "tef/56e98982883ca71c.mp3",
+    "seconds": 24.2,
     "voices": [
-      "fr-CA-ThierryNeural",
-      "fr-CA-SylvieNeural"
+      "fr-CA-SylvieNeural",
+      "fr-CA-JeanNeural"
     ]
   },
   "tef-mock-listening-b1-006-audio": {
-    "text": "2c329101",
-    "source": "300b6a38b7ae660c",
-    "path": "tef/300b6a38b7ae660c.mp3",
-    "seconds": 9,
+    "text": "4c8879f3",
+    "source": "24aa973b9e83b4d8",
+    "path": "tef/24aa973b9e83b4d8.mp3",
+    "seconds": 19.3,
     "voices": [
-      "fr-CA-SylvieNeural"
+      "fr-CA-ThierryNeural"
     ]
   },
   "tef-mock-listening-b1-007-audio": {
-    "text": "ebc577e9",
-    "source": "c37bcf34c5c43192",
-    "path": "tef/c37bcf34c5c43192.mp3",
-    "seconds": 9,
+    "text": "126d5155",
+    "source": "ef11fc9d18df8d7f",
+    "path": "tef/ef11fc9d18df8d7f.mp3",
+    "seconds": 19.2,
     "voices": [
       "fr-FR-JeromeNeural"
     ]
   },
   "tef-mock-listening-b1-008-audio": {
-    "text": "0768e7c7",
-    "source": "fcdd0b0f9e3a4cc6",
-    "path": "tef/fcdd0b0f9e3a4cc6.mp3",
-    "seconds": 10.1,
+    "text": "f90ce4d9",
+    "source": "88c9014b8846f49e",
+    "path": "tef/88c9014b8846f49e.mp3",
+    "seconds": 22.6,
     "voices": [
-      "fr-FR-AlainNeural"
+      "fr-FR-JacquelineNeural"
     ]
   },
   "tef-mock-listening-b1-009-audio": {
-    "text": "7ad659e0",
-    "source": "7f51d25544dc42c1",
-    "path": "tef/7f51d25544dc42c1.mp3",
-    "seconds": 8.1,
+    "text": "1685a997",
+    "source": "5992302105f7aee6",
+    "path": "tef/5992302105f7aee6.mp3",
+    "seconds": 21.2,
     "voices": [
-      "fr-FR-ClaudeNeural"
+      "fr-FR-JosephineNeural"
     ]
   },
   "tef-mock-listening-b1-010-audio": {
-    "text": "9d885c97",
-    "source": "c88af94215c359b2",
-    "path": "tef/c88af94215c359b2.mp3",
-    "seconds": 10,
+    "text": "d01fcf20",
+    "source": "0468693e7c62af3c",
+    "path": "tef/0468693e7c62af3c.mp3",
+    "seconds": 20,
     "voices": [
       "fr-CA-JeanNeural",
       "fr-CA-SylvieNeural"
     ]
   },
   "tef-mock-listening-b1-011-audio": {
-    "text": "784c68b4",
-    "source": "f02e72f828b5ec3a",
-    "path": "tef/f02e72f828b5ec3a.mp3",
-    "seconds": 9.3,
+    "text": "e91d2d0c",
+    "source": "7b5223efe3821cd6",
+    "path": "tef/7b5223efe3821cd6.mp3",
+    "seconds": 23,
     "voices": [
       "fr-CA-SylvieNeural"
     ]
   },
   "tef-mock-listening-b1-012-audio": {
-    "text": "02f0a2ce",
-    "source": "51d7103edbd8630e",
-    "path": "tef/51d7103edbd8630e.mp3",
-    "seconds": 10.7,
+    "text": "d833444c",
+    "source": "a043b9a370ad3676",
+    "path": "tef/a043b9a370ad3676.mp3",
+    "seconds": 21,
     "voices": [
       "fr-CA-SylvieNeural"
     ]
   },
   "tef-mock-listening-b2-001-audio": {
-    "text": "bd0b883b",
-    "source": "7b02d45612a2f40f",
-    "path": "tef/7b02d45612a2f40f.mp3",
-    "seconds": 12.9,
+    "text": "6cae7c87",
+    "source": "104e6a6b2914d1cf",
+    "path": "tef/104e6a6b2914d1cf.mp3",
+    "seconds": 26.3,
     "voices": [
       "fr-FR-ClaudeNeural",
       "fr-FR-JosephineNeural"
     ]
   },
   "tef-mock-listening-b2-002-audio": {
-    "text": "8d3098bb",
-    "source": "c1e388f8beac2336",
-    "path": "tef/c1e388f8beac2336.mp3",
-    "seconds": 11.1,
+    "text": "a1a7e24c",
+    "source": "5286f623b176087f",
+    "path": "tef/5286f623b176087f.mp3",
+    "seconds": 20.7,
     "voices": [
       "fr-CA-AntoineNeural"
     ]
   },
   "tef-mock-listening-b2-003-audio": {
-    "text": "b3f1c23c",
-    "source": "cdca8ce6e3fda044",
-    "path": "tef/cdca8ce6e3fda044.mp3",
-    "seconds": 9.7,
+    "text": "b70fc36f",
+    "source": "24f84de695f2f413",
+    "path": "tef/24f84de695f2f413.mp3",
+    "seconds": 19.9,
     "voices": [
       "fr-FR-HenriNeural"
     ]
   },
   "tef-mock-listening-b2-004-audio": {
-    "text": "0f14ae0b",
-    "source": "71ead14da1be517d",
-    "path": "tef/71ead14da1be517d.mp3",
-    "seconds": 10.2,
+    "text": "d60e211a",
+    "source": "537faccffba40455",
+    "path": "tef/537faccffba40455.mp3",
+    "seconds": 21.3,
     "voices": [
       "fr-CA-SylvieNeural"
     ]
   },
   "tef-mock-listening-b2-005-audio": {
-    "text": "0a00532f",
-    "source": "f00803369d690b3d",
-    "path": "tef/f00803369d690b3d.mp3",
-    "seconds": 12.9,
+    "text": "b421cb55",
+    "source": "1098ceb73ae0f54a",
+    "path": "tef/1098ceb73ae0f54a.mp3",
+    "seconds": 25,
     "voices": [
-      "fr-FR-AlainNeural"
+      "fr-FR-JacquelineNeural"
     ]
   },
   "tef-mock-listening-b2-006-audio": {
-    "text": "6a381386",
-    "source": "b931a2a54fd12aed",
-    "path": "tef/b931a2a54fd12aed.mp3",
-    "seconds": 11.6,
+    "text": "f1cd4d44",
+    "source": "8e6de4c8b19a1622",
+    "path": "tef/8e6de4c8b19a1622.mp3",
+    "seconds": 22.9,
     "voices": [
       "fr-FR-JeromeNeural",
       "fr-FR-YvetteNeural"
     ]
   },
   "tef-mock-listening-b2-007-audio": {
-    "text": "56f3bfd8",
-    "source": "f7d4c53d5fa5e915",
-    "path": "tef/f7d4c53d5fa5e915.mp3",
-    "seconds": 11.5,
+    "text": "6f9c4f1e",
+    "source": "e9cfed8d29715da1",
+    "path": "tef/e9cfed8d29715da1.mp3",
+    "seconds": 22.1,
     "voices": [
-      "fr-CA-ThierryNeural"
+      "fr-CA-SylvieNeural"
     ]
   },
   "tef-mock-listening-b2-008-audio": {
-    "text": "39582c00",
-    "source": "4e182001a5bb9cce",
-    "path": "tef/4e182001a5bb9cce.mp3",
-    "seconds": 12.5,
+    "text": "a1588e1e",
+    "source": "37c3b7ba9215aac1",
+    "path": "tef/37c3b7ba9215aac1.mp3",
+    "seconds": 19.7,
     "voices": [
       "fr-FR-JeromeNeural"
     ]
   },
   "tef-mock-listening-b2-009-audio": {
-    "text": "c8e8c79d",
-    "source": "1c36c4f2bdd90871",
-    "path": "tef/1c36c4f2bdd90871.mp3",
-    "seconds": 10.8,
+    "text": "7fa52533",
+    "source": "e750ed94ebfaa384",
+    "path": "tef/e750ed94ebfaa384.mp3",
+    "seconds": 22.2,
     "voices": [
       "fr-CA-SylvieNeural",
       "fr-CA-ThierryNeural"
     ]
   },
   "tef-mock-listening-b2-010-audio": {
-    "text": "65cadb22",
-    "source": "ac93835d5605cc64",
-    "path": "tef/ac93835d5605cc64.mp3",
-    "seconds": 12.6,
+    "text": "ca3c81ca",
+    "source": "39b903f155f8b06b",
+    "path": "tef/39b903f155f8b06b.mp3",
+    "seconds": 23.9,
     "voices": [
       "fr-CA-SylvieNeural"
     ]
   },
   "tef-mock-listening-b2-011-audio": {
-    "text": "f441883a",
-    "source": "b2452070605e4590",
-    "path": "tef/b2452070605e4590.mp3",
-    "seconds": 10.4,
+    "text": "acc49c49",
+    "source": "6144375fc3c6c89f",
+    "path": "tef/6144375fc3c6c89f.mp3",
+    "seconds": 24.4,
     "voices": [
       "fr-CA-AntoineNeural"
     ]
   },
   "tef-mock-listening-b2-012-audio": {
-    "text": "fc9abf18",
-    "source": "a476111d834cd19b",
-    "path": "tef/a476111d834cd19b.mp3",
-    "seconds": 12.9,
+    "text": "4f7b3a2f",
+    "source": "08fbbb603be1b4ee",
+    "path": "tef/08fbbb603be1b4ee.mp3",
+    "seconds": 23.1,
     "voices": [
       "fr-CA-SylvieNeural"
     ]
   },
   "tef-mock-listening-c1-001-audio": {
-    "text": "dfe28e96",
-    "source": "39128d7affc734ce",
-    "path": "tef/39128d7affc734ce.mp3",
-    "seconds": 12.8,
+    "text": "b722935e",
+    "source": "0df30b52e6a8a1f0",
+    "path": "tef/0df30b52e6a8a1f0.mp3",
+    "seconds": 25,
     "voices": [
       "fr-CA-AntoineNeural"
     ]
   },
   "tef-mock-listening-c1-002-audio": {
-    "text": "f69cc9f1",
-    "source": "97758c925c04d740",
-    "path": "tef/97758c925c04d740.mp3",
-    "seconds": 11.9,
+    "text": "4cd9fcc4",
+    "source": "f871531da527bfd5",
+    "path": "tef/f871531da527bfd5.mp3",
+    "seconds": 29.7,
     "voices": [
       "fr-CA-ThierryNeural"
     ]
   },
   "tef-mock-listening-c1-003-audio": {
-    "text": "e178a811",
-    "source": "77a2661c86dd2ae7",
-    "path": "tef/77a2661c86dd2ae7.mp3",
-    "seconds": 13.2,
+    "text": "220efee4",
+    "source": "b8a3cd7305838de3",
+    "path": "tef/b8a3cd7305838de3.mp3",
+    "seconds": 32,
     "voices": [
       "fr-CA-ThierryNeural",
       "fr-CA-SylvieNeural"
     ]
   },
   "tef-mock-listening-c1-004-audio": {
-    "text": "d3582750",
-    "source": "63578101bf592534",
-    "path": "tef/63578101bf592534.mp3",
-    "seconds": 12.2,
+    "text": "00c05662",
+    "source": "fea622b55a74547a",
+    "path": "tef/fea622b55a74547a.mp3",
+    "seconds": 32.5,
     "voices": [
       "fr-CA-SylvieNeural"
     ]
   },
   "tef-mock-listening-c1-005-audio": {
-    "text": "e9f0ec5a",
-    "source": "ea8264f1d4abef7f",
-    "path": "tef/ea8264f1d4abef7f.mp3",
-    "seconds": 11.9,
+    "text": "3a26ceea",
+    "source": "f174f56f3e486dbd",
+    "path": "tef/f174f56f3e486dbd.mp3",
+    "seconds": 33.3,
     "voices": [
       "fr-FR-CoralieNeural"
     ]
   },
   "tef-mock-listening-c1-006-audio": {
-    "text": "4d7ff3c1",
-    "source": "5f38597d2387d3dc",
-    "path": "tef/5f38597d2387d3dc.mp3",
-    "seconds": 14.4,
+    "text": "18e3c4fb",
+    "source": "41b441cc9afba5f9",
+    "path": "tef/41b441cc9afba5f9.mp3",
+    "seconds": 25.4,
     "voices": [
-      "fr-FR-HenriNeural"
+      "fr-FR-BrigitteNeural"
     ]
   },
   "tef-mock-listening-c1-007-audio": {
-    "text": "176db0d7",
-    "source": "4d55ade4d5884de1",
-    "path": "tef/4d55ade4d5884de1.mp3",
-    "seconds": 15.4,
+    "text": "5e8d5c91",
+    "source": "b791fc7df679b18c",
+    "path": "tef/b791fc7df679b18c.mp3",
+    "seconds": 37,
     "voices": [
       "fr-CA-JeanNeural"
     ]
   },
   "tef-mock-listening-c1-008-audio": {
-    "text": "62bbb2cd",
-    "source": "ee06812f2e9325a6",
-    "path": "tef/ee06812f2e9325a6.mp3",
-    "seconds": 11.1,
+    "text": "ca96380b",
+    "source": "40e766a4f1b9ccea",
+    "path": "tef/40e766a4f1b9ccea.mp3",
+    "seconds": 31.5,
     "voices": [
-      "fr-FR-YvetteNeural"
+      "fr-FR-AlainNeural",
+      "fr-FR-JacquelineNeural"
     ]
   },
   "tef-speaking-section-a-001-model": {

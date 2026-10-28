@@ -4,6 +4,10 @@ import { z } from "zod";
 import { cookies } from "next/headers";
 import { unstable_rethrow } from "next/navigation";
 import { getMessages } from "@/i18n/server";
+import {
+  isDiagnosticWritingSample,
+  diagnosticWritingVersion,
+} from "@/lib/domain/diagnostic-writing";
 import { getErrorDetails, logServerError } from "@/lib/server/diagnostics";
 import { getLearnerSnapshot, requireUserId } from "@/lib/supabase/learner";
 import type {
@@ -71,6 +75,13 @@ const sessionAnswersSchema = z.array(
   }),
 );
 const intakeSchema = z.object({
+  writingSample: z
+    .object({
+      version: z.literal(diagnosticWritingVersion),
+      text: z.string().max(4000),
+    })
+    .refine(isDiagnosticWritingSample)
+    .optional(),
   goal: z.enum(["TEF Canada", "TCF Canada", "Not sure yet"]),
   target: z.enum(["NCLC 5", "NCLC 7", "NCLC 9+", "I'm not sure"]),
   frenchExperience: z.enum([
@@ -253,13 +264,18 @@ export async function claimGuestAssessmentAction(
     const { supabase } = await requireUserId();
     const exam =
       parsed.data.intake.goal === "TCF Canada" ? "TCF Canada" : "TEF Canada";
-    const { data, error } = await supabase.rpc("mpk_submit_assessment", {
-      p_guest_session_id: parsed.data.id,
-      p_kind: "diagnostic",
-      p_exam: exam,
-      p_intake: parsed.data.intake,
-      p_answers: answerRows(parsed.data.answers),
-    });
+    const { data, error } = await supabase.rpc(
+      parsed.data.intake.writingSample
+        ? "mpk_submit_diagnostic"
+        : "mpk_submit_assessment",
+      {
+        p_guest_session_id: parsed.data.id,
+        p_kind: "diagnostic",
+        p_exam: exam,
+        p_intake: parsed.data.intake,
+        p_answers: answerRows(parsed.data.answers),
+      },
+    );
     if (error) throw error;
     return await snapshotResult(data as unknown as AssessmentSubmission);
   } catch (error) {
@@ -275,7 +291,7 @@ export async function submitDiagnosticAction(input: {
   const parsed = z
     .object({
       submissionId: z.string().uuid(),
-      intake: intakeSchema,
+      intake: intakeSchema.refine((value) => Boolean(value.writingSample)),
       answers: answersSchema,
     })
     .safeParse(input);
@@ -296,7 +312,7 @@ export async function submitDiagnosticAction(input: {
     const { supabase } = await requireUserId();
     const exam =
       parsed.data.intake.goal === "TCF Canada" ? "TCF Canada" : "TEF Canada";
-    const { data, error } = await supabase.rpc("mpk_submit_assessment", {
+    const { data, error } = await supabase.rpc("mpk_submit_diagnostic", {
       p_guest_session_id: parsed.data.submissionId,
       p_kind: "diagnostic",
       p_exam: exam,
