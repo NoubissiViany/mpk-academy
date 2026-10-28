@@ -27,7 +27,7 @@
       "explanation": "The last admission is 5:15 p.m., including for members.",
       "explanationFr": "La dernière entrée est fixée à 17 h 15, y compris pour les abonnés.",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -50,7 +50,9 @@
       "explanationFr": "« À donner » signifie gratuit ; la table doit être récupérée sur place, car il n’y a pas de livraison.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. À donner and the explicit absence of delivery together establish a free item to collect. The new, rental and transport-service alternatives conflict with the advertisement.",
+      "teacher": "approved"
     },
     {
       "id": "tef-reading-b1-001",
@@ -72,7 +74,9 @@
       "explanationFr": "Samedi, seuls les manteaux seront distribués ; le tri a lieu vendredi et les autres articles le mois prochain.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Saturday is reserved for distributing coats; sorting is Friday and other garments are distributed next month. The question, answer and bilingual explanations agree on that schedule.",
+      "teacher": "approved"
     },
     {
       "id": "tef-reading-b1-002",
@@ -93,7 +97,7 @@
       "explanation": "« Doublons » are duplicate records: the same client entered several times.",
       "explanationFr": "Les « doublons » sont des fiches en double : le même client enregistré plusieurs fois.",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -115,7 +119,7 @@
       "explanation": "The caretaker thanks residents and asks them to keep using the outdoor racks.",
       "explanationFr": "Le concierge remercie les résidents et leur demande de continuer à utiliser les supports extérieurs.",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -137,7 +141,7 @@
       "explanation": "Many viewers work evenings or nights: the morning show meets a broader need than planned.",
       "explanationFr": "Beaucoup de spectateurs travaillent le soir ou la nuit : la séance du matin répond à un besoin plus large que prévu.",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -159,7 +163,7 @@
       "explanation": "The sentence sets a condition: bottles will only decrease if refilling is easy.",
       "explanationFr": "La phrase pose une condition : les bouteilles ne diminueront que si l’on peut remplir facilement les gourdes.",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -182,7 +186,9 @@
       "explanationFr": "La compréhension et les formules polies adoucissent un refus clair de modifier un billet non modifiable.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Empathy and formal closing formulas accompany an explicit refusal to modify the ticket. No paid exception, request for information or refund promise is offered, making the register distinction defensible.",
+      "teacher": "approved"
     },
     {
       "id": "tef-reading-c1-001",
@@ -203,7 +209,7 @@
       "explanation": "The author accepts that demand creates pressure but rejects the idea that policy has no room to respond.",
       "explanationFr": "L’auteur admet la pression de la demande, mais refuse l’idée que les pouvoirs publics n’auraient aucune marge d’action.",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -225,7 +231,7 @@
       "explanation": "The omitted cost is users' time spent fixing errors that no agent can now resolve directly.",
       "explanationFr": "Le coût oublié est le temps que les usagers passent à corriger des erreurs qu’aucun agent ne peut plus régler directement.",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -248,7 +254,7 @@
       "explanationFr": "Le livreur n’a pas pu livrer, car le numéro d’appartement manquait.",
       "speakers": "FM",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -271,7 +277,7 @@
       "explanationFr": "La sortie est maintenue, mais chacun doit apporter son repas, car la cuisine du refuge est fermée.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -295,7 +301,9 @@
       "speakers": "MF",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The first speaker advises announcing the date immediately and sending details later. Cancellation, a larger venue and waiting for confirmation each contradict the advice; the dialogue turns and MF voices agree.",
+      "teacher": "approved"
     },
     {
       "id": "tef-listening-b2-001",
@@ -317,7 +325,7 @@
       "explanationFr": "Il vient désormais pour les échanges : discuter, partager des recettes et s’entraider.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -341,7 +349,9 @@
       "speakers": "F",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The employee identifies one missing transcript and explains how to complete the file. Sending it onward tomorrow is not an approval promise; neither rejection nor replacement of every document is stated.",
+      "teacher": "approved"
     },
     {
       "id": "tef-listening-b2-003",
@@ -363,7 +373,7 @@
       "explanationFr": "Limiter la durée libérerait des places occupées toute la journée par les mêmes voitures, pour plus de clients.",
       "speakers": "MF",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -387,7 +397,9 @@
       "speakers": "F",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The contrast between demanded autonomy and three successive approvals supports the organizational contradiction. The speaker accepts some controls, so the explanation must not imply rejection of all oversight.",
+      "teacher": "approved"
     },
     {
       "id": "tef-listening-c1-002",
@@ -409,7 +421,7 @@
       "explanationFr": "Elle apprécie les œuvres prises une à une, mais ne voit pas le fil conducteur qui les relie.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     }
   ]

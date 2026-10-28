@@ -18,57 +18,94 @@ afterEach(() => {
 describe("ResultsView", () => {
   beforeEach(() => vi.stubEnv("NEXT_PUBLIC_BETA_MODE", "false"));
 
-  it("renders dynamic results, intake context, and the visitor handoff", async () => {
-    const answers = Object.fromEntries(
-      diagnosticQuestions
-        .filter(
-          (question) =>
-            question.diagnosticSkill !== "listening" && question.id !== "d15",
-        )
-        .map((question) => [question.id, question.correctAnswer]),
-    );
-    saveState({
-      ...defaultState,
-      user: null,
-      diagnosticIntake: {
-        goal: "TCF Canada",
-        target: "NCLC 9+",
-        frenchExperience: "I can communicate in French",
-      },
-      diagnosticResult: scoreDiagnostic(diagnosticQuestions, answers),
-    });
+  it.each(["pending", "ready"] as const)(
+    "renders results and the visitor handoff with %s listening audio",
+    async (status) => {
+      const questions = diagnosticQuestions.map((question) =>
+        question.metadata?.audio
+          ? {
+              ...question,
+              metadata: {
+                ...question.metadata,
+                audio: {
+                  ...question.metadata.audio,
+                  ...(status === "ready"
+                    ? {
+                        status: "ready" as const,
+                        path: "/test-only/diagnostic.mp3",
+                      }
+                    : { status: "pending" as const, path: undefined }),
+                },
+              },
+            }
+          : question,
+      );
+      const answers = Object.fromEntries(
+        questions.map((question) => [question.id, question.correctAnswer]),
+      );
+      saveState({
+        ...defaultState,
+        user: null,
+        diagnosticIntake: {
+          goal: "TCF Canada",
+          target: "NCLC 9+",
+          frenchExperience: "I can communicate in French",
+        },
+        diagnosticResult: scoreDiagnostic(questions, answers),
+      });
 
-    render(
-      <AppProvider>
-        <ResultsView />
-      </AppProvider>,
-    );
+      render(
+        <AppProvider>
+          <ResultsView />
+        </AppProvider>,
+      );
 
-    expect(
-      await screen.findByRole("heading", { name: "Your French Assessment" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("heading", {
-        name: "Compared with your NCLC 9+ target",
-      }),
-    ).toBeVisible();
-    expect(
-      screen.getByText(/Estimated level C1 \(provisional\) · Advanced French/),
-    ).toBeVisible();
-    expect(screen.getByText("Limited evidence so far")).toBeVisible();
-    expect(screen.getAllByText(/Target line at 85%/).length).toBeGreaterThan(0);
-    expect(
-      screen.getByText(/preparing for TCF Canada and aiming for NCLC 9\+/),
-    ).toBeVisible();
-    expect(screen.getByText("Your priority")).toBeVisible();
-    expect(
-      screen.getAllByText(/Listening — Not assessed yet/).length,
-    ).toBeGreaterThan(0);
-    expect(
-      screen.getByRole("link", { name: "Continue with Complete" }),
-    ).toHaveAttribute("href", "/register?plan=complete");
-    expect(screen.getByText(/For a NCLC 9\+ goal/)).toBeVisible();
-  });
+      expect(
+        await screen.findByRole("heading", { name: "Your French Assessment" }),
+      ).toBeVisible();
+      expect(
+        screen.getByRole("heading", {
+          name: "Compared with your NCLC 9+ target",
+        }),
+      ).toBeVisible();
+      expect(
+        screen.getByText(
+          /Estimated level C1 \(provisional\) · Advanced French/,
+        ),
+      ).toBeVisible();
+      const assessed = questions.filter(
+        (question) =>
+          status === "ready" || question.diagnosticSkill !== "listening",
+      ).length;
+      expect(
+        screen.getByText(
+          new RegExp(`Provisional MPK estimate based on ${assessed} `),
+        ),
+      ).toBeVisible();
+      expect(screen.getAllByText(/Target line at 85%/).length).toBeGreaterThan(
+        0,
+      );
+      expect(
+        screen.getByText(/preparing for TCF Canada and aiming for NCLC 9\+/),
+      ).toBeVisible();
+      expect(screen.getByText("Your priority")).toBeVisible();
+      if (status === "pending") {
+        expect(screen.getByText(/Listening — Not assessed yet/)).toBeVisible();
+        expect(
+          screen.queryByRole("progressbar", { name: /^Listening:/ }),
+        ).toBeNull();
+      } else {
+        expect(screen.queryByText(/Listening — Not assessed yet/)).toBeNull();
+        expect(
+          screen.getByRole("progressbar", { name: "Listening: 100%" }),
+        ).toBeVisible();
+      }
+      expect(
+        screen.getByRole("link", { name: "Continue with Complete" }),
+      ).toHaveAttribute("href", "/register?plan=complete");
+      expect(screen.getByText(/For a NCLC 9\+ goal/)).toBeVisible();
+    },
+  );
 
   it.each([
     ["NCLC 5", "Essential", "essential"],

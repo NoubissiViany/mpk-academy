@@ -33,6 +33,10 @@ const validate = (
   );
 const words = (n: number) =>
   Array.from({ length: n }, (_, i) => `mot${i}`).join(" ");
+const listedDebt = (id: string): ContentDebt => ({
+  ...contentDebt,
+  shortDocuments: [...new Set([...contentDebt.shortDocuments, id])],
+});
 
 describe("item-writing checks", () => {
   it("measures documents against the level's minimum", () => {
@@ -96,8 +100,11 @@ describe("content validation", () => {
 
   it("rejects a new short document but accepts a listed one", () => {
     const item = mcq("tef-reading-b2-001");
+    item.passage = words(20);
     const others = items.filter((i) => i.id !== item.id);
-    expect(contentDebt.shortDocuments).toContain(item.id);
+    expect(() =>
+      validate({ items: [...others, item], debt: listedDebt(item.id) }),
+    ).not.toThrow();
     const debt = {
       ...contentDebt,
       shortDocuments: contentDebt.shortDocuments.filter((id) => id !== item.id),
@@ -113,6 +120,7 @@ describe("content validation", () => {
     expect(() =>
       validate({
         items: items.map((i) => (i.id === item.id ? item : i)),
+        debt: listedDebt(item.id),
       }),
     ).toThrow("tef-reading-b2-001: no longer a short document");
   });
@@ -121,13 +129,16 @@ describe("content validation", () => {
     const item = mcq("tef-reading-b2-001");
     item.passage = words(120);
     const fixed = items.map((i) => (i.id === item.id ? item : i));
-    const debt = shrinkDebt(contentDebt, fixed, manifests, practiceIds);
+    const before = listedDebt(item.id);
+    const debt = shrinkDebt(before, fixed, manifests, practiceIds);
     expect(debt.shortDocuments).not.toContain(item.id);
-    expect(debt.shortDocuments).toHaveLength(
-      contentDebt.shortDocuments.length - 1,
-    );
+    expect(debt.shortDocuments).toHaveLength(before.shortDocuments.length - 1);
     expect(debt.longestCorrect).toEqual(contentDebt.longestCorrect);
     expect(() => validate({ items: fixed, debt })).not.toThrow();
+    const newShort = { ...item, id: "fixture-new-short", passage: words(20) };
+    expect(
+      shrinkDebt(debt, [...fixed, newShort], manifests, practiceIds),
+    ).toEqual(debt);
   });
 
   it("rejects a mock section where the longest option is too often right", () => {

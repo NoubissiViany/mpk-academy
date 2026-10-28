@@ -31,19 +31,22 @@ vi.mock("@/lib/server/ai/groq", async (original) => ({
   ...(await original<typeof import("@/lib/server/ai/groq")>()),
   groqTranscribe: mocks.transcribe,
 }));
-// Real tasks, with a clip length for the objections when a test sets one.
+// Real task text, but clip availability is controlled by each test.
 vi.mock("@/lib/server/content", async (original) => {
   const actual = await original<typeof import("@/lib/server/content")>();
   return {
     ...actual,
     getPublicSpeakingTask: (exam: never, id: string) => {
       const task = actual.getPublicSpeakingTask(exam, id);
-      return task?.objections && mocks.objectionSeconds.value
+      return task?.objections
         ? {
             ...task,
             objections: task.objections.map((o) => ({
               ...o,
-              audio: "/audio/objection.mp3",
+              audio:
+                mocks.objectionSeconds.value === undefined
+                  ? undefined
+                  : "/audio/objection.mp3",
               seconds: mocks.objectionSeconds.value,
             })),
           }
@@ -193,8 +196,7 @@ describe("speaking upload", () => {
     expect(mocks.after).toHaveBeenCalledTimes(1);
   });
 
-  it("removes an objection heard in the recording and tells the reviewer", async () => {
-    // Words 1.0–1.4, 2.5–2.9, 4.0–4.4 …: the second objection plays at 4 s.
+  it("reports objections without removing words when no clip is available", async () => {
     const response = await upload(undefined, [
       { index: 0, at: 4, played: true },
       { index: 1, at: 10, played: false },
@@ -220,6 +222,21 @@ describe("speaking upload", () => {
     expect(args.p_transcript).toBe(
       "Bonjour je un défi de lecture avec moi ce mois-ci parce que",
     );
+  });
+
+  it("keeps the transcript when an available objection clip did not play", async () => {
+    mocks.objectionSeconds.value = 2;
+    const response = await upload(undefined, [
+      { index: 0, at: 4, played: false },
+    ]);
+    expect(response.status).toBe(200);
+    const args = mocks.adminRpc.mock.calls.find(
+      ([name]) => name === "mpk_submit_speaking",
+    )![1];
+    expect(args).toMatchObject({
+      p_transcript: spoken,
+      p_metrics: { objections: [0] },
+    });
   });
 
   it("rejects malformed objection reports", async () => {

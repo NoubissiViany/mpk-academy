@@ -67,12 +67,15 @@ npm run lint
 npm test
 npm run build && npm run check:bundle
 npm run test:e2e
+NEXT_PUBLIC_BETA_MODE=false npm run test:e2e
 ```
 
 `check:bundle` fails if any answer key, explanation, model response, mock item, or lesson body appears in the browser bundle.
 
+Browser smoke tests start their own server on `127.0.0.1:3100`, with a dummy local Supabase URL and blank privileged credentials. They never reuse the developer's server or write to hosted services. Run the two modes sequentially. Build, type checking and the dev server also share generated Next.js files; finish each before starting the next.
+
 ## Known gaps
 
-- Lesson bodies and answer explanations are English-only until the Phase 4 content rewrite. French-interface learners see a note on each lesson. `npm run validate:content -- --require-fr` will enforce full French coverage once that content lands.
+- French lesson bodies, explanations and task guidance are present and enforced by `npm run validate:content`. Content volume and teacher review remain incomplete; see `docs/MVP_STATUS.md` for current counts.
 - Paid-mode screens (pricing, plan comparison, checkout) are hidden in beta and still English-only. Translate them before setting `NEXT_PUBLIC_BETA_MODE=false`.
-- The privacy notice describes current behaviour. Have it reviewed, and update it before adding analytics, AI feedback, or recordings.
+- The privacy notice describes the existing analytics and consent-based AI feedback, including recordings transcribed without audio storage. Have it reviewed and keep it aligned with provider and retention changes.

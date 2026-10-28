@@ -30,7 +30,9 @@
       "explanation": "The daycare writes to explain that outdoor play hours are being adjusted because of extreme cold forecasts. The other options misinterpret clothing advice, invent an outright permanent cancellation, or suggest a meeting that is never mentioned.",
       "explanationFr": "Le CPE écrit pour avertir d’un changement d’horaire pour les sorties extérieures (« nous ajustons notre horaire habituel ») en raison du grand froid. Les autres options déforment les consignes vestimentaires ou imaginent une annulation définitive ou une réunion inexistante.",
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The main announcement moves outdoor play to the afternoon because of colder weather. Clothing reminders and the conditional indoor alternative do not imply replacement clothes, winter-long cancellation or a parent meeting.",
+      "teacher": "approved"
     },
     {
       "id": "tef-reading-b1-005",
@@ -50,7 +52,7 @@
       ],
       "explanation": "The text warns clients not to wait until the last days because transfer processing times may be longer (« N’attendez pas les derniers jours : les délais de traitement [...] peuvent être plus longs »), which implies one should act early. The other options contradict the document or add false information.",
       "explanationFr": "L’avis recommande d’agir rapidement (« N’attendez pas les derniers jours ») pour que les virements soient bien traités à temps. Les autres options contredisent la possibilité de faire les démarches en ligne ou inventent des frais et un report de date.",
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     }
   ]

@@ -27,7 +27,7 @@
       "explanation": "The notice says the bakery is closed on Mondays.",
       "explanationFr": "L’affiche indique que la boulangerie est fermée le lundi.",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -49,7 +49,7 @@
       "explanation": "Inès tells Karim his book is with the caretaker and when to collect it.",
       "explanationFr": "Inès indique à Karim que son livre est chez la gardienne et jusqu’à quelle heure le récupérer.",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -71,7 +71,7 @@
       "explanation": "The workshop is free and tools are supplied; participants bring the device to fix.",
       "explanationFr": "L’atelier est gratuit et les outils sont fournis : les participants apportent l’appareil à réparer.",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -83,7 +83,7 @@
       "topic": "Location",
       "documentType": "contrat",
       "document": "Contrat de location – Article 6 : état des lieux. Avant la remise des clés, un état des lieux sera réalisé conjointement par le propriétaire et la locataire. Ensemble, ils visiteront chaque pièce et noteront l’état des murs, des sols, des fenêtres et des appareils. Le document sera signé par les deux parties, qui en garderont chacune une copie. Il servira de référence au départ de la locataire pour le remboursement du dépôt de garantie.",
-      "prompt": "Comment sera réalisé l’état des lieux ?",
+      "prompt": "Que signifie « conjointement » dans ce contrat ?",
       "correct": "Par les deux parties ensemble.",
       "wrong": [
         "Par la locataire seule, après son arrivée.",
@@ -94,7 +94,9 @@
       "explanationFr": "« Conjointement » signifie ensemble : le propriétaire et la locataire font l’état des lieux tous les deux.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: prompt. Conjointement means that landlord and tenant perform the inspection together; the other agents and absence of a visit contradict the clause. Reworded the prompt to test the declared vocabulary competency directly.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-reading-b1-003",
@@ -115,7 +117,7 @@
       "explanation": "Only the route changes this week; the starting point and distance stay the same.",
       "explanationFr": "Seul l’itinéraire change cette semaine ; le lieu de départ et la distance restent les mêmes.",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -137,7 +139,7 @@
       "explanation": "Unplanned shoppers often have no containers with them, so returnable packaging remains useful.",
       "explanationFr": "Les clients qui achètent sans l’avoir prévu n’ont souvent pas de contenant : les emballages consignés leur restent utiles.",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -159,7 +161,7 @@
       "explanation": "The author balances quiet and collaboration by creating separate zones.",
       "explanationFr": "L’auteur concilie calme et échanges en créant des zones distinctes selon les usages.",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -181,7 +183,7 @@
       "explanation": "Friday remote work stays; staff should note their office presence by Wednesday so visitors can be welcomed.",
       "explanationFr": "Le télétravail du vendredi reste permis ; il faut indiquer sa présence au bureau avant mercredi pour organiser l’accueil.",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -203,7 +205,7 @@
       "explanation": "Erasing the traces of successive uses could create a misleadingly unified past.",
       "explanationFr": "Effacer les traces des usages successifs risque de fabriquer un passé trompeusement uniforme.",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -225,7 +227,7 @@
       "explanation": "The author separates bounded uncertainty, knowing where knowledge stops, from knowing nothing.",
       "explanationFr": "L’auteur distingue une incertitude délimitée, savoir où s’arrête la connaissance, d’une ignorance totale.",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -248,7 +250,7 @@
       "explanationFr": "Le rayon fruits est fermé : des paniers de fruits préparés sont proposés près des caisses.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -271,7 +273,7 @@
       "explanationFr": "Une copie du diplôme suffit, mais il faut l’original de la pièce d’identité pour entrer dans le bâtiment.",
       "speakers": "MF",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -294,7 +296,7 @@
       "explanationFr": "L’école cherche encore deux parents pour accompagner la sortie de jeudi.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -317,7 +319,7 @@
       "explanationFr": "La personne continue le cours, mais passe du mardi au jeudi à cause de son nouvel horaire de travail.",
       "speakers": "MF",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -341,7 +343,9 @@
       "speakers": "F",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The speaker explicitly prioritizes attachment to existing clothes over modest savings. Total unwillingness to spend, professional obligation and lack of shops are unsupported; fière matches the female voice.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-listening-b2-002",
@@ -363,7 +367,7 @@
       "explanationFr": "Les chiffres sont prêts ; les témoignages demandent un accord, donc seuls les tableaux peuvent être publiés vendredi.",
       "speakers": "FM",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -386,7 +390,7 @@
       "explanationFr": "Pendant le diagnostic, un ordinateur prêté lui permet de continuer à travailler, sans promesse de réparation immédiate.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -409,7 +413,7 @@
       "explanationFr": "Le nombre de visites ne montre pas si le parc profite à tous les habitants ou toujours aux mêmes habitués.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     },
     {
@@ -432,7 +436,7 @@
       "explanationFr": "Ce qui fonctionnait de façon informelle dans une petite équipe devra être organisé explicitement avant d’étendre le projet.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": []
     }
   ]

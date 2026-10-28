@@ -7,6 +7,7 @@
 //
 //   node scripts/content/upload-mock-audio.cjs                  # uses .env.local
 //   node scripts/content/upload-mock-audio.cjs --env <file>
+//   node scripts/content/upload-mock-audio.cjs --check         # read-only inventory
 //
 // Needs NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY for the target.
 const fs = require("node:fs");
@@ -15,6 +16,7 @@ const { createClient } = require("@supabase/supabase-js");
 
 const root = path.resolve(__dirname, "../..");
 const BUCKET = "mock-audio";
+const check = process.argv.includes("--check");
 // Not --env-file: Node reads that flag itself, even after the script name.
 const envIndex = process.argv.indexOf("--env");
 const envFile = path.resolve(
@@ -55,9 +57,21 @@ async function main() {
     for (const file of data) present.add(`${folder}/${file.name}`);
   }
 
+  const absent = keys.filter((key) => !present.has(key));
+  if (check) {
+    console.log(
+      `${keys.length - absent.length}/${keys.length} mock clips present; no files uploaded.`,
+    );
+    if (absent.length)
+      throw Error(
+        `${absent.length} mock clips missing. Run content:upload-mock-audio for this project before applying audio-ready migrations.`,
+      );
+    return;
+  }
+
   const missing = [];
   let uploaded = 0;
-  for (const key of keys.filter((key) => !present.has(key))) {
+  for (const key of absent) {
     const file = path.join(root, ".audio-cache", BUCKET, key);
     if (!fs.existsSync(file)) {
       missing.push(key);

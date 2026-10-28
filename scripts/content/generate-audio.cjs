@@ -14,6 +14,7 @@ require("./register.cjs");
 const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
+const { pruneAudioFiles } = require("./audio-files.cjs");
 const {
   diagnosticItems,
   practiceItems,
@@ -260,13 +261,27 @@ async function synthesize(ssml, key, region) {
   }
 }
 
+function cleanUp() {
+  if (only || limit !== Infinity) return;
+  const ids = new Set(clips.map((clip) => clip.id));
+  for (const id of Object.keys(manifest)) if (!ids.has(id)) delete manifest[id];
+  saveManifest();
+  pruneAudioFiles(
+    publicDir,
+    new Set(Object.values(manifest).map((entry) => path.basename(entry.path))),
+  );
+}
+
 async function main() {
   if (dryRun) {
     for (const clip of todo)
       console.log(`${clip.id}  ${clip.voices.join(" + ")}  → ${clip.path}`);
     return;
   }
-  if (!todo.length) return;
+  if (!todo.length) {
+    cleanUp();
+    return;
+  }
   try {
     process.loadEnvFile(path.join(root, ".env.local"));
   } catch {
@@ -314,20 +329,8 @@ async function main() {
     );
   }
 
-  // Forget clips whose questions are gone, and their files.
-  if (!only && limit === Infinity) {
-    const ids = new Set(clips.map((clip) => clip.id));
-    for (const id of Object.keys(manifest))
-      if (!ids.has(id)) delete manifest[id];
-    saveManifest();
-    const kept = new Set(
-      Object.values(manifest).map((entry) => path.basename(entry.path)),
-    );
-    for (const name of fs.existsSync(publicDir)
-      ? fs.readdirSync(publicDir)
-      : [])
-      if (!kept.has(name)) fs.rmSync(path.join(publicDir, name));
-  }
+  // Also runs on a no-op retry after generation has already finished.
+  cleanUp();
   console.log(
     "Next: upload mock clips to each Supabase project (npm run content:upload-mock-audio), then npm run content:sql to mark the clips ready.",
   );

@@ -28,7 +28,9 @@
       "explanationFr": "Les commandes en ligne se retirent au comptoir du fond ; on paie ses achats aux caisses de l’entrée.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Collection of online orders is explicitly at the rear counter, distinct from the entrance tills. The other locations are not pickup points; the concise shop notice supports A2 detail retrieval.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-a2-002",
@@ -50,7 +52,9 @@
       "explanationFr": "Le cours commence à 16 h ; arriver dix minutes avant, c’est arriver à 15 h 50.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Ten minutes before the 16 h start is 15 h 50. The other times confuse arriving early, arriving late and the lesson's end; supplied materials are separate contextual details.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-a2-003",
@@ -72,7 +76,9 @@
       "explanationFr": "L’avis explique comment récupérer des clés trouvées, à l’accueil du centre sportif.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The announcement gives the owner a place and identification condition for recovering found keys. It does not offer goods, a locksmith or a playground booking.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-a2-004",
@@ -94,7 +100,9 @@
       "explanationFr": "La boisson est en supplément (2,50 $) ; la soupe, le sandwich et le pain sont compris.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Only the drink has an explicit surcharge; soup, sandwich and bread belong to the fixed menu. No takeaway surcharge is stated, and both explanations accurately identify the 2.50-dollar supplement.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-a2-005",
@@ -116,7 +124,9 @@
       "explanationFr": "On demande à Émilie d’acheter du lait ; il reste du pain et des œufs.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The mother asks specifically for milk and says bread and eggs are already available. Preparing dinner is not requested; the options distinguish the named foods clearly.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-a2-006",
@@ -126,7 +136,7 @@
       "competency": "specific_detail",
       "topic": "Parc",
       "documentType": "règlement",
-      "document": "Parc des Rapides – Règlement. Les chiens sont admis en laisse sur les sentiers et dans le stationnement. Ils sont interdits dans l’aire de jeux pour enfants et sur la plage. Merci de ramasser les besoins de votre animal. Amende : 100 $.",
+      "document": "Parc des Rapides – Règlement. Les chiens sont admis en laisse sur les sentiers et dans le stationnement. Ils sont interdits dans l’aire de jeux pour enfants et sur la plage. Merci de ramasser les déjections de votre animal. Amende : 100 $.",
       "prompt": "Où peut-on promener son chien en laisse ?",
       "correct": "Sur les sentiers.",
       "wrong": [
@@ -138,7 +148,9 @@
       "explanationFr": "Les chiens en laisse sont admis sur les sentiers et au stationnement, pas dans l’aire de jeux ni sur la plage.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: document. Leashed dogs are allowed on trails and in parking, but excluded from the playground and beach. Corrected the unnatural ramasser les besoins wording to the standard term for animal waste.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-a2-007",
@@ -160,7 +172,9 @@
       "explanationFr": "Les départs du matin sont annulés ; midi est l’heure de la prochaine information, pas une reprise confirmée.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Morning ferry departures are cancelled; noon is only the next information update. A guaranteed noon restart, increased fare and week-long cancellation exceed what is announced.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-a2-008",
@@ -182,7 +196,9 @@
       "explanationFr": "Le rendez-vous reste devant la serre même s’il pleut ; l’atelier a alors lieu à l’intérieur.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The meeting point explicitly remains in front of the greenhouse in rain, even though the workshop moves inside. The organizing institution is not the meeting location.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-b1-001",
@@ -204,7 +220,9 @@
       "explanationFr": "Le service est assuré ; il manque des bénévoles pour l’installation à 10 h et le rangement à 15 h.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Service volunteers, menus and delivery are already arranged; only setup and cleanup still need people. The times and both explanations match these two outstanding duties.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-b1-002",
@@ -226,7 +244,9 @@
       "explanationFr": "On peut s’inscrire en retard seulement s’il reste des places, sans frais supplémentaires.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The phrase dans la limite des places disponibles conditions late registration on remaining capacity. Extra charges are expressly excluded, and placement testing is not presented as a pass/fail admission requirement.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-b1-003",
@@ -248,7 +268,9 @@
       "explanationFr": "Les demandes non urgentes passent par un document partagé consulté deux fois par jour ; les urgences restent signalées par téléphone.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The change separates written non-urgent requests from telephone emergencies. The text retains calls and written requests and does not introduce a meeting for each request.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-b1-004",
@@ -270,7 +292,9 @@
       "explanationFr": "Les poussettes sont admises partout, sauf dans la tour, dont l’escalier est étroit.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The tower is the explicit exception to stroller access because of its narrow staircase. Reception provides storage and the gardens remain accessible.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-b1-005",
@@ -281,7 +305,7 @@
       "topic": "Service",
       "documentType": "courriel",
       "document": "Objet : votre commande n° 3318. Bonjour Madame Nguyen, votre commande est prête en magasin. Comme convenu, nous pouvons la conserver jusqu’à vendredi soir, 20 h. Passé ce délai, les produits seront remis en rayon et votre paiement vous sera remboursé automatiquement sur votre carte. Si vous souhaitez prolonger la réservation, appelez-nous avant vendredi. Merci de votre confiance. L’équipe de la Boutique Nature",
-      "prompt": "Que se passe-t-il si la cliente ne vient pas à temps ?",
+      "prompt": "Sans prolongation, que se passe-t-il si la cliente ne vient pas à temps ?",
       "correct": "Elle est remboursée et la réservation s’arrête.",
       "wrong": [
         "La commande est livrée chez elle sans frais supplémentaires.",
@@ -292,7 +316,9 @@
       "explanationFr": "Après vendredi 20 h, les produits retournent en rayon et la cliente est remboursée.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: prompt. Without an agreed extension, uncollected goods return to stock after Friday 20 h and the payment is refunded. Added the no-extension condition to the question so the stated possibility of prolonging the reservation does not make the premise ambiguous.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-b1-006",
@@ -307,14 +333,16 @@
       "correct": "Demander de tailler des branches.",
       "wrong": [
         "Exiger la suppression de toutes les fleurs.",
-        "Proposer d’acheter la maison voisine.",
+        "Proposer de tailler eux-mêmes le lilas.",
         "Féliciter les voisins sans rien demander."
       ],
       "explanation": "After a compliment, the neighbours ask for the overhanging lilac branches to be trimmed.",
       "explanationFr": "Après un compliment, les voisins demandent de tailler les branches du lilas qui dépassent sur le trottoir.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: wrong. The compliment introduces a request to trim obstructing branches, not to remove the garden. Replaced the unrelated house-purchase distractor with an offer to prune the lilac themselves, which the letter does not make: it offers only a tool loan.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-b1-007",
@@ -328,15 +356,17 @@
       "prompt": "De quoi le client sera-t-il informé ?",
       "correct": "Du retour du modèle en stock.",
       "wrong": [
-        "D’un changement de fabricant.",
-        "De la fermeture de la boutique.",
-        "De la fin de la garantie."
+        "D’une baisse du prix du modèle.",
+        "De l’arrivée d’une autre pointure.",
+        "Du remboursement des frais de livraison."
       ],
       "explanation": "« Réapprovisionnement » means restocking: the customer is told when the boots are back.",
       "explanationFr": "Le « réapprovisionnement », c’est le retour du produit en stock : le client est prévenu quand les bottes reviennent.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: wrong. Réapprovisionnement refers to the return of the unavailable size to stock. Replaced disconnected warranty and closure distractors with plausible confusions about price, a different size and delivery charges, none of which triggers the promised notification.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-b1-008",
@@ -350,15 +380,17 @@
       "prompt": "Quel est l’intérêt du projet ?",
       "correct": "Partager des outils rarement utilisés.",
       "wrong": [
-        "Former des vendeurs d’outils spécialisés.",
-        "Remplacer les artisans du quartier.",
-        "Donner des outils sans les rendre."
+        "Acheter des outils neufs à prix réduit.",
+        "Réserver les outils aux membres d’un atelier.",
+        "Distribuer définitivement les outils aux familles."
       ],
       "explanation": "Neighbours share tools they rarely use instead of each buying them.",
       "explanationFr": "Les voisins partagent des outils dont ils se servent rarement, au lieu que chacun les achète.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: wrong. The project replaces separate purchases with temporary shared use recorded in a loan book. Revised distractors to distinguish borrowing from discounted buying, workshop-only access and permanent distribution.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-b1-009",
@@ -380,7 +412,9 @@
       "explanationFr": "En cas de problème de connexion, il faut prévenir l’enseignante avant l’échéance de lundi midi.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Connection trouble must be reported before Monday noon, by email or phone. The notice neither requires a paper copy nor authorizes waiting or an unexplained extra week.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-b1-010",
@@ -391,18 +425,20 @@
       "topic": "Emploi",
       "documentType": "annonce",
       "document": "Offre d’emploi – Agent ou agente d’accueil communautaire. Vous accueillerez les nouveaux arrivants et les accompagnerez dans leurs premières démarches : inscription à l’école, recherche de logement, ouverture d’un compte bancaire. Une bonne connaissance du quartier sera appréciée. Le permis de conduire n’est pas exigé : les déplacements se font à pied ou en transport en commun. Poste à 25 heures par semaine. Parler une deuxième langue est un atout.",
-      "prompt": "Quel candidat peut postuler ?",
+      "prompt": "Quel profil correspond aux conditions de l’offre ?",
       "correct": "Quelqu’un sans permis qui connaît le quartier.",
       "wrong": [
-        "Seulement un conducteur professionnel.",
-        "Seulement une personne qui possède une voiture.",
-        "Une personne qui refuse tout déplacement à pied."
+        "Quelqu’un qui n’accepte que les trajets en voiture.",
+        "Quelqu’un qui exige un poste sans contact avec le public.",
+        "Quelqu’un qui refuse de se déplacer dans le quartier."
       ],
       "explanation": "No licence is required, since trips are on foot or by public transit, and knowing the area is valued.",
       "explanationFr": "Le permis n’est pas exigé, car les déplacements se font à pied ou en transport en commun, et la connaissance du quartier est appréciée.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: prompt, wrong. Local knowledge is valued and a driving licence is explicitly unnecessary. Recast the options as parallel candidate profiles; refusing all neighbourhood travel removes the ambiguity of refusing walking alone, while car-only travel and avoiding public contact contradict the duties.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-b1-011",
@@ -424,7 +460,9 @@
       "explanationFr": "L’entraînement a lieu au gymnase car le terrain est humide : il faut des chaussures propres pour la salle.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Moving the maintained 18 h session indoors requires clean shoes without studs. Rain gear for the field, an earlier start and field cleaning are not requested.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-b1-012",
@@ -446,7 +484,9 @@
       "explanationFr": "Les répétitions ouvertes montrent le travail qui précède le spectacle et permettent d’échanger avec l’équipe.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Watching rehearsals and discussing revisions reveals the creative process before a finished show. Auditioning, casting decisions and completed performances are not offered by this initiative.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-b2-001",
@@ -457,18 +497,20 @@
       "topic": "Mobilité",
       "documentType": "tribune",
       "document": "Tribune – Le bus, oui, mais pas seulement. La Ville propose d’allonger les horaires de ses lignes d’autobus jusqu’à minuit en semaine. L’intention est bonne, et beaucoup de travailleurs de soir l’attendaient. Mais cette mesure ne suffira pas si les correspondances restent aussi mal coordonnées. Aujourd’hui, un usager qui quitte son travail à 22 h doit souvent attendre quarante minutes entre deux lignes, dans le froid, à un arrêt mal éclairé. Une telle attente décourage même les personnes les plus disposées à laisser leur voiture au garage. Avant d’ajouter des départs, il faudrait donc faire coïncider les horaires des lignes qui se croisent. Ce travail coûte peu, mais il exige une planification d’ensemble.",
-      "prompt": "Quel problème complémentaire faut-il résoudre ?",
-      "correct": "La coordination des lignes.",
+      "prompt": "Quelle action l’auteur juge-t-il prioritaire ?",
+      "correct": "Coordonner les horaires des lignes.",
       "wrong": [
-        "Le confort des stationnements.",
-        "Le nombre de voitures vendues.",
-        "Le prix des billets de bus."
+        "Éclairer les arrêts de correspondance.",
+        "Ajouter des départs après minuit.",
+        "Réduire les tarifs en soirée."
       ],
       "explanation": "Longer hours won't help if transfers involve 40-minute waits: the author calls for coordinated schedules.",
       "explanationFr": "Allonger les horaires ne suffira pas si les correspondances imposent quarante minutes d’attente : il faut coordonner les lignes.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: prompt, correct, wrong. The author explicitly prioritizes synchronized connections over simply extending operating hours. Reframed the question around that priority and made all options plausible transport actions; lighting is mentioned as context but is not the recommended first step.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-b2-002",
@@ -490,7 +532,9 @@
       "explanationFr": "Arriver plus tôt pour retrouver le même bureau montre un attachement à un espace de travail stable.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Arriving early and reserving the same personalized desk indicate attachment to familiar surroundings. The earlier arrival is a means to retain a place, not evidence of a preference for morning work.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-b2-003",
@@ -501,18 +545,20 @@
       "topic": "Recherche",
       "documentType": "rapport",
       "document": "Rapport d’évaluation – Programme de mentorat pour nouveaux arrivants. Les premiers résultats du programme sont prometteurs : après six mois, onze des quinze participants ont trouvé un emploi dans leur domaine, contre environ un sur deux dans la population comparable. Les participants se disent aussi plus confiants dans leurs démarches. Le coût du programme reste modeste. Ces résultats doivent toutefois être interprétés avec circonspection, l’échantillon étant réduit et les participants ayant été choisis parmi les plus motivés. Avant d’étendre le programme à toute la région, nous recommandons une seconde évaluation, dès l’an prochain, sur un groupe plus large et sélectionné au hasard.",
-      "prompt": "Quelle attitude le rapport recommande-t-il ?",
+      "prompt": "Quelle attitude exprime ici le mot « circonspection » ?",
       "correct": "La prudence.",
       "wrong": [
         "L’enthousiasme.",
         "L’indifférence.",
         "La certitude."
       ],
-      "explanation": "« Circonspection » means caution, justified by the small, self-selected sample.",
+      "explanation": "« Circonspection » means caution, justified by the small sample and the selection of particularly motivated participants.",
       "explanationFr": "La « circonspection », c’est la prudence, justifiée par un échantillon réduit et des participants choisis parmi les plus motivés.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: prompt, explanation. Circonspection means caution because the sample is small and was selected for motivation. Corrected the English claim that participants self-selected, which the passage does not establish, and named the vocabulary target in the prompt.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-b2-004",
@@ -524,17 +570,19 @@
       "documentType": "reportage",
       "document": "Moins de restes à la cantine. Depuis la rentrée, la cantine de l’école secondaire Champlain sert des portions plus petites d’emblée, tout en permettant aux élèves de se resservir autant qu’ils le souhaitent. L’idée venait d’un groupe d’élèves engagés dans le comité environnement. Trois mois plus tard, le bilan est clair : les restes jetés chaque jour ont diminué de près de moitié. Et contrairement à ce que craignaient certains parents, les élèves interrogés ne déclarent pas avoir davantage faim l’après-midi. Les cuisiniers, eux, disent mieux prévoir les quantités à préparer. La direction réfléchit maintenant à étendre l’expérience aux deux autres écoles du quartier.",
       "prompt": "Quel résultat est rapporté ?",
-      "correct": "Moins de restes, sans élèves affamés.",
+      "correct": "Moins de déchets, sans faim supplémentaire déclarée.",
       "wrong": [
-        "Une baisse du nombre de repas servis.",
-        "La suppression du deuxième service.",
-        "Une hausse de la faim l’après-midi."
+        "Moins de repas servis, avec des portions initiales inchangées.",
+        "Moins de restes, grâce à l’interdiction de se resservir.",
+        "Moins de déchets, mais une faim accrue signalée."
       ],
       "explanation": "Smaller first servings with seconds cut leftovers nearly in half without students reporting more hunger.",
-      "explanationFr": "Des portions plus petites, avec la possibilité de se resservir, ont presque réduit de moitié les restes sans que les élèves aient plus faim.",
+      "explanationFr": "Les restes ont diminué de près de moitié, sans que les élèves interrogés déclarent avoir davantage faim.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: correct, wrong, explanationFr. The evidence is reduced leftovers without a reported increase in hunger, not proof that no pupil is hungry. Qualified the answer and French explanation accordingly and made the distractors distinguish reduced meal numbers, banned seconds and reported hunger.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-b2-005",
@@ -556,7 +604,9 @@
       "explanationFr": "Les remarques sont jointes au dossier pour le conseil, mais elles n’arrêtent pas la procédure en cours.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Comments enter the council's file while consultation and preparation continue. Receipt of observations neither approves the project nor stops it, and the promised consideration rules out destruction unread.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-b2-006",
@@ -578,7 +628,9 @@
       "explanationFr": "L’étiquette « soutien » donnait l’impression d’être en échec ; un lieu neutre et visible a fait augmenter la participation.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Tutors identify the perceived stigma of entering the support room as a participation barrier. Fees cannot explain avoidance of a free service; the move changes visibility and image rather than tutor availability.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-b2-007",
@@ -600,7 +652,9 @@
       "explanationFr": "Les arbres matures assurent de l’ombre et absorbent l’eau, ce que de jeunes plants ne remplacent pas avant des décennies.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Mature trees provide services that saplings cannot immediately replace, supporting maintenance of existing trees. The author does not demand ending planting or replacing every large tree.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-b2-008",
@@ -622,7 +676,9 @@
       "explanationFr": "L’expression adoucit la relance en admettant que l’expéditeur peut se tromper.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Sauf erreur de ma part leaves room for the sender to be mistaken and thereby softens the reminder. It does not admit a definite error, withdraw the request or declare disagreement.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-b2-009",
@@ -640,11 +696,13 @@
         "Ils remplacent tous les autres services.",
         "Ils permettent d’employer moins de personnel."
       ],
-      "explanation": "Few buy on the day, but many come back later with a project: the workshops create later sales.",
-      "explanationFr": "Peu de visiteurs achètent le jour même, mais beaucoup reviennent ensuite avec un projet : les ateliers créent des ventes différées.",
+      "explanation": "Several visitors return weeks later with a project and become loyal customers; the manager sees the workshops as a way to build future sales.",
+      "explanationFr": "Plusieurs visiteurs reviennent quelques semaines plus tard avec un projet et deviennent des clients fidèles : la responsable mise sur cette relation pour favoriser les achats futurs.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: explanation, explanationFr. The manager values later projects and loyalty despite few same-day purchases. Corrected both explanations' unsupported many/beaucoup quantification to the passage's several returning visitors and its long-term commercial rationale.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-b2-010",
@@ -666,7 +724,9 @@
       "explanationFr": "La critique juge l’intrigue prévisible, mais salue la justesse des relations entre les sœurs.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The critic explicitly contrasts a predictable plot with believable, nuanced relationships between the sisters. Historical precision and consistently fast pacing are not praised.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-b2-011",
@@ -688,7 +748,9 @@
       "explanationFr": "Les matinées sans rendez-vous servent aux démarches rapides et les dossiers longs se font sur réservation : accès facile et accompagnement approfondi.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Quick walk-in requests coexist with booked longer cases to balance spontaneous access and adequate support. The other options would remove or flatten one side of this arrangement.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-b2-012",
@@ -710,7 +772,9 @@
       "explanationFr": "Les étudiants de l’atelier étaient déjà les plus assidus, ce qui peut expliquer une partie de l’écart.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Workshop participants already attended classes more regularly, so prior attendance may explain some of the score gap. The passage reports a comparison and voluntary participation, excluding the alternative explanations.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-c1-001",
@@ -724,15 +788,17 @@
       "prompt": "Quelle distinction structure le texte ?",
       "correct": "Vivre côte à côte ou se rencontrer vraiment.",
       "wrong": [
-        "Les logements sociaux et les logements de luxe vendus au prix fort.",
-        "La densité des villes et le coût de la construction.",
-        "Les trajets quotidiens et les voyages lointains."
+        "Construire des logements voisins ou améliorer leur confort intérieur.",
+        "Réunir des catégories sociales ou uniformiser leurs revenus.",
+        "Partager des équipements publics ou réduire le coût des loyers."
       ],
       "explanation": "The text separates living near one another from the conditions that make real encounters possible.",
       "explanationFr": "Le texte distingue le fait d’habiter à proximité des conditions qui rendent de vraies rencontres possibles.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: wrong. The central distinction is physical proximity versus actual social encounters. Replaced unrelated travel and generic construction distractors with competing housing-policy distinctions, without introducing another defensible summary.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-c1-002",
@@ -746,15 +812,17 @@
       "prompt": "Quel risque l’auteur identifie-t-il ?",
       "correct": "Rester prisonnier de ses goûts passés.",
       "wrong": [
-        "L’absence totale de recommandations sur les plateformes.",
-        "La disparition des données sur nos écoutes passées.",
-        "L’impossibilité de reconnaître ses propres goûts."
+        "Recevoir des suggestions trop éloignées de ses préférences habituelles.",
+        "Confondre les goûts de ses amis avec ses propres choix.",
+        "Passer davantage de temps à chercher parmi les nouveautés."
       ],
       "explanation": "Personalisation may treat past choices as limits on future curiosity, reducing the chance encounters that broaden tastes.",
       "explanationFr": "La personnalisation peut transformer nos choix passés en limites pour nos curiosités futures, en raréfiant les rencontres imprévues.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: wrong. The author accepts convenience but warns that past preferences can limit future discovery. Replaced distractors denying the existence of recommendations with plausible misreadings of novelty, friends' tastes and search time; all miss the confinement argument.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-c1-003",
@@ -765,18 +833,20 @@
       "topic": "Débat",
       "documentType": "analyse",
       "document": "Analyse – Le bon usage des objections. Dans un débat sur la semaine de travail de quatre jours, un économiste soutenait récemment que la réduction du temps de travail améliore la productivité. Une contradictrice lui a opposé un exemple précis : dans les hôpitaux, où la présence continue du personnel est indispensable, la mesure entraînerait surtout des besoins d’embauche. Faut-il en conclure que l’argument de l’économiste était faux ? Pas nécessairement. L’objection n’invalide pas le raisonnement ; elle oblige à en circonscrire la portée. Le raisonnement peut rester valable pour les emplois de bureau, où la concentration compte davantage que la présence, tout en s’appliquant mal aux secteurs organisés en équipes de garde. L’objection, loin d’affaiblir le débat, l’a rendu plus précis. Un bon débat ne consiste pas à remporter la discussion, mais à préciser les conditions dans lesquelles chaque thèse tient vraiment.",
-      "prompt": "Que faut-il faire, selon le texte ?",
+      "prompt": "Que signifie « en circonscrire la portée » dans ce texte ?",
       "correct": "Préciser où le raisonnement s’applique.",
       "wrong": [
         "Renoncer à toute conclusion sur le sujet.",
         "Remplacer l’objection par un autre exemple.",
         "Étendre le raisonnement à tous les secteurs."
       ],
-      "explanation": "« Circonscrire la portée » means limiting the scope: the argument may hold for office jobs but not for 24-hour services.",
-      "explanationFr": "« Circonscrire la portée », c’est limiter le champ d’application : l’argument peut valoir pour les bureaux, pas pour les services continus.",
+      "explanation": "« Circonscrire la portée » means limiting the scope: the argument may apply to office jobs without applying equally well to services requiring continuous staffing.",
+      "explanationFr": "« Circonscrire la portée », c’est limiter le champ d’application : l’argument peut valoir pour les emplois de bureau sans s’appliquer aussi bien aux services exigeant une présence continue.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: prompt, explanation, explanationFr. Circonscrire la portée means specifying where the argument applies, not rejecting or universalizing it. Made the expression explicit and preserved the passage's qualification that it applies less well, rather than necessarily never, to continuously staffed services.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-c1-004",
@@ -786,19 +856,21 @@
       "competency": "argumentation",
       "topic": "Travail",
       "documentType": "tribune",
-      "document": "Tribune – Ce que les primes ne voient pas. De plus en plus d’entreprises récompensent leurs employés selon des résultats individuels : nombre de dossiers traités, ventes conclues, objectifs atteints. Le système a le mérite de la clarté. Mais récompenser uniquement les résultats individuels peut invisibiliser le travail de coopération qui les rend possibles. La collègue qui forme les nouveaux arrivants, celui qui documente une procédure ou répond aux questions des autres perdent du temps sur leurs propres objectifs. Leur bilan chiffré s’en ressent, alors même qu’ils améliorent souvent davantage la performance collective que les meilleurs vendeurs. À terme, un tel système apprend à chacun à garder son savoir pour soi. Il faudrait au minimum compléter les indicateurs individuels par une évaluation de la contribution à l’équipe, faute de quoi on décourage précisément les comportements dont l’organisation a le plus besoin.",
+      "document": "Tribune – Ce que les primes ne voient pas. De plus en plus d’entreprises récompensent leurs employés selon des résultats individuels : nombre de dossiers traités, ventes conclues, objectifs atteints. Le système a le mérite de la clarté. Mais récompenser uniquement les résultats individuels peut invisibiliser le travail de coopération qui les rend possibles. La collègue qui forme les nouveaux arrivants et celui qui documente une procédure ou répond aux questions des autres perdent du temps sur leurs propres objectifs. Leur bilan chiffré s’en ressent, alors même qu’ils améliorent souvent davantage la performance collective que les meilleurs vendeurs. À terme, un tel système apprend à chacun à garder son savoir pour soi. Il faudrait au minimum compléter les indicateurs individuels par une évaluation de la contribution à l’équipe, faute de quoi on décourage précisément les comportements dont l’organisation a le plus besoin.",
       "prompt": "Quelle limite du système l’auteur dénonce-t-il ?",
       "correct": "Il ignore l’aide apportée aux collègues.",
       "wrong": [
-        "Il ne peut mesurer aucune activité du tout.",
-        "Il donne trop d’autonomie aux nouveaux salariés.",
-        "Il surévalue les formations suivies par chacun."
+        "Il récompense davantage les débutants que les employés expérimentés.",
+        "Il privilégie le temps de formation au détriment des ventes.",
+        "Il confond les résultats de l’équipe avec ceux de chacun."
       ],
       "explanation": "Individual metrics miss the cooperative work, like training colleagues, that improves the group's performance.",
       "explanationFr": "Les indicateurs individuels ignorent le travail de coopération, comme former ses collègues, qui améliore la performance du groupe.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: document, wrong. Individual output metrics omit assistance that enables collective performance. Clarified the coordination of the two example employees and replaced disconnected distractors with plausible misreadings about experience, training time and allocation of team results.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-c1-005",
@@ -820,7 +892,9 @@
       "explanationFr": "L’auteur accepte une part d’étrangeté voulue pour préserver la différence culturelle, sans exiger une traduction mot à mot.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The author advocates retaining some culturally meaningful strangeness while explicitly rejecting opaque word-for-word translation. Erasing cultural references or demanding effortless familiarity reverses that balanced position.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-c1-006",
@@ -842,7 +916,9 @@
       "explanationFr": "L’auteur invite à examiner ce que recouvre la réussite chiffrée, car des dossiers peuvent être clos sans être réglés.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Closing a file after a stock response can meet the numeric target while leaving the user's problem unresolved. The recommended qualitative audit examines that gap rather than adding figures or abolishing all closure.",
+      "teacher": "approved"
     },
     {
       "id": "tcf-mock-reading-c1-007",
@@ -864,7 +940,9 @@
       "explanationFr": "Réduire le superflu et renoncer à l’essentiel ne sont pas le même sacrifice : l’effort doit tenir compte des situations et des besoins.",
       "replaces": true,
       "review": "accepted",
-      "problems": []
+      "problems": [],
+      "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The contrast between essential heating and discretionary travel supports differentiated effort and support for households without room to cut. Equal reductions and treating all use as superfluous contradict that principle.",
+      "teacher": "approved"
     }
   ]
 }
