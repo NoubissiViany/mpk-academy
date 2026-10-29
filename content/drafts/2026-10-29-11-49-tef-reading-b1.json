@@ -1,0 +1,235 @@
+{
+  "createdAt": "2026-10-29T11:49:22.163Z",
+  "provider": "groq",
+  "model": "openai/gpt-oss-20b",
+  "promptVersion": "2026-10-22",
+  "request": {
+    "mode": "new",
+    "exam": "TEF",
+    "skill": "reading",
+    "level": "B1",
+    "count": 10
+  },
+  "items": [
+    {
+      "id": "tef-reading-b1-006",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "B1",
+      "competency": "inference",
+      "topic": "emploi",
+      "documentType": "email",
+      "document": "Objet : Offre d’emploi — assistant administratif. Bonjour, notre petite entreprise de Montréal recherche une personne bilingue pour gérer les agendas, préparer les rapports et organiser les réunions. Nos clients nous écrivent en français et en anglais ; vous devrez répondre dans ces deux langues. Le poste commence le 1er juin. Le salaire annuel est de 45 000 $, avec une assurance collective. Une expérience de deux ans et une bonne connaissance d’Excel sont demandées. Merci d’envoyer votre CV et votre lettre de motivation avant le 15 mai. Cordialement, Marie, responsable du recrutement.",
+      "prompt": "Pourquoi la personne recrutée doit-elle connaître deux langues ?",
+      "correct": "Pour communiquer avec les clients",
+      "wrong": [
+        "Pour traduire les rapports du siège étranger",
+        "Pour enseigner l’anglais aux nouveaux employés",
+        "Pour organiser des voyages dans deux pays"
+      ],
+      "explanation": "Clients write in French and English, and the employee must reply in both. Nothing mentions teaching, travel or a foreign head office.",
+      "explanationFr": "Les clients écrivent en français et en anglais, et la personne devra leur répondre dans ces deux langues. Il n’est pas question de cours, de voyages ou d’un siège étranger.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Corrected the application/start-date conflict and replaced a literal job-title question with an inference supported by duties and language requirements. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-b1-007",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "B1",
+      "competency": "specific_detail",
+      "topic": "services publics",
+      "documentType": "annonce",
+      "document": "Avis aux voyageurs de la navette du centre culturel. Du 15 au 30 septembre, les personnes de 65 ans et plus pourront acheter un billet à 1,50 $, au lieu du tarif habituel de 3 $. Cette réduction concerne uniquement notre navette entre le centre culturel et la gare ; elle ne s’applique pas aux autobus de la ville. Présentez une pièce d’identité au conducteur avant de payer. Les horaires restent les mêmes pendant cette période. Pour obtenir une fiche avec les départs, adressez-vous à l’accueil du centre.",
+      "prompt": "Quel est le prix réduit d’un billet de navette ?",
+      "correct": "1,50 $",
+      "wrong": [
+        "3,00 $",
+        "2,50 $",
+        "2,00 $"
+      ],
+      "explanation": "The centre’s notice gives a reduced fare of $1.50; $3 is the ordinary fare. The offer applies only to this shuttle.",
+      "explanationFr": "L’avis indique un tarif réduit de 1,50 $ ; 3 $ correspond au prix habituel. L’offre concerne seulement cette navette.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Removed invented municipal policy and a real-looking contact URL; retained a clearly bounded fictional operator’s fare notice. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-b1-008",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "B1",
+      "competency": "main_idea",
+      "topic": "économie locale",
+      "documentType": "article",
+      "document": "Dans le quartier, plusieurs cafés proposent de nouvelles activités pour faire venir les visiteurs. Certains organisent des soirées musicales ; d’autres ajoutent des plats végétariens à leur carte. Une visite guidée permet aussi de rencontrer les propriétaires et de découvrir leurs spécialités. Les commerçants espèrent ainsi donner aux touristes une raison de rester plus longtemps dans le quartier. Ils précisent que leurs clients habituels sont toujours les bienvenus. Les premières animations auront lieu le samedi, car les équipes souhaitent commencer progressivement avant de proposer des rendez-vous en semaine.",
+      "prompt": "Quelle est l’idée principale de l’article ?",
+      "correct": "Les cafés diversifient leur offre touristique.",
+      "wrong": [
+        "Les cafés réservent leurs salles aux habitués.",
+        "Les cafés limitent leur activité aux visites guidées.",
+        "Les cafés remplacent leurs menus par des concerts."
+      ],
+      "explanation": "Menus, music and guided visits are different ways to attract visitors. Regular customers remain welcome, and normal café service continues.",
+      "explanationFr": "Menus, musique et visites guidées sont plusieurs moyens d’attirer les visiteurs. Les habitués restent les bienvenus et le service habituel continue.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Removed an invented mayoral forecast and made all distractors plausible café business choices. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-b1-009",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "B1",
+      "competency": "argumentation",
+      "topic": "Vaisselle réutilisable",
+      "documentType": "guide pratique",
+      "document": "Pour la prochaine fête du quartier, le comité propose de louer des gobelets lavables. Les années précédentes, les bénévoles passaient beaucoup de temps à ramasser les gobelets jetables sur la place. Cette fois, chaque visiteur versera une petite somme, qui lui sera rendue lorsqu’il rapportera son gobelet au stand. Une équipe se chargera ensuite du lavage. La location coûte un peu plus cher au départ, mais les organisateurs veulent surtout réduire les déchets et rendre le nettoyage de la place plus rapide.",
+      "prompt": "Quel argument le comité donne-t-il pour choisir des gobelets lavables ?",
+      "correct": "Ils permettent de limiter les déchets.",
+      "wrong": [
+        "Ils évitent toute dépense de location.",
+        "Ils dispensent les bénévoles de nettoyer.",
+        "Ils permettent de supprimer tous les stands."
+      ],
+      "explanation": "The committee wants fewer discarded cups and faster clean-up. Renting and washing still cost money and effort.",
+      "explanationFr": "Le comité souhaite moins de gobelets jetés et un nettoyage plus rapide. La location et le lavage restent nécessaires.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced unsupported and inaccurate medical guidance with an original low-risk practical argument about reducing event waste. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-b1-010",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "B1",
+      "competency": "register",
+      "topic": "culture",
+      "documentType": "lettre",
+      "document": "Salut Camille ! Je t’écris pour t’inviter à notre mariage le 12 octobre. La cérémonie aura lieu à la salle des Fleurs, puis nous partagerons un repas dans le jardin, si le temps le permet. On a prévu quelques plats végétariens, alors tu trouveras de quoi te régaler ! Dis-moi avant le 1er octobre si tu peux venir avec Alex. Si vous cherchez un endroit où dormir, vous pourrez rester chez ma sœur, qui habite tout près. J’espère vraiment vous voir tous les deux. À très bientôt ! Sophie",
+      "prompt": "Quel ton utilise la lettre de Sophie ?",
+      "correct": "Amical et informel",
+      "wrong": [
+        "Officiel et impersonnel",
+        "Professionnel et autoritaire",
+        "Inquiet et accusateur"
+      ],
+      "explanation": "Greetings such as “Salut” and “À très bientôt”, direct address with tu, and the personal invitation establish a friendly, informal tone.",
+      "explanationFr": "« Salut », « À très bientôt », le tutoiement et l’invitation personnelle donnent à la lettre un ton amical et informel.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Expanded the invitation to the B1 minimum and replaced an unnatural distractor with a recognizable tone. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-b1-011",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "B1",
+      "competency": "main_idea",
+      "topic": "Événement communautaire",
+      "documentType": "article",
+      "document": "Le comité du quartier prépare une fête d’hiver sur la place centrale. Les habitants pourront apporter un plat à partager et participer à des jeux en équipe. Quelques artisans vendront aussi leurs créations, mais les organisateurs précisent que le but principal est de permettre aux voisins de faire connaissance. Des bénévoles présenteront les nouveaux arrivants aux autres familles. La petite somme versée par les exposants servira à louer les tables. L’entrée restera gratuite, et les activités seront maintenues dans la salle municipale en cas de mauvais temps.",
+      "prompt": "Quel est l’objectif principal de l’événement décrit dans le texte ?",
+      "correct": "Aider les voisins à faire connaissance",
+      "wrong": [
+        "Financer une nouvelle salle municipale",
+        "Réserver les activités aux familles déjà connues",
+        "Organiser un concours entre les artisans"
+      ],
+      "explanation": "The organisers explicitly prioritise helping neighbours meet. Stall fees pay for tables, not a new hall.",
+      "explanationFr": "Les organisateurs donnent la priorité aux rencontres entre voisins. Les frais des exposants financent les tables, pas une nouvelle salle.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Removed invented municipal funding and eliminated the competing supported answer about commercial benefits. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-b1-012",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "B1",
+      "competency": "specific_detail",
+      "topic": "Réservation d’un logement étudiant",
+      "documentType": "email",
+      "document": "Bonjour, je vais commencer mes études à Montréal à la rentrée et je cherche une chambre pour l’année universitaire. Je préfère habiter près d’un arrêt de métro, car mes cours auront lieu dans plusieurs bâtiments. Mon budget est de 650 $ par mois, charges comprises. Je peux partager la cuisine et la salle de bains avec d’autres étudiants. Pourriez-vous m’envoyer les annonces qui correspondent à ces critères et m’expliquer comment organiser une visite ? Je serai sur place à partir du 20 août. Merci pour votre aide.",
+      "prompt": "Quel est le budget mensuel que l’étudiant propose pour son logement ?",
+      "correct": "650 $",
+      "wrong": [
+        "600 $",
+        "700 $",
+        "800 $"
+      ],
+      "explanation": "The email explicitly states a budget of 650 $ per month.",
+      "explanationFr": "L’étudiant indique clairement un budget de « 650 $ » par mois.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Removed an implausible campus-neighbourhood walking claim and obsolete dates while keeping the budget detail. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-b1-013",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "B1",
+      "competency": "inference",
+      "topic": "Atelier de conversation",
+      "documentType": "avis",
+      "document": "Le centre associatif ouvre un atelier de conversation en français le mardi soir. L’inscription se fait sur son site, mais les personnes qui ne disposent pas d’un accès à Internet peuvent appeler l’accueil : une bénévole remplira le formulaire avec elles. Il n’est pas nécessaire de passer un examen pour participer. Les groupes seront constitués pendant la première séance, après un échange avec l’animateur. L’atelier est gratuit et s’adresse aux adultes du quartier. Merci de vous inscrire avant vendredi pour que le centre puisse préparer les salles.",
+      "prompt": "Que permet l’inscription par téléphone ?",
+      "correct": "Participer sans connexion à Internet",
+      "wrong": [
+        "Choisir son groupe avant la première séance",
+        "S’inscrire après la fermeture des inscriptions",
+        "Éviter de répondre aux questions du formulaire"
+      ],
+      "explanation": "A volunteer fills out the form by phone for people without internet access. This offers an alternative to online registration.",
+      "explanationFr": "Une bénévole remplit le formulaire par téléphone avec les personnes sans accès à Internet. Elles peuvent donc s’inscrire sans passer par le site.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced an unsupported inference and medical assertions with a documented contrast between two registration routes. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-b1-014",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "B1",
+      "competency": "speaker_intention",
+      "topic": "Réponse à une plainte",
+      "documentType": "lettre",
+      "document": "Cher(e) client, Nous avons bien reçu votre courrier concernant la panne de votre appareil électroménager. Nous comprenons votre frustration et nous nous excusons pour les désagréments causés. Nous envoyons un technicien dans les 48 h pour diagnostiquer le problème et, si nécessaire, procéder à un remplacement. En attendant, nous vous offrons une remise de 10 % sur votre prochaine commande. Nous vous remercions de votre patience et restons à votre disposition pour toute question supplémentaire.",
+      "prompt": "Quelle est l’intention principale de l’auteur de cette lettre ?",
+      "correct": "Rassurer le client et organiser une intervention",
+      "wrong": [
+        "Annoncer la fermeture définitive du service technique",
+        "Demander au client de réparer lui-même son appareil",
+        "Conditionner toute réparation à une nouvelle commande"
+      ],
+      "explanation": "The apology and the technician’s promised visit aim to reassure the client and address the fault. The discount is an additional gesture, not a purchase condition.",
+      "explanationFr": "Les excuses et la visite annoncée du technicien visent à rassurer le client et à résoudre la panne. La remise est un geste supplémentaire, pas une condition d’achat.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Corrected the question’s gender and strengthened the distractors without creating a length cue. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-b1-015",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "B1",
+      "competency": "vocabulary_in_context",
+      "topic": "Accès à un parking",
+      "documentType": "guide",
+      "document": "Le parking de notre salle de spectacles comporte deux espaces. Les places proches de l’entrée sont réservées aux personnes disposant d’une autorisation spéciale. Les autres visiteurs doivent utiliser l’espace situé derrière le bâtiment. Son accès est temporairement fermé pendant les travaux de peinture, du lundi au mercredi inclus. Il rouvrira jeudi matin aux horaires habituels. Pendant ces trois jours, un agent indiquera aux visiteurs un autre stationnement à quelques minutes à pied. Les abonnés peuvent conserver leur carte : elle restera valable après les travaux.",
+      "prompt": "Dans cet avis, que signifie « temporairement fermé » ?",
+      "correct": "Fermé pendant une période limitée",
+      "wrong": [
+        "Fermé définitivement à tous les visiteurs",
+        "Ouvert uniquement aux détenteurs d’une carte",
+        "Accessible seulement après une réservation"
+      ],
+      "explanation": "The car park closes for three days and reopens on Thursday. “Temporairement” therefore means for a limited period.",
+      "explanationFr": "Le parking ferme trois jours et rouvre jeudi. « Temporairement » signifie donc pendant une période limitée.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced invented parking rules with a coherent private-site notice and made the question actually assess vocabulary in context. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    }
+  ]
+}

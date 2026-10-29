@@ -57,6 +57,8 @@ update private.ai_settings set speaking_daily_limit = 55, speaking_user_daily_li
 
 ## One-time setup per environment
 
+**October 29, 2026 audit:** production Vercel has `GROQ_API_KEY` and `JOBS_SECRET`; its Vault has `mpk_jobs_url` pointing to the main app and a nonempty `mpk_jobs_secret`. Secret equality and a real provider/worker round trip remain unverified. Sandbox Vercel lacks both AI/job variables, and staging Vault lacks both job entries. Configure the sandbox’s Production environment and staging Vault, then redeploy the sandbox. The main production project does not need duplicate Vault entries. See [the current release checklist](PHASE4_COMPLETION.md).
+
 ### 1. Groq
 
 1. Create a Groq account and an API key per environment (for example `mpk-production`, `mpk-staging`).
@@ -120,7 +122,9 @@ order by f.created_at desc limit 50;
 1. With learners' agreement, pick 40 reviewed essays across both exams and all targets.
 2. A qualified French teacher grades each criterion (task, coherence, vocabulary, grammar) on the same A2–C1 scale, without seeing the AI levels.
 3. For each criterion, report exact agreement and agreement within one level. Aim for at least 60% exact and 90% within one before showing levels as anything more than rough guidance.
-4. Keep the results in the repository (`docs/calibration/`) and adjust the prompt or the target bars if a criterion is consistently off.
+4. Keep aggregate results and methodology in `docs/calibration/`; keep learner texts, identities and consent records outside Git. Investigate systematic disagreements, revise prompts as needed and evaluate changes on held-out ratings.
+
+A [blank 40-essay packet and procedure](calibration/README.md) are prepared. Run `npm run check:calibration -- /private/path/writing-ratings.json` to check completeness, coverage and agreement per criterion. The untouched template intentionally fails. The tool checks supplied ratings, not the authenticity of consent or independent review; synthetic tests are not calibration evidence. Speaking needs its own teacher-rated evaluation.
 
 ## Privacy duties
 

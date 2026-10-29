@@ -1,0 +1,279 @@
+{
+  "createdAt": "2026-10-29T11:53:57.734Z",
+  "provider": "groq",
+  "model": "openai/gpt-oss-20b",
+  "promptVersion": "2026-10-29",
+  "request": {
+    "mode": "new",
+    "exam": "TEF",
+    "skill": "reading",
+    "level": "B2",
+    "count": 12
+  },
+  "items": [
+    {
+      "id": "tef-reading-b2-004",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "B2",
+      "competency": "main_idea",
+      "topic": "Attribution de chambres étudiantes",
+      "documentType": "article",
+      "document": "La résidence étudiante des Tilleuls dispose de moins de chambres que de demandes. Jusqu’ici, les dossiers étaient classés selon leur date d’arrivée, ce qui avantageait les candidats informés très tôt. À la rentrée, un autre système sera expérimenté : les ressources financières et la distance entre le domicile familial et le campus seront prises en compte. Les critères seront publiés avant l’ouverture des candidatures, et chaque refus sera accompagné d’une explication. Le nombre de chambres et le montant des loyers resteront inchangés. Pour la responsable, cette réforme ne résoudra pas la pénurie, mais elle doit rendre les décisions plus compréhensibles et éviter que la rapidité d’inscription soit le seul avantage décisif.",
+      "prompt": "Quel est l’objectif principal de cette réforme ?",
+      "correct": "Rendre l’attribution des chambres plus équitable.",
+      "wrong": [
+        "Augmenter immédiatement la capacité de la résidence.",
+        "Garantir une chambre à chaque candidat éloigné.",
+        "Réduire les loyers grâce à une inscription anticipée."
+      ],
+      "explanation": "The residence will replace arrival order with published financial and distance criteria. Capacity and rents will not change, and no room is guaranteed.",
+      "explanationFr": "La résidence remplacera l’ordre d’arrivée par des critères publiés de ressources et d’éloignement. Ni la capacité ni les loyers ne changent, et aucune chambre n’est garantie.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced invented university statistics with a fictional residence’s clear policy; distinguished fairness from capacity and price. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-b2-005",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "B2",
+      "competency": "specific_detail",
+      "topic": "Permanence informatique associative",
+      "documentType": "tribune",
+      "document": "Notre association aide les habitants à utiliser les services numériques : envoyer une candidature, consulter un dossier ou joindre une pièce à un formulaire. Pourtant, sa permanence ferme à dix-sept heures, au moment où de nombreux salariés quittent leur travail. Je propose de maintenir l’accueil jusqu’à vingt heures deux soirs par semaine, au lieu d’allonger tous les horaires. Des bénévoles se sont déclarés disponibles le mardi et le jeudi ; il faudrait vérifier que ces créneaux correspondent aux besoins. Une expérimentation de trois mois permettrait de compter les visites et d’ajuster le dispositif. Il ne s’agit pas de supprimer les rendez-vous de journée, qui restent indispensables à d’autres usagers, mais de compléter l’offre actuelle.",
+      "prompt": "Quelle organisation l’auteur propose-t-il ?",
+      "correct": "Deux permanences prolongées en soirée.",
+      "wrong": [
+        "Une fermeture retardée tous les jours de la semaine.",
+        "Des rendez-vous exclusivement organisés à distance.",
+        "Le remplacement des créneaux de journée par des ateliers."
+      ],
+      "explanation": "The proposal extends two evenings to 8 p.m. while retaining daytime appointments. It is a three-month trial, not a permanent daily extension.",
+      "explanationFr": "La proposition prolonge l’accueil jusqu’à 20 h deux soirs, tout en conservant les rendez-vous de journée. Il s’agit d’un essai de trois mois.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced unsupported health statistics and repetitive hour-recall with a precise paraphrased service proposal. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-b2-006",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "B2",
+      "competency": "inference",
+      "topic": "Navette d’entreprise",
+      "documentType": "extrait de rapport",
+      "document": "Le bilan de la navette du parc d’activités fait apparaître un contraste. Les départs de sept heures trente et de huit heures sont souvent complets, tandis que les véhicules de milieu de journée circulent presque à vide. Les questionnaires indiquent que la majorité des voyageurs commencent leur travail avant neuf heures et disposent d’une cantine sur place. Plusieurs salariés expliquent qu’ils renoncent à la navette lorsqu’ils ne sont pas sûrs de pouvoir monter à bord. Le gestionnaire envisage de déplacer un départ de midi vers la matinée, sans augmenter le nombre total de trajets. Il vérifiera toutefois les besoins des salariés aux horaires décalés avant de supprimer ce départ, car une faible fréquentation ne signifie pas une absence totale d’utilité.",
+      "prompt": "Que peut-on déduire des questionnaires et des horaires de fréquentation ?",
+      "correct": "L’offre actuelle correspond mal aux principaux besoins.",
+      "wrong": [
+        "Les salariés préfèrent tous se déplacer à l’heure du déjeuner.",
+        "Les véhicules du matin sont moins confortables que les autres.",
+        "La navette reste inutilisée parce que son tarif est trop élevé."
+      ],
+      "explanation": "Full early departures and nearly empty midday ones show a mismatch between capacity and commuting needs. The text gives no fare or comfort explanation.",
+      "explanationFr": "Les départs matinaux complets et ceux de midi presque vides révèlent un décalage entre l’offre et les besoins. Le texte ne l’attribue ni au tarif ni au confort.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced invented transit statistics and a literal-detail inference with evidence requiring comparison. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-b2-007",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "B2",
+      "competency": "vocabulary_in_context",
+      "topic": "Demande de salle associative",
+      "documentType": "lettre officielle",
+      "document": "Madame, Monsieur, notre association souhaite organiser une exposition de photographies dans la salle municipale au mois de novembre. Nous avons bien noté que la priorité est donnée aux activités déjà inscrites au calendrier. Néanmoins, notre projet pourrait s’adapter aux créneaux restants, y compris en semaine. Nous sollicitons donc un entretien afin d’examiner les possibilités avec votre équipe. Les tirages seraient installés sur des supports mobiles, sans modification des murs, et nos bénévoles assureraient l’accueil du public. Nous joignons une présentation du projet ainsi qu’une estimation du nombre de visiteurs. Si la grande salle n’est pas disponible, nous sommes prêts à étudier une solution plus modeste. Nous vous remercions de l’attention portée à notre demande.",
+      "prompt": "Que signifie « sollicitons » dans cette lettre ?",
+      "correct": "Demandons de manière formelle.",
+      "wrong": [
+        "Confirmons une décision déjà prise ensemble.",
+        "Refusons une proposition reçue précédemment.",
+        "Annonçons une obligation fixée par le règlement."
+      ],
+      "explanation": "The association is asking for a meeting to explore options; none has yet been agreed. “Solliciter” here means formally request.",
+      "explanationFr": "L’association demande un entretien pour étudier les possibilités ; aucun rendez-vous n’est encore convenu. « Solliciter » signifie ici demander formellement.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced the duplicated parking letter and a vocabulary answer absent from its document. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-b2-008",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "B2",
+      "competency": "register",
+      "topic": "Avis sur un atelier de photographie",
+      "documentType": "avis de participante",
+      "document": "J’ai suivi l’atelier de photographie du centre culturel avec un appareil assez ancien, et je craignais de ne pas pouvoir suivre. Heureusement, l’animatrice a commencé par expliquer les réglages communs à tous les modèles. Les exercices dans le jardin m’ont surtout aidée à comprendre les effets de la lumière. J’aurais toutefois apprécié un groupe moins nombreux : nous étions douze, et certaines questions sont restées sans réponse à la fin. Le livret remis aux participants est clair, mais il ne remplace pas un échange avec l’animatrice. Je conseillerais donc cet atelier à une personne qui débute, à condition qu’elle n’attende pas un accompagnement entièrement individuel. Pour moi, ce premier contact a donné envie de continuer.",
+      "prompt": "Comment caractériser le ton de cet avis ?",
+      "correct": "Personnel et favorable, avec une réserve.",
+      "wrong": [
+        "Impersonnel et limité à des consignes techniques.",
+        "Enthousiaste et dépourvu de toute critique du cours.",
+        "Hostile et centré sur le refus de recommander l’atelier."
+      ],
+      "explanation": "The writer describes her own experience, recommends the workshop and notes the large group as a limitation. The praise is therefore qualified.",
+      "explanationFr": "La participante raconte son expérience, recommande l’atelier et signale une limite liée à la taille du groupe. Son avis favorable reste nuancé.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced duplicated shuttle text and unclear register labels with an evidenced, qualified personal tone. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-b2-009",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "B2",
+      "competency": "main_idea",
+      "topic": "Suivi des réparations d’une coopérative",
+      "documentType": "article",
+      "document": "La coopérative d’habitation du Verger lance un carnet de suivi des réparations accessible aux résidents. Chaque demande recevra un numéro et un état : reçue, à examiner, programmée ou terminée. Jusqu’à présent, les habitants contactaient parfois plusieurs bénévoles pour le même problème, sans savoir si quelqu’un s’en occupait déjà. Le nouvel outil doit réduire ces échanges répétés et permettre de repérer les demandes oubliées. Les urgences devront toujours être signalées par téléphone ; le carnet ne remplace donc pas ce service. Une permanence aidera les personnes peu à l’aise avec Internet. Le conseil précise enfin que la visibilité des demandes ne garantit pas une intervention immédiate, car les délais dépendront encore des artisans et des pièces disponibles.",
+      "prompt": "À quoi sert principalement le nouveau carnet ?",
+      "correct": "À clarifier l’avancement des demandes de réparation.",
+      "wrong": [
+        "À garantir une intervention immédiate pour tous les logements.",
+        "À remplacer les appels téléphoniques en situation d’urgence.",
+        "À confier directement les réparations aux résidents concernés."
+      ],
+      "explanation": "The status labels show whether and how a request is being handled. The system improves tracking without guaranteeing faster repairs or replacing emergency calls.",
+      "explanationFr": "Les états indiquent où en est chaque demande. L’outil améliore le suivi sans garantir une réparation immédiate ni remplacer les appels d’urgence.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced repeated student-housing content and a verbatim answer with a distinct process-comprehension task. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-b2-010",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "B2",
+      "competency": "specific_detail",
+      "topic": "Commande groupée de produits locaux",
+      "documentType": "note aux adhérents",
+      "document": "Pour notre prochaine commande groupée, les adhérents pourront choisir leurs produits jusqu’au mercredi soir. Le jeudi matin, la coordinatrice transmettra les quantités définitives aux producteurs. Les paniers seront préparés le vendredi et distribués le samedi entre dix et treize heures dans la cour de l’association. En cas d’absence, il sera possible de désigner une autre personne pour retirer son panier, à condition de prévenir avant vendredi midi. Aucun panier ne sera conservé jusqu’au lundi, faute de place dans la chambre froide. Les commandes ne pourront plus être modifiées après leur transmission aux producteurs. Cette organisation doit limiter les erreurs tout en permettant aux bénévoles de préparer la distribution sans devoir vérifier chaque demande au dernier moment.",
+      "prompt": "À quelle condition une autre personne peut-elle retirer un panier ?",
+      "correct": "Si l’association est prévenue avant l’échéance indiquée.",
+      "wrong": [
+        "Si les produits commandés sont conservés jusqu’au lundi.",
+        "Si la commande est modifiée après l’envoi aux producteurs.",
+        "Si les bénévoles préparent le panier dès le mercredi matin."
+      ],
+      "explanation": "A substitute collector is allowed if the association is notified before Friday noon. The other options contradict the stated preparation and storage rules.",
+      "explanationFr": "Une autre personne peut retirer le panier si l’association est prévenue avant vendredi midi. Les autres réponses contredisent les règles de préparation ou de conservation.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced duplicated health-service material, corrected the opening-versus-closing-hour ambiguity, and met the B2 length range. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-b2-011",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "B2",
+      "competency": "inference",
+      "topic": "Bibliothèque d’outils",
+      "documentType": "bilan associatif",
+      "document": "Après six mois, la bibliothèque d’outils du quartier affiche un nombre d’inscriptions encourageant, mais les prêts se concentrent sur quelques perceuses et machines à coudre. Les outils de jardinage sortent rarement. Les bénévoles avaient d’abord envisagé d’en acheter davantage, avant de découvrir que beaucoup d’adhérents vivent en appartement sans jardin. Ils proposent maintenant des séances pour apprendre à entretenir un vélo ou réparer un vêtement. Les achats futurs seront décidés après ces séances et une nouvelle consultation. Les cotisations ne changeront pas cette année. Le conseil souhaite éviter que le succès des inscriptions soit interprété trop vite comme une demande pour toutes les catégories de matériel : emprunter suppose aussi de savoir utiliser l’objet et d’en avoir réellement besoin.",
+      "prompt": "Pourquoi l’association reporte-t-elle certains achats ?",
+      "correct": "Elle veut mieux cerner les usages avant d’investir.",
+      "wrong": [
+        "Elle considère que les inscriptions sont trop peu nombreuses.",
+        "Elle souhaite réserver tous les outils aux seuls jardiniers.",
+        "Elle doit attendre une augmentation des cotisations annuelles."
+      ],
+      "explanation": "The mismatch between enrolment and actual borrowing prompts consultation and training before purchases. Low enrolment or higher fees are not the reason.",
+      "explanationFr": "Le décalage entre inscriptions et emprunts conduit à consulter et à former avant d’acheter. Le texte n’invoque ni un manque d’inscrits ni une hausse des cotisations.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced repetitive commuter material with an inference distinguishing enrolment from actual demand. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-b2-012",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "B2",
+      "competency": "speaker_intention",
+      "topic": "Organisation d’une formation professionnelle",
+      "documentType": "courriel professionnel",
+      "document": "Madame, à la suite de notre échange, je vous remercie d’avoir proposé une formation sur le nouveau logiciel de gestion. Le programme semble adapté à nos missions, mais les dates annoncées coïncident avec notre période de clôture annuelle. Deux collègues ne pourraient donc pas y participer, alors qu’ils utilisent cet outil chaque jour. Serait-il possible de répartir la formation sur deux matinées la semaine suivante ? Nous pourrions ainsi maintenir une permanence au bureau et éviter que certains membres de l’équipe prennent du retard. Je joins nos disponibilités afin de faciliter la recherche d’un créneau commun. Nous conservons notre intérêt pour l’ensemble du programme et ne demandons aucune modification de son contenu. Merci d’avance pour votre retour.",
+      "prompt": "Que cherche à obtenir l’autrice du courriel ?",
+      "correct": "Un aménagement des horaires de formation.",
+      "wrong": [
+        "Une suppression des modules destinés aux utilisateurs réguliers.",
+        "Une réduction du nombre de collègues autorisés à participer.",
+        "Un remplacement du logiciel avant la clôture annuelle."
+      ],
+      "explanation": "She requests two mornings the following week so colleagues can attend while keeping the office staffed. She explicitly retains the course content.",
+      "explanationFr": "Elle demande deux matinées la semaine suivante pour permettre la participation tout en maintenant une permanence. Elle souhaite conserver le contenu de la formation.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced an exact duplicate parking letter and corrected intention-question agreement. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-b2-013",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "B2",
+      "competency": "register",
+      "topic": "Critique d’une exposition",
+      "documentType": "critique culturelle",
+      "document": "L’exposition consacrée aux paysages industriels évite heureusement la simple succession de belles images. Les photographies sont accompagnées de témoignages d’ouvriers, d’habitants et d’urbanistes dont les points de vue ne coïncident pas toujours. Ce choix donne de la profondeur au parcours : un bâtiment abandonné peut représenter une blessure pour les uns et une possibilité de transformation pour les autres. On regrettera néanmoins la petite taille de certains textes, difficiles à lire lorsque plusieurs visiteurs se trouvent devant le même panneau. La dernière salle, plus aérée, montre qu’une présentation moins chargée aurait été possible. Malgré cette réserve, l’ensemble invite à regarder autrement des lieux souvent traversés sans attention. Une visite stimulante, à laquelle il faut accorder du temps.",
+      "prompt": "Quel ton domine dans cette critique ?",
+      "correct": "Appréciatif, mais attentif à une limite.",
+      "wrong": [
+        "Moqueur envers les témoignages présentés au public.",
+        "Entièrement neutre, sans appréciation de l’exposition.",
+        "Défavorable à l’ensemble des choix de présentation."
+      ],
+      "explanation": "The critic praises the contrasting perspectives and stimulating visit, but regrets the readability of some panels. Approval and a specific reservation coexist.",
+      "explanationFr": "La critique apprécie les points de vue contrastés et la visite stimulante, mais regrette la lisibilité de certains panneaux. Elle associe approbation et réserve précise.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced a second exact shuttle duplicate with a distinct critical-review voice and defensible tone options. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-b2-014",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "B2",
+      "competency": "vocabulary_in_context",
+      "topic": "Réemploi du mobilier",
+      "documentType": "article",
+      "document": "La ressourcerie du quartier récupère des meubles dont les propriétaires ne veulent plus. À l’arrivée, chaque objet est examiné : certains peuvent être proposés tels quels, tandis que d’autres nécessitent une réparation. L’équipe cherche à prolonger leur usage plutôt qu’à récupérer immédiatement leurs matériaux. Une table dont un pied est abîmé sera ainsi remise en état avant d’être vendue à petit prix. Cette démarche de réemploi se distingue du recyclage, qui transforme les matières pour fabriquer d’autres produits. Les bénévoles insistent toutefois sur les limites du dispositif : tout ne peut pas être réparé, et les objets trop endommagés sont orientés vers une filière adaptée. Des ateliers permettent également aux habitants d’apprendre quelques gestes simples pour entretenir leur mobilier.",
+      "prompt": "Que désigne le « réemploi » dans ce texte ?",
+      "correct": "Le fait d’utiliser de nouveau un objet existant.",
+      "wrong": [
+        "La transformation systématique des matières en produits neufs.",
+        "La destruction des meubles avant leur examen par les bénévoles.",
+        "L’achat de mobilier neuf destiné uniquement aux ateliers."
+      ],
+      "explanation": "The table is repaired and used again as a table. The passage explicitly contrasts this reuse with transforming materials through recycling.",
+      "explanationFr": "La table est réparée puis utilisée à nouveau comme table. Le texte distingue ce réemploi de la transformation des matières par recyclage.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced incorrect decontamination vocabulary and inappropriate battery-handling instructions with a precise reuse/recycling distinction. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-b2-015",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "B2",
+      "competency": "inference",
+      "topic": "Mémoire du quartier",
+      "documentType": "article associatif",
+      "document": "Pour préparer une promenade consacrée à l’histoire du quartier, l’association Mémoire des rues a réuni des habitants de plusieurs générations. Les archives municipales fournissent des dates et des plans, mais elles ne racontent pas toujours la vie quotidienne autour des anciennes boutiques. Les organisateurs demandent donc aux participants d’apporter des photographies et des souvenirs de famille. Chaque récit sera comparé aux documents disponibles ; lorsqu’un détail reste incertain, il sera présenté comme tel dans le livret de visite. L’objectif n’est pas de dresser un inventaire complet des bâtiments, mais de faire comprendre comment les lieux étaient vécus. Les jeunes du centre de loisirs enregistreront les témoignages, avec l’accord des personnes concernées, puis aideront à choisir les étapes du parcours.",
+      "prompt": "Pourquoi les organisateurs recueillent-ils des souvenirs personnels ?",
+      "correct": "Pour compléter les archives par des expériences vécues.",
+      "wrong": [
+        "Pour remplacer tous les documents municipaux par des récits.",
+        "Pour établir une chronologie certaine de chaque bâtiment.",
+        "Pour réserver la promenade aux personnes âgées du quartier."
+      ],
+      "explanation": "Archives supply dates and plans, while memories illuminate everyday experience. Stories are checked rather than treated as automatically certain.",
+      "explanationFr": "Les archives donnent des dates et des plans ; les souvenirs éclairent la vie quotidienne. Les récits sont vérifiés, sans être considérés d’emblée comme certains.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced an unsupported creativity inference with explicit complementary evidence and distinct distractors. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    }
+  ]
+}

@@ -55,6 +55,8 @@ npm run content:draft -- rewrite --prefix tef-mock-reading-b2 --count 10
 
 Drafts are written to `content/drafts/<date>-<label>.json`, with the problems the automatic checks found on each one: length, longest option, voices, near-duplicates, an untranslated explanation. `--provider groq` uses `openai/gpt-oss-20b` on the app's Groq account instead. The app does not use that model, but its French is weaker; it is for testing the pipeline.
 
+Successful provider batches are saved immediately through an atomic file replacement. `request.generatedCount` and `request.generationComplete` distinguish a partial run from a completed request. Same-minute runs receive separate filenames and retain previous review decisions. Requests have a 90-second timeout; bounded retries for network/rate/server failures are separate from retries for invalid structured output. If a later request fails, count the saved drafts and request only the remainder. Later requests in the same run also receive summaries of earlier questions to discourage repetition. These safeguards do not replace editorial checks.
+
 **Priorities:**
 
 1. Release the merged diagnostic v3/content batch and required writing sample: verify private storage, apply the pending migrations, then deploy matching source.
@@ -156,12 +158,9 @@ The latest audio run regenerated 87 recordings and added four: 91 changed clips,
 
 The owner authorized uploading the 79 new synthetic mock recordings to staging project `czbynijgpkflnntgoqgj`. Upload and verification completed: **79/79 new filenames present**. Existing bucket objects were preserved. This result does not establish production storage readiness.
 
-The linked staging database has applied `20261024000100` and `20261028000100`. The pending release now includes:
+**October 29 update:** staging has applied all 24 migrations, including `20261028000200_content_sync.sql` and `20261028000300_diagnostic_writing.sql`. The sandbox now runs source revision `2779986`; its hosted guest diagnostic passed. Production is configured as `uhbuvskmiojqjegpuuln`, its private bucket contains 79/79 required filenames, and its dry run lists six pending migrations. The owner still runs hosted pushes. See [the current release sequence](PHASE4_COMPLETION.md#2-release-the-existing-batch-to-production).
 
-- `20261028000200_content_sync.sql`: merged content and ready audio references.
-- `20261028000300_diagnostic_writing.sql`: required writing-sample submission and separate feedback queue access.
-
-The owner runs hosted pushes. Recheck the bucket and target, run `npx supabase db push --dry-run`, apply the reviewed migrations, then deploy the corresponding app. Repeat independently for production using verified production configuration. Verify listening, a full entitled mock, single-play behavior, guest writing handoff and consented AI feedback in each deployment.
+A new expansion batch contains **45 pending TEF reading drafts**: 13 A2, 10 B1, 12 B2 and 10 C1. All received AI editorial corrections and dated notes; none is accepted, teacher-approved or merged. Mechanical checks have zero flags and an in-memory candidate merge validates. The printable `content/drafts/review.html` is generated with `npm run content:review -- --print`. After editorial acceptance, nine sampled items require the normal teacher gate. All earlier 213 merged draft files remain unchanged. Provider failures stopped generation before the planned 13 C1 items; three C1 questions plus the other exam/skill groups remain to draft.
 
 The required 80–120-word writing sample is independent diagnostic content, not an extra practice-bank task. Its provisional result never changes the quiz score. Local verification and the remaining content quantities are recorded in [the Phase 4 checklist](PHASE4_COMPLETION.md).
 

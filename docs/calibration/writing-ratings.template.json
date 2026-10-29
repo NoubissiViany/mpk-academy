@@ -1,0 +1,766 @@
+{
+  "model": "openai/gpt-oss-120b",
+  "promptRevision": "2779986",
+  "samples": [
+    {
+      "sampleId": "essay-01",
+      "exam": "TEF",
+      "target": "NCLC 5",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-02",
+      "exam": "TEF",
+      "target": "NCLC 7",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-03",
+      "exam": "TEF",
+      "target": "NCLC 9+",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-04",
+      "exam": "TEF",
+      "target": "NCLC 5",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-05",
+      "exam": "TEF",
+      "target": "NCLC 7",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-06",
+      "exam": "TEF",
+      "target": "NCLC 9+",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-07",
+      "exam": "TEF",
+      "target": "NCLC 5",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-08",
+      "exam": "TEF",
+      "target": "NCLC 7",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-09",
+      "exam": "TEF",
+      "target": "NCLC 9+",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-10",
+      "exam": "TEF",
+      "target": "NCLC 5",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-11",
+      "exam": "TEF",
+      "target": "NCLC 7",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-12",
+      "exam": "TEF",
+      "target": "NCLC 9+",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-13",
+      "exam": "TEF",
+      "target": "NCLC 5",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-14",
+      "exam": "TEF",
+      "target": "NCLC 7",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-15",
+      "exam": "TEF",
+      "target": "NCLC 9+",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-16",
+      "exam": "TEF",
+      "target": "NCLC 5",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-17",
+      "exam": "TEF",
+      "target": "NCLC 7",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-18",
+      "exam": "TEF",
+      "target": "NCLC 9+",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-19",
+      "exam": "TEF",
+      "target": "NCLC 5",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-20",
+      "exam": "TEF",
+      "target": "NCLC 7",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-21",
+      "exam": "TCF",
+      "target": "NCLC 9+",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-22",
+      "exam": "TCF",
+      "target": "NCLC 5",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-23",
+      "exam": "TCF",
+      "target": "NCLC 7",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-24",
+      "exam": "TCF",
+      "target": "NCLC 9+",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-25",
+      "exam": "TCF",
+      "target": "NCLC 5",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-26",
+      "exam": "TCF",
+      "target": "NCLC 7",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-27",
+      "exam": "TCF",
+      "target": "NCLC 9+",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-28",
+      "exam": "TCF",
+      "target": "NCLC 5",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-29",
+      "exam": "TCF",
+      "target": "NCLC 7",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-30",
+      "exam": "TCF",
+      "target": "NCLC 9+",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-31",
+      "exam": "TCF",
+      "target": "NCLC 5",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-32",
+      "exam": "TCF",
+      "target": "NCLC 7",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-33",
+      "exam": "TCF",
+      "target": "NCLC 9+",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-34",
+      "exam": "TCF",
+      "target": "NCLC 5",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-35",
+      "exam": "TCF",
+      "target": "NCLC 7",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-36",
+      "exam": "TCF",
+      "target": "NCLC 9+",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-37",
+      "exam": "TCF",
+      "target": "NCLC 5",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-38",
+      "exam": "TCF",
+      "target": "NCLC 7",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-39",
+      "exam": "TCF",
+      "target": "NCLC 9+",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    },
+    {
+      "sampleId": "essay-40",
+      "exam": "TCF",
+      "target": "NCLC 5",
+      "consentConfirmed": false,
+      "independentTeacherReview": false,
+      "teacher": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      },
+      "ai": {
+        "task": null,
+        "coherence": null,
+        "vocabulary": null,
+        "grammar": null
+      }
+    }
+  ]
+}

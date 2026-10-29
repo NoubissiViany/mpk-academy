@@ -1,0 +1,301 @@
+{
+  "createdAt": "2026-10-29T11:38:37.243Z",
+  "provider": "gemini",
+  "model": "gemini-3.8-flash",
+  "promptVersion": "2026-10-22",
+  "request": {
+    "mode": "new",
+    "exam": "TEF",
+    "skill": "reading",
+    "level": "A2",
+    "count": 13
+  },
+  "items": [
+    {
+      "id": "tef-reading-a2-003",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "A2",
+      "competency": "specific_detail",
+      "topic": "Animaux de compagnie",
+      "documentType": "Avis",
+      "document": "Refuge des Amis : Venez rencontrer nos chats et nos chiens prêts pour l’adoption ce samedi, entre 10 h et 16 h. Les frais incluent la micropuce et les premiers vaccins. Apportez une pièce d’identité avec photo et une preuve d’adresse pour compléter le dossier le jour même.",
+      "prompt": "Que faut-il présenter pour adopter un animal samedi ?",
+      "correct": "Un document confirmant votre domicile.",
+      "wrong": [
+        "Le carnet de vaccination de l’animal.",
+        "Une autorisation écrite de votre propriétaire.",
+        "Une somme d’argent liquide pour le dossier."
+      ],
+      "explanation": "The text asks visitors to bring photo identification and \"une preuve d’adresse\" (proof of address) to finalize the adoption.",
+      "explanationFr": "Le texte indique qu’il faut apporter « une preuve d’adresse » ainsi qu’une pièce d’identité pour compléter l’adoption le jour même.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Checked the two required documents against the answer and both explanations; proof of address is explicitly required."
+    },
+    {
+      "id": "tef-reading-a2-004",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "A2",
+      "competency": "main_idea",
+      "topic": "Déneigement",
+      "documentType": "Avis municipal",
+      "document": "Résidence des Pins : Une tempête de neige est prévue cette nuit. Pour laisser passer les camions, merci de ne pas garer votre voiture sur le parking de la résidence entre 22 h et 7 h. Le parking couvert voisin restera ouvert gratuitement pendant cette période. Merci pour votre aide.",
+      "prompt": "Quel est le sujet principal de ce message ?",
+      "correct": "L’interdiction de garer sa voiture la nuit.",
+      "wrong": [
+        "Le programme du déneigement pour tout le mois.",
+        "L’ouverture payante du parking couvert voisin.",
+        "L’autorisation de stationner dehors toute la nuit."
+      ],
+      "explanation": "Residents are asked not to park outside between 22 h and 7 h to allow snow clearance. The covered parking is a temporary alternative.",
+      "explanationFr": "Le message demande de ne pas stationner dehors entre 22 h et 7 h pour permettre le déneigement. Le parking couvert est une solution temporaire.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Replaced unrelated distractors about school buses and speeding with alternatives tied to parking and snow removal. Replaced an invented city-wide parking rule with a fictional residence’s own notice."
+    },
+    {
+      "id": "tef-reading-a2-005",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "A2",
+      "competency": "speaker_intention",
+      "topic": "Téléphonie mobile",
+      "documentType": "Message texte",
+      "document": "Alerte Info Mobile : Vous avez utilisé 90 % des données Internet incluses dans votre forfait mensuel. Pour éviter des frais supplémentaires de 15 $ par gigaoctet, vous pouvez ajouter une option de données temporaire dès maintenant sur votre espace client en ligne ou en répondant OUI à ce message.",
+      "prompt": "Pourquoi l’opérateur envoie-t-il ce message au client ?",
+      "correct": "Pour proposer des données Internet supplémentaires.",
+      "wrong": [
+        "Pour confirmer que des données ont déjà été ajoutées.",
+        "Pour signaler que toutes les données sont déjà utilisées.",
+        "Pour annoncer la gratuité des dépassements de données."
+      ],
+      "explanation": "The mobile operator alerts the user about reaching their data threshold and offers an extra data option to avoid fees.",
+      "explanationFr": "L’opérateur prévient le client qu’il a presque atteint sa limite et lui offre d’ajouter des données pour ne pas payer de surplus.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Made the answer specify the temporary data addition; distractors now test 90 percent versus exhaustion, an offer versus a completed purchase, and paid overages."
+    },
+    {
+      "id": "tef-reading-a2-006",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "A2",
+      "competency": "inference",
+      "topic": "Camp de jour",
+      "documentType": "Courriel",
+      "document": "Bonjour madame Roy, nous confirmons l’inscription de votre fils Thomas au camp de jour pour la semaine du 14 juillet. Les activités commencent à 9 h, mais le service de garde accueille les enfants dès 7 h 30 sans coût additionnel. N’oubliez pas de lui préparer un chapeau et de la crème solaire.",
+      "prompt": "Que peut-on déduire de ce message ?",
+      "correct": "Les enfants passeront du temps à l’extérieur.",
+      "wrong": [
+        "Le service du matin demande un paiement spécial.",
+        "Les parents doivent obligatoirement venir avant 7 h 30.",
+        "Le camp refuse les nouvelles inscriptions pour juillet."
+      ],
+      "explanation": "Asking parents to pack a hat and sunscreen indicates that activities will take place outside in the sun.",
+      "explanationFr": "La demande d’un chapeau et de crème solaire permet de déduire que des activités sont prévues à l’extérieur.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Removed the unsupported inference that outdoor activities necessarily mean organised outings away from the camp."
+    },
+    {
+      "id": "tef-reading-a2-007",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "A2",
+      "competency": "vocabulary_in_context",
+      "topic": "Abonnement à la piscine",
+      "documentType": "Avis officiel",
+      "document": "Piscine du Quartier : Votre abonnement se termine le 30 juin. Pour conserver le tarif réduit, renouvelez-le au plus tard à cette date limite, à l’accueil ou sur notre site. Après le 30 juin, vous pourrez toujours nager, mais vous devrez payer chaque entrée au prix normal.",
+      "prompt": "Dans ce texte, que signifie l’expression « date limite » ?",
+      "correct": "Le dernier jour pour garder la réduction.",
+      "wrong": [
+        "Le premier jour pour acheter un billet au prix normal.",
+        "Le jour prévu pour ouvrir la piscine aux nouveaux membres.",
+        "Le nombre de jours pendant lesquels on peut aller nager."
+      ],
+      "explanation": "Here, « date limite » is the last day on which renewing preserves the discounted price: 30 June.",
+      "explanationFr": "La « date limite » est le dernier jour où le renouvellement permet de conserver le tarif réduit, ici le 30 juin.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Replaced an unverified driving-licence rule with a fictional pool membership notice; retained the deadline vocabulary objective and clarified the inclusive deadline."
+    },
+    {
+      "id": "tef-reading-a2-008",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "A2",
+      "competency": "specific_detail",
+      "topic": "Réparation de vélos",
+      "documentType": "Avis à la clientèle",
+      "document": "Atelier Vélo Pratique. Notre atelier déménage ! Dès le 15 novembre, nous vous accueillerons au 450, rue des Pins. Les réparations sans rendez-vous se feront uniquement le samedi matin, de 9 h à 12 h. Pour une réparation urgente pendant la semaine, merci de téléphoner avant de vous déplacer.",
+      "prompt": "Que doivent faire les clients pour une réparation urgente en semaine ?",
+      "correct": "Appeler l’atelier avant de venir",
+      "wrong": [
+        "Se présenter directement le samedi matin",
+        "Prendre un rendez-vous à l’ancienne adresse",
+        "Envoyer un courriel au responsable de l’atelier"
+      ],
+      "explanation": "For an urgent weekday repair, customers must telephone before going to the workshop. Saturday walk-in hours are a separate arrangement.",
+      "explanationFr": "Pour une réparation urgente en semaine, il faut « téléphoner avant de vous déplacer ». Les horaires sans rendez-vous concernent le samedi.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Replaced the second animal-care notice with bicycle repairs to broaden coverage; preserved the weekday/weekend contrast."
+    },
+    {
+      "id": "tef-reading-a2-009",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "A2",
+      "competency": "main_idea",
+      "topic": "Jardin collectif",
+      "documentType": "annonce",
+      "document": "Le jardin partagé ouvre ses inscriptions pour l’été. Les habitants du quartier peuvent demander un petit terrain pour cultiver des légumes. Une réunion d’information aura lieu samedi à 10 h, devant la bibliothèque. L’inscription coûte 20 $ pour toute la saison. Les outils sont prêtés gratuitement aux membres.",
+      "prompt": "Quel est l’objectif principal de ce message ?",
+      "correct": "Présenter les inscriptions à un jardin collectif",
+      "wrong": [
+        "Annoncer la vente de légumes devant la bibliothèque",
+        "Proposer un service payant de location des outils",
+        "Inviter les habitants à un repas samedi matin"
+      ],
+      "explanation": "The announcement explains how residents can join the shared garden. The meeting, price and free tools support that main purpose.",
+      "explanationFr": "Le message présente l’ouverture des inscriptions au jardin partagé. La réunion, le prix et le prêt des outils précisent cette offre.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Replaced a semantic duplicate of the snow-removal notice with a gardening announcement. Distractors distinguish joining from buying vegetables, renting tools and attending a meal."
+    },
+    {
+      "id": "tef-reading-a2-010",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "A2",
+      "competency": "speaker_intention",
+      "topic": "Courrier postal",
+      "documentType": "Avis de passage",
+      "document": "Service de livraison du quartier. Bonjour, nous avons tenté de livrer votre colis aujourd’hui à 11 h 15, mais personne n’était présent pour signer le reçu. Votre paquet a été déposé au bureau de poste de la rue Principale. Vous pouvez le récupérer dès demain avec cette carte et une pièce d’identité.",
+      "prompt": "Pourquoi le facteur a-t-il laissé cet avis ?",
+      "correct": "Pour expliquer où récupérer un colis",
+      "wrong": [
+        "Pour exiger le paiement immédiat d’une taxe",
+        "Pour demander une confirmation de votre identité",
+        "Pour proposer une seconde livraison à domicile"
+      ],
+      "explanation": "The delivery agent leaves the card to tell the recipient that the parcel was taken to the post office and how to pick it up.",
+      "explanationFr": "Le facteur laisse cet avis pour indiquer au destinataire où se trouve son colis et comment aller le chercher.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Checked the failed delivery, collection location, next-day availability and identification requirement; the correct answer states the notice’s main purpose."
+    },
+    {
+      "id": "tef-reading-a2-011",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "A2",
+      "competency": "inference",
+      "topic": "Plein air",
+      "documentType": "Panneau d’information",
+      "document": "Parc du Petit-Bois. Le sentier des Crêtes est temporairement fermé à cause de la glace. Les marcheurs peuvent prendre le sentier du Ruisseau avec des crampons légers sous leurs chaussures. Des bottes chaudes sont aussi demandées. Merci de respecter les panneaux pour votre sécurité.",
+      "prompt": "Que comprend-on à propos des sentiers du parc ?",
+      "correct": "Certains chemins sont devenus dangereux",
+      "wrong": [
+        "Tous les sentiers sont entièrement inaccessibles",
+        "Les randonneurs doivent payer un équipement spécial",
+        "Le parcours du Ruisseau ne nécessite aucun équipement"
+      ],
+      "explanation": "The closure because of ice supports the inference that some paths are dangerous. The alternative trail remains open with suitable equipment.",
+      "explanationFr": "La fermeture d’un sentier à cause de la glace montre que certains chemins sont dangereux. Un autre sentier reste accessible avec un équipement adapté.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Used a fictional park and simpler A2 wording, avoiding an invented rule attributed to a real national park. Kept the inference and equipment contrast."
+    },
+    {
+      "id": "tef-reading-a2-012",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "A2",
+      "competency": "vocabulary_in_context",
+      "topic": "Collecte des déchets",
+      "documentType": "Calendrier municipal",
+      "document": "Résidence du Moulin. Notre collecte des encombrants aura lieu le 12 mai. Vous pouvez déposer vos meubles usagés et gros électroménagers devant le local de collecte la veille à partir de 18 h. Les appareils électroniques ne sont pas acceptés : ils doivent être apportés à l’écocentre local.",
+      "prompt": "Dans ce texte, que désigne le mot « encombrants » ?",
+      "correct": "Les objets de grande taille",
+      "wrong": [
+        "Les déchets ordinaires de cuisine",
+        "Les vieux appareils électroniques",
+        "Les bacs de recyclage pour le plastique"
+      ],
+      "explanation": "The examples « meubles usagés et gros électroménagers » show that « encombrants » means bulky objects. Size, rather than weight alone, is the defining feature.",
+      "explanationFr": "Le document associe les encombrants à des « meubles usagés et gros électroménagers », ce qui désigne des objets volumineux.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Corrected the definition of encombrants to refer to size rather than weight alone; the examples and French explanation already support this. Replaced the invented municipal collection announcement with a fictional residence’s notice."
+    },
+    {
+      "id": "tef-reading-a2-013",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "A2",
+      "competency": "specific_detail",
+      "topic": "Emprunt d’instruments",
+      "documentType": "annonce",
+      "document": "Bibliothèque des Pins : Vous pouvez maintenant emprunter une guitare ou un petit clavier avec votre carte de membre. Réservez votre instrument en ligne, puis venez le chercher le vendredi après-midi. Le prêt dure vingt et un jours. Merci de rapporter aussi le sac de protection fourni avec l’instrument.",
+      "prompt": "Combien de temps peut-on garder un instrument ?",
+      "correct": "Pendant trois semaines.",
+      "wrong": [
+        "Jusqu’au vendredi qui suit l’emprunt.",
+        "Pendant les deux jours du week-end.",
+        "Pendant toute la durée de l’abonnement."
+      ],
+      "explanation": "The loan lasts twenty-one days, which is three weeks. Friday is the collection day, not the return deadline.",
+      "explanationFr": "Le prêt dure « vingt et un jours », soit trois semaines. Le vendredi correspond au retrait de l’instrument, pas à la fin du prêt.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Replaced another animal-identification notice with an instrument loan; tests a clear duration conversion without repeating the ID-document question."
+    },
+    {
+      "id": "tef-reading-a2-014",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "A2",
+      "competency": "main_idea",
+      "topic": "Séance de cinéma",
+      "documentType": "avis",
+      "document": "Cinéma des Platanes : La séance de dimanche, prévue à 18 h, commencera finalement à 20 h. Le film sera présenté dans la même salle. Votre billet reste valable, sans supplément. Si ce nouvel horaire ne vous convient pas, demandez un remboursement à l’accueil avant samedi soir.",
+      "prompt": "Quel est le message principal de cet avis ?",
+      "correct": "Annoncer un changement d’horaire.",
+      "wrong": [
+        "Annoncer le déplacement de la séance dans une autre salle.",
+        "Présenter les nouveaux tarifs des séances du dimanche.",
+        "Demander à tous les clients d’acheter un autre billet."
+      ],
+      "explanation": "The main change is the start time, from 18 h to 20 h. The room and existing ticket stay valid, and a refund is optional.",
+      "explanationFr": "L’avis annonce surtout le passage de 18 h à 20 h. La salle ne change pas et le billet reste valable ; le remboursement est facultatif.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Replaced the third overnight-parking notice with a cinema schedule change. All distractors now contradict specific details in the notice."
+    },
+    {
+      "id": "tef-reading-a2-015",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "A2",
+      "competency": "speaker_intention",
+      "topic": "Tourisme régional",
+      "documentType": "Annonce publicitaire",
+      "document": "Excursions des Îles : Profitez de notre nouveau service de bateau pour visiter les îles cet été ! Deux départs par jour sont proposés du jeudi au dimanche, jusqu’au 30 septembre. Réservez vos billets sur notre site au moins deux jours avant votre sortie pour avoir une place et observer les phoques.",
+      "prompt": "Quel est l’objectif de cette annonce ?",
+      "correct": "Promouvoir une liaison touristique en bateau.",
+      "wrong": [
+        "Recruter des guides pour la prochaine saison estivale.",
+        "Informer le public sur la protection des espèces marines.",
+        "Modifier les horaires de départ réguliers de la navette."
+      ],
+      "explanation": "The announcement promotes a new boat service for visiting the islands. It also gives departure days and explains how far ahead to book.",
+      "explanationFr": "L’annonce présente un nouveau service de bateau pour visiter les îles. Elle précise les jours de départ et le délai de réservation.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Simplified fluvial-shuttle vocabulary for A2 and used a fictional operator instead of implying an actual regional tourism offer."
+    }
+  ]
+}

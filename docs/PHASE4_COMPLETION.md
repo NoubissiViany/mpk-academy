@@ -1,106 +1,140 @@
 # Phase 4 completion checklist
 
-Verified October 28, 2026. **Phase 4 is not complete.** The reviewed-content merge, audio generation and required diagnostic writing feature are prepared locally. Content expansion and release verification remain. AI calibration is a separate outstanding accuracy dependency from Phases 2–3.
+Verified **October 29, 2026**. **Phase 4 is not complete.** Staging now runs the reviewed content and required diagnostic writing sample. Production is configured but remains six migrations behind; content-volume targets and hosted authenticated acceptance tests remain unfinished. Writing and speaking calibration are separate outstanding accuracy dependencies from Phases 2–3.
 
-## What is now done
+## Verified state
 
-- [x] All **213 drafts merged**, including the 183 owner-authorized AI editorial approvals. The earlier 30 and every review note/decision were preserved.
-- [x] **256 catalog items, 24 unique lessons, 26 diagnostic questions**, and 12 TEF reading practice questions.
-- [x] Zero short-document exceptions and zero answer-length-bias exceptions.
-- [x] **124 generated clips: 45 public and 79 private**, with zero pending. The latest batch changed 91 recordings (87 replacements and four additions). Local files and fixed-rate MP3 durations were checked; mock sections retain adequate answer time.
-- [x] Source scoring data agrees with `20261028000200_content_sync.sql` and the content lock. Historical migrations are preserved.
-- [x] The owner-confirmed staging bucket contains **79/79 new mock filenames** after the authorized upload. All downloaded files match local SHA-256 hashes, and the bucket is private. Old objects were preserved.
-- [x] The required **80–120-word writing sample** is implemented after the quiz, with EN/FR instructions, a live word count and no automatic timeout (ten minutes suggested).
-- [x] Samples save with the assessment and transfer from guest storage after sign-in. Current AI consent and an explicit request are required before provider review. The provisional writing result is separate from quiz scores and readiness.
-- [x] Diagnostic feedback shares the existing per-user/global writing limits, supports idempotent requests and failed-review retries, and rechecks consent before provider transmission. Paid practice entitlements are unchanged.
+| Area                        | Evidence                                                                                                                      | Remaining                                                                                      |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Previously reviewed content | All 213 drafts merged; 183 owner-authorized AI approvals and earlier decisions preserved                                      | No repeat approval needed for this batch                                                       |
+| Published source            | 256 questions/tasks, 24 unique lessons, 26 diagnostic questions, two mocks                                                    | Cohort-one expansion below                                                                     |
+| Content quality/audio       | Zero short-document or answer-length exceptions; 124 ready clips, 45 public and 79 private                                    | New listening content will need its own audio                                                  |
+| Staging database            | `czbynijgpkflnntgoqgj`; all 24 migrations applied, dry run reports up to date                                                 | Authenticated/provider acceptance tests                                                        |
+| Staging application         | [Sandbox](https://mpk-academy-sandbox.vercel.app), release `2779986f24fc62e0c6e6b9c579c1f8df08ad0703`; October 29 build ready | AI environment/worker setup below                                                              |
+| Production database         | `uhbuvskmiojqjegpuuln`; reachable and active, six pending migrations                                                          | Owner-run push before matching app deploy                                                      |
+| Production application      | Main Vercel project still serves revision `081b7f6abf26d0f5e4fa8a9a7c8944bf4f004684`                                          | Deploy reviewed release after database update                                                  |
+| Private mock storage        | Both buckets private, 2 MiB limit, `audio/mpeg`; 79/79 required names in each                                                 | Entitled playback verification; production bytes not independently hash-compared in this audit |
+| New expansion drafts        | 45 TEF reading drafts individually edited; zero mechanical flags; all pending                                                 | Owner acceptance and nine sampled teacher reviews, then merge                                  |
+| Calibration                 | Blank 40-essay packet and agreement checker prepared                                                                          | Real consented samples and independent ratings                                                 |
 
-The historical [editorial review](CONTENT_REVIEW.md) remains the record of individual content decisions. These checkmarks describe local implementation and the specific staging storage check, not a production launch.
+The staging upload was completed previously; its 79 downloaded clips matched local SHA-256 hashes. No audio upload or hosted database write was performed in this audit. The main production application was not redeployed. The CLI link remains staging. The current remote content branch was still at `c57d94f3fbff361692693ab8e3bdf559d5adfc6c` during the audit; local commits need pushing.
 
-## 1. Release the prepared batch
+Staging deployment ID: `dpl_7dPFJU7LyZiAyGvcVh4SoLqWiWTP`. It was built from an immutable archive of `2779986`, with no local environment files. The hosted guest browser check passed 26 quiz questions, the mandatory 80–120-word sample, preservation through back navigation, a separate provisional writing panel and the sign-in link, with zero client errors. This was a guest-only synthetic run; it did not submit an assessment to a hosted account or send text to an AI provider.
 
-The owner runs hosted database pushes. The CLI is linked to **staging**, project `czbynijgpkflnntgoqgj`. Do not use that link for production by accident.
+The writing feature is already implemented. Its sample transfers after sign-in, requires current consent and an explicit feedback request, and shares writing queue limits. Its provisional criteria do not alter quiz scores or readiness. Historical assessments remain supported. See [AI operations](AI_OPERATIONS.md).
 
-Staging's earlier migrations `20261024000100` and `20261028000100` are applied. The new release contains:
+## 1. Finish staging acceptance
 
-| Migration                               | Purpose                                                              |
-| --------------------------------------- | -------------------------------------------------------------------- |
-| `20261028000200_content_sync.sql`       | The 183 merged drafts and their ready audio references               |
-| `20261028000300_diagnostic_writing.sql` | Required sample validation and owner-scoped diagnostic feedback RPCs |
+Do not repeat the completed database push or mock-audio upload unless a fresh check finds a difference.
 
-On staging, after reviewing the final branch:
+1. In Vercel, select **`mpk-academy-sandbox`**, not the main project. Add a staging `GROQ_API_KEY` and `JOBS_SECRET` to its **Production environment**: the sandbox's stable URL uses that Vercel target. Both were absent on October 29. Verify Groq Zero Data Retention and model limits as described in [AI operations](AI_OPERATIONS.md#one-time-setup-per-environment).
+2. In the **staging** Supabase SQL editor, create the two absent Vault entries. Use the same job secret as the sandbox Vercel project; keep the actual value out of Git and chat:
+
+   ```sql
+   select vault.create_secret('https://mpk-academy-sandbox.vercel.app/api/jobs/run', 'mpk_jobs_url');
+   select vault.create_secret('<same staging JOBS_SECRET>', 'mpk_jobs_secret');
+   ```
+
+3. Redeploy the sandbox after saving its variables. Check the scheduled worker with the read-only queries in [AI operations](AI_OPERATIONS.md). No Vault entries were created by this audit.
+4. With an account you control, complete these hosted checks:
+   - Complete the guest diagnostic, sign in, and confirm the writing sample transfers exactly once and opens on the results page.
+   - Give AI consent and request feedback. Confirm a real Groq response and all four separate provisional writing criteria. Check a failed-review retry, a deferred/capped state, and that consent withdrawal prevents queued diagnostic transmission.
+   - Use an entitled test account for listening practice and a complete mock: private playback, single-play authorization, saved answers, scoring and results.
+   - Check EN/FR and desktop/mobile behavior, plus recent errors in `/admin`.
+   - Confirm signup and password recovery through an external inbox, with the correct callback and language. This audit sent no authentication emails.
+
+**Done when:** these authenticated/provider scenarios pass on the deployed sandbox, with evidence recorded. Presence of credentials and passing guest tests do not establish them.
+
+## 2. Release the existing batch to production
+
+Production is now configured. Its Vercel public URL and Supabase credentials point to `uhbuvskmiojqjegpuuln`; `GROQ_API_KEY` and `JOBS_SECRET` are present. Production Vault contains `mpk_jobs_url` pointing to `https://mpk-academy.vercel.app/api/jobs/run` and a nonempty `mpk_jobs_secret`. Their secret values were not compared, and an actual worker/provider round trip remains unverified. Do not create a replacement production project or duplicate these existing Vault entries.
+
+Production already has all 79 required private mock filenames. Recheck before applying migrations that open audio access:
 
 ```bash
-npm run content:upload-mock-audio -- --check
+npm run content:upload-mock-audio -- --check --env .env.production.local
+npx supabase link --project-ref uhbuvskmiojqjegpuuln
+cat supabase/.temp/project-ref
 npx supabase db push --dry-run
-# Owner runs this after reviewing the target and pending migrations:
+```
+
+The October 29 production dry run listed exactly:
+
+1. `20261022000200_mock_audio_bucket.sql`
+2. `20261022000300_diagnostic_size.sql`
+3. `20261024000100_content_sync.sql`
+4. `20261028000100_content_sync.sql`
+5. `20261028000200_content_sync.sql`
+6. `20261028000300_diagnostic_writing.sql`
+
+After reviewing that target and list, **the owner runs**:
+
+```bash
 npx supabase db push
+npx supabase db push --dry-run
+# Restore the usual staging link afterwards:
+npx supabase link --project-ref czbynijgpkflnntgoqgj
 ```
 
-Then deploy the matching application revision to staging. Verify:
-
-- [ ] Complete the 26-question diagnostic as a guest. Confirm the finish button requires 80–120 words, the sample survives back navigation, and the quiz result remains separate.
-- [ ] Register/sign in and confirm the sample transfers and the writing result opens. Existing historical guest assessments must still transfer.
-- [ ] Give AI consent and request feedback. Confirm actual Groq processing and the four provisional criteria. Test a daily-cap/deferred state and a failed-review retry. Consent withdrawal must prevent a queued diagnostic sample from reaching the provider.
-- [ ] With an entitled tester, complete listening practice and a mock. Check private playback, single-play authorization, answer saving, scoring and results.
-- [ ] Verify EN/FR UI, desktop/mobile behavior and no sensitive errors in `/admin`.
-
-**Production is not configured**, as confirmed by the owner on October 28. Bootstrap it before repeating the release checks:
-
-1. Create or explicitly designate a production Supabase project. The paused, unused project mentioned in [Supabase operations](SUPABASE_OPERATIONS.md) is not a verified production target.
-2. Put that project's URL and service-role key in the ignored `.env.production.local` file. Configure the deployment's public URL, Supabase URL/publishable key, server-only service-role key, `GROQ_API_KEY`, `JOBS_SECRET`, admin and contact settings from `.env.example`. Keep beta mode enabled for the closed beta. Azure/Gemini content-tool keys stay local.
-3. In production's Storage dashboard, create a **private** `mock-audio` bucket allowing `audio/mpeg`, with a 2 MiB file limit and no public access policy. The historical bucket migration is idempotent. Creating this bucket first allows audio to be present before the later migrations mark clips ready.
-4. Upload and verify production's own 79 files:
+Then push the reviewed local branch, open/complete its PR, and merge/deploy the matching source to the **main** Vercel project `mpk-academy`. If a merge to `main` triggers deployment automatically, finish the production database step first. Pending draft files are authoring records and do not enter the published catalog just because their commit is deployed.
 
 ```bash
-npm run content:upload-mock-audio -- --check --env .env.production.local
-# If the check reports missing files:
-npm run content:upload-mock-audio -- --env .env.production.local
-npm run content:upload-mock-audio -- --check --env .env.production.local
+git push -u origin content/review-and-first-audio
 ```
 
-5. Link the CLI to the confirmed production reference with `npx supabase link --project-ref <production-project-ref>`, check the reference in `supabase/.temp/project-ref`, then review `npx supabase db push --dry-run` before running the owner-managed push. A fresh production database needs **all historical migrations**, not just staging's two pending migrations.
-6. Configure production Auth URLs, confirmation/recovery templates and SMTP using [Supabase operations](SUPABASE_OPERATIONS.md). Set production's worker URL and secret in Vault using [AI operations](AI_OPERATIONS.md), and verify the scheduled job. Deploy the matching app and run the same hosted acceptance checks, including external-inbox signup and password recovery.
+Repeat the authenticated acceptance checks on production. Verify its Auth Site URL, redirect allow-list, SMTP delivery and scheduled worker using [Supabase operations](SUPABASE_OPERATIONS.md) and [AI operations](AI_OPERATIONS.md). The audit did not establish actual email delivery or equality of the Vercel/Vault job secrets.
 
-The upload command's `--env` argument **does not change the Supabase CLI link**. Keep credentials outside version control. Apply migrations before deploying matching source. If merging a PR to `main` automatically deploys production, complete production's database step first. Keep old private objects while older app deployments may reference them.
+The upload script's `--env` option does **not** change the CLI database link. Preserve old private objects while older deployments may use them. Keep credentials outside version control.
 
-**Done when:** both deployments use matching content/audio/SQL, all hosted scenarios above pass, and the release revision is committed and deployed. Local tests cannot establish hosted user-session or provider behavior.
+## 3. Finish the remaining cohort-one content
 
-## 2. Finish the remaining cohort-one content
+Published counts are unchanged by this audit. Diagnostic/mock questions and the diagnostic writing sample do not count toward practice-bank targets.
 
-These are current practice counts. Diagnostic and mock questions do not fill practice targets. The required diagnostic writing sample is also separate from the writing-practice task count.
+| Content             | TEF now | Target | TEF gap | TCF now | Target | TCF gap |
+| ------------------- | ------: | -----: | ------: | ------: | -----: | ------: |
+| Reading questions   |      12 |     60 |      48 |      10 |     60 |      50 |
+| Listening questions |      10 |     60 |      50 |      10 |     60 |      50 |
+| Writing tasks       |       4 |     10 |       6 |       6 |     10 |       4 |
+| Speaking tasks      |       4 |     10 |       6 |       6 |     10 |       4 |
+| Available lessons   |      17 |     25 |       8 |      17 |     25 |       8 |
 
-| Content             | TEF now | Target | TEF remaining | TCF now | Target | TCF remaining |
-| ------------------- | ------: | -----: | ------------: | ------: | -----: | ------------: |
-| Reading questions   |      12 |     60 |            48 |      10 |     60 |            50 |
-| Listening questions |      10 |     60 |            50 |      10 |     60 |            50 |
-| Writing tasks       |       4 |     10 |             6 |       6 |     10 |             4 |
-| Speaking tasks      |       4 |     10 |             6 |       6 |     10 |             4 |
-| Available lessons   |      17 |     25 |             8 |      17 |     25 |             8 |
+This is **198 reading/listening questions and 20 productive tasks** still to publish. **45 of those questions are now prepared as pending drafts**, leaving **153 not yet drafted**. The 45 are TEF reading: 13 A2, 10 B1, 12 B2 and 10 C1. After their approved merge, TEF reading would be 57/60; three C1 questions would complete the proposed 15-per-level split.
 
-This is **198 additional reading/listening questions and 20 productive tasks**. Shared lessons can count toward both exam gaps, so eight suitable shared lessons could fill both; the two lesson gaps are not necessarily 16 distinct lessons.
+All 45 passages, questions, options and bilingual explanations were individually reviewed and corrected. Substantive fixes include replacing duplicate documents, removing unsupported municipal/medical/legal claims, correcting contradictions and weak inferences, and rebuilding advanced questions at the required length and level. Notes explicitly identify AI editorial preparation. They remain `review: "pending"`, with no teacher decisions. The previous AI approval exception applied only to the earlier 183 drafts.
 
-Every existing lesson currently has one checkpoint. Add at least **48 checkpoints across the 24 existing lessons** to reach three each. New lessons also need 3–5 checkpoints. Maintain original documents, distinct distractors, appropriate competency/level coverage, bilingual teaching text and listening audio.
+An **in-memory simulation only** validates all 45 additions: 301 catalog items, unchanged 24 lessons/two mocks, zero pending audio; the 57-item TEF reading pool's correct positions are a=15, b=17, c=13, d=12 and pass the existing balance rule. This is not an approval or a merge. The current catalog remains 256 items.
 
-A balanced authoring split would bring each practice skill to 15 questions at each of A2/B1/B2/C1. This is a suggested distribution, not a new exam-scoring rule:
-
-| Batch         | A2 to add | B1 to add | B2 to add | C1 to add |
-| ------------- | --------: | --------: | --------: | --------: |
-| TEF reading   |        13 |        10 |        12 |        13 |
-| TEF listening |        13 |        12 |        12 |        13 |
-| TCF reading   |        13 |        12 |        12 |        13 |
-| TCF listening |        13 |        12 |        12 |        13 |
-
-Use the existing pipeline in reviewable batches, varying topics and competencies. For example:
+Review the saved batch:
 
 ```bash
-npm run content:draft -- new --exam TEF --skill reading --level A2 --count 13
-npm run content:draft -- new --exam TEF --skill reading --level B1 --count 10
-npm run content:draft -- new --exam TCF --skill listening --level B2 --count 12
 npm run content:review
+# Open http://localhost:4400; record each editorial decision.
+npm run content:review -- --print
+# After acceptance, generate the nine-item teacher sample:
 npm run content:review -- --print --teacher
 ```
 
-Complete the other rows/levels using the table. The drafting CLI handles reading/listening questions; writing/speaking tasks and lessons/checkpoints are authored in their typed content files. New batches need their normal editorial and sampled teacher review. The owner's AI approval exception applied to the previous 183 drafts only; it is not blanket approval for new material.
+`content/drafts/review.html` is the printable 45-draft packet and can be regenerated. The teacher packet includes accepted items only. Keep the teacher gate for the nine sampled IDs and preserve all review notes.
+
+Remaining authoring after these saved drafts:
+
+| Batch         | A2 to draft | B1 to draft | B2 to draft | C1 to draft |
+| ------------- | ----------: | ----------: | ----------: | ----------: |
+| TEF reading   |           0 |           0 |           0 |           3 |
+| TEF listening |          13 |          12 |          12 |          13 |
+| TCF reading   |          13 |          12 |          12 |          13 |
+| TCF listening |          13 |          12 |          12 |          13 |
+
+The generation run stopped after Gemini availability/network errors and Groq rate limits. Saved partial output is retained; the C1 file records 10/13 generated. Rerun only the remaining counts when capacity is available, for example:
+
+```bash
+npm run content:draft -- new --exam TEF --skill reading --level C1 --count 3
+npm run content:draft -- new --exam TCF --skill listening --level B2 --count 12
+```
+
+The command now saves every successful batch atomically, avoids overwriting same-minute files, records incomplete generation, and retries transient provider failures separately from schema failures. Provider output still needs editorial review; a successful request is not a quality guarantee.
+
+Author writing/speaking tasks and lessons in their typed content files. **Eight suitable shared lessons** can fill both eight-lesson exam gaps. Add **48 checkpoints across the 24 existing lessons** to reach three each; every new lesson also needs 3–5 checkpoints. Maintain bilingual teaching text, level/competency coverage, original documents and distinct answer options.
 
 After each approved batch:
 
@@ -112,15 +146,17 @@ npm run content:sql
 npm run validate:content
 ```
 
-Then release matching audio, SQL and application source using the sequence above.
+Release matching content, audio, SQL and source using the sequence above. The 45 reading additions need no new clips themselves; future listening and speaking additions do.
 
-**Done when:** `npm run check:phase4` reports all local content targets met, and the content is deployed and usable. This command intentionally exits nonzero while targets are short, even though `validate:content` passes. A green result is a local content check, not proof of deployment or calibrated scoring.
+**Done when:** `npm run check:phase4` reports all local targets met, all drafts resolved and zero pending audio/debt, and the resulting content is deployed and usable. It currently exits nonzero intentionally. `validate:content` passing alone is not Phase 4 completion.
 
-## 3. Validation before release
+## 4. Validation evidence
 
-Local verification on October 28 passed content/SQL synchronization, formatting, lint, type checking, **357 unit tests across 58 files**, the production build, and the subsequent client-bundle check (**704 protected strings across 87 files**). All **24 migrations**, **seven database assertion suites** and **six diagnostic parity scenarios** passed on disposable PostgreSQL 17.11. A final staging dry run listed exactly `20261028000200_content_sync.sql` and `20261028000300_diagnostic_writing.sql`; neither was pushed.
+The application release `2779986` previously passed **357 unit tests in 58 files**, formatting, lint, types, content/SQL validation, production build and the subsequent client-bundle protection check (**704 protected strings across 87 files**). All **24 migrations**, **seven database assertion suites** and **six diagnostic parity scenarios** passed on disposable PostgreSQL 17.11. Isolated desktop/mobile tests passed **14 beta and 16 paid-mode checks**, including public audio delivery and guest writing handoff; hosted authentication and real provider calls were outside those local tests.
 
-The isolated desktop/mobile browser suites passed **14 beta-mode checks and 16 paid-mode checks**. Each run skipped only the other mode's scenarios. They covered the required writing sample and guest handoff, EN/FR UI, access boundaries, paid-plan navigation, and byte-for-byte delivery of all 45 public audio files. They did not exercise hosted sign-in, a real AI provider, or entitled private-mock playback; those remain in the hosted acceptance checklist.
+This audit also passed the sandbox deployment's production build and hosted guest browser check. Draft persistence and calibration have eight new tests, including saved partial batches, preservation of existing reviews, exact agreement thresholds and rejection of incomplete calibration. Current verification totals are recorded in [the October 29 audit](PHASE4_AUDIT_2026-10-29.md).
+
+For a future application/content release:
 
 ```bash
 npm run validate:content
@@ -134,25 +170,20 @@ npm run test:e2e
 NEXT_PUBLIC_BETA_MODE=false npm run test:e2e
 ```
 
-Run build and bundle checks sequentially. Browser tests use isolated local configuration without hosted credentials and webpack, matching the production bundler; Turbopack's cold startup exceeded the local smoke-server timeout. Apply all migrations and database assertions to **disposable PostgreSQL 17**, then run the six diagnostic parity scenarios; never run `scripts/db/test-migrations.sh` against a hosted project.
+Run build and bundle checks sequentially. Run the migration/assertion/parity harness against **disposable PostgreSQL 17 only**, never a hosted project. The current audit changes tooling, pending drafts and documentation; it does not alter runtime learner code or migrations.
 
-The new SQL assertions cover missing/short/long samples, prompt version, historical guest compatibility, quiz-score preservation, ownership, current consent, idempotency, retries and daily budgets. Local AI tests use synthetic text and mocked responses; the hosted checklist still requires a real consented feedback round trip.
+## 5. Complete the separate calibration dependency
 
-## 4. Finish the separate calibration dependency
+1. Obtain **at least 40 consented learner essays**, across both exams and all three target bands. Keep identities, texts and consent records outside Git.
+2. Have a qualified French teacher independently rate task fulfilment, coherence, vocabulary and grammar before seeing AI ratings.
+3. Enter paired results into a private copy of [the blank packet](calibration/writing-ratings.template.json). Record the actual model and prompt/source revision.
+4. Run the checker:
 
-- [ ] Obtain consent for 40 learner essays across both exams and target levels.
-- [ ] Have a qualified teacher independently grade task fulfilment, coherence, vocabulary and grammar without seeing AI ratings.
-- [ ] Calculate agreement per criterion: the existing target is at least 60% exact and 90% within one level. Record aggregate results and adjustments in `docs/calibration/`, without identifiable learner work.
-- [ ] Arrange a separate teacher-rated speaking sample and define its size/acceptance criteria. Transcript feedback does not assess pronunciation.
-- [ ] Re-evaluate systematic disagreements and retain provisional labels until evidence supports stronger claims. A brief diagnostic sample is not a calibrated official exam score.
+   ```bash
+   npm run check:calibration -- /private/path/writing-ratings.json
+   ```
 
-See [AI operations](AI_OPERATIONS.md#calibration-before-trusting-the-levels).
+5. Record aggregate methodology/results in `docs/calibration/`. Each criterion must achieve at least **60% exact and 90% within-one-level agreement**. Investigate disagreements and evaluate changes on held-out ratings.
+6. Arrange a separate teacher-rated speaking sample and agree its size and acceptance criteria. Writing agreement does not validate speaking; transcript feedback does not assess pronunciation.
 
-## What the owner needs to do
-
-1. Review and run the two pending staging migrations, deploy the matching branch, and perform the hosted checks.
-2. Configure production using the bootstrap sequence above; upload/check its private audio, push all reviewed migrations, deploy and verify.
-3. Complete the remaining 198 questions, 20 tasks, lesson gaps and checkpoints through the authoring/review pipeline; arrange the required review of new batches.
-4. Arrange consented calibration samples and independent teacher ratings.
-
-The content merge and writing-sample implementation are no longer the open development tasks. Phase 4 remains open because its content-volume and hosted-release milestones are unfinished.
+The [calibration guide](calibration/README.md) explains the procedure. The blank template correctly fails with zero complete samples. Synthetic tests and AI editorial draft review are not calibration evidence. Keep provisional labels until actual results justify stronger claims.

@@ -14,7 +14,7 @@ import { competencyIds, type ContentCompetency } from "./shared/competencies";
 import { levels, type ContentLevel } from "./shared/levels";
 import type { MCQ } from "./shared/types";
 
-export const DRAFT_PROMPT_VERSION = "2026-10-22";
+export const DRAFT_PROMPT_VERSION = "2026-10-29";
 
 export type DraftSkill = "reading" | "listening";
 export type DraftExam = "TEF" | "TCF";
@@ -96,7 +96,7 @@ const levelGuide: Record<ContentLevel, string> = {
 };
 
 const examGuide: Record<DraftExam, string> = {
-  TEF: "TEF Canada (France Éducation international / CCI Paris Île-de-France style): documents from daily, professional and civic life in Canada and France; one question per document.",
+  TEF: "TEF Canada: original practice documents from daily, professional and civic life in Canada and France; one question per document.",
   TCF: "TCF Canada (France Éducation international): items rise in difficulty from A1 to C2; one question per document; the question is read after the document.",
 };
 
@@ -157,6 +157,8 @@ const rules = (skill: DraftSkill, level?: ContentLevel) =>
       ? '- The document is a recording transcript of spoken French. A dialogue marks every turn "A : …", "B : …" on one line; a monologue has no marks. "speakers" gives one letter per speaker in order, F or M (for example "FM"), matching how they refer to themselves and how the question and explanations refer to them.'
       : '- "speakers" is an empty string.',
     "- One question per document, answerable only from the document. Exactly one option is correct; the three wrong options are plausible to someone who misreads, each tied to something in the document.",
+    "- Match the question to its competency: inference needs a supported implication, vocabulary tests the meaning of an expression actually present, and advanced-level questions require nuance rather than elementary fact recall. Check that dates, quantities and explanations do not contradict the document.",
+    "- Use fictional organizations for invented announcements, statistics or policies. Do not attribute invented medical advice, legal requirements, research findings or public-service rules to real institutions. Prefer ordinary fictional situations that need no external factual claims.",
     "- All four options have the same grammatical form and similar length. The correct option must NOT be the longest one; make at least one wrong option longer. At B2 and C1 the correct option paraphrases the document instead of repeating its words.",
     "- No 'all of the above', 'none of the above', or options that differ only by one word.",
     "- French typography: a space before ? ! : ; and inside « », times as 8 h 30, apostrophes ’.",
@@ -176,7 +178,7 @@ export function newItemsMessages(request: {
   return [
     {
       role: "system" as const,
-      content: `You write original ${request.skill} comprehension questions for ${examGuide[request.exam]} The questions train adult learners; a French teacher reviews every draft. Return JSON only, following the schema.`,
+      content: `You write original ${request.skill} comprehension questions for ${examGuide[request.exam]} The questions train adult learners; every draft receives editorial review, with a separate teacher gate where required. Return JSON only, following the schema.`,
     },
     {
       role: "user" as const,
