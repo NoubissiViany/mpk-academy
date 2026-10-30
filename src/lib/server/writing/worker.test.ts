@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { GroqError, groqChat, type ChatFunction } from "@/lib/server/ai/groq";
 import { buildReviewMessages, processWritingQueue } from "./worker";
+import { aiFeedbackNoticeVersion } from "@/config/privacy";
 
 const essay =
   "Madame, Monsieur, je vous écris au sujet de la journée sans voiture. D’abord, les enfants peuvent jouer dehors. Ensuite, l’air est plus propre. Il faut aider les magasin du centre-ville.";
@@ -43,7 +44,7 @@ type WorkerClient = NonNullable<
   NonNullable<Parameters<typeof processWritingQueue>[0]>["client"]
 >;
 
-function fakeClient(jobs: ReturnType<typeof job>[]) {
+function fakeClient(jobs: ReturnType<typeof job>[], consented = true) {
   const queue = [...jobs];
   const rpc = vi.fn(async (name: string, args?: Record<string, unknown>) => {
     void args;
@@ -51,7 +52,22 @@ function fakeClient(jobs: ReturnType<typeof job>[]) {
       return { data: queue.length ? [queue.shift()] : [], error: null };
     return { data: null, error: null };
   });
-  return { client: { rpc } as unknown as WorkerClient, rpc };
+  const from = () => ({
+    select: () => ({
+      eq: () => ({
+        maybeSingle: async () => ({
+          data: {
+            ai_feedback_consent_version: consented
+              ? aiFeedbackNoticeVersion
+              : null,
+            ai_feedback_consent_at: consented ? new Date().toISOString() : null,
+          },
+          error: null,
+        }),
+      }),
+    }),
+  });
+  return { client: { rpc, from } as unknown as WorkerClient, rpc };
 }
 
 const chatReturning =
@@ -59,6 +75,38 @@ const chatReturning =
   async () => ({ content, totalTokens: 2700, remainingTokens });
 
 describe("writing feedback worker", () => {
+  it("does not send a queued diagnostic sample after consent is withdrawn", async () => {
+    const { client, rpc } = fakeClient(
+      [job({ task_id: "mpk-diagnostic-writing-v1" })],
+      false,
+    );
+    const chat = vi.fn(chatReturning(JSON.stringify(goodFeedback)));
+    await processWritingQueue({ client, chat });
+    expect(chat).not.toHaveBeenCalled();
+    expect(rpc).toHaveBeenCalledWith(
+      "mpk_retry_writing_job",
+      expect.objectContaining({
+        p_error: "consent_required",
+        p_final: true,
+        p_tokens: 0,
+      }),
+    );
+  });
+  it("reviews a diagnostic sample through the existing verified-feedback queue", async () => {
+    const { client, rpc } = fakeClient([
+      job({ task_id: "mpk-diagnostic-writing-v1" }),
+    ]);
+    const chat = vi.fn(chatReturning(JSON.stringify(goodFeedback)));
+    expect(await processWritingQueue({ client, chat })).toEqual({
+      processed: 1,
+    });
+    expect(JSON.stringify(chat.mock.calls)).toContain("80–120 words");
+    expect(JSON.stringify(chat.mock.calls)).toContain("separate quiz result");
+    expect(rpc).toHaveBeenCalledWith(
+      "mpk_complete_writing_job",
+      expect.objectContaining({ p_id: "job-1" }),
+    );
+  });
   it("stores verified feedback and counts tokens", async () => {
     const { client, rpc } = fakeClient([job()]);
     const result = await processWritingQueue({

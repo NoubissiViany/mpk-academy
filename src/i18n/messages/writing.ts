@@ -121,7 +121,8 @@ const en = {
   },
   history: {
     title: "My texts",
-    description: "Every text you sent for AI feedback, newest first.",
+    description:
+      "Your writing-practice texts, newest first. Diagnostic writing feedback remains with your assessment results.",
     empty: "You have not sent a text for AI feedback yet.",
     start: "Practise writing",
     status: {
@@ -277,7 +278,7 @@ const fr: typeof en = {
   history: {
     title: "Mes textes",
     description:
-      "Tous les textes envoyés pour une correction par IA, du plus récent au plus ancien.",
+      "Vos textes d’entraînement, du plus récent au plus ancien. Le retour écrit du diagnostic reste accessible avec les résultats de votre évaluation.",
     empty: "Vous n’avez encore envoyé aucun texte pour une correction par IA.",
     start: "S’entraîner à l’écrit",
     status: {

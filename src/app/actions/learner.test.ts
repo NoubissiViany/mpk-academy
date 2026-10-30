@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { writingSampleFixture } from "@/test/diagnostic-writing";
 
 const mocks = vi.hoisted(() => ({
   getSnapshot: vi.fn(),
@@ -27,6 +28,7 @@ import {
 const submission = {
   submissionId: "30000000-0000-4000-8000-000000000003",
   intake: {
+    writingSample: writingSampleFixture,
     goal: "TEF Canada",
     target: "NCLC 7",
     frenchExperience: "I know some French",
@@ -65,6 +67,22 @@ describe("learner action failures", () => {
   });
 
   afterEach(() => vi.restoreAllMocks());
+
+  it("requires an 80–120-word sample before saving a new diagnostic", async () => {
+    for (const writingSample of [
+      undefined,
+      { ...writingSampleFixture, text: "mot ".repeat(79) },
+      { ...writingSampleFixture, text: "mot ".repeat(121) },
+    ]) {
+      expect(
+        await submitDiagnosticAction({
+          ...submission,
+          intake: { ...submission.intake, writingSample },
+        }),
+      ).toMatchObject({ ok: false, reason: "invalid_submission" });
+    }
+    expect(mocks.rpc).not.toHaveBeenCalled();
+  });
 
   it("normalizes a structured Supabase authentication error", async () => {
     mocks.rpc.mockResolvedValue({
@@ -128,7 +146,7 @@ describe("learner action failures", () => {
     });
     expect(mocks.getSnapshot).not.toHaveBeenCalled();
     expect(mocks.rpc).toHaveBeenCalledWith(
-      "mpk_submit_assessment",
+      "mpk_submit_diagnostic",
       expect.objectContaining({ p_guest_session_id: submission.submissionId }),
     );
   });

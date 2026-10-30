@@ -1118,6 +1118,20 @@ export type Database = {
         };
         Returns: Json;
       };
+      mpk_submit_diagnostic: {
+        Args: {
+          p_guest_session_id: string;
+          p_kind: string;
+          p_exam: string;
+          p_intake: Json;
+          p_answers: Json;
+        };
+        Returns: Json;
+      };
+      mpk_submit_diagnostic_writing: {
+        Args: { p_assessment_id: string; p_locale: string; p_retry?: boolean };
+        Returns: Json;
+      };
       mpk_writing_status: { Args: { p_id: string }; Returns: Json };
       mpk_admin_create_beta_invite: {
         Args: {

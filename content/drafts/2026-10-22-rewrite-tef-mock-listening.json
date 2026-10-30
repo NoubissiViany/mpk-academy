@@ -28,7 +28,7 @@
       "explanationFr": "L’annonce demande aux clients d’aller aux caisses avant la fermeture ; les cabines d’essayage sont déjà fermées.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Customers are explicitly directed to the tills before closing; fitting rooms have already closed. Waiting outside, returning later and trying clothes conflict with the announcement.",
       "teacher": "approved"
@@ -53,7 +53,7 @@
       "explanationFr": "Julie dit qu’elle est devant la porte bleue, à droite de la pharmacie.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Julie locates herself at the blue door to the pharmacy's right. Inside, left and behind are distinct unsupported positions; arrivée and the female voice agree.",
       "teacher": "approved"
@@ -78,7 +78,7 @@
       "explanationFr": "À cause des travaux, l’autobus termine son trajet devant l’hôpital au lieu du terminus habituel.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The hospital replaces the usual terminus while other stops remain unchanged. Fare, line number and first departure time are not altered.",
       "teacher": "approved"
@@ -103,7 +103,7 @@
       "explanationFr": "Les élèves écrivent seulement leur prénom maintenant ; l’exercice commence après les consignes.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The immediate writing task is the first name; exercise answers must wait for instructions. Address and date are not requested, so the temporal distinction is unambiguous.",
       "teacher": "approved"
@@ -128,7 +128,7 @@
       "explanationFr": "Elle prévient que la fenêtre de la voiture est ouverte alors qu’il commence à pleuvoir.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The neighbour calls to warn of the open car window as rain starts. No request for keys, shared journey or mechanical repair is made; voisine matches the female voice.",
       "teacher": "approved"
@@ -153,7 +153,7 @@
       "explanationFr": "La deuxième personne choisit un thé sans sucre et accepte aussi un verre d’eau.",
       "speakers": "FM",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The second speaker selects unsweetened tea and subsequently accepts water. The other listed choices alter the drink or sugar condition; the extra glass does not create a competing answer.",
       "teacher": "approved"
@@ -178,7 +178,7 @@
       "explanationFr": "La salle informatique ouvre à onze heures à cause d’une réparation ; les tables de lecture sont déjà accessibles.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Reading tables are already usable, while the computer room opens later at eleven. Other rooms are not identified as accessible, and ordinary book loans do not imply access to the reserve.",
       "teacher": "approved"
@@ -203,7 +203,7 @@
       "explanationFr": "Hugo a un billet en trop et invite Karim à l’accompagner au match de ce soir.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Hugo offers Karim the ticket freed by his brother's absence. Attending together is distinct from joining a team, buying for the brother or watching television.",
       "teacher": "approved"
@@ -228,7 +228,7 @@
       "explanationFr": "L’entretien garde le même jour et la même heure, mais il se fera en visioconférence.",
       "speakers": "MF",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The recruiter explicitly preserves Tuesday at ten but changes an in-person interview to videoconference. The form of the meeting alone changes; the MF turn assignment is consistent.",
       "teacher": "approved"
@@ -253,7 +253,7 @@
       "explanationFr": "Il y a assez de jouets ; les livres pour adolescents sont ce qui manque le plus à l’association.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The association has enough toys and names adolescent books as its greatest shortage. Winter clothing is welcome but is not the main request; the offered alternatives miss the age group or requested goods.",
       "teacher": "approved"
@@ -278,7 +278,7 @@
       "explanationFr": "La circulation est bloquée près du pont, et la piste cyclable le long de la rivière évite ce secteur.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Marc chooses a riverside cycle route to bypass the accident-blocked bridge area. Group exercise, bus prices and a bicycle-only bridge do not explain his choice.",
       "teacher": "approved"
@@ -303,7 +303,7 @@
       "explanationFr": "Il faut d’abord enregistrer le document, puis l’envoyer, pour que la pièce jointe contienne les dernières modifications.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: document, explanation, explanationFr. Saving precedes emailing. Corrected the claim that sending itself loses edits: the concrete risk is that an unsaved attachment omits the latest changes, while the sequence and correct answer stay the same.",
       "teacher": "approved"
@@ -328,7 +328,7 @@
       "explanationFr": "Malgré un appartement plus grand, la personne reste, car elle perdrait presque deux heures par jour en trajet.",
       "speakers": "FM",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: document. The prospective two-hour commute outweighs the attractive larger apartment. Corrected the Quebec apartment expression to un quatre et demi; size, landlord rejection and a current rent increase do not explain the decision.",
       "teacher": "approved"
@@ -353,7 +353,7 @@
       "explanationFr": "La discussion avec la réalisatrice a lieu après le film, vers 21 h 30.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The discussion follows the film at approximately 21 h 30. The announcement distinguishes it from the 20 h screening and offers no next-day or mid-film discussion.",
       "teacher": "approved"
@@ -378,7 +378,7 @@
       "explanationFr": "La pièce est arrivée ; le réparateur attend l’accord du client sur le devis de 65 $ avant de commencer.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The part has already arrived, but repair waits for approval of the 65-dollar quote. Delivery and diagnosis are not the outstanding request; Jean matches the male voice.",
       "teacher": "approved"
@@ -403,7 +403,7 @@
       "explanationFr": "Les promenades font découvrir aux nouveaux arrivants les commerces et les services du quartier.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. A guided neighbourhood walk introduces newcomers to shops and services and allows questions. Competition, rankings and property sales are not its purpose.",
       "teacher": "approved"
@@ -428,7 +428,7 @@
       "explanationFr": "Le club prête les gilets de sauvetage ; les participants apportent chaussures, vêtements de rechange et serviette.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The club supplies life jackets; footwear, spare clothing and towels must be brought by participants. All four options refer to equipment in the script and distinguish supply from personal preparation.",
       "teacher": "approved"
@@ -453,7 +453,7 @@
       "explanationFr": "Elle refuse aujourd’hui à cause d’une échéance, mais demande qu’on lui garde une place demain.",
       "speakers": "MF",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The deadline explains today's refusal, while asking for a place tomorrow preserves interest in eating with colleagues. The deadline is today, and the group's lunch is not cancelled; the second female voice matches both explanations.",
       "teacher": "approved"
@@ -478,7 +478,7 @@
       "explanationFr": "L’entrée principale est fermée pour travaux : il faut passer par la porte de la rue latérale pour récupérer la commande.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Nathalie warns that construction closes the usual entrance and identifies the side-street door. The message contains neither refund amount, new order date nor paint colour.",
       "teacher": "approved"
@@ -503,7 +503,7 @@
       "explanationFr": "La garde est gratuite pendant la réunion, mais il faut inscrire les enfants avant mardi.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Free childcare during the meeting is conditional on registration before Tuesday. No payment is required, and doing nothing does not secure a place.",
       "teacher": "approved"
@@ -528,7 +528,7 @@
       "explanationFr": "Elle prévoit des bénéfices à terme, mais propose moins de dossiers par personne pendant l’apprentissage de l’outil.",
       "speakers": "MF",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The second speaker recommends a temporary reduction in files during software training, with normal workload resuming Monday. She does not reject the software, raise targets or cancel training.",
       "teacher": "approved"
@@ -553,7 +553,7 @@
       "explanationFr": "Il voit plus de clients et vend davantage ; les livraisons sont plus difficiles, mais il ne reviendrait pas en arrière.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Higher sales and more families outweigh the delivery inconvenience for this merchant, who explicitly rejects returning to the old arrangement. The mixed but favourable assessment is unique.",
       "teacher": "approved"
@@ -578,7 +578,7 @@
       "explanationFr": "Pour le chroniqueur, faire découvrir des artistes peu connus donne au festival sa raison d’être.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The commentator argues that discovery distinguishes the festival from radio and major venues and justifies travelling. Celebrity, free transport and refusal by known artists are not his argument; chroniqueur matches the male voice.",
       "teacher": "approved"
@@ -603,7 +603,7 @@
       "explanationFr": "Seul le modèle bleu peut être échangé tout de suite ; le gris arrivera dans une dizaine de jours.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Only the blue replacement is offered immediately at the same price; grey requires a delivery wait. Refund and repair are not offered alternatives in the call.",
       "teacher": "approved"
@@ -628,7 +628,7 @@
       "explanationFr": "Son expérience l’aide ; le plus difficile est de retrouver une méthode de travail régulière.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Professional experience aids understanding, while regular revision and organized notes remain difficult. The alternatives either contradict her experience or introduce an unmentioned social barrier.",
       "teacher": "approved"
@@ -653,7 +653,7 @@
       "explanationFr": "Seuls 200 usagers sur plus de 3 000 ont répondu ; les non-réponses peuvent fausser le résultat, sans que les réponses reçues soient fausses.",
       "speakers": "MF",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: wrong, explanation, explanationFr. The second speaker questions representativeness because most users did not respond, without proving their dissatisfaction. Preserved more than 3,000 in both explanations and replaced disconnected distractors with plausible statistical misinterpretations.",
       "teacher": "approved"
@@ -678,7 +678,7 @@
       "explanationFr": "Les participants apprennent à réparer avec les bénévoles, puis transmettent ce savoir-faire à leur tour.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Repairing alongside volunteers gives participants reusable skills that they can teach others. The additional benefit is knowledge transfer, not new-product sales, certification or eliminating tools.",
       "teacher": "approved"
@@ -703,7 +703,7 @@
       "explanationFr": "Quelques minutes de plus pour répartir clairement les tâches font gagner du temps ensuite.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The speaker values explicit task ownership and deadlines over maximum brevity. Extra participants and eliminating written records are not proposed priorities.",
       "teacher": "approved"
@@ -728,7 +728,7 @@
       "explanationFr": "La batterie remplaçable devrait permettre de garder l’ordinateur plusieurs années, malgré un prix plus élevé.",
       "speakers": "FM",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The buyer accepts an extra hundred dollars for a replaceable battery to extend the computer's life. Lowest price, delivery speed and appearance are not the stated decision criteria.",
       "teacher": "approved"
@@ -753,7 +753,7 @@
       "explanationFr": "L’association soutient l’idée, mais demande le matériel, la salle et le nombre de bénévoles avant de fixer une date.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The association asks about equipment, room and volunteers before scheduling, while explicitly supporting the idea. This is a feasibility request, not rejection or confirmation of a replacement date.",
       "teacher": "approved"
@@ -778,7 +778,7 @@
       "explanationFr": "Les vélos restent payants à part, mais les trente premières minutes de chaque trajet sont offertes aux abonnés.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Each bicycle trip includes its first thirty minutes, with later fifteen-minute periods charged separately. It is neither one free monthly trip nor unlimited use nor ownership of a bicycle.",
       "teacher": "approved"
@@ -803,7 +803,7 @@
       "explanationFr": "Les descriptions sonores, prévues pour les visiteurs malvoyants, servent aussi à beaucoup d’autres publics.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. An aid designed for visually impaired visitors also serves children, people with reading difficulties and listeners by preference. That broader benefit does not make written descriptions useless.",
       "teacher": "approved"
@@ -828,7 +828,7 @@
       "explanationFr": "Il apprécie le classement, mais rappelle qu’il repose sur trois critères que le service avait les moyens d’améliorer, sans mesurer la qualité de l’accompagnement.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: explanationFr. The ranking omits support quality and covers only three measurable dimensions. Corrected the French explanation's unsupported claim that those dimensions were easy to improve: the speaker says the service had the means to improve them.",
       "teacher": "approved"
@@ -853,7 +853,7 @@
       "explanationFr": "Le chroniqueur invite à chercher où le travail s’est déplacé et qui le fait, plutôt que de supposer qu’il a disparu.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The commentator contrasts interface simplicity with labour transferred to unseen workers. His proposal is to examine who performs it and under what conditions, not merely button counts, prices or banning apps.",
       "teacher": "approved"
@@ -878,7 +878,7 @@
       "explanationFr": "Elle soutient qu’un résultat négatif, publié avec sa méthode, peut éviter à d’autres équipes de refaire le même travail.",
       "speakers": "MF",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: explanationFr. The second speaker defends publishing a negative result with reproducible methods so others can avoid redundant work. Qualified the French explanation with peut to match the English possibility rather than guarantee prevention.",
       "teacher": "approved"
@@ -903,7 +903,7 @@
       "explanationFr": "Une forte fréquentation ne prouve pas que le centre a attiré des habitants qui n’allaient jamais dans les lieux culturels.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: wrong. High attendance by established cultural audiences does not demonstrate reaching previously absent residents. Replaced disconnected building/tourism distractors with plausible distinctions about programme cost, artistic reputation and venue attendance.",
       "teacher": "approved"
@@ -928,7 +928,7 @@
       "explanationFr": "Si tout est urgent, l’urgence ne permet plus de classer les tâches.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: wrong. Labelling every request urgent destroys urgency's usefulness for prioritizing and crowds out important long-term work. Replaced unrelated workload/break distractors with misreadings of recency, strategic tasks and priority labels.",
       "teacher": "approved"
@@ -953,7 +953,7 @@
       "explanationFr": "Elle accepte la lenteur et les silences, mais reproche des ambiguïtés que le récit ne permet pas d’interpréter.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The critic accepts long shots and some silences but objects to obscurity unsupported by narrative clues. Excess explanation, excessive speed and silence itself are not her criticism.",
       "teacher": "approved"
@@ -978,7 +978,7 @@
       "explanationFr": "Le suivi vérifie si la baisse de consommation se maintient une fois les rappels arrêtés.",
       "speakers": "M",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: wrong. A six-month follow-up tests whether lower water use survives withdrawal of reminders. Revised distractors to distinguish that persistence question from message readership, costs and premature meter installation.",
       "teacher": "approved"
@@ -1003,7 +1003,7 @@
       "explanationFr": "Nommer ce qui résiste permet de distinguer les obstacles qu’on peut lever de ceux qu’il faut accepter : l’action devient plus réaliste.",
       "speakers": "MF",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Identifying removable obstacles and lasting constraints enables realistic action rather than surrender. The other options deny obstacles, treat them uniformly or equate difficulty with abandonment; the two voices and pronouns are consistent.",
       "teacher": "approved"

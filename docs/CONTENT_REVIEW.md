@@ -1,5 +1,7 @@
 # Pending-draft editorial review
 
+**Merge update, October 28, 2026:** all 183 reviewed drafts are now merged into local source. Every approval and editorial note below is preserved unchanged. The text below records the October 27 review; release status is tracked in [Phase 4 completion](PHASE4_COMPLETION.md).
+
 Date: 2026-10-27 (America/Iqaluit). Reviewer: Codex, performing an AI editorial review explicitly authorized by the owner.
 
 **183 reviewed and approved: 44 corrected, 139 approved unchanged, zero unresolved exceptions.** The batch consists of 158 mock questions, 16 diagnostic drafts and nine practice drafts. All remain `review: "accepted"`; their existing `teacher` field is now `"approved"`. The dated notes identify the AI reviewer. This is the owner-authorized use of the existing approval gate for this batch, not a claim of human teacher review or empirical score calibration.

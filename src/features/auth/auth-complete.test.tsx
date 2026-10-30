@@ -5,6 +5,7 @@ import { diagnosticQuestions } from "@/data/questions";
 import { scoreDiagnostic } from "@/lib/domain/diagnostic";
 import { guestAssessmentRepository } from "@/repositories/guest-assessment";
 import { demoState } from "@/test/fixtures";
+import { writingSampleFixture } from "@/test/diagnostic-writing";
 import { AuthComplete } from "./auth-complete";
 
 const mocks = vi.hoisted(() => ({
@@ -118,6 +119,52 @@ describe("confirmed registration handoff", () => {
     await waitFor(() =>
       expect(mocks.replace).toHaveBeenCalledWith("/checkout?plan=complete"),
     );
+  });
+
+  it("returns a new guest sample to its separate writing result after registration", async () => {
+    const result = scoreDiagnostic(diagnosticQuestions, {});
+    const guest = await guestAssessmentRepository.create({
+      intake: {
+        goal: "TEF Canada",
+        target: "NCLC 7",
+        frenchExperience: "I know some French",
+        writingSample: writingSampleFixture,
+      },
+      answers: {},
+      result,
+      activity: {
+        id: "sample-activity",
+        label: "Assessment",
+        detail: "Sample",
+        timestamp: new Date().toISOString(),
+      },
+      recommendedPlanId: "complete",
+    });
+    mocks.claimGuest.mockResolvedValue({
+      ok: true,
+      data: { id: "assessment-id" },
+      snapshot: {
+        ...demoState,
+        planAccess: null,
+        diagnosticIntake: guest.intake,
+      },
+    });
+    render(
+      <AppProvider initialState={demoState}>
+        <AuthComplete />
+      </AppProvider>,
+    );
+    await waitFor(() =>
+      expect(mocks.replace).toHaveBeenCalledWith("/diagnostic/results"),
+    );
+    expect(mocks.claimGuest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        intake: expect.objectContaining({
+          writingSample: writingSampleFixture,
+        }),
+      }),
+    );
+    expect(await guestAssessmentRepository.getActive()).toBeNull();
   });
 
   it("uses an explicit selected plan instead of the guest recommendation", async () => {

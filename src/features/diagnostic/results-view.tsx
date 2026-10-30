@@ -21,6 +21,7 @@ import {
 } from "@/lib/domain/readiness";
 import type { Messages } from "@/i18n/messages";
 import type { AppState } from "@/types/domain";
+import { DiagnosticWritingResult } from "./writing-result";
 
 function BetaContinueCard({
   state,
@@ -207,7 +208,11 @@ export function ResultsView() {
                 </div>
               ),
             )}
-            <p>{copy.writingPending}</p>
+            <p>
+              {state.diagnosticIntake?.writingSample
+                ? t.diagnostic.writing.separate
+                : copy.writingPending}
+            </p>
             <p>{copy.speakingPending}</p>
             <p className="text-sm text-muted-foreground md:col-span-2">
               {copy.basedOn(result.assessedItemCount ?? copy.historical)}
@@ -216,6 +221,9 @@ export function ResultsView() {
         </Card>
       </section>
 
+      {state.diagnosticIntake?.writingSample && (
+        <DiagnosticWritingResult key={state.user?.id ?? "guest"} />
+      )}
       <div className="mt-6 grid gap-5 md:grid-cols-2">
         <Card>
           <CardContent className="pt-6">

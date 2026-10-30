@@ -28,6 +28,11 @@ export default async function WritingHistoryPage() {
   return (
     <>
       <PageHeader title={copy.title} description={copy.description} />
+      <Button asChild variant="secondary" className="mb-6">
+        <Link href="/diagnostic/results">
+          {t.diagnostic.writing.resultTitle}
+        </Link>
+      </Button>
       {submissions.length === 0 ? (
         <>
           <EmptyState title={copy.title} description={copy.empty} />

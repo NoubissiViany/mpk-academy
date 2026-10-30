@@ -34,11 +34,28 @@ async function completeGuestAssessment(page: import("@playwright/test").Page) {
     else await page.getByPlaceholder("Votre réponse").fill("lirais");
     await page
       .getByRole("button", {
-        name: index === total ? "Finish assessment" : "Next",
+        name: index === total ? "Continue to writing" : "Next",
         exact: true,
       })
       .click();
   }
+  const finish = page.getByRole("button", {
+    name: "Finish assessment",
+    exact: true,
+  });
+  await expect(finish).toBeDisabled();
+  const writing = page.getByLabel("Your message in French");
+  await writing.fill("mot ".repeat(79));
+  await expect(finish).toBeDisabled();
+  await writing.fill("mot ".repeat(121));
+  await expect(finish).toBeDisabled();
+  await writing.fill(
+    Array.from(
+      { length: 10 },
+      () => "Samedi nous avons participé ensemble à une activité intéressante.",
+    ).join(" "),
+  );
+  await finish.click();
   return total;
 }
 
@@ -53,7 +70,14 @@ async function expectGuestAssessmentStored(
   );
   expect(storedGuest).toMatchObject({
     status: "active",
-    intake: { goal: "TEF Canada", target: "NCLC 7" },
+    intake: {
+      goal: "TEF Canada",
+      target: "NCLC 7",
+      writingSample: {
+        version: "mpk-diagnostic-writing-v1",
+        text: expect.any(String),
+      },
+    },
   });
   expect(Object.keys(storedGuest.answers)).toHaveLength(questionCount);
   expect(Date.parse(storedGuest.expiresAt)).toBeGreaterThan(Date.now());

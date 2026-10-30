@@ -27,7 +27,7 @@
       "explanation": "Only the return box near the main entrance can be used at any hour; loans, computers and help are available during opening hours.",
       "explanationFr": "Seule la boîte de retour près de l’entrée est accessible à toute heure ; le prêt, les ordinateurs et l’aide sont disponibles pendant les heures d’ouverture.",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The return box is available at any hour; borrowing, computers and staff help are explicitly limited to opening hours. The concrete notice and four action options suit A2.",
       "teacher": "approved"
@@ -51,7 +51,7 @@
       "explanation": "The ad says the first lesson is free; the following ones cost $12 each.",
       "explanationFr": "L’annonce précise que le premier cours est gratuit ; les suivants coûtent 12 $ chacun.",
       "target": "diagnostic",
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The first lesson is explicitly free, whereas subsequent lessons cost 12 dollars. The price distractors and reception reference cannot override that stated introductory offer.",
       "teacher": "approved"
@@ -75,7 +75,7 @@
       "explanation": "The message moves the plumbing work from Tuesday to Thursday and explains what that changes for residents.",
       "explanationFr": "Le message déplace les travaux de plomberie du mardi au jeudi et explique ce que cela change pour les résidents.",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: document. The Tuesday-to-Thursday postponement is the message's main purpose; neither an unexpected breakdown, completed work nor a rent reduction is announced. Corrected the key instruction so access is needed by the plumber during a resident's absence.",
       "teacher": "approved"
@@ -99,7 +99,7 @@
       "explanation": "Keeping only the budget and the schedule and postponing the rest reduces the number of topics; the start time does not change.",
       "explanationFr": "Garder seulement le budget et le calendrier, et reporter le reste, réduit le nombre de sujets ; l’heure de début ne change pas.",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Restricting the agenda to budget and scheduling and deferring other topics establishes the contextual meaning of alléger. The unchanged start time rules out the time distractor.",
       "teacher": "approved"
@@ -123,7 +123,7 @@
       "explanation": "Asking for more bike racks after opposing the project suggests the merchants now see it more favourably; it does not prove that all their customers cycle.",
       "explanationFr": "Demander davantage d’arceaux après s’être opposés au projet montre que les commerçants le voient plus favorablement, sans prouver que tous leurs clients viennent à vélo.",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Former opponents asking for more bicycle racks support a change in attitude; the text does not establish that all customers cycle or request removal or compensation. Both explanations preserve this inference's limits.",
       "teacher": "approved"
@@ -147,7 +147,7 @@
       "explanation": "The author welcomes free courses but argues that childcare, schedules and transport must also be addressed for them to reach those who need them.",
       "explanationFr": "L’auteur salue la gratuité, mais soutient qu’il faut aussi régler la garde des enfants, les horaires et les transports pour que les cours profitent à ceux qui en ont besoin.",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The author welcomes free tuition but also requires childcare, transport and scheduling support. The three alternatives contradict that inclusive, practical argument.",
       "teacher": "approved"
@@ -171,7 +171,7 @@
       "explanation": "Enrolment shows the programme's appeal; completion rates and assessment results would be needed to show it works.",
       "explanationFr": "Les inscriptions montrent l’attrait du programme ; il faudrait les taux d’achèvement et les résultats aux évaluations pour prouver son efficacité.",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The contrast between enrolment, completion and measured progress supports the criticism of effectiveness claims. Fraud, harm and insufficient enrolment are not asserted; the nuanced editorial supports C1 argument comprehension.",
       "teacher": "approved"
@@ -195,7 +195,7 @@
       "explanation": "The author agrees there should be fewer cars but argues that alternatives must come first, or a ban would penalize people who have no choice.",
       "explanationFr": "L’auteur souhaite moins de voitures, mais soutient qu’il faut d’abord offrir des alternatives ; sinon, l’interdiction pénaliserait ceux qui n’ont pas le choix.",
       "target": "diagnostic",
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The author supports reducing car use only after transport alternatives exist. The distractors each remove or reverse that sequencing condition, and the explanations retain it.",
       "teacher": "approved"
@@ -220,7 +220,7 @@
       "explanationFr": "L’heure du rendez-vous ne change pas ; seul l’étage du cabinet change, dans le même immeuble.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The floor changes within the same building while the appointment time remains fixed. The doctor and consultation day are unchanged; the single female voice is consistent.",
       "teacher": "approved"
@@ -245,7 +245,7 @@
       "explanationFr": "Le train de 17 h 40 part avec quinze minutes de retard, donc à 17 h 55, de la même voie.",
       "speakers": "M",
       "target": "diagnostic",
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Adding the stated fifteen-minute delay to 17 h 40 yields 17 h 55. The unchanged track is separate information; the other times do not follow from the announcement.",
       "teacher": "approved"
@@ -270,7 +270,7 @@
       "explanationFr": "Léa travaille de chez elle demain et propose de garder le colis ; la date de livraison n’a pas pu être changée.",
       "speakers": "MF",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Léa's offer to keep the parcel while working at home, followed by giving her name to the courier, establishes receipt on the neighbour's behalf. The delivery cannot be postponed, and no shared journey is proposed; MF matches the dialogue.",
       "teacher": "approved"
@@ -295,7 +295,7 @@
       "explanationFr": "Le cours du mercredi est annulé, car le professeur est malade, et il peut être rattrapé samedi matin.",
       "speakers": "F",
       "target": "diagnostic",
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Sophie announces a missed Wednesday class and a Saturday replacement in the same room. Registration, closure and room-change alternatives are unsupported; both explanations describe the cancellation and replacement accurately.",
       "teacher": "approved"
@@ -320,7 +320,7 @@
       "explanationFr": "La partie technique est terminée ; la semaine sert à tester le formulaire avec de vrais usagers avant le lancement.",
       "speakers": "FM",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. Technical bugs have already been fixed; the extra week is specifically for testing with real users. The answer paraphrases usability testing rather than confusing it with development or authorization.",
       "teacher": "approved"
@@ -345,7 +345,7 @@
       "explanationFr": "L’hygiène est le principal défi : des bénévoles vérifient le frigo deux fois par jour, mais il en faudrait davantage, surtout le week-end.",
       "speakers": "MF",
       "target": "diagnostic",
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The interviewee explicitly needs more volunteers to maintain hygiene checks, especially at weekends. Donations are plentiful and bakeries participate; cost is not identified as the difficulty.",
       "teacher": "approved"
@@ -370,7 +370,7 @@
       "explanationFr": "Elle reconnaît des résultats encourageants, mais rappelle que des volontaires ne représentent pas tous les employés : il faut vérifier les effets avant d’étendre le programme.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: document. The speaker acknowledges improvement while questioning whether volunteers represent other employees. Softened the claim about volunteers' prior beliefs: volunteering suggests possible greater interest, not certain conviction; the answer remains a qualification of the results.",
       "teacher": "approved"
@@ -395,7 +395,7 @@
       "explanationFr": "Il reconnaît que le télétravail évite les trajets, mais soutient que, sans règles de déconnexion ni limites aux réunions, il devient une disponibilité permanente.",
       "speakers": "M",
       "target": "diagnostic",
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The argument accepts remote work's benefits but conditions them on disconnection hours and meeting limits. Neither abandoning remote work nor praising every effect reflects the speaker's position; the male voice matches chroniqueur.",
       "teacher": "approved"

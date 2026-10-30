@@ -1,0 +1,237 @@
+{
+  "createdAt": "2026-10-29T12:13:42.325Z",
+  "provider": "groq",
+  "model": "openai/gpt-oss-20b",
+  "promptVersion": "2026-10-29",
+  "request": {
+    "mode": "new",
+    "exam": "TEF",
+    "skill": "reading",
+    "level": "C1",
+    "count": 13,
+    "generatedCount": 10,
+    "generationComplete": false
+  },
+  "items": [
+    {
+      "id": "tef-reading-c1-003",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "C1",
+      "competency": "main_idea",
+      "topic": "Sélection des projets culturels",
+      "documentType": "essai critique",
+      "document": "Un appel à projets peut être ouvert à tous sans offrir à chacun les mêmes chances d’être entendu. Le fonds culturel des Rives l’a constaté en examinant ses candidatures : les associations déjà structurées produisaient des dossiers impeccables, tandis que des collectifs récents peinaient à traduire leur connaissance du terrain dans le langage attendu. Le jury a donc ajouté un entretien oral et proposé un accompagnement à la rédaction. Cette évolution ne consiste pas à renoncer à toute exigence : les budgets doivent toujours être justifiés et les activités réalisables. Elle reconnaît plutôt que la maîtrise des procédures constitue une ressource inégalement répartie. Certains craignent qu’un accompagnement ne favorise artificiellement les nouveaux venus. Pourtant, si la qualité d’un projet se confond avec l’aisance administrative de ses auteurs, le concours risque surtout de reproduire les avantages existants. L’enjeu est de rendre les capacités comparables sans prétendre que tous les projets se valent, ni transformer le soutien en garantie de financement.",
+      "prompt": "Quelle thèse l’auteur défend-il ?",
+      "correct": "Une procédure ouverte peut nécessiter un soutien différencié.",
+      "wrong": [
+        "Une sélection équitable doit financer tous les projets recevables.",
+        "La qualité administrative suffit à établir la pertinence des projets.",
+        "Les associations expérimentées doivent être exclues des financements."
+      ],
+      "explanation": "Formal openness does not remove unequal administrative resources. Support can make assessment fairer while retaining requirements and selection.",
+      "explanationFr": "L’ouverture formelle ne supprime pas les inégalités de ressources administratives. Un accompagnement peut rendre l’évaluation plus équitable tout en conservant exigences et sélection.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced unsupported housing and deposit assertions with a nuanced argument about substantive access, including a counterargument. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-c1-004",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "C1",
+      "competency": "inference",
+      "topic": "Évaluation d’un dispositif de tutorat",
+      "documentType": "analyse",
+      "document": "Le collège expérimental des Passerelles présente une hausse du taux de réussite depuis la création de son dispositif de tutorat. Le rapprochement paraît convaincant, mais l’équipe chargée du bilan invite à la prudence. Les étudiants inscrits volontairement au programme disposent aussi, en moyenne, de davantage de temps pour travailler ; les examens ont par ailleurs été réorganisés pendant la même période. Rien ne permet donc d’attribuer toute l’amélioration au tutorat. Ce constat ne rend pas le dispositif inutile : les entretiens révèlent un sentiment d’isolement moindre et une meilleure compréhension des attentes pédagogiques. Il conduit plutôt à distinguer ce que les données suggèrent de ce qu’elles établissent. Pour la prochaine année, le collège suivra des groupes comparables et recueillera également les raisons pour lesquelles certains étudiants renoncent à participer. Une évaluation crédible doit pouvoir reconnaître les bénéfices observés sans transformer une succession chronologique en démonstration causale, surtout lorsque plusieurs changements interviennent simultanément dans le même établissement.",
+      "prompt": "Que peut-on déduire de la position de l’équipe d’évaluation ?",
+      "correct": "Elle juge prématurée une conclusion causale.",
+      "wrong": [
+        "Elle considère l’absence de preuve causale comme une preuve d’inefficacité.",
+        "Elle attribue la totalité des progrès à la réorganisation des examens.",
+        "Elle estime que les témoignages rendent toute comparaison inutile."
+      ],
+      "explanation": "The team recognises reported benefits while identifying other possible causes of improved results. It calls for stronger comparisons, not abandonment of tutoring.",
+      "explanationFr": "L’équipe reconnaît des bénéfices rapportés tout en identifiant d’autres causes possibles des progrès. Elle demande des comparaisons plus solides, sans rejeter le tutorat.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced a question that falsely asserted rising absences despite a falling-absence passage; now tests a cautious causal inference. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-c1-005",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "C1",
+      "competency": "argumentation",
+      "topic": "Tarification d’un service partagé",
+      "documentType": "chronique de débat",
+      "document": "La coopérative de mobilité des Coteaux envisage de remplacer une partie de son abonnement fixe par un tarif proportionnel à l’usage. Ses défenseurs y voient une règle intuitive : chacun paierait davantage lorsqu’il utilise davantage les véhicules. Les opposants ne contestent pas cette logique dans son principe, mais soulignent que l’usage dépend aussi de contraintes que les membres ne choisissent pas. Une personne travaillant loin des transports collectifs pourrait supporter une hausse importante, sans disposer d’une véritable alternative. À l’inverse, un membre habitant près de tous les services bénéficierait d’une réduction, même avec des revenus supérieurs. Le conseil étudie donc un plafonnement pour certains trajets essentiels. Cette piste rendrait le calcul moins simple, reconnaît-il, mais la simplicité ne saurait être le seul critère d’équité. Le désaccord porte finalement moins sur la nécessité de financer le service que sur la manière de répartir un effort commun lorsque les possibilités de réduire sa consommation sont très inégales.",
+      "prompt": "Quel argument fragilise l’assimilation entre paiement à l’usage et équité ?",
+      "correct": "Les possibilités de limiter ses trajets diffèrent selon les membres.",
+      "wrong": [
+        "Les membres opposés à la réforme refusent tout financement du service.",
+        "Les habitants proches des services utilisent nécessairement plus de véhicules.",
+        "Le plafonnement proposé rendrait tous les trajets entièrement gratuits."
+      ],
+      "explanation": "Usage reflects unequal constraints, not only voluntary choices. The opponents still accept funding the service; they question how the burden is distributed.",
+      "explanationFr": "L’usage dépend de contraintes inégales, pas seulement de choix volontaires. Les opposants acceptent le financement du service, mais interrogent la répartition de l’effort.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced an invented transit authority and competing valid answers with a single counterargument grounded in unequal constraints. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-c1-006",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "C1",
+      "competency": "vocabulary_in_context",
+      "topic": "Indicateurs de fréquentation culturelle",
+      "documentType": "critique",
+      "document": "Le rapport annuel du musée met en avant un record de fréquentation, obtenu notamment grâce à plusieurs journées gratuites. Cette progression mérite d’être saluée, mais elle ne saurait tenir lieu de bilan complet. Compter les entrées ne dit rien, à lui seul, du temps passé dans les salles, de la diversité des visiteurs ni de ce qu’ils retiennent de leur visite. Les mêmes habitués peuvent revenir plus souvent sans que le musée atteigne de nouveaux publics. Les chiffres sont donc utiles, à condition de ne pas les ériger en arbitre unique de la réussite. Une enquête qualitative, menée auprès de visiteurs et de personnes qui ne viennent jamais, éclairerait autrement le résultat. Elle coûterait du temps et produirait des réponses moins faciles à résumer dans un titre. Ce serait pourtant le prix d’une appréciation plus juste : les indicateurs doivent nourrir le jugement, non dispenser ceux qui les utilisent d’en exercer un.",
+      "prompt": "Que signifie « les ériger en arbitre unique de la réussite » dans ce contexte ?",
+      "correct": "Leur attribuer le pouvoir exclusif de déterminer le succès.",
+      "wrong": [
+        "Les comparer systématiquement aux témoignages des visiteurs réguliers.",
+        "Les considérer comme des données trop incertaines pour être utilisées.",
+        "Leur donner une place secondaire dans une enquête qualitative élargie."
+      ],
+      "explanation": "The author warns against letting attendance figures alone decide whether the museum succeeds. The phrase describes excessive authority, not rejection of the figures.",
+      "explanationFr": "L’auteur refuse que les seuls chiffres de fréquentation décident de la réussite. L’expression désigne une autorité excessive accordée aux indicateurs, non leur rejet.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced an elementary free-parking word lookup with C1 figurative vocabulary supported by a complete argument. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-c1-007",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "C1",
+      "competency": "specific_detail",
+      "topic": "Consultation sur les horaires d’une médiathèque",
+      "documentType": "note de synthèse",
+      "document": "La médiathèque des Saules a testé une ouverture dominicale pendant huit semaines. Le bilan distingue la fréquentation brute du nombre de nouveaux usagers : une partie des visiteurs du dimanche venait auparavant le samedi, mais un groupe de salariés a déclaré ne pouvoir se déplacer à aucun autre moment. Le conseil retient donc le principe d’une ouverture deux dimanches par mois, sous réserve de recruter suffisamment de personnel volontaire. Il refuse en revanche de compenser intégralement ces heures par la suppression du mercredi matin, très fréquenté par les familles. Avant toute décision définitive, une estimation des coûts et un échange avec l’équipe seront nécessaires. Les résultats du questionnaire ne seront pas présentés comme un vote : seuls les visiteurs présents ont pu y répondre, ce qui laisse de côté les attentes de ceux que les horaires actuels empêchent de venir. La direction prévoit de contacter également les associations locales afin d’élargir cette consultation au-delà du public déjà acquis.",
+      "prompt": "À quelle condition le conseil envisage-t-il l’ouverture régulière le dimanche ?",
+      "correct": "À la présence d’un effectif volontaire suffisant.",
+      "wrong": [
+        "À la suppression complète de l’accueil du mercredi matin.",
+        "À un vote favorable de tous les habitants de la commune.",
+        "À la preuve que chaque visite dominicale concerne un nouvel usager."
+      ],
+      "explanation": "The proposal is expressly conditional on enough volunteer staff. Wednesday opening is retained, and the visitor questionnaire is not treated as a binding vote.",
+      "explanationFr": "La proposition dépend explicitement d’un nombre suffisant de membres du personnel volontaires. Le mercredi est maintenu, et le questionnaire ne vaut pas vote.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced simplistic line-count recall and contradictory transport text with a qualified decision requiring careful detail discrimination. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-c1-008",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "C1",
+      "competency": "speaker_intention",
+      "topic": "Stages dans un atelier de restauration",
+      "documentType": "lettre ouverte",
+      "document": "À ceux qui envisagent un stage dans notre atelier de restauration, je voudrais adresser une précision. Les objets exposés au public sont la partie la plus visible du métier, mais leur présentation résulte de longues heures d’observation, de classement et d’essais parfois infructueux. Nous ne promettons donc pas à chaque stagiaire de travailler immédiatement sur une pièce spectaculaire. Certains commencent par documenter des interventions anciennes ou préparer du matériel. Ces tâches ne doivent pas servir de prétexte à les tenir à l’écart : un temps d’explication et un échange régulier avec leur tuteur sont prévus. Elles participent néanmoins à l’apprentissage d’une responsabilité essentielle, celle de ne pas agir sur un objet avant de comprendre les conséquences possibles du geste. Si cette description paraît moins séduisante qu’une démonstration publique, elle permet au moins de choisir en connaissance de cause. Notre ambition est d’accueillir des personnes curieuses du travail réel, et non d’entretenir une image flatteuse que l’expérience démentirait aussitôt.",
+      "prompt": "Quelle est l’intention principale de cette lettre ?",
+      "correct": "Clarifier les attentes pour permettre un choix éclairé.",
+      "wrong": [
+        "Décourager tous les candidats qui ne possèdent pas déjà une expérience.",
+        "Justifier l’absence de tout accompagnement pédagogique des stagiaires.",
+        "Garantir à chaque candidat une intervention sur une pièce prestigieuse."
+      ],
+      "explanation": "The author explains less visible work and promised supervision so applicants understand the placement. The letter neither requires prior expertise nor dismisses tutoring.",
+      "explanationFr": "L’auteur décrit le travail peu visible et l’encadrement prévu pour éclairer les candidatures. Il n’exige pas une expérience préalable et ne renonce pas au tutorat.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced malformed expressions and unsupported medical-admission claims with a realistic statement of purpose. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-c1-009",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "C1",
+      "competency": "vocabulary_in_context",
+      "topic": "Mutualisation des ateliers artisanaux",
+      "documentType": "chronique",
+      "document": "Plusieurs artisans du quartier ont décidé de mutualiser certains équipements qu’aucun d’eux ne pourrait acquérir seul. Leur accord prévoit un local commun, un calendrier de réservation et une contribution proportionnelle au temps d’utilisation. Chacun conserve cependant sa clientèle, ses méthodes et la responsabilité de ses commandes. Il serait donc trompeur d’y voir une fusion des entreprises. Le projet repose sur une distinction plus fine entre ce qui gagne à être partagé et ce qui doit rester autonome. Cette frontière n’est pas fixée une fois pour toutes : l’entretien des machines, d’abord confié à un prestataire extérieur, pourrait être organisé collectivement si les membres se formaient. Les désaccords sur les créneaux les plus demandés montrent aussi que la coopération ne supprime pas les intérêts particuliers. Elle leur donne un cadre de négociation. La réussite du dispositif dépendra ainsi moins d’une solidarité proclamée que de règles suffisamment précises pour rendre la mise en commun durable et acceptable pour chacun.",
+      "prompt": "Que signifie ici « mutualiser certains équipements » ?",
+      "correct": "Mettre du matériel en commun tout en gardant son autonomie.",
+      "wrong": [
+        "Regrouper les entreprises sous une direction commerciale unique.",
+        "Répartir définitivement les machines entre leurs propriétaires exclusifs.",
+        "Confier toutes les commandes à un prestataire extérieur spécialisé."
+      ],
+      "explanation": "Equipment and access arrangements are shared, while clients, methods and orders remain each artisan’s responsibility. Mutualisation is not a business merger.",
+      "explanationFr": "Les équipements et leurs conditions d’accès sont partagés, mais chaque artisan garde ses clients, ses méthodes et ses commandes. La mutualisation n’est pas une fusion.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced invented health-policy announcements and potentially synonymous distractors with an explicit sharing-versus-merger distinction. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-c1-010",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "C1",
+      "competency": "main_idea",
+      "topic": "Médiation autour d’une salle de concerts",
+      "documentType": "analyse",
+      "document": "Le conflit autour de la salle de concerts du quartier a d’abord été présenté comme une opposition entre culture et tranquillité. Cette lecture commode laissait pourtant dans l’ombre les propositions des riverains, dont plusieurs fréquentent eux-mêmes la salle. Ils ne demandaient pas sa fermeture, mais une meilleure gestion des sorties et des livraisons nocturnes. De leur côté, les organisateurs craignaient que toute concession soit suivie de nouvelles restrictions. La médiation a permis de décomposer le problème : certains bruits venaient des spectacles, d’autres des véhicules ou des conversations sur le trottoir. Les réponses ne pouvaient donc pas être identiques. Un calendrier d’essai, assorti de points réguliers avec les habitants, a été préféré à une promesse de silence impossible à tenir. L’accord reste fragile, mais il montre l’intérêt de quitter les positions générales pour discuter de situations précises. Reconnaître la légitimité de préoccupations différentes ne signifie pas qu’elles deviennent automatiquement compatibles ; cela rend au moins possible la recherche de compromis vérifiables.",
+      "prompt": "Quelle idée principale se dégage de cette analyse ?",
+      "correct": "Préciser les sources du conflit aide à construire un compromis.",
+      "wrong": [
+        "Défendre la culture impose de rejeter toutes les demandes des riverains.",
+        "Obtenir un accord garantit la disparition définitive de toute nuisance.",
+        "Fermer la salle constitue la seule réponse souhaitée par les habitants."
+      ],
+      "explanation": "Mediation separates different noise sources and creates testable arrangements. The agreement is fragile and does not erase the competing concerns.",
+      "explanationFr": "La médiation distingue les sources de bruit et prévoit des mesures à évaluer. L’accord reste fragile et ne supprime pas les préoccupations divergentes.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Removed invented legal noise thresholds and fines; raised the task from literal complaint recall to synthesis of a nuanced argument. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-c1-011",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "C1",
+      "competency": "inference",
+      "topic": "Accompagnement vers l’emploi",
+      "documentType": "analyse",
+      "document": "Une association d’accompagnement vers l’emploi a choisi de ne plus présenter le nombre de contrats signés comme son seul indicateur de réussite. Plusieurs participants avaient accepté rapidement un poste pour le quitter peu après, faute d’horaires compatibles avec leur situation familiale. D’autres avaient mis davantage de temps à trouver un emploi, mais l’avaient conservé et y avaient acquis de nouvelles responsabilités. Le suivi portera désormais sur la stabilité des parcours et sur l’adéquation entre les postes et les projets exprimés. Les financeurs souhaitent cependant maintenir un indicateur simple pour comparer les dispositifs. L’association ne rejette pas cette demande ; elle propose de publier les placements immédiats avec des informations de suivi à six mois. Elle entend ainsi éviter qu’une mesure commode ne crée une incitation à privilégier les résultats les plus rapides. Le changement implique davantage de contacts avec les anciens participants, mais aussi l’acceptation de bilans moins spectaculaires à court terme et potentiellement plus instructifs sur la durée.",
+      "prompt": "Quel risque l’association cherche-t-elle implicitement à limiter ?",
+      "correct": "La priorité aux placements rapides, même peu durables.",
+      "wrong": [
+        "Une impossibilité de comparer les dispositifs dès qu’un contrat est signé.",
+        "Une obligation de refuser tous les postes comportant des horaires fixes.",
+        "Une disparition des contacts avec les participants après leur recrutement."
+      ],
+      "explanation": "A sole immediate-placement indicator can reward speed despite unstable outcomes. The association adds follow-up without abandoning comparable placement data.",
+      "explanationFr": "Un indicateur limité aux placements immédiats peut favoriser la rapidité malgré des résultats instables. L’association ajoute un suivi sans abandonner les données comparables.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced a literal quotation mislabeled inference with an implication about incentives supported across the passage. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    },
+    {
+      "id": "tef-reading-c1-012",
+      "exam": "TEF",
+      "skill": "reading",
+      "level": "C1",
+      "competency": "register",
+      "topic": "Réaménagement d’une place",
+      "documentType": "tribune d’habitants",
+      "document": "Nous accueillons avec intérêt le projet de réaménagement de la place, longtemps réduite à un lieu de passage. Des bancs, des arbres et un espace pour les jeux pourraient lui redonner une fonction de rencontre. Encore faudrait-il que cette intention se traduise dans les usages réels. Le dessin présenté est séduisant, mais il renseigne peu sur l’ombre disponible en été ou sur l’accès des personnes qui se déplacent difficilement. Demander ces précisions ne revient pas à s’opposer au projet. C’est prendre au sérieux la promesse d’un espace destiné à tous. Nous proposons donc une promenade avec les concepteurs et des habitants d’âges différents, avant la validation définitive. Les contraintes budgétaires devront être expliquées, et certains souhaits resteront sans doute incompatibles. Mieux vaut toutefois rendre ces arbitrages visibles que découvrir, une fois les travaux achevés, que l’accord apparent reposait sur des attentes très différentes. Notre soutien est réel ; il n’équivaut pas à donner un chèque en blanc.",
+      "prompt": "Comment caractériser la position exprimée par les auteurs ?",
+      "correct": "Un soutien exigeant, ouvert à la discussion.",
+      "wrong": [
+        "Une adhésion inconditionnelle à tous les choix annoncés.",
+        "Un rejet ironique de toute transformation de la place.",
+        "Une neutralité distante, sans proposition concrète."
+      ],
+      "explanation": "The writers welcome the project but request practical checks, discussion and transparent trade-offs. “Un chèque en blanc” marks the limits of their support.",
+      "explanationFr": "Les auteurs accueillent favorablement le projet, mais demandent des vérifications, une discussion et des arbitrages explicites. « Un chèque en blanc » souligne les limites de leur soutien.",
+      "review": "pending",
+      "problems": [],
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced unsupported municipal claims and quotation recall with nuanced stance and register analysis. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+    }
+  ]
+}

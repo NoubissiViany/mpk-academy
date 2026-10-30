@@ -18,7 +18,7 @@ Put these in `.env.local` on the machine that makes content. They are for the sc
    AZURE_SPEECH_REGION=canadacentral
    ```
 
-F0 includes 500,000 characters of neural speech a month. The current manifest contains 120 clips, including spoken model answers and objections. Use the audio dry run to see the characters needed for new or changed clips.
+F0 includes 500,000 characters of neural speech a month. The current manifest contains 124 clips, including spoken model answers and objections. Use the audio dry run to see the characters needed for new or changed clips.
 
 **Gemini (drafting, free tier)**
 
@@ -55,11 +55,13 @@ npm run content:draft -- rewrite --prefix tef-mock-reading-b2 --count 10
 
 Drafts are written to `content/drafts/<date>-<label>.json`, with the problems the automatic checks found on each one: length, longest option, voices, near-duplicates, an untranslated explanation. `--provider groq` uses `openai/gpt-oss-20b` on the app's Groq account instead. The app does not use that model, but its French is weaker; it is for testing the pipeline.
 
+Successful provider batches are saved immediately through an atomic file replacement. `request.generatedCount` and `request.generationComplete` distinguish a partial run from a completed request. Same-minute runs receive separate filenames and retain previous review decisions. Requests have a 90-second timeout; bounded retries for network/rate/server failures are separate from retries for invalid structured output. If a later request fails, count the saved drafts and request only the remainder. Later requests in the same run also receive summaries of earlier questions to discourage repetition. These safeguards do not replace editorial checks.
+
 **Priorities:**
 
-1. Merge the approved mock, diagnostic and practice drafts, then regenerate audio from the approved text. The current recordings exist; rewriting a transcript makes its clip pending again.
-2. Complete diagnostic v3 and its deferred writing sample.
-3. Then add new practice items toward the targets that `validate:content` prints.
+1. Release the merged diagnostic v3/content batch and required writing sample: verify private storage, apply the pending migrations, then deploy matching source.
+2. Add new practice items and lesson checkpoints toward the remaining cohort-one targets.
+3. Run `npm run check:phase4`; it reports unmet content targets separately from content validity.
 
 ## Review
 
@@ -68,7 +70,7 @@ Every draft goes through two checks before it reaches learners:
 - **Your review**, for every draft. You read it and accept it, fix it, or reject it.
 - **The teacher's review**, for every accepted mock-exam and diagnostic question, and a fixed one in five of the other accepted drafts. A qualified French teacher confirms the French, that exactly one answer is defensible, the level, and the explanations.
 
-**Recorded batch exception, October 27, 2026:** the owner explicitly authorized Codex to proofread and approve the 183 remaining accepted drafts through the existing teacher-review gate. All 183 now have `teacher: "approved"` and remain `review: "accepted"`; 44 were corrected. Their notes identify an AI editorial review authorized by the owner, not a human teacher decision. This exception applies to this batch only. [The review report](CONTENT_REVIEW.md) records every decision and [the Phase 4 checklist](PHASE4_COMPLETION.md) describes the remaining work.
+**Recorded batch exception, October 27, 2026:** the owner explicitly authorized Codex to proofread and approve the 183 remaining accepted drafts through the existing teacher-review gate. All 183 received `teacher: "approved"`; 44 were corrected. On October 28 they were merged into the catalog (`review: "merged"`) with every review note and approval decision preserved. Their notes identify an AI editorial review authorized by the owner, not a human teacher decision. This exception applies to this batch only. [The review report](CONTENT_REVIEW.md) records every decision and [the Phase 4 checklist](PHASE4_COMPLETION.md) describes the remaining work.
 
 Both happen on a review page that runs on your computer:
 
@@ -148,27 +150,19 @@ Release in this order:
 
 Step 3 must come before step 4. Otherwise a project's mock exam opens with clips that are missing from its bucket. A new question must not be served before its scoring row has reached that project's database.
 
-### Eligible-content release handoff
+### Reviewed-content release handoff — October 28, 2026
 
-The current branch has merged 30 of the 213 first-pass accepted drafts: 29 practice rewrites and one new TEF reading question. The other 183 have now passed the owner-authorized AI editorial review described above and are approved but unmerged. The earlier 30 were preserved. The pending teacher-review packet, generated with `npm run content:review -- --print --teacher` at `content/drafts/teacher-review.html`, is now empty; the [individual review report](CONTENT_REVIEW.md) retains all 183 decisions and correction summaries.
+All 213 drafts are merged. The latest 183 comprise 176 rewrites and seven new questions, bringing the catalog to 256 items with a 26-question diagnostic and no recorded content debt. All approval decisions and editorial notes were preserved. The teacher-review queue for this batch is empty.
 
-All 13 changed practice recordings were regenerated. The manifest still contains 120 clips (41 public, 79 private), with zero pending listening items. Content debt is now 172 short documents and four biased mock sections. `20261028000100_content_sync.sql` upserts 30 question rows without retiring any; the diagnostic stays at 20 questions.
+The latest audio run regenerated 87 recordings and added four: 91 changed clips, 124 total (45 public, 79 private), zero pending. Source, manifest and `20261028000200_content_sync.sql` agree. Every local audio file exists and its duration matches the fixed-rate MP3 output. Mock clips leave 1,478.5 seconds in TEF and 1,231.8 seconds in TCF for answers within the section limits.
 
-Those counts describe the currently merged source. An in-memory merge of the 183 approved drafts validates with 256 items, 26 diagnostic questions and no recorded content debt, but would make 91 listening items pending (79 private and 12 public). That later batch needs new audio and a new additive migration before release. No catalog merge, audio generation or migration was performed during the editorial review. The current approval state means the next `content:accept` run will include these 183 drafts.
+The owner authorized uploading the 79 new synthetic mock recordings to staging project `czbynijgpkflnntgoqgj`. Upload and verification completed: **79/79 new filenames present**. Existing bucket objects were preserved. This result does not establish production storage readiness.
 
-The owner runs hosted database pushes. Before releasing to either environment:
+**October 29 update:** staging has applied all 24 migrations, including `20261028000200_content_sync.sql` and `20261028000300_diagnostic_writing.sql`. The sandbox now runs source revision `2779986`; its hosted guest diagnostic passed. Production is configured as `uhbuvskmiojqjegpuuln`, its private bucket contains 79/79 required filenames, and its dry run lists six pending migrations. The owner still runs hosted pushes. See [the current release sequence](PHASE4_COMPLETION.md#2-release-the-existing-batch-to-production).
 
-1. Confirm the selected Supabase project matches the app deployment and the audio check's project. The existing CLI link is staging; do not use it for production by accident.
-2. Run the corresponding read-only bucket check above. If clips are missing, run the upload command for that same environment and check again. This is required before the earlier `20261024000100_content_sync.sql` migration, which opens both mocks by marking their audio ready.
-3. Against the verified CLI link, run `npx supabase db push --dry-run`. Review every pending migration, including both content-sync migrations if the first audio release has not been applied.
-4. Run `npx supabase db push` yourself, then deploy the matching application source. Repeat with the production project selected and its bucket verified. No hosted push or application deployment is part of the local content preparation.
-5. Smoke-test a listening practice session and a full mock with an entitled tester. Confirm playback, scoring and the single-play restriction before inviting learners.
+A new expansion batch contains **45 pending TEF reading drafts**: 13 A2, 10 B1, 12 B2 and 10 C1. All received AI editorial corrections and dated notes; none is accepted, teacher-approved or merged. Mechanical checks have zero flags and an in-memory candidate merge validates. The printable `content/drafts/review.html` is generated with `npm run content:review -- --print`. After editorial acceptance, nine sampled items require the normal teacher gate. All earlier 213 merged draft files remain unchanged. Provider failures stopped generation before the planned 13 C1 items; three C1 questions plus the other exam/skill groups remain to draft.
 
-The production environment file is not present locally. Production storage and migration state must be verified separately; the generated migration and local checks alone are insufficient.
-
-Verified on October 27, 2026: the staging bucket contains **79/79** manifest clips (read-only check, no uploads). The linked staging migration dry run lists **20261024000100** and **20261028000100** as pending. Neither was applied during preparation. Recheck immediately before the owner-run push.
-
-Local validation passed: 338 unit tests; all applicable desktop/mobile browser checks in beta and paid modes; all 22 migrations, six database assertion suites and six diagnostic parity scenarios on disposable PostgreSQL 17.11. Content/SQL synchronization, formatting, lint, type checking, the production build and client-bundle protection also passed. Browser checks verified all 41 public clips were served intact. Draft comparisons confirmed exactly 30 merges and unchanged teacher decisions; historical migrations were preserved.
+The required 80–120-word writing sample is independent diagnostic content, not an extra practice-bank task. Its provisional result never changes the quiz score. Local verification and the remaining content quantities are recorded in [the Phase 4 checklist](PHASE4_COMPLETION.md).
 
 ## Thèmes récurrents
 

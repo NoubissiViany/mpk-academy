@@ -93,7 +93,7 @@
       "explanation": "« Conjointement » means together: owner and tenant do the inspection jointly.",
       "explanationFr": "« Conjointement » signifie ensemble : le propriétaire et la locataire font l’état des lieux tous les deux.",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved after corrections; edited fields: prompt. Conjointement means that landlord and tenant perform the inspection together; the other agents and absence of a visit contradict the clause. Reworded the prompt to test the declared vocabulary competency directly.",
       "teacher": "approved"
@@ -342,7 +342,7 @@
       "explanationFr": "Au-delà des économies, elle tient à certains vêtements et préfère les réparer plutôt que les remplacer.",
       "speakers": "F",
       "replaces": true,
-      "review": "accepted",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-27 — AI editorial review authorized by the owner (Codex). Approved unchanged; edited fields: none. The speaker explicitly prioritizes attachment to existing clothes over modest savings. Total unwillingness to spend, professional obligation and lack of shops are unsupported; fière matches the female voice.",
       "teacher": "approved"

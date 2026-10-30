@@ -4,6 +4,16 @@ Learners on the Complete plan (everyone in the closed beta) can send a writing-p
 
 Nothing is sent before the learner agrees (`profiles.ai_feedback_consent_version` must equal `aiFeedbackNoticeVersion` in `src/config/privacy.ts`). The feature is hidden on any deployment without `GROQ_API_KEY`.
 
+## Diagnostic writing sample
+
+The diagnostic now requires a French sample of 80–120 words after its 26-question quiz. Ten minutes is suggested; no timer forces submission. The sample is saved in the assessment intake, including the prompt version, and a guest can transfer it to their account on sign-in. It is not sent to Groq automatically.
+
+After sign-in, any learner can request a separate provisional writing result with current AI consent; a paid practice entitlement is not required for this diagnostic review. Practice feedback entitlements remain unchanged. `mpk_submit_diagnostic_writing` reads only the caller's saved assessment, uses the existing two-per-user daily limit and the shared global queue, and is idempotent per assessment. Failed reviews can retry the same saved sample. The worker rechecks current consent immediately before sending a diagnostic job, including one that waited overnight.
+
+The four writing criteria, verified corrections and rewritten passage appear separately on `/diagnostic/results`. They never change quiz scoring or readiness. Diagnostic reviews are excluded from the practice-text history; that page links back to diagnostic results. Historical guest assessments without a writing sample still transfer normally.
+
+Deploy `20261028000300_diagnostic_writing.sql` before the matching application. Confirm the sample survives sign-in, consent is required, a real provider response arrives, and queued/failed states remain recoverable. Provider configuration and calibration are still required; local tests use synthetic text and mocked AI replies.
+
 ## Speaking feedback
 
 Learners on the Complete plan can record a spoken answer to a speaking task. The browser records at about 24 kbps (0.18 MB a minute) and stops itself before 4 MB, because Vercel rejects request bodies over 4.5 MB. `/api/speaking/submit` then works in this order:
@@ -46,6 +56,8 @@ update private.ai_settings set speaking_daily_limit = 55, speaking_user_daily_li
 ```
 
 ## One-time setup per environment
+
+**October 29, 2026 audit:** production Vercel has `GROQ_API_KEY` and `JOBS_SECRET`; its Vault has `mpk_jobs_url` pointing to the main app and a nonempty `mpk_jobs_secret`. Secret equality and a real provider/worker round trip remain unverified. Sandbox Vercel lacks both AI/job variables, and staging Vault lacks both job entries. Configure the sandbox’s Production environment and staging Vault, then redeploy the sandbox. The main production project does not need duplicate Vault entries. See [the current release checklist](PHASE4_COMPLETION.md).
 
 ### 1. Groq
 
@@ -110,7 +122,9 @@ order by f.created_at desc limit 50;
 1. With learners' agreement, pick 40 reviewed essays across both exams and all targets.
 2. A qualified French teacher grades each criterion (task, coherence, vocabulary, grammar) on the same A2–C1 scale, without seeing the AI levels.
 3. For each criterion, report exact agreement and agreement within one level. Aim for at least 60% exact and 90% within one before showing levels as anything more than rough guidance.
-4. Keep the results in the repository (`docs/calibration/`) and adjust the prompt or the target bars if a criterion is consistently off.
+4. Keep aggregate results and methodology in `docs/calibration/`; keep learner texts, identities and consent records outside Git. Investigate systematic disagreements, revise prompts as needed and evaluate changes on held-out ratings.
+
+A [blank 40-essay packet and procedure](calibration/README.md) are prepared. Run `npm run check:calibration -- /private/path/writing-ratings.json` to check completeness, coverage and agreement per criterion. The untouched template intentionally fails. The tool checks supplied ratings, not the authenticity of consent or independent review; synthetic tests are not calibration evidence. Speaking needs its own teacher-rated evaluation.
 
 ## Privacy duties
 

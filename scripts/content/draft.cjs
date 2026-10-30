@@ -74,28 +74,40 @@ async function chat(provider, model, key, messages, rewrite) {
     type: "json_schema",
     json_schema: drafting.draftSchema(rewrite),
   };
-  for (let attempt = 1; ; attempt += 1) {
-    const response = await fetch(provider.url, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${key}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model,
-        messages,
-        temperature: 0.8,
-        response_format: format,
-        ...provider.extra,
-      }),
-    });
+  let schemaFailures = 0;
+  let transientFailures = 0;
+  for (;;) {
+    let response;
+    try {
+      response = await fetch(provider.url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${key}`,
+          "Content-Type": "application/json",
+        },
+        signal: AbortSignal.timeout(90_000),
+        body: JSON.stringify({
+          model,
+          messages,
+          temperature: 0.8,
+          response_format: format,
+          ...provider.extra,
+        }),
+      });
+    } catch (error) {
+      if (++transientFailures >= 5) throw error;
+      const wait = 20 * transientFailures;
+      console.log(`  network/timeout error; retrying in ${wait}s`);
+      await new Promise((resolve) => setTimeout(resolve, wait * 1000));
+      continue;
+    }
     if (response.ok) {
       const body = await response.json();
       return JSON.parse(body.choices[0].message.content);
     }
     const detail = (await response.text()).slice(0, 400);
     // An answer that broke the schema: ask again.
-    if (detail.includes("json_validate_failed") && attempt < 5) {
+    if (detail.includes("json_validate_failed") && ++schemaFailures < 5) {
       console.log("  the answer did not match the schema; asking again");
       continue;
     }
@@ -108,8 +120,12 @@ async function chat(provider, model, key, messages, rewrite) {
       format = { type: "json_object" };
       continue;
     }
-    if ((response.status === 429 || response.status >= 500) && attempt < 5) {
-      const wait = Number(response.headers.get("retry-after")) || 20 * attempt;
+    if (
+      (response.status === 429 || response.status >= 500) &&
+      ++transientFailures < 5
+    ) {
+      const wait =
+        Number(response.headers.get("retry-after")) || 20 * transientFailures;
       console.log(`  ${response.status}; retrying in ${wait}s`);
       await new Promise((resolve) => setTimeout(resolve, wait * 1000));
       continue;
@@ -273,17 +289,86 @@ async function main() {
   };
 
   const items = [];
+  fs.mkdirSync(draftsDir, { recursive: true });
+  const createdAt = new Date().toISOString();
+  const stamp = createdAt.slice(0, 16).replace(/[:T]/g, "-");
+  let file = path.join(draftsDir, `${stamp}-${work.label}.json`);
+  for (let suffix = 2; fs.existsSync(file); suffix += 1)
+    file = path.join(draftsDir, `${stamp}-${work.label}-${suffix}.json`);
+  const saveProgress = () => {
+    const replaced = new Set(items.filter((i) => i.replaces).map((i) => i.id));
+    const others = [
+      ...published
+        .filter((item) => !replaced.has(item.id))
+        .map((item) => ({
+          id: item.id,
+          text: `${documentText(item)} ${item.prompt}`,
+        })),
+      ...readDrafts()
+        .filter((item) => item.review !== "rejected")
+        .map((item) => ({
+          id: item.id,
+          text: `${item.document} ${item.prompt}`,
+        })),
+      ...items.map((item) => ({
+        id: item.id,
+        text: `${item.document} ${item.prompt}`,
+      })),
+    ];
+    for (const item of items)
+      item.problems = drafting.draftProblems(item, others);
+    const temporaryFile = `${file}.tmp`;
+    fs.writeFileSync(
+      temporaryFile,
+      JSON.stringify(
+        {
+          createdAt,
+          provider: providerName,
+          model,
+          promptVersion: drafting.DRAFT_PROMPT_VERSION,
+          request: {
+            ...work.request,
+            generatedCount: items.length,
+            generationComplete: items.length === work.request.count,
+          },
+          items,
+        },
+        null,
+        2,
+      ) + "\n",
+    );
+    fs.renameSync(temporaryFile, file);
+  };
   let last = 0;
   for (const [index, batch] of work.batches.entries()) {
     await new Promise((resolve) =>
       setTimeout(resolve, Math.max(0, last + REQUEST_GAP_MS - Date.now())),
     );
     last = Date.now();
+    const messages = [
+      ...batch.messages,
+      ...(!batch.originals.length && items.length
+        ? [
+            {
+              role: "user",
+              content:
+                "Earlier questions in this run are below. Use different situations and test different information; do not paraphrase these documents or repeat their questions under new place names.\n" +
+                JSON.stringify(
+                  items.map(({ topic, document, prompt }) => ({
+                    topic,
+                    document: document.slice(0, 240),
+                    prompt,
+                  })),
+                ),
+            },
+          ]
+        : []),
+    ];
     const raw = await chat(
       provider,
       model,
       key,
-      batch.messages,
+      messages,
       batch.originals.length > 0,
     );
     const parsed = drafting.parseDraftItems(
@@ -293,52 +378,14 @@ async function main() {
       batch.originals,
     );
     items.push(...parsed);
+    // A later provider failure must not discard already generated questions.
+    if (parsed.length) saveProgress();
     console.log(
-      `request ${index + 1}/${work.batches.length}: ${parsed.length} drafts`,
+      `request ${index + 1}/${work.batches.length}: ${parsed.length} drafts; ${items.length} saved in ${path.relative(root, file)}`,
     );
   }
-
-  // Check every draft against published questions and the other drafts.
-  const replaced = new Set(items.filter((i) => i.replaces).map((i) => i.id));
-  const others = [
-    ...published
-      .filter((item) => !replaced.has(item.id))
-      .map((item) => ({
-        id: item.id,
-        text: `${documentText(item)} ${item.prompt}`,
-      })),
-    ...readDrafts()
-      .filter((item) => item.review !== "rejected")
-      .map((item) => ({
-        id: item.id,
-        text: `${item.document} ${item.prompt}`,
-      })),
-    ...items.map((item) => ({
-      id: item.id,
-      text: `${item.document} ${item.prompt}`,
-    })),
-  ];
-  for (const item of items)
-    item.problems = drafting.draftProblems(item, others);
-
-  fs.mkdirSync(draftsDir, { recursive: true });
-  const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");
-  const file = path.join(draftsDir, `${stamp}-${work.label}.json`);
-  fs.writeFileSync(
-    file,
-    JSON.stringify(
-      {
-        createdAt: new Date().toISOString(),
-        provider: providerName,
-        model,
-        promptVersion: drafting.DRAFT_PROMPT_VERSION,
-        request: work.request,
-        items,
-      },
-      null,
-      2,
-    ) + "\n",
-  );
+  if (!items.length)
+    throw Error("The provider returned no usable drafts; no file was written.");
   const flagged = items.filter((item) => item.problems.length).length;
   console.log(
     `Wrote ${path.relative(root, file)}: ${items.length} drafts, ${flagged} with problems to look at.`,

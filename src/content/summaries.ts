@@ -556,6 +556,16 @@ export const practiceSummaries: PracticeSummary[] = [
     ]
   },
   {
+    "id": "tef-reading-b1-004",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "B1",
+    "competencies": [
+      "speaker_intention"
+    ]
+  },
+  {
     "id": "tef-listening-a2-001",
     "exam": "TEF",
     "skill": "listening",
