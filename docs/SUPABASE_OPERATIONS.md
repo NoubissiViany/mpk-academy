@@ -5,7 +5,7 @@
 - Organization: `NoubissiViany's Org` (`otnxgfnmgvxcrswbbrds`)
 - Staging and the usual CLI link: `mpk-academy-staging` (`czbynijgpkflnntgoqgj`), serving `mpk-academy-sandbox.vercel.app`
 - Production: `mpk-academy` (`uhbuvskmiojqjegpuuln`), serving `mpk-academy.vercel.app`. It is active and configured as of October 29, 2026; the earlier paused/unused description is obsolete.
-- October 29 audit: staging has all 24 migrations; production has six pending. Both private mock buckets contain all 79 required clip names. Exact owner-run release commands: [Phase 4 checklist](PHASE4_COMPLETION.md#2-release-the-existing-batch-to-production).
+- October 30 audit (UTC): staging and production both have the earlier 24 migrations, including diagnostic writing. Two new local content migrations (`20261030000100` and `20261030000200`) await owner-run pushes. Both private mock buckets contain all 79 required clip names. Exact release commands: [Phase 4 checklist](PHASE4_COMPLETION.md#2-release-the-current-content-changes).
 - Database password: GNOME Login keyring item `MPK Academy Supabase database`
 
 Free projects pause after a week without traffic. Before pointing a deployment at the database, confirm `npx supabase projects list` shows it as `ACTIVE_HEALTHY` and `supabase/.temp/project-ref` matches `NEXT_PUBLIC_SUPABASE_URL`.

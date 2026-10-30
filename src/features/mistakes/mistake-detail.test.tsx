@@ -26,9 +26,13 @@ describe("mistake detail", () => {
     ).toBeVisible();
     expect(
       screen.getByRole("heading", {
-        name: "Listen for intention and correction",
+        name: "Keep details linked when listening",
       }),
     ).toBeVisible();
+    expect(screen.getByRole("link", { name: /Review lesson/ })).toHaveAttribute(
+      "href",
+      "/learn/listening-strategies/shared-lesson-016",
+    );
     expect(
       screen.getByRole("link", { name: /Practice weakness/ }),
     ).toHaveAttribute(

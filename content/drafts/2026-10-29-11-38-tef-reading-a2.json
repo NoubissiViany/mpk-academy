@@ -29,7 +29,7 @@
       ],
       "explanation": "The text asks visitors to bring photo identification and \"une preuve d’adresse\" (proof of address) to finalize the adoption.",
       "explanationFr": "Le texte indique qu’il faut apporter « une preuve d’adresse » ainsi qu’une pièce d’identité pour compléter l’adoption le jour même.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Checked the two required documents against the answer and both explanations; proof of address is explicitly required."
     },
@@ -51,7 +51,7 @@
       ],
       "explanation": "Residents are asked not to park outside between 22 h and 7 h to allow snow clearance. The covered parking is a temporary alternative.",
       "explanationFr": "Le message demande de ne pas stationner dehors entre 22 h et 7 h pour permettre le déneigement. Le parking couvert est une solution temporaire.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Replaced unrelated distractors about school buses and speeding with alternatives tied to parking and snow removal. Replaced an invented city-wide parking rule with a fictional residence’s own notice."
     },
@@ -73,7 +73,7 @@
       ],
       "explanation": "The mobile operator alerts the user about reaching their data threshold and offers an extra data option to avoid fees.",
       "explanationFr": "L’opérateur prévient le client qu’il a presque atteint sa limite et lui offre d’ajouter des données pour ne pas payer de surplus.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Made the answer specify the temporary data addition; distractors now test 90 percent versus exhaustion, an offer versus a completed purchase, and paid overages."
     },
@@ -95,7 +95,7 @@
       ],
       "explanation": "Asking parents to pack a hat and sunscreen indicates that activities will take place outside in the sun.",
       "explanationFr": "La demande d’un chapeau et de crème solaire permet de déduire que des activités sont prévues à l’extérieur.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Removed the unsupported inference that outdoor activities necessarily mean organised outings away from the camp."
     },
@@ -117,7 +117,7 @@
       ],
       "explanation": "Here, « date limite » is the last day on which renewing preserves the discounted price: 30 June.",
       "explanationFr": "La « date limite » est le dernier jour où le renouvellement permet de conserver le tarif réduit, ici le 30 juin.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Replaced an unverified driving-licence rule with a fictional pool membership notice; retained the deadline vocabulary objective and clarified the inclusive deadline."
     },
@@ -139,7 +139,7 @@
       ],
       "explanation": "For an urgent weekday repair, customers must telephone before going to the workshop. Saturday walk-in hours are a separate arrangement.",
       "explanationFr": "Pour une réparation urgente en semaine, il faut « téléphoner avant de vous déplacer ». Les horaires sans rendez-vous concernent le samedi.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Replaced the second animal-care notice with bicycle repairs to broaden coverage; preserved the weekday/weekend contrast."
     },
@@ -161,9 +161,10 @@
       ],
       "explanation": "The announcement explains how residents can join the shared garden. The meeting, price and free tools support that main purpose.",
       "explanationFr": "Le message présente l’ouverture des inscriptions au jardin partagé. La réunion, le prix et le prêt des outils précisent cette offre.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
-      "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Replaced a semantic duplicate of the snow-removal notice with a gardening announcement. Distractors distinguish joining from buying vegetables, renting tools and attending a meal."
+      "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Replaced a semantic duplicate of the snow-removal notice with a gardening announcement. Distractors distinguish joining from buying vegetables, renting tools and attending a meal.",
+      "teacher": "approved"
     },
     {
       "id": "tef-reading-a2-010",
@@ -183,9 +184,10 @@
       ],
       "explanation": "The delivery agent leaves the card to tell the recipient that the parcel was taken to the post office and how to pick it up.",
       "explanationFr": "Le facteur laisse cet avis pour indiquer au destinataire où se trouve son colis et comment aller le chercher.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
-      "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Checked the failed delivery, collection location, next-day availability and identification requirement; the correct answer states the notice’s main purpose."
+      "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Checked the failed delivery, collection location, next-day availability and identification requirement; the correct answer states the notice’s main purpose.",
+      "teacher": "approved"
     },
     {
       "id": "tef-reading-a2-011",
@@ -205,7 +207,7 @@
       ],
       "explanation": "The closure because of ice supports the inference that some paths are dangerous. The alternative trail remains open with suitable equipment.",
       "explanationFr": "La fermeture d’un sentier à cause de la glace montre que certains chemins sont dangereux. Un autre sentier reste accessible avec un équipement adapté.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Used a fictional park and simpler A2 wording, avoiding an invented rule attributed to a real national park. Kept the inference and equipment contrast."
     },
@@ -227,7 +229,7 @@
       ],
       "explanation": "The examples « meubles usagés et gros électroménagers » show that « encombrants » means bulky objects. Size, rather than weight alone, is the defining feature.",
       "explanationFr": "Le document associe les encombrants à des « meubles usagés et gros électroménagers », ce qui désigne des objets volumineux.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Corrected the definition of encombrants to refer to size rather than weight alone; the examples and French explanation already support this. Replaced the invented municipal collection announcement with a fictional residence’s notice."
     },
@@ -249,7 +251,7 @@
       ],
       "explanation": "The loan lasts twenty-one days, which is three weeks. Friday is the collection day, not the return deadline.",
       "explanationFr": "Le prêt dure « vingt et un jours », soit trois semaines. Le vendredi correspond au retrait de l’instrument, pas à la fin du prêt.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Replaced another animal-identification notice with an instrument loan; tests a clear duration conversion without repeating the ID-document question."
     },
@@ -271,7 +273,7 @@
       ],
       "explanation": "The main change is the start time, from 18 h to 20 h. The room and existing ticket stay valid, and a refund is optional.",
       "explanationFr": "L’avis annonce surtout le passage de 18 h à 20 h. La salle ne change pas et le billet reste valable ; le remboursement est facultatif.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Replaced the third overnight-parking notice with a cinema schedule change. All distractors now contradict specific details in the notice."
     },
@@ -293,7 +295,7 @@
       ],
       "explanation": "The announcement promotes a new boat service for visiting the islands. It also gives departure days and explains how far ahead to book.",
       "explanationFr": "L’annonce présente un nouveau service de bateau pour visiter les îles. Elle précise les jours de départ et le délai de réservation.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation; owner/teacher approval remains pending. Simplified fluvial-shuttle vocabulary for A2 and used a fictional operator instead of implying an actual regional tourism offer."
     }

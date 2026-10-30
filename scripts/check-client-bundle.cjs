@@ -53,8 +53,20 @@ for (const item of mockItems) {
 }
 for (const lesson of lessons) {
   add(lesson.id, "lesson explanation", lesson.explanation);
-  add(lesson.id, "checkpoint explanation", lesson.checkpoint.explanation);
+  add(lesson.id, "lesson explanationFr", lesson.explanationFr);
+  for (const [index, checkpoint] of [
+    lesson.checkpoint,
+    ...(lesson.extraCheckpoints ?? []),
+  ].entries()) {
+    add(lesson.id, `checkpoint ${index} explanation`, checkpoint.explanation);
+    add(
+      lesson.id,
+      `checkpoint ${index} explanationFr`,
+      checkpoint.explanationFr,
+    );
+  }
   add(lesson.id, "guided application", lesson.guidedApplication);
+  add(lesson.id, "guided applicationFr", lesson.guidedApplicationFr);
 }
 
 function walk(dir) {

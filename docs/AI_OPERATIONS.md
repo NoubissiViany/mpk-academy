@@ -14,6 +14,12 @@ The four writing criteria, verified corrections and rewritten passage appear sep
 
 Deploy `20261028000300_diagnostic_writing.sql` before the matching application. Confirm the sample survives sign-in, consent is required, a real provider response arrives, and queued/failed states remain recoverable. Provider configuration and calibration are still required; local tests use synthetic text and mocked AI replies.
 
+## October 30 hosted verification (UTC)
+
+Both hosted databases now include the diagnostic-writing migration. Sandbox Groq/job variables are configured. The two previously absent staging Vault entries were added from the existing sandbox Vercel configuration, with the destination verified and the secret never displayed. No production worker secret was changed and no hosted migration was pushed.
+
+Temporary synthetic staging and production accounts completed the guest-to-authenticated writing flow and received real `openai/gpt-oss-120b` feedback with all four criteria. Missing/withdrawn consent was rejected, the claim/request remained idempotent, and quiz scores stayed unchanged. Both accounts were deleted after testing. A full TEF mock also passed on staging. Detailed test coverage and cleanup are recorded in [the October 30 audit](PHASE4_AUDIT_2026-10-30.md). These are functional checks, not calibration. The owner confirmed that independent learner/teacher calibration results do not yet exist.
+
 ## Speaking feedback
 
 Learners on the Complete plan can record a spoken answer to a speaking task. The browser records at about 24 kbps (0.18 MB a minute) and stops itself before 4 MB, because Vercel rejects request bodies over 4.5 MB. `/api/speaking/submit` then works in this order:

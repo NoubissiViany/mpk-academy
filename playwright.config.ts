@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const baseURL = "http://127.0.0.1:3100";
+const useProductionBuild = process.env.MPK_E2E_USE_BUILD === "1";
 
 export default defineConfig({
   testDir: "./e2e",
@@ -8,9 +9,11 @@ export default defineConfig({
   workers: 1,
   use: { baseURL, trace: "on-first-retry" },
   webServer: {
-    // Match the production bundler; Turbopack's cold compilation can exceed
-    // the startup timeout on the local filesystem used for smoke tests.
-    command: "npm run dev -- --webpack --hostname 127.0.0.1 --port 3100",
+    // Build with the same isolated environment and beta mode before opting in.
+    // Production mode avoids development compilation during browser checks.
+    command: useProductionBuild
+      ? "npm run start -- --hostname 127.0.0.1 --port 3100"
+      : "npm run dev -- --webpack --hostname 127.0.0.1 --port 3100",
     url: baseURL,
     reuseExistingServer: false,
     timeout: 120_000,

@@ -174,6 +174,154 @@ export const lessonSummaries: LessonSummary[] = [
     ]
   },
   {
+    "id": "shared-lesson-011",
+    "exam": "shared",
+    "skill": "grammar",
+    "moduleId": "grammar",
+    "title": "Replace objects without losing meaning",
+    "titleFr": "Remplacer les compléments sans perdre le sens",
+    "level": "B1",
+    "estimatedTime": 720,
+    "isFree": false,
+    "competencies": [
+      "grammar_accuracy",
+      "reformulation"
+    ],
+    "objectives": [
+      "Replace objects without losing meaning"
+    ]
+  },
+  {
+    "id": "shared-lesson-012",
+    "exam": "shared",
+    "skill": "grammar",
+    "moduleId": "grammar",
+    "title": "Negation changes the message",
+    "titleFr": "La négation change le message",
+    "level": "A2",
+    "estimatedTime": 720,
+    "isFree": false,
+    "competencies": [
+      "grammar_accuracy",
+      "specific_detail"
+    ],
+    "objectives": [
+      "Negation changes the message"
+    ]
+  },
+  {
+    "id": "shared-lesson-013",
+    "exam": "shared",
+    "skill": "grammar",
+    "moduleId": "grammar",
+    "title": "State a condition and its consequence",
+    "titleFr": "Exprimer une condition et sa conséquence",
+    "level": "B1",
+    "estimatedTime": 720,
+    "isFree": false,
+    "competencies": [
+      "grammar_accuracy",
+      "argumentation"
+    ],
+    "objectives": [
+      "State a condition and its consequence"
+    ]
+  },
+  {
+    "id": "shared-lesson-014",
+    "exam": "shared",
+    "skill": "grammar",
+    "moduleId": "grammar",
+    "title": "Link information with qui, que and dont",
+    "titleFr": "Relier les informations avec qui, que et dont",
+    "level": "B2",
+    "estimatedTime": 720,
+    "isFree": false,
+    "competencies": [
+      "grammar_accuracy",
+      "organization"
+    ],
+    "objectives": [
+      "Link information with qui, que and dont"
+    ]
+  },
+  {
+    "id": "shared-lesson-015",
+    "exam": "shared",
+    "skill": "reading",
+    "moduleId": "reading-strategies",
+    "title": "Paraphrase without changing the claim",
+    "titleFr": "Reformuler sans changer l’idée",
+    "level": "B2",
+    "estimatedTime": 720,
+    "isFree": false,
+    "competencies": [
+      "reformulation",
+      "inference",
+      "argumentation"
+    ],
+    "objectives": [
+      "Paraphrase without changing the claim"
+    ]
+  },
+  {
+    "id": "shared-lesson-016",
+    "exam": "shared",
+    "skill": "listening",
+    "moduleId": "listening-strategies",
+    "title": "Keep details linked when listening",
+    "titleFr": "Relier les détails pendant l’écoute",
+    "level": "B1",
+    "estimatedTime": 720,
+    "isFree": false,
+    "competencies": [
+      "specific_detail",
+      "speaker_intention",
+      "time_expressions"
+    ],
+    "objectives": [
+      "Keep details linked when listening"
+    ]
+  },
+  {
+    "id": "shared-lesson-017",
+    "exam": "shared",
+    "skill": "writing",
+    "moduleId": "writing-strategies",
+    "title": "Build an argument with an example",
+    "titleFr": "Construire un argument avec un exemple",
+    "level": "B2",
+    "estimatedTime": 720,
+    "isFree": false,
+    "competencies": [
+      "organization",
+      "argumentation",
+      "connectors"
+    ],
+    "objectives": [
+      "Build an argument with an example"
+    ]
+  },
+  {
+    "id": "shared-lesson-018",
+    "exam": "shared",
+    "skill": "writing",
+    "moduleId": "writing-strategies",
+    "title": "Revise in a useful order",
+    "titleFr": "Relire dans un ordre utile",
+    "level": "B1",
+    "estimatedTime": 720,
+    "isFree": false,
+    "competencies": [
+      "task_completion",
+      "grammar_accuracy",
+      "organization"
+    ],
+    "objectives": [
+      "Revise in a useful order"
+    ]
+  },
+  {
     "id": "tef-lesson-001",
     "exam": "TEF",
     "skill": "reading",
@@ -563,6 +711,456 @@ export const practiceSummaries: PracticeSummary[] = [
     "level": "B1",
     "competencies": [
       "speaker_intention"
+    ]
+  },
+  {
+    "id": "tef-reading-c1-012",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "C1",
+    "competencies": [
+      "register"
+    ]
+  },
+  {
+    "id": "tef-reading-c1-011",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "C1",
+    "competencies": [
+      "inference"
+    ]
+  },
+  {
+    "id": "tef-reading-c1-010",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "C1",
+    "competencies": [
+      "main_idea"
+    ]
+  },
+  {
+    "id": "tef-reading-c1-009",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "C1",
+    "competencies": [
+      "vocabulary_in_context"
+    ]
+  },
+  {
+    "id": "tef-reading-c1-008",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "C1",
+    "competencies": [
+      "speaker_intention"
+    ]
+  },
+  {
+    "id": "tef-reading-c1-007",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "C1",
+    "competencies": [
+      "specific_detail"
+    ]
+  },
+  {
+    "id": "tef-reading-c1-006",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "C1",
+    "competencies": [
+      "vocabulary_in_context"
+    ]
+  },
+  {
+    "id": "tef-reading-c1-005",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "C1",
+    "competencies": [
+      "argumentation"
+    ]
+  },
+  {
+    "id": "tef-reading-c1-004",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "C1",
+    "competencies": [
+      "inference"
+    ]
+  },
+  {
+    "id": "tef-reading-c1-003",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "C1",
+    "competencies": [
+      "main_idea"
+    ]
+  },
+  {
+    "id": "tef-reading-b2-015",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "B2",
+    "competencies": [
+      "inference"
+    ]
+  },
+  {
+    "id": "tef-reading-b2-014",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "B2",
+    "competencies": [
+      "vocabulary_in_context"
+    ]
+  },
+  {
+    "id": "tef-reading-b2-013",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "B2",
+    "competencies": [
+      "register"
+    ]
+  },
+  {
+    "id": "tef-reading-b2-012",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "B2",
+    "competencies": [
+      "speaker_intention"
+    ]
+  },
+  {
+    "id": "tef-reading-b2-011",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "B2",
+    "competencies": [
+      "inference"
+    ]
+  },
+  {
+    "id": "tef-reading-b2-010",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "B2",
+    "competencies": [
+      "specific_detail"
+    ]
+  },
+  {
+    "id": "tef-reading-b2-009",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "B2",
+    "competencies": [
+      "main_idea"
+    ]
+  },
+  {
+    "id": "tef-reading-b2-008",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "B2",
+    "competencies": [
+      "register"
+    ]
+  },
+  {
+    "id": "tef-reading-b2-007",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "B2",
+    "competencies": [
+      "vocabulary_in_context"
+    ]
+  },
+  {
+    "id": "tef-reading-b2-006",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "B2",
+    "competencies": [
+      "inference"
+    ]
+  },
+  {
+    "id": "tef-reading-b2-005",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "B2",
+    "competencies": [
+      "specific_detail"
+    ]
+  },
+  {
+    "id": "tef-reading-b2-004",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "B2",
+    "competencies": [
+      "main_idea"
+    ]
+  },
+  {
+    "id": "tef-reading-b1-015",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "B1",
+    "competencies": [
+      "vocabulary_in_context"
+    ]
+  },
+  {
+    "id": "tef-reading-b1-014",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "B1",
+    "competencies": [
+      "speaker_intention"
+    ]
+  },
+  {
+    "id": "tef-reading-b1-013",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "B1",
+    "competencies": [
+      "inference"
+    ]
+  },
+  {
+    "id": "tef-reading-b1-012",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "B1",
+    "competencies": [
+      "specific_detail"
+    ]
+  },
+  {
+    "id": "tef-reading-b1-011",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "B1",
+    "competencies": [
+      "main_idea"
+    ]
+  },
+  {
+    "id": "tef-reading-b1-010",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "B1",
+    "competencies": [
+      "register"
+    ]
+  },
+  {
+    "id": "tef-reading-b1-009",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "B1",
+    "competencies": [
+      "argumentation"
+    ]
+  },
+  {
+    "id": "tef-reading-b1-008",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "B1",
+    "competencies": [
+      "main_idea"
+    ]
+  },
+  {
+    "id": "tef-reading-b1-007",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "B1",
+    "competencies": [
+      "specific_detail"
+    ]
+  },
+  {
+    "id": "tef-reading-b1-006",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "B1",
+    "competencies": [
+      "inference"
+    ]
+  },
+  {
+    "id": "tef-reading-a2-015",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "A2",
+    "competencies": [
+      "speaker_intention"
+    ]
+  },
+  {
+    "id": "tef-reading-a2-014",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "A2",
+    "competencies": [
+      "main_idea"
+    ]
+  },
+  {
+    "id": "tef-reading-a2-013",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "A2",
+    "competencies": [
+      "specific_detail"
+    ]
+  },
+  {
+    "id": "tef-reading-a2-012",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "A2",
+    "competencies": [
+      "vocabulary_in_context"
+    ]
+  },
+  {
+    "id": "tef-reading-a2-011",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "A2",
+    "competencies": [
+      "inference"
+    ]
+  },
+  {
+    "id": "tef-reading-a2-010",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "A2",
+    "competencies": [
+      "speaker_intention"
+    ]
+  },
+  {
+    "id": "tef-reading-a2-009",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "A2",
+    "competencies": [
+      "main_idea"
+    ]
+  },
+  {
+    "id": "tef-reading-a2-008",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "A2",
+    "competencies": [
+      "specific_detail"
+    ]
+  },
+  {
+    "id": "tef-reading-a2-007",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "A2",
+    "competencies": [
+      "vocabulary_in_context"
+    ]
+  },
+  {
+    "id": "tef-reading-a2-006",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "A2",
+    "competencies": [
+      "inference"
+    ]
+  },
+  {
+    "id": "tef-reading-a2-005",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "A2",
+    "competencies": [
+      "speaker_intention"
+    ]
+  },
+  {
+    "id": "tef-reading-a2-004",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "A2",
+    "competencies": [
+      "main_idea"
+    ]
+  },
+  {
+    "id": "tef-reading-a2-003",
+    "exam": "TEF",
+    "skill": "reading",
+    "kind": "mcq",
+    "level": "A2",
+    "competencies": [
+      "specific_detail"
     ]
   },
   {

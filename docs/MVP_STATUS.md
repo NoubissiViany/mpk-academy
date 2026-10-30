@@ -1,25 +1,25 @@
 # MVP Status
 
-| Feature                            | Persistence/security                                       | Status     |
-| ---------------------------------- | ---------------------------------------------------------- | ---------- |
-| Email/password Auth                | Supabase Auth, confirmation, recovery, SSR cookies         | Integrated |
-| Profile and exam goal              | Supabase RLS + restricted functions                        | Integrated |
-| Diagnostic                         | Atomic answers/results/progress; server-owned scoring      | Integrated |
-| Guest diagnostic handoff           | Seven-day browser record; idempotent authenticated claim   | Integrated |
-| Dashboard (Today, plan, readiness) | Server-loaded learner snapshot; client-side planning       | Integrated |
-| Lessons                            | One checkpoint per lesson; supports additional checkpoints | Integrated |
-| Reading/listening practice         | Unseen-first, weakness-weighted selection on the server    | Integrated |
-| Writing AI feedback                | Queue + DB caps; server-verified Groq output; consent      | Integrated |
-| Speaking AI feedback               | Transcribed in-request, audio never stored; queued review  | Integrated |
-| Mock exam                          | Atomic assessment and server-owned scoring                 | Integrated |
-| Mistake review (1, 3, 7 days)      | `review_items` kept by a trigger; owner-only reads         | Integrated |
-| Purchases/entitlements             | Atomic Stripe fulfillment; no browser writes               | Integrated |
-| Checkout                           | Stripe-hosted payment, tax, webhook, refund revocation     | Integrated |
-| Closed beta access                 | Invite codes, seat limit, `/admin` tools                   | Integrated |
-| Bilingual interface (EN/FR)        | Typed messages; French explanations and lesson bodies      | Integrated |
-| Certificate                        | Removed until server issuance/verification exists          | Removed    |
-| Private mock audio storage         | Signed URLs; one play authorized by the mock session       | Integrated |
-| Realtime, Edge Functions           | Not used                                                   | Deferred   |
+| Feature                            | Persistence/security                                      | Status     |
+| ---------------------------------- | --------------------------------------------------------- | ---------- |
+| Email/password Auth                | Supabase Auth, confirmation, recovery, SSR cookies        | Integrated |
+| Profile and exam goal              | Supabase RLS + restricted functions                       | Integrated |
+| Diagnostic                         | Atomic answers/results/progress; server-owned scoring     | Integrated |
+| Guest diagnostic handoff           | Seven-day browser record; idempotent authenticated claim  | Integrated |
+| Dashboard (Today, plan, readiness) | Server-loaded learner snapshot; client-side planning      | Integrated |
+| Lessons                            | Three checkpoints per lesson; server-owned answer checks  | Integrated |
+| Reading/listening practice         | Unseen-first, weakness-weighted selection on the server   | Integrated |
+| Writing AI feedback                | Queue + DB caps; server-verified Groq output; consent     | Integrated |
+| Speaking AI feedback               | Transcribed in-request, audio never stored; queued review | Integrated |
+| Mock exam                          | Atomic assessment and server-owned scoring                | Integrated |
+| Mistake review (1, 3, 7 days)      | `review_items` kept by a trigger; owner-only reads        | Integrated |
+| Purchases/entitlements             | Atomic Stripe fulfillment; no browser writes              | Integrated |
+| Checkout                           | Stripe-hosted payment, tax, webhook, refund revocation    | Integrated |
+| Closed beta access                 | Invite codes, seat limit, `/admin` tools                  | Integrated |
+| Bilingual interface (EN/FR)        | Typed messages; French explanations and lesson bodies     | Integrated |
+| Certificate                        | Removed until server issuance/verification exists         | Removed    |
+| Private mock audio storage         | Signed URLs; one play authorized by the mock session      | Integrated |
+| Realtime, Edge Functions           | Not used                                                  | Deferred   |
 
 Answer keys, explanations, and model responses stay on the server: lessons, practice, and the diagnostic receive redacted content and are checked by server actions. `npm run check:bundle` verifies the browser bundle after each build.
 
@@ -28,14 +28,14 @@ Answer keys, explanations, and model responses stay on the server: lessons, prac
 - **Readiness** is the average of the reading and listening practice scores (a rolling average that moves after every session), compared with an MPK accuracy goal per target: NCLC 5 → 60%, NCLC 7 → 70%, NCLC 9+ → 85%. Bands are "at", "near" (within 10 points), or "below", with an evidence label. These are planning aids, not NCLC conversions, and every screen says so.
 - **Today** combines due reviews, one practice session on the weakest skill, and one recommended lesson (about 20–30 minutes). Steps count as done from today's activity in the learner's time zone.
 - **Study plan** turns the exam date from Settings into practice sessions per week (3–5 by target, plus up to 2 when far behind close to the exam) and compares them with this week.
-- **Waiting on content:** diagnostic v3 is deployed to staging with 26 questions and a required 80–120-word writing sample. Its separate AI writing result requires sign-in and consent; sandbox provider setup and production deployment remain. Lessons still have one checkpoint each (the code supports 3–5 through `extraCheckpoints`). Practice has 12 TEF reading items, 10 TCF reading items and 10 listening items per exam, so learners see every item within a few sessions; selection then repeats the items seen longest ago.
+- **Waiting on content:** diagnostic v3 and its required 80–120-word writing sample are implemented and present on both hosted database schemas. Authenticated feedback is verified on staging and production. Local content now provides 25 lessons per exam with three checkpoints each, 57 TEF reading questions, 10 TCF reading questions and 10 listening questions per exam. Release of the latest reading/lesson additions and the remaining practice-bank expansion are outstanding.
 
 ## Phase 2 (AI writing feedback)
 
 - A writing-practice text can be sent for AI feedback after the learner agrees (separate consent, recorded with the notice version). Groq reviews it; the server drops quotes that are not in the text, corrections that rewrite too much, and rewrites of text the learner did not write.
 - Caps are enforced in the database: 60 essays a day in total and 2 per learner (failed reviews do not count). Essays past the cap are reviewed the next morning. Setup, monitoring, and calibration: `docs/AI_OPERATIONS.md`.
 - Learners can rewrite a text and compare it with the first version, and report wrong corrections. `/admin` shows tokens, the queue, failures, and flags.
-- **Not done yet:** the 40-essay calibration with a teacher (levels are uncalibrated estimates until then), while the diagnostic writing sample is implemented and deployed to staging.
+- **Not done yet:** the 40-essay calibration with a teacher (levels are uncalibrated estimates until then), while the diagnostic writing sample is implemented and authenticated provider checks pass on both environments.
 
 ## Phase 3 (AI speaking feedback)
 
@@ -46,16 +46,16 @@ Answer keys, explanations, and model responses stay on the server: lessons, prac
 
 ## Phase 4 (content and audio)
 
-Status verified **October 29, 2026**. **Phase 4 remains open.** The reviewed-content release and required writing sample are deployed to staging; production synchronization, content targets and authenticated hosted acceptance remain.
+Status verified **October 30, 2026 (UTC)**. **Phase 4 remains open.** Earlier production migrations and the 45-question approved merge are done; the current local lesson targets are met. Practice expansion, release of the two new content migrations and independent calibration remain.
 
-- **Published catalog:** 256 questions/tasks, 24 unique lessons, two mocks and 26 diagnostic questions. The earlier **213 drafts remain merged**, including 183 owner-authorized AI approvals, with unchanged review history. See [editorial review](CONTENT_REVIEW.md).
-- **Content/audio:** zero short-document or answer-length exceptions; 124 ready clips, 45 public and 79 private. Both staging and production private buckets contain all 79 required filenames. Staging downloads previously matched local hashes; this audit checked production inventory and bucket privacy.
-- **Staging:** all 24 migrations applied. The sandbox now runs `2779986`; its build and hosted guest diagnostic/writing check passed. Sandbox `GROQ_API_KEY`/`JOBS_SECRET` and staging Vault worker entries are absent and need configuration before the consented provider test.
-- **Production:** configured as Supabase `uhbuvskmiojqjegpuuln`, with application AI variables and worker Vault entries present. Its database is six migrations behind and its app still serves `081b7f6`. The owner runs the database push before deploying matching source. No hosted database writes were performed by Codex in this audit.
-- **Writing sample:** required 80–120 words after the quiz, preserved through guest sign-in, separate provisional result, current consent and explicit provider request, existing shared daily limits and queued consent recheck. Historical assessments remain supported. Production needs the existing writing migration before the matching app.
-- **New drafts:** 45 TEF reading questions individually edited, all pending; zero mechanical flags and a valid in-memory candidate merge. Nine require the normal teacher sample after acceptance. Provider availability/rate errors stopped generation. These files do not change learner content, and the previous 183-item AI approval exception does not extend to them.
-- **Remaining published-content gaps:** 48 TEF / 50 TCF reading; 50 listening per exam; six TEF / four TCF writing and six TEF / four TCF speaking tasks; eight additional available lessons per exam. Eight shared lessons could fill both gaps. Add 48 checkpoints to existing lessons and 3–5 to each new lesson. Of the 198 MCQs still to publish, 45 are drafted and 153 are not yet drafted.
-- **Calibration:** a blank 40-essay packet and per-criterion agreement checker are ready; no real calibration ratings are recorded. Independent teacher writing ratings and separate speaking evaluation remain outstanding accuracy work from Phases 2–3.
-- **Completion check:** `npm run check:phase4` intentionally fails until local content targets are met and drafts resolved. It does not establish hosted deployment, authentication, provider behavior or calibration.
+- **Local catalog:** 301 questions/tasks, 32 unique lessons, 26 diagnostic questions and two mocks. All 258 drafts are merged, including the owner's 45 latest TEF reading decisions; earlier review history is preserved.
+- **Lessons:** 18 shared plus seven exam-specific lessons give 25 available lessons per exam. All 32 have three checkpoints (96 total). Eight new bilingual shared lessons and 48 added checkpoints complete the lesson targets.
+- **Quality/audio:** zero document-length or answer-length exceptions, 124 ready clips and zero pending. Both private hosted buckets have 79/79 required filenames. This reading/lesson release needs no audio regeneration.
+- **Hosted databases:** staging `czbynijgpkflnntgoqgj` and production `uhbuvskmiojqjegpuuln` both have the previous 24 migrations. The new `20261030000100` and `20261030000200` content migrations remain owner-run pushes, before matching source deployment.
+- **Applications/worker:** sandbox serves `2779986`; production serves main `0ae406c`. The sandbox's missing Vault worker entries were configured using its existing Vercel secret. Authenticated writing/provider and private-audio checks passed on both environments, with a full TEF mock completed on staging. Exact coverage is recorded in the audit.
+- **Writing sample:** required 80–120 words, idempotent guest-to-account claim, explicit consent/provider request, four separate provisional criteria, unchanged quiz scoring, shared limits and queued consent recheck. It is not an extra practice task.
+- **Remaining practice targets:** three TEF and 50 TCF reading questions; 50 listening questions per exam; six TEF/four TCF writing and six TEF/four TCF speaking tasks. Total: 153 MCQs and 20 productive tasks. No drafts currently await review.
+- **Calibration:** the owner has no completed results. The blank 40-essay packet/checker is ready, but independent teacher writing ratings and separate speaking evaluation remain. Authenticated synthetic provider tests establish functionality, not score accuracy.
+- **Completion check:** `npm run check:phase4` deliberately reports the remaining practice gaps. It does not establish deployment, email delivery or calibration.
 
-Exact remaining quantities, commands and completion criteria: [Phase 4 checklist](PHASE4_COMPLETION.md). Dated evidence: [October 29 audit](PHASE4_AUDIT_2026-10-29.md).
+Exact actions and release commands: [Phase 4 checklist](PHASE4_COMPLETION.md). Current evidence: [October 30 audit](PHASE4_AUDIT_2026-10-30.md). The [October 29 audit](PHASE4_AUDIT_2026-10-29.md) remains a historical record.
