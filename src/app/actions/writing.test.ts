@@ -55,7 +55,7 @@ const complete = {
   planAccess: { planId: "complete", purchasedAt: null, accessUntil: null },
   exam: "TEF Canada",
 };
-const text = Array.from({ length: 30 }, () => "mot").join(" ");
+const text = Array.from({ length: 80 }, () => "mot").join(" ");
 const request = {
   taskId: "tef-writing-section-a-001",
   text,
@@ -132,14 +132,46 @@ describe("requesting AI writing feedback", () => {
         p_locale: "fr",
         p_parent_id: null,
         p_checks: expect.objectContaining({
-          words: 30,
+          words: 80,
           range: { min: 80, max: null },
-          length: "under",
+          length: "within",
         }),
       }),
     );
     expect(mocks.after).toHaveBeenCalledTimes(1);
   });
+
+  it.each([
+    ["TCF Canada", "tcf-writing-task-1-001", 60],
+    ["TEF Canada", "tef-writing-section-a-001", 80],
+    ["TCF Canada", "tcf-writing-task-2-001", 120],
+    ["TEF Canada", "tef-writing-section-b-002", 200],
+  ] as const)(
+    "enforces the %s %s minimum of %i for feedback and rewrites",
+    async (exam, taskId, min) => {
+      mocks.access.mockResolvedValue({ ...complete, exam });
+      for (const parentId of [undefined, request.clientKey]) {
+        expect(
+          await requestWritingFeedbackAction({
+            ...request,
+            taskId,
+            practice: undefined,
+            parentId,
+            text: "mot ".repeat(min - 1),
+          }),
+        ).toMatchObject({ ok: false, reason: "too_short" });
+        expect(mocks.rpc).not.toHaveBeenCalled();
+      }
+      expect(
+        await requestWritingFeedbackAction({
+          ...request,
+          taskId,
+          practice: undefined,
+          text: "mot ".repeat(min),
+        }),
+      ).toMatchObject({ ok: true });
+    },
+  );
 
   it("explains the daily limit", async () => {
     mocks.rpc.mockImplementation(async (name: string) =>

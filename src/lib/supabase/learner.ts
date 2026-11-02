@@ -85,14 +85,23 @@ export async function getPracticeResult(sessionId: string) {
   const { data, error } = await supabase
     .from("practice_sessions")
     .select(
-      "id, exam, skill, score, correct_count, question_count, completed_at, evidence_mode",
+      "id, exam, skill, status, score, correct_count, question_count, completed_at, evidence_mode",
     )
     .eq("id", sessionId)
     .eq("user_id", userId)
-    .eq("status", "completed")
+    .in("status", ["completed", "abandoned"])
     .maybeSingle();
   if (error) throw error;
-  return data;
+  if (!data || data.status !== "abandoned")
+    return data ? { ...data, drafts: [] } : null;
+  const { data: drafts, error: draftsError } = await supabase
+    .from("practice_answers")
+    .select("question_id, answer")
+    .eq("practice_session_id", sessionId)
+    .eq("user_id", userId)
+    .order("sequence");
+  if (draftsError) throw draftsError;
+  return { ...data, drafts: drafts ?? [] };
 }
 
 export async function getAssessmentResult(assessmentId: string) {

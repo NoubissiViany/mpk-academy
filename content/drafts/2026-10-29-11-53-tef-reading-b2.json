@@ -29,7 +29,7 @@
       ],
       "explanation": "The residence will replace arrival order with published financial and distance criteria. Capacity and rents will not change, and no room is guaranteed.",
       "explanationFr": "La résidence remplacera l’ordre d’arrivée par des critères publiés de ressources et d’éloignement. Ni la capacité ni les loyers ne changent, et aucune chambre n’est garantie.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced invented university statistics with a fictional residence’s clear policy; distinguished fairness from capacity and price. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
     },
@@ -51,7 +51,7 @@
       ],
       "explanation": "The proposal extends two evenings to 8 p.m. while retaining daytime appointments. It is a three-month trial, not a permanent daily extension.",
       "explanationFr": "La proposition prolonge l’accueil jusqu’à 20 h deux soirs, tout en conservant les rendez-vous de journée. Il s’agit d’un essai de trois mois.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced unsupported health statistics and repetitive hour-recall with a precise paraphrased service proposal. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
     },
@@ -73,7 +73,7 @@
       ],
       "explanation": "Full early departures and nearly empty midday ones show a mismatch between capacity and commuting needs. The text gives no fare or comfort explanation.",
       "explanationFr": "Les départs matinaux complets et ceux de midi presque vides révèlent un décalage entre l’offre et les besoins. Le texte ne l’attribue ni au tarif ni au confort.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced invented transit statistics and a literal-detail inference with evidence requiring comparison. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
     },
@@ -95,7 +95,7 @@
       ],
       "explanation": "The association is asking for a meeting to explore options; none has yet been agreed. “Solliciter” here means formally request.",
       "explanationFr": "L’association demande un entretien pour étudier les possibilités ; aucun rendez-vous n’est encore convenu. « Solliciter » signifie ici demander formellement.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced the duplicated parking letter and a vocabulary answer absent from its document. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
     },
@@ -117,9 +117,10 @@
       ],
       "explanation": "The writer describes her own experience, recommends the workshop and notes the large group as a limitation. The praise is therefore qualified.",
       "explanationFr": "La participante raconte son expérience, recommande l’atelier et signale une limite liée à la taille du groupe. Son avis favorable reste nuancé.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
-      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced duplicated shuttle text and unclear register labels with an evidenced, qualified personal tone. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced duplicated shuttle text and unclear register labels with an evidenced, qualified personal tone. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review.",
+      "teacher": "approved"
     },
     {
       "id": "tef-reading-b2-009",
@@ -139,7 +140,7 @@
       ],
       "explanation": "The status labels show whether and how a request is being handled. The system improves tracking without guaranteeing faster repairs or replacing emergency calls.",
       "explanationFr": "Les états indiquent où en est chaque demande. L’outil améliore le suivi sans garantir une réparation immédiate ni remplacer les appels d’urgence.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced repeated student-housing content and a verbatim answer with a distinct process-comprehension task. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
     },
@@ -161,7 +162,7 @@
       ],
       "explanation": "A substitute collector is allowed if the association is notified before Friday noon. The other options contradict the stated preparation and storage rules.",
       "explanationFr": "Une autre personne peut retirer le panier si l’association est prévenue avant vendredi midi. Les autres réponses contredisent les règles de préparation ou de conservation.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced duplicated health-service material, corrected the opening-versus-closing-hour ambiguity, and met the B2 length range. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
     },
@@ -183,7 +184,7 @@
       ],
       "explanation": "The mismatch between enrolment and actual borrowing prompts consultation and training before purchases. Low enrolment or higher fees are not the reason.",
       "explanationFr": "Le décalage entre inscriptions et emprunts conduit à consulter et à former avant d’acheter. Le texte n’invoque ni un manque d’inscrits ni une hausse des cotisations.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced repetitive commuter material with an inference distinguishing enrolment from actual demand. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
     },
@@ -205,7 +206,7 @@
       ],
       "explanation": "She requests two mornings the following week so colleagues can attend while keeping the office staffed. She explicitly retains the course content.",
       "explanationFr": "Elle demande deux matinées la semaine suivante pour permettre la participation tout en maintenant une permanence. Elle souhaite conserver le contenu de la formation.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced an exact duplicate parking letter and corrected intention-question agreement. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
     },
@@ -227,9 +228,10 @@
       ],
       "explanation": "The critic praises the contrasting perspectives and stimulating visit, but regrets the readability of some panels. Approval and a specific reservation coexist.",
       "explanationFr": "La critique apprécie les points de vue contrastés et la visite stimulante, mais regrette la lisibilité de certains panneaux. Elle associe approbation et réserve précise.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
-      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced a second exact shuttle duplicate with a distinct critical-review voice and defensible tone options. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced a second exact shuttle duplicate with a distinct critical-review voice and defensible tone options. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review.",
+      "teacher": "approved"
     },
     {
       "id": "tef-reading-b2-014",
@@ -249,7 +251,7 @@
       ],
       "explanation": "The table is repaired and used again as a table. The passage explicitly contrasts this reuse with transforming materials through recycling.",
       "explanationFr": "La table est réparée puis utilisée à nouveau comme table. Le texte distingue ce réemploi de la transformation des matières par recyclage.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced incorrect decontamination vocabulary and inappropriate battery-handling instructions with a precise reuse/recycling distinction. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
     },
@@ -271,7 +273,7 @@
       ],
       "explanation": "Archives supply dates and plans, while memories illuminate everyday experience. Stories are checked rather than treated as automatically certain.",
       "explanationFr": "Les archives donnent des dates et des plans ; les souvenirs éclairent la vie quotidienne. Les récits sont vérifiés, sans être considérés d’emblée comme certains.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced an unsupported creativity inference with explicit complementary evidence and distinct distractors. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
     }

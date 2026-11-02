@@ -29,7 +29,7 @@
       ],
       "explanation": "Clients write in French and English, and the employee must reply in both. Nothing mentions teaching, travel or a foreign head office.",
       "explanationFr": "Les clients écrivent en français et en anglais, et la personne devra leur répondre dans ces deux langues. Il n’est pas question de cours, de voyages ou d’un siège étranger.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Corrected the application/start-date conflict and replaced a literal job-title question with an inference supported by duties and language requirements. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
     },
@@ -51,7 +51,7 @@
       ],
       "explanation": "The centre’s notice gives a reduced fare of $1.50; $3 is the ordinary fare. The offer applies only to this shuttle.",
       "explanationFr": "L’avis indique un tarif réduit de 1,50 $ ; 3 $ correspond au prix habituel. L’offre concerne seulement cette navette.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Removed invented municipal policy and a real-looking contact URL; retained a clearly bounded fictional operator’s fare notice. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
     },
@@ -73,7 +73,7 @@
       ],
       "explanation": "Menus, music and guided visits are different ways to attract visitors. Regular customers remain welcome, and normal café service continues.",
       "explanationFr": "Menus, musique et visites guidées sont plusieurs moyens d’attirer les visiteurs. Les habitués restent les bienvenus et le service habituel continue.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Removed an invented mayoral forecast and made all distractors plausible café business choices. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
     },
@@ -95,7 +95,7 @@
       ],
       "explanation": "The committee wants fewer discarded cups and faster clean-up. Renting and washing still cost money and effort.",
       "explanationFr": "Le comité souhaite moins de gobelets jetés et un nettoyage plus rapide. La location et le lavage restent nécessaires.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced unsupported and inaccurate medical guidance with an original low-risk practical argument about reducing event waste. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
     },
@@ -117,9 +117,10 @@
       ],
       "explanation": "Greetings such as “Salut” and “À très bientôt”, direct address with tu, and the personal invitation establish a friendly, informal tone.",
       "explanationFr": "« Salut », « À très bientôt », le tutoiement et l’invitation personnelle donnent à la lettre un ton amical et informel.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
-      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Expanded the invitation to the B1 minimum and replaced an unnatural distractor with a recognizable tone. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Expanded the invitation to the B1 minimum and replaced an unnatural distractor with a recognizable tone. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review.",
+      "teacher": "approved"
     },
     {
       "id": "tef-reading-b1-011",
@@ -139,7 +140,7 @@
       ],
       "explanation": "The organisers explicitly prioritise helping neighbours meet. Stall fees pay for tables, not a new hall.",
       "explanationFr": "Les organisateurs donnent la priorité aux rencontres entre voisins. Les frais des exposants financent les tables, pas une nouvelle salle.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Removed invented municipal funding and eliminated the competing supported answer about commercial benefits. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
     },
@@ -161,7 +162,7 @@
       ],
       "explanation": "The email explicitly states a budget of 650 $ per month.",
       "explanationFr": "L’étudiant indique clairement un budget de « 650 $ » par mois.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Removed an implausible campus-neighbourhood walking claim and obsolete dates while keeping the budget detail. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
     },
@@ -183,7 +184,7 @@
       ],
       "explanation": "A volunteer fills out the form by phone for people without internet access. This offers an alternative to online registration.",
       "explanationFr": "Une bénévole remplit le formulaire par téléphone avec les personnes sans accès à Internet. Elles peuvent donc s’inscrire sans passer par le site.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced an unsupported inference and medical assertions with a documented contrast between two registration routes. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
     },
@@ -205,7 +206,7 @@
       ],
       "explanation": "The apology and the technician’s promised visit aim to reassure the client and address the fault. The discount is an additional gesture, not a purchase condition.",
       "explanationFr": "Les excuses et la visite annoncée du technicien visent à rassurer le client et à résoudre la panne. La remise est un geste supplémentaire, pas une condition d’achat.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
       "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Corrected the question’s gender and strengthened the distractors without creating a length cue. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
     },
@@ -227,9 +228,10 @@
       ],
       "explanation": "The car park closes for three days and reopens on Thursday. “Temporairement” therefore means for a limited period.",
       "explanationFr": "Le parking ferme trois jours et rouvre jeudi. « Temporairement » signifie donc pendant une période limitée.",
-      "review": "pending",
+      "review": "merged",
       "problems": [],
-      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced invented parking rules with a coherent private-site notice and made the question actually assess vocabulary in context. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review."
+      "notes": "2026-10-29 — AI editorial preparation authorized by the owner’s Phase 4 continuation request. Replaced invented parking rules with a coherent private-site notice and made the question actually assess vocabulary in context. Reviewed passage, question, options, bilingual explanations, competency and level. Editorial acceptance and any required teacher approval remain pending; this is not a human teacher review.",
+      "teacher": "approved"
     }
   ]
 }

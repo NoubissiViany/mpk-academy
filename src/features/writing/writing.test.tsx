@@ -91,6 +91,7 @@ describe("AI writing feedback view", () => {
     render(
       <AppProvider initialState={demoState}>
         <WritingFeedbackView
+          range={{ min: 200 }}
           submission={submission()}
           taskTitle="Une journée sans voiture"
           parentBody={null}
@@ -133,6 +134,7 @@ describe("AI writing feedback view", () => {
     render(
       <AppProvider initialState={demoState}>
         <WritingFeedbackView
+          range={{ min: 200 }}
           submission={submission({ flaggedFixes: [1] })}
           taskTitle="Tâche"
           parentBody={null}
@@ -174,6 +176,7 @@ describe("AI writing feedback view", () => {
     render(
       <AppProvider initialState={demoState}>
         <WritingFeedbackView
+          range={{ min: 200 }}
           submission={submission({ status: "queued", feedback: null })}
           taskTitle="Tâche"
           parentBody="Première version."
@@ -202,6 +205,7 @@ describe("AI writing feedback view", () => {
     render(
       <AppProvider initialState={demoState}>
         <WritingFeedbackView
+          range={{ min: 200 }}
           submission={submission({ status: "queued", feedback: null })}
           taskTitle="Tâche"
           parentBody={null}
@@ -228,7 +232,8 @@ describe("requesting AI feedback", () => {
       >
         <RequestAiFeedback
           taskId="tef-writing-section-a-001"
-          text="Mon texte"
+          range={{ min: 80 }}
+          text={"mot ".repeat(80).trim()}
         />
       </AppProvider>,
     );
@@ -246,7 +251,7 @@ describe("requesting AI feedback", () => {
     expect(mocks.request).toHaveBeenCalledWith(
       expect.objectContaining({
         taskId: "tef-writing-section-a-001",
-        text: "Mon texte",
+        text: "mot ".repeat(80).trim(),
         clientKey: expect.any(String),
       }),
     );
@@ -279,10 +284,11 @@ describe("a review that failed", () => {
         }}
       >
         <WritingFeedbackView
+          range={{ min: 200 }}
           submission={submission({
             status: "failed",
             feedback: null,
-            body: "Mon texte à revoir.",
+            body: "mot ".repeat(200).trim(),
           })}
           taskTitle="Tâche"
           parentBody={null}
@@ -292,12 +298,12 @@ describe("a review that failed", () => {
     expect(
       await screen.findByText("We could not review this text"),
     ).toBeVisible();
-    expect(screen.getByText("Mon texte à revoir.")).toBeVisible();
+    expect(screen.getByText("mot ".repeat(200).trim())).toBeVisible();
     await user.click(screen.getByRole("button", { name: "Try again" }));
     expect(mocks.request).toHaveBeenCalledWith(
       expect.objectContaining({
         taskId: "tef-writing-section-b-002",
-        text: "Mon texte à revoir.",
+        text: "mot ".repeat(200).trim(),
         parentId: null,
       }),
     );

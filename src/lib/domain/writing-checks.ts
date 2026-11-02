@@ -15,6 +15,34 @@ export interface WritingChecks {
 export const countWords = (text: string) =>
   text.trim() ? text.trim().split(/\s+/).length : 0;
 
+export type WritingRange = { min: number; max?: number };
+
+export function validWritingRange(
+  range: WritingRange | undefined,
+): range is WritingRange {
+  return Boolean(
+    range &&
+    Number.isInteger(range.min) &&
+    range.min > 0 &&
+    (range.max === undefined ||
+      (Number.isInteger(range.max) && range.max >= range.min)),
+  );
+}
+
+/** Maximums are guidance unless the caller already enforces one (diagnostic). */
+export function canSubmitWriting(
+  text: string,
+  range: WritingRange | undefined,
+  enforceMaximum = false,
+) {
+  if (!validWritingRange(range)) return false;
+  const words = countWords(text);
+  return (
+    words >= range.min &&
+    (!enforceMaximum || range.max === undefined || words <= range.max)
+  );
+}
+
 // Connecting words examiners look for, longest first so "par conséquent"
 // is not also counted as a shorter match.
 const connectorList = [

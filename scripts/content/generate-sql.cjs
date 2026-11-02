@@ -57,6 +57,8 @@ const tables = {
       "duration_seconds",
       "preparation_seconds",
       "audio_duration",
+      "difficulty",
+      "minimum_words",
     ],
     rows: items.map((i) => [
       i.id,
@@ -90,6 +92,8 @@ const tables = {
         i.durationSeconds ?? "null",
         i.preparationSeconds ?? 0,
         i.audio?.intendedDuration ?? "null",
+        i.difficulty,
+        i.kind === "writing" ? i.wordCount.min : "null",
       ].join(","),
     ]),
     // Answers and mistakes keep pointing at old rows, so nothing is deleted.

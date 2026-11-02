@@ -21,7 +21,7 @@ export default async function WritingRewritePage({
   const task = submission
     ? getPublicWritingTask(submission.exam, submission.taskId)
     : null;
-  if (!submission || !task) notFound();
+  if (!submission || !task || !task.wordCount) notFound();
   return (
     <RewriteEditor
       submissionId={submission.id}
@@ -29,6 +29,7 @@ export default async function WritingRewritePage({
       taskTitle={task.title}
       instructions={task.instructions}
       original={submission.body}
+      range={task.wordCount}
     />
   );
 }

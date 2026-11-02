@@ -156,10 +156,21 @@ describe("drafting questions", () => {
     expect(item.options.map((o) => o.label)).toContain(draft().correct);
   });
 
-  it("sends every mock question to the teacher", () => {
+  it("requires mock and diagnostic review and keeps a stable practice sample", () => {
     expect(needsTeacher("tef-mock-reading-b2-001", true)).toBe(true);
-    const sample = practiceItems.filter((i) => needsTeacher(i.id, false));
-    expect(sample.length).toBeGreaterThan(5);
-    expect(sample.length).toBeLessThan(20);
+    expect(needsTeacher("diagnostic-reading-b2-001", false)).toBe(true);
+    const ids = Array.from(
+      { length: 100 },
+      (_, index) => `tef-reading-b1-${String(index + 1).padStart(3, "0")}`,
+    );
+    const sample = ids.filter((id) => needsTeacher(id, false));
+    expect(sample.length).toBeGreaterThanOrEqual(10);
+    expect(sample.length).toBeLessThanOrEqual(30);
+    expect(
+      [...ids]
+        .reverse()
+        .filter((id) => needsTeacher(id, false))
+        .sort(),
+    ).toEqual([...sample].sort());
   });
 });

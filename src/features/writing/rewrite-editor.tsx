@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { PageHeader } from "@/components/shared";
 import { useI18n } from "@/i18n/client";
-import { countWords } from "@/lib/domain/writing-checks";
+import { type WritingRange, countWords } from "@/lib/domain/writing-checks";
 import { RequestAiFeedback } from "./request-feedback";
 
 export function RewriteEditor({
@@ -13,12 +13,14 @@ export function RewriteEditor({
   taskTitle,
   instructions,
   original,
+  range,
 }: {
   submissionId: string;
   taskId: string;
   taskTitle: string;
   instructions: string;
   original: string;
+  range: WritingRange;
 }) {
   const { t } = useI18n();
   const copy = t.writing.rewrite;
@@ -46,6 +48,7 @@ export function RewriteEditor({
       </p>
       <RequestAiFeedback
         taskId={taskId}
+        range={range}
         text={text}
         parentId={submissionId}
         disabled={text.trim() === original.trim()}

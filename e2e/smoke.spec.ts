@@ -98,11 +98,15 @@ test("the landing sample is checked by the server", async ({ page }) => {
   const sample = page.getByRole("region", {
     name: "See how MPK practice works",
   });
-  await sample.locator('input[type="radio"]').first().check({ force: true });
-  await sample.getByRole("button", { name: "Check answer" }).click();
-  await expect(sample.getByRole("status")).toBeVisible({ timeout: 15_000 });
-
-  await sample.getByRole("button", { name: "Next question" }).click();
+  // Listening can occur anywhere in the shuffled four-question attempt.
+  for (let position = 0; position < 4; position++) {
+    await expect(sample.locator('input[type="radio"]').first()).toBeVisible();
+    if (await sample.locator("audio").count()) break;
+    await sample.locator('label:has(input[type="radio"])').first().click();
+    await sample.getByRole("button", { name: "Check answer" }).click();
+    await expect(sample.getByRole("status")).toBeVisible({ timeout: 15_000 });
+    await sample.getByRole("button", { name: "Next question" }).click();
+  }
   const audio = sample.locator("audio");
   await expect(audio).toBeVisible();
   await expect
@@ -119,7 +123,7 @@ test("the landing sample is checked by the server", async ({ page }) => {
   await expect(sample.getByText("Read what was said")).toHaveCount(0);
   await expect(sample.getByText(/Bonjour, je vous appelle/)).toHaveCount(0);
 
-  await sample.locator('input[type="radio"]').first().check({ force: true });
+  await sample.locator('label:has(input[type="radio"])').first().click();
   await sample.getByRole("button", { name: "Check answer" }).click();
   await sample.getByText("Read what was said").click();
   await expect(sample.getByText(/Bonjour, je vous appelle/)).toBeVisible();

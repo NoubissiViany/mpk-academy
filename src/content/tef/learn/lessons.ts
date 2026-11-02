@@ -52,6 +52,40 @@ export const lessons: LearningLesson[] = [
       explanationFr:
         "« Reportée » change le moment de la réunion ; le texte précise que le lieu ne change pas.",
     },
+    extraCheckpoints: [
+      {
+        prompt:
+          "« Le guichet ferme à midi, mais le formulaire reste accessible en ligne. » What is supported?",
+        promptFr:
+          "« Le guichet ferme à midi, mais le formulaire reste accessible en ligne. » Quelle réponse est justifiée ?",
+        options: [
+          "On peut encore accéder au formulaire sur Internet.",
+          "Toutes les démarches sont annulées à midi.",
+          "Le guichet rouvrira obligatoirement dans une heure.",
+        ],
+        answer: 0,
+        explanation:
+          "The contrast preserves online access. The notice does not announce cancellation or a reopening time.",
+        explanationFr:
+          "L’opposition maintient l’accès en ligne. L’avis n’annonce ni annulation ni heure de réouverture.",
+      },
+      {
+        prompt:
+          "A notice asks residents to bring their keys to reception before repairs. What is its main purpose?",
+        promptFr:
+          "Un avis demande aux résidents de laisser leurs clés à l’accueil avant des travaux. Quelle est son intention principale ?",
+        options: [
+          "Raconter l’histoire du bâtiment.",
+          "Demander une action aux résidents.",
+          "Comparer plusieurs entreprises de travaux.",
+        ],
+        answer: 1,
+        explanation:
+          "The requested action identifies the practical purpose of this notice. A building-related word alone does not determine the answer.",
+        explanationFr:
+          "L’action demandée révèle l’objectif pratique de l’avis. Un mot lié au bâtiment ne suffit pas à déterminer la réponse.",
+      },
+    ],
   },
   {
     id: "tef-lesson-002",
@@ -97,6 +131,36 @@ export const lessons: LearningLesson[] = [
       explanation: "Finalement introduces the final decision.",
       explanationFr: "« Finalement » introduit la décision définitive.",
     },
+    extraCheckpoints: [
+      {
+        prompt:
+          "Written analysis exercise: « Je vous avais proposé 15 h ; ce sera plutôt 16 h. » Which time is final?",
+        promptFr:
+          "Exercice d’analyse écrite : « Je vous avais proposé 15 h ; ce sera plutôt 16 h. » Quel horaire est définitif ?",
+        options: ["15 h", "15 h 30", "16 h"],
+        answer: 2,
+        explanation:
+          "Plutôt replaces the earlier proposal with 16 h. Reading this transcript trains analysis, not listening itself.",
+        explanationFr:
+          "« Plutôt » remplace la proposition initiale par 16 h. Lire cette transcription entraîne l’analyse, pas l’écoute elle-même.",
+      },
+      {
+        prompt:
+          "Written message: « Le colis est arrivé. Merci de rappeler avant de venir. » What action is requested first?",
+        promptFr:
+          "Message écrit : « Le colis est arrivé. Merci de rappeler avant de venir. » Quelle action est demandée en premier ?",
+        options: [
+          "Téléphoner au service.",
+          "Venir immédiatement sans appeler.",
+          "Attendre une nouvelle livraison.",
+        ],
+        answer: 0,
+        explanation:
+          "Avant de venir places the call before the visit. The parcel has already arrived.",
+        explanationFr:
+          "« Avant de venir » place l’appel avant la visite. Le colis est déjà arrivé.",
+      },
+    ],
   },
   {
     id: "tef-lesson-003",
@@ -151,6 +215,39 @@ export const lessons: LearningLesson[] = [
       explanationFr:
         "La première phrase poursuit les événements ; la seconde transforme la tâche en commentaire.",
     },
+    extraCheckpoints: [
+      {
+        prompt:
+          "Which continuation preserves the news situation: « Un chien a été retrouvé dans un autobus »?",
+        promptFr:
+          "Quelle suite garde la situation de l’article : « Un chien a été retrouvé dans un autobus » ?",
+        options: [
+          "Je pense que les transports sont trop chers.",
+          "Le conducteur l’a confié à une association locale.",
+          "Cher ami, viens prendre le bus avec moi.",
+        ],
+        answer: 1,
+        explanation:
+          "The driver’s action develops the reported event. The other choices switch to an opinion or a personal invitation.",
+        explanationFr:
+          "L’action du conducteur développe l’événement rapporté. Les autres propositions passent à un avis général ou à une invitation personnelle.",
+      },
+      {
+        prompt: "Which plan supports a justified position in writing B?",
+        promptFr:
+          "Quel plan permet de défendre une position justifiée en expression écrite B ?",
+        options: [
+          "Une liste d’opinions sans explication.",
+          "Une suite d’événements sans lien avec le sujet.",
+          "Une position, des arguments illustrés et une conclusion.",
+        ],
+        answer: 2,
+        explanation:
+          "A position needs reasons and examples, then a closing that follows from them. Listing views without support does not develop an argument.",
+        explanationFr:
+          "Une position demande des raisons et des exemples, puis une conclusion cohérente. Énumérer des avis sans les justifier ne développe pas une argumentation.",
+      },
+    ],
   },
   {
     id: "tef-lesson-004",
@@ -198,6 +295,40 @@ export const lessons: LearningLesson[] = [
       explanationFr:
         "La relance s’appuie sur la réponse reçue et cherche une autre possibilité.",
     },
+    extraCheckpoints: [
+      {
+        prompt:
+          "The other person says: « C’est trop cher. » Which reply addresses that objection?",
+        promptFr:
+          "L’autre personne dit : « C’est trop cher. » Quelle réponse traite cette objection ?",
+        options: [
+          "On pourrait choisir la formule moins chère et partager les frais.",
+          "Le lieu est joli, donc parlons seulement du paysage.",
+          "Tu dois être d’accord parce que je le veux.",
+        ],
+        answer: 0,
+        explanation:
+          "The reply responds to cost with a concrete alternative. It neither ignores the concern nor relies on pressure.",
+        explanationFr:
+          "La réponse traite le coût en proposant une solution concrète. Elle n’ignore pas la préoccupation et ne s’appuie pas sur la pression.",
+      },
+      {
+        prompt:
+          "Which follow-up clarifies the reply « Le matériel est fourni »?",
+        promptFr:
+          "Quelle relance précise la réponse « Le matériel est fourni » ?",
+        options: [
+          "Je vous repose la question sur le jour sans écouter.",
+          "Les chaussures sont-elles comprises dans ce matériel ?",
+          "Je vais réciter tous mes arguments sur le transport.",
+        ],
+        answer: 1,
+        explanation:
+          "The question builds on the reply and checks a specific condition, rather than starting an unrelated topic.",
+        explanationFr:
+          "La question s’appuie sur la réponse et vérifie une condition précise, au lieu de changer de sujet.",
+      },
+    ],
   },
   {
     id: "tef-lesson-005",
@@ -245,6 +376,38 @@ export const lessons: LearningLesson[] = [
       explanationFr:
         "La section A de l’expression orale est une interaction pour obtenir des informations.",
     },
+    extraCheckpoints: [
+      {
+        prompt:
+          "In the MPK TEF simulation, which activity belongs to speaking B?",
+        promptFr:
+          "Dans la simulation TEF de MPK, quelle activité correspond à l’expression orale B ?",
+        options: [
+          "Compléter une phrase à trous.",
+          "Recopier un article sans le modifier.",
+          "Convaincre une personne en répondant à ses objections.",
+        ],
+        answer: 2,
+        explanation:
+          "Speaking B is the persuasion role-play. The other activities do not match its communicative purpose.",
+        explanationFr:
+          "L’expression orale B est le jeu de rôle de persuasion. Les autres activités ne correspondent pas à son objectif de communication.",
+      },
+      {
+        prompt: "What does completing an MPK simulation provide?",
+        promptFr: "Que permet d’obtenir une simulation MPK terminée ?",
+        options: [
+          "Un bilan d’entraînement à analyser.",
+          "Un résultat officiel délivré par le centre d’examen.",
+          "Une garantie de réussite à une future épreuve.",
+        ],
+        answer: 0,
+        explanation:
+          "MPK provides independent practice evidence, not an official result or a guarantee.",
+        explanationFr:
+          "MPK fournit des éléments d’entraînement indépendants, pas un résultat officiel ni une garantie.",
+      },
+    ],
   },
   {
     id: "tef-lesson-006",
@@ -287,6 +450,39 @@ export const lessons: LearningLesson[] = [
       explanationFr:
         "Le minimum de 80 mots concerne la section A ; la section B demande au moins 200 mots.",
     },
+    extraCheckpoints: [
+      {
+        prompt: "In MPK writing A, how should the 25 minutes be used?",
+        promptFr:
+          "Dans l’expression écrite A de MPK, comment utiliser les 25 minutes ?",
+        options: [
+          "Écrire 25 minutes puis ajouter un temps de relecture.",
+          "Planifier, rédiger et relire à l’intérieur des 25 minutes.",
+          "Garder la planification pour la fin de l’épreuve suivante.",
+        ],
+        answer: 1,
+        explanation:
+          "Planning and checking are included in the task allowance; they do not create extra time.",
+        explanationFr:
+          "La planification et la relecture font partie du temps de la tâche ; elles ne donnent pas de temps supplémentaire.",
+      },
+      {
+        prompt:
+          "A writing B response contains 175 words. What does the lesson’s minimum imply?",
+        promptFr:
+          "Une réponse à l’écrit B contient 175 mots. Que signifie le minimum indiqué dans la leçon ?",
+        options: [
+          "Le texte dépasse déjà le minimum de 25 mots.",
+          "Le minimum de 80 mots suffit pour cette section.",
+          "Il manque au moins 25 mots de contenu pertinent.",
+        ],
+        answer: 2,
+        explanation:
+          "Writing B requires at least 200 words: 200 minus 175 is 25. Relevant development is needed rather than empty padding.",
+        explanationFr:
+          "L’écrit B demande au moins 200 mots : 200 moins 175 donne 25. Il faut développer un contenu pertinent, pas ajouter du remplissage.",
+      },
+    ],
   },
   {
     id: "tef-lesson-007",
@@ -337,5 +533,39 @@ export const lessons: LearningLesson[] = [
       explanationFr:
         "La première note décrit une stratégie d’écoute réutilisable.",
     },
+    extraCheckpoints: [
+      {
+        prompt:
+          "Your answer was wrong because you confused the author’s view with a quoted view. What should you practise?",
+        promptFr:
+          "Vous avez confondu l’avis de l’auteur avec un avis cité. Que faut-il travailler ?",
+        options: [
+          "Repérer qui défend chaque point de vue.",
+          "Mémoriser la lettre choisie dans cette question.",
+          "Changer de réponse dès qu’un mot semble difficile.",
+        ],
+        answer: 0,
+        explanation:
+          "The error concerns attribution of viewpoints, a transferable reading skill. Memorising the answer letter does not address it.",
+        explanationFr:
+          "L’erreur porte sur l’attribution des points de vue, une compétence de lecture réutilisable. Mémoriser une lettre ne la corrige pas.",
+      },
+      {
+        prompt:
+          "Your response differs from the model but completes the task. What is the useful comparison?",
+        promptFr:
+          "Votre réponse diffère du modèle mais réalise la tâche. Quelle comparaison est utile ?",
+        options: [
+          "Compter seulement les mots identiques au modèle.",
+          "Vérifier la tâche, la cohérence et les critères de la grille.",
+          "Remplacer toutes vos idées par celles du modèle.",
+        ],
+        answer: 1,
+        explanation:
+          "A model is one possible response. Review the rubric and evidence in your own work instead of requiring identical wording.",
+        explanationFr:
+          "Le modèle est une réponse possible. Examinez les critères et les indices dans votre propre production, sans exiger les mêmes formulations.",
+      },
+    ],
   },
 ];

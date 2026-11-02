@@ -22,6 +22,8 @@ vi.mock("@/lib/supabase/learner", () => ({
 import {
   getLearnerSnapshotAction,
   submitDiagnosticAction,
+  submitPracticeAction,
+  saveIncompleteWritingPracticeAction,
   updateProfileAction,
 } from "./learner";
 
@@ -67,6 +69,48 @@ describe("learner action failures", () => {
   });
 
   afterEach(() => vi.restoreAllMocks());
+
+  it("rejects short writing before reaching a submission RPC", async () => {
+    for (const [exam, questionId, min] of [
+      ["TCF Canada", "tcf-writing-task-1-001", 60],
+      ["TEF Canada", "tef-writing-section-a-001", 80],
+      ["TCF Canada", "tcf-writing-task-2-001", 120],
+      ["TEF Canada", "tef-writing-section-b-002", 200],
+    ] as const) {
+      expect(
+        await submitPracticeAction({
+          exam,
+          skill: "writing",
+          durationSeconds: 10,
+          answers: [
+            { questionId, sequence: 0, answer: "mot ".repeat(min - 1) },
+          ],
+        }),
+      ).toMatchObject({ ok: false, reason: "invalid_submission" });
+    }
+    expect(mocks.rpc).not.toHaveBeenCalled();
+  });
+  it("saves a timed-out empty draft through the authenticated incomplete RPC", async () => {
+    mocks.rpc.mockResolvedValue({
+      data: { id: submission.submissionId, status: "abandoned" },
+      error: null,
+    });
+    expect(
+      await saveIncompleteWritingPracticeAction({
+        exam: "TEF Canada",
+        taskId: "tef-writing-section-a-001",
+        text: "",
+        submissionId: submission.submissionId,
+        durationSeconds: 3600,
+      }),
+    ).toEqual({ ok: true, id: submission.submissionId });
+    expect(mocks.requireUser).toHaveBeenCalledOnce();
+    expect(mocks.rpc).toHaveBeenCalledWith(
+      "mpk_save_incomplete_writing_practice",
+      expect.objectContaining({ p_body: "" }),
+    );
+    expect(mocks.getSnapshot).not.toHaveBeenCalled();
+  });
 
   it("requires an 80–120-word sample before saving a new diagnostic", async () => {
     for (const writingSample of [

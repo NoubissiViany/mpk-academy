@@ -63,15 +63,18 @@ export async function mockSessionEvent(
     return {
       ok: false,
       message:
-        error.code === "55000"
-          ? "Audio en préparation : examen blanc complet indisponible."
-          : "Cette action est indisponible. Reprenez la session pour vérifier son état actuel.",
+        error.code === "22023" && error.message.includes("Writing minimum")
+          ? `Une réponse n’atteint pas le minimum de ${error.details} mots. Complétez les textes avant de terminer cette section.`
+          : error.code === "55000"
+            ? "Audio en préparation : examen blanc complet indisponible."
+            : "Cette action est indisponible. Reprenez la session pour vérifier son état actuel.",
     };
   const result = data as unknown as Omit<
     MockSessionPayload,
-    "manifest" | "item" | "serverNow"
+    "item" | "serverNow"
   > & { audioGranted: boolean };
-  const manifest = manifests.find((m) => m.id === result.manifestId);
+  const manifest =
+    result.manifest ?? manifests.find((m) => m.id === result.manifestId);
   if (!manifest) return { ok: false, message: "Simulation inconnue." };
   const serverNow = Date.now();
   const source = mockItems.find(
@@ -85,6 +88,21 @@ export async function mockSessionEvent(
     source && result.state.status !== "completed"
       ? candidateItem(source)
       : undefined;
+  if (item?.options && result.optionOrder?.[item.id]) {
+    const options = item.options;
+    item.options = result.optionOrder[item.id].flatMap(
+      (id) => options.find((o) => o.id === id) ?? [],
+    );
+  }
+  const writingMinimums = Object.fromEntries(
+    mockItems.flatMap((i) =>
+      i.kind === "writing" &&
+      i.wordCount &&
+      manifest.sections.some((s) => s.itemIds.includes(i.id))
+        ? [[i.id, i.wordCount.min]]
+        : [],
+    ),
+  );
   if (item?.audio) {
     // A signed link is sent only for a successful first play; resume never
     // enables replay, and the bucket key itself never reaches the browser.
@@ -100,5 +118,8 @@ export async function mockSessionEvent(
       delete item.options;
     }
   }
-  return { ok: true, data: { ...result, manifest, item, serverNow } };
+  return {
+    ok: true,
+    data: { ...result, manifest, item, serverNow, writingMinimums },
+  };
 }

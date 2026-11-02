@@ -36,9 +36,9 @@ begin
  assert (select count(*) from public.mistakes where user_id=uid and evidence_mode='transcript')=1,'transcript mistakes labelled';
  begin perform public.mpk_submit_practice('TCF Canada','listening','',30,answers);raise exception 'wrong exam accepted';exception when sqlstate '22023' then null;end;
  select id into first_id from private.question_bank where purpose='practice' and exam='TEF' and skill='writing' order by id limit 1;
- r:=public.mpk_submit_practice('TEF Canada','writing','',100,jsonb_build_array(jsonb_build_object('question_id',first_id,'sequence',0,'answer','Mon texte original.','submission_id','writing-test')));
+ r:=public.mpk_submit_practice('TEF Canada','writing','',100,jsonb_build_array(jsonb_build_object('question_id',first_id,'sequence',0,'answer',repeat('mot ',80),'submission_id','writing-test')));
  assert r->'score'='null'::jsonb,'writing not scored';
- assert exists(select 1 from public.practice_answers where practice_session_id=(r->>'id')::uuid and answer='Mon texte original.' and is_correct is null),'writing saved without correctness';
+ assert exists(select 1 from public.practice_answers where practice_session_id=(r->>'id')::uuid and answer=repeat('mot ',80) and is_correct is null),'writing saved without correctness';
  perform public.mpk_complete_lesson('shared-lesson-001');
  assert (select course_completion from public.learner_progress where user_id=uid and exam='TEF Canada')=round(100.0/(select count(*) from private.lesson_catalog where active and exam in ('shared','TEF'))),'one of the applicable lessons';
  begin perform public.mpk_mock_event(null,'tef-mock-01','{"type":"start"}');raise exception 'pending mock launched';exception when sqlstate '55000' then null;end;
@@ -50,7 +50,7 @@ begin
  -- Ready metadata is a test fixture only. No production file is implied or created.
  update private.question_bank set audio_status='ready' where purpose='mock';
  session:=public.mpk_mock_event(null,'tef-mock-01','{"type":"start"}');session_id:=(session->>'id')::uuid;deadline:=(session->'state'->>'deadline')::numeric;
- select manifest->'sections'->0->'itemIds'->>0,manifest->'sections'->0->'itemIds'->>1 into first_id,second_id from private.content_manifests where id='tef-mock-01';
+ first_id:=session->'manifest'->'sections'->0->'itemIds'->>0;second_id:=session->'manifest'->'sections'->0->'itemIds'->>1;
  session:=public.mpk_mock_event(session_id,'tef-mock-01',jsonb_build_object('type','answer','itemId',first_id,'answer','a'));
  session:=public.mpk_mock_event(session_id,'tef-mock-01',jsonb_build_object('type','next','itemId',first_id));
  session:=public.mpk_mock_event(session_id,'tef-mock-01',jsonb_build_object('type','previous','itemId',second_id));
@@ -65,14 +65,14 @@ begin
  update private.mock_sessions set state=jsonb_set(state,'{deadline}',to_jsonb(floor(extract(epoch from clock_timestamp())*1000)-100)) where id=session_id;
  session:=public.mpk_mock_event(session_id,'tef-mock-01','{"type":"tick"}');
  assert (session->'state'->>'sectionIndex')::integer=1,'reading expiry advances';
- select manifest->'sections'->1->'itemIds'->>0 into first_id from private.content_manifests where id='tef-mock-01';
+ first_id:=session->'manifest'->'sections'->1->'itemIds'->>0;
  session:=public.mpk_mock_event(session_id,'tef-mock-01',jsonb_build_object('type','play','itemId',first_id));
  assert (session->>'audioGranted')::boolean,'first play allowed';
  begin perform public.mpk_mock_event(session_id,'tef-mock-01',jsonb_build_object('type','play','itemId',first_id));raise exception 'replay allowed';exception when sqlstate '22023' then null;end;
  begin perform public.mpk_mock_event(session_id,'tef-mock-01',jsonb_build_object('type','answer','itemId',first_id,'answer','a'));raise exception 'early listening answer allowed';exception when sqlstate '22023' then null;end;
  update private.mock_sessions set state=jsonb_set(state,'{audioUntil}','0') where id=session_id;
  session:=public.mpk_mock_event(session_id,'tef-mock-01',jsonb_build_object('type','next','itemId',first_id));
- select manifest->'sections'->1->'itemIds'->>1 into second_id from private.content_manifests where id='tef-mock-01';
+ second_id:=session->'manifest'->'sections'->1->'itemIds'->>1;
  begin perform public.mpk_mock_event(session_id,'tef-mock-01',jsonb_build_object('type','previous','itemId',second_id));raise exception 'listening back allowed';exception when sqlstate '22023' then null;end;
  -- Expired browser time must not grant a new full section after a long absence.
  update private.mock_sessions set state=jsonb_set(jsonb_set(state,'{deadline}',to_jsonb(floor(extract(epoch from clock_timestamp())*1000)-20000000)),'{taskDeadline}','null') where id=session_id;

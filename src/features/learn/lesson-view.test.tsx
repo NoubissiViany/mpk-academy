@@ -47,9 +47,11 @@ describe("lesson checkpoints", () => {
     const content = toPublicLesson(withExtra, "en", () => 0);
     expect(content).not.toHaveProperty("checkpoint");
     expect(content.checkpoints).toHaveLength(2);
-    for (const [position, checkpoint] of content.checkpoints.entries()) {
+    for (const checkpoint of content.checkpoints) {
       const original =
-        position === 0 ? authored.checkpoint : withExtra.extraCheckpoints[0];
+        checkpoint.index === 0
+          ? authored.checkpoint
+          : withExtra.extraCheckpoints[0];
       expect(checkpoint).not.toHaveProperty("answer");
       for (const option of checkpoint.options)
         expect(option.label).toBe(original.options[option.index]);
@@ -78,21 +80,25 @@ describe("lesson checkpoints", () => {
     const tef = getLessonContent("tef-lesson-005")!;
     const { checkpoint } = tef;
     const content = toPublicLesson(tef, "fr", () => 0);
-    expect(content.checkpoints[0].prompt).toBe(checkpoint.promptFr);
-    for (const option of content.checkpoints[0].options)
+    expect(content.checkpoints.find((c) => c.index === 0)!.prompt).toBe(
+      checkpoint.promptFr,
+    );
+    for (const option of content.checkpoints.find((c) => c.index === 0)!
+      .options)
       expect(option.label).toBe(checkpoint.optionsFr![option.index]);
     expect(checkLessonCheckpoint(tef.id, 0, checkpoint.answer, "fr")).toEqual({
       correct: true,
       correctAnswer: checkpoint.optionsFr![checkpoint.answer],
       explanation: checkpoint.explanationFr,
     });
-    expect(toPublicLesson(tef, "en").checkpoints[0].prompt).toBe(
-      checkpoint.prompt,
-    );
+    expect(
+      toPublicLesson(tef, "en").checkpoints.find((c) => c.index === 0)!.prompt,
+    ).toBe(checkpoint.prompt);
   });
 
   it("completes only after every checkpoint is answered", async () => {
     const user = userEvent.setup();
+    const shuffled = toPublicLesson(withExtra, "en", () => 0);
     mocks.check.mockImplementation(async (_id, position: number) => ({
       ok: true,
       feedback: {
@@ -108,11 +114,7 @@ describe("lesson checkpoints", () => {
           progress: { ...demoState.progress, completedLessonIds: [] },
         }}
       >
-        <LessonView
-          lesson={lesson}
-          content={toPublicLesson(withExtra)}
-          next={null}
-        />
+        <LessonView lesson={lesson} content={shuffled} next={null} />
       </AppProvider>,
     );
     const complete = await screen.findByRole("button", {
@@ -127,17 +129,25 @@ describe("lesson checkpoints", () => {
     });
     await user.click(groups[0].querySelector("input")!);
     await user.click(checks[0]);
-    expect(await screen.findByText("Explanation 1")).toBeVisible();
+    expect(
+      await screen.findByText(
+        `Explanation ${shuffled.checkpoints[0].index + 1}`,
+      ),
+    ).toBeVisible();
     expect(complete).toBeDisabled();
 
     await user.click(groups[1].querySelector("input")!);
     await user.click(
       screen.getByRole("button", { name: "Check understanding" }),
     );
-    expect(await screen.findByText("Explanation 2")).toBeVisible();
+    expect(
+      await screen.findByText(
+        `Explanation ${shuffled.checkpoints[1].index + 1}`,
+      ),
+    ).toBeVisible();
     expect(mocks.check).toHaveBeenLastCalledWith(
       lesson.id,
-      1,
+      shuffled.checkpoints[1].index,
       expect.any(Number),
     );
     expect(complete).toBeEnabled();
