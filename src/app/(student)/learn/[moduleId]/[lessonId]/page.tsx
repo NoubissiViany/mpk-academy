@@ -67,6 +67,7 @@ export default async function LessonPage({
   const next = available[available.findIndex((l) => l.id === lesson.id) + 1];
   return (
     <LessonView
+      key={lesson.id}
       lesson={lesson}
       content={toPublicLesson(content, locale)}
       next={next ? { id: next.id, moduleId: next.moduleId } : null}

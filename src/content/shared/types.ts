@@ -183,6 +183,8 @@ export type PublicLessonContent = Omit<
   "checkpoint" | "extraCheckpoints"
 > & {
   checkpoints: Array<{
+    /** Original source index, independent of display order. */
+    index: number;
     prompt: string;
     options: Array<{ index: number; label: string }>;
   }>;

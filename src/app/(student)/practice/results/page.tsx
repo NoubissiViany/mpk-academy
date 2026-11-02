@@ -23,6 +23,30 @@ export default async function PracticeResultsPage({
   ]);
   if (!result) notFound();
   const copy = t.practice.results;
+  if (result.status === "abandoned")
+    return (
+      <div className="mx-auto max-w-3xl space-y-5">
+        <PageHeader
+          eyebrow={copy.eyebrow(result.exam)}
+          title={t.writing.length.incompleteTitle}
+          description={t.writing.length.incomplete}
+        />
+        {result.drafts.map((draft) => (
+          <pre
+            key={draft.question_id}
+            className="whitespace-pre-wrap rounded-xl border p-5 font-sans"
+            lang="fr"
+          >
+            {draft.answer}
+          </pre>
+        ))}
+        <Button asChild>
+          <Link href="/practice/session?skill=writing">
+            {t.writing.length.retry}
+          </Link>
+        </Button>
+      </div>
+    );
   const canReviewMistakes = hasPlanFeature(access.planAccess, "mistakeReview");
   const scored = result.score !== null;
   const skill = t.practice.skills[result.skill as ExamSkill] ?? result.skill;

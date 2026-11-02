@@ -25,6 +25,26 @@ export function LessonView({
   const { state, replaceState } = useApp();
   const { t, locale } = useI18n();
   const copy = t.learn.lesson;
+  const [presentation] = useState(() =>
+    content.checkpoints.map((c) => ({
+      index: c.index,
+      options: c.options.map((o) => o.index),
+    })),
+  );
+  const checkpoints = presentation.flatMap((order) => {
+    const checkpoint = content.checkpoints.find((c) => c.index === order.index);
+    return checkpoint
+      ? [
+          {
+            ...checkpoint,
+            options: order.options.flatMap(
+              (index) =>
+                checkpoint.options.find((o) => o.index === index) ?? [],
+            ),
+          },
+        ]
+      : [];
+  });
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [feedback, setFeedback] = useState<Record<number, AnswerFeedback>>({});
   const [checking, setChecking] = useState<number | null>(null);
@@ -113,9 +133,9 @@ export function LessonView({
       <section className="rounded-xl border p-6">
         <h2 className="text-xl font-bold">{copy.checkpoint}</h2>
         <ol className="mt-4 space-y-8">
-          {content.checkpoints.map((checkpoint, position) => {
-            const answer = answers[position];
-            const verdict = feedback[position];
+          {checkpoints.map((checkpoint, position) => {
+            const answer = answers[checkpoint.index];
+            const verdict = feedback[checkpoint.index];
             return (
               <li key={checkpoint.prompt}>
                 {total > 1 && (
@@ -154,7 +174,7 @@ export function LessonView({
                         onChange={() =>
                           setAnswers((current) => ({
                             ...current,
-                            [position]: option.index,
+                            [checkpoint.index]: option.index,
                           }))
                         }
                       />
@@ -165,9 +185,11 @@ export function LessonView({
                 {!verdict ? (
                   <Button
                     disabled={answer === undefined || checking !== null}
-                    onClick={() => check(position)}
+                    onClick={() => check(checkpoint.index)}
                   >
-                    {checking === position ? t.assessment.checking : copy.check}
+                    {checking === checkpoint.index
+                      ? t.assessment.checking
+                      : copy.check}
                   </Button>
                 ) : (
                   <p role="status" className="leading-7">

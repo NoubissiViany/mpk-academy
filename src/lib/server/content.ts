@@ -107,7 +107,11 @@ export function getPracticePool(
   });
   return {
     questions: selection.items.map((item) =>
-      toPublicQuestion(toQuestion(item)),
+      toPublicQuestion({
+        ...toQuestion(item),
+        options: shuffle(item.options, options.random),
+        type: "multiple_choice",
+      }),
     ),
     reviewIds: selection.reviewIds,
   };
@@ -156,16 +160,20 @@ export function toPublicLesson(
   const { checkpoint, extraCheckpoints, ...rest } = lesson;
   return {
     ...rest,
-    checkpoints: lessonCheckpoints(lesson).map((item) => {
-      const { prompt, options } = localCheckpoint(item, locale);
-      return {
-        prompt,
-        options: shuffle(
-          options.map((label, index) => ({ index, label })),
-          random,
-        ),
-      };
-    }),
+    checkpoints: shuffle(
+      lessonCheckpoints(lesson).map((item, index) => {
+        const { prompt, options } = localCheckpoint(item, locale);
+        return {
+          index,
+          prompt,
+          options: shuffle(
+            options.map((label, index) => ({ index, label })),
+            random,
+          ),
+        };
+      }),
+      random,
+    ),
   };
 }
 

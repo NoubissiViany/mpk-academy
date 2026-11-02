@@ -1,8 +1,11 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { submitPracticeAction } from "@/app/actions/learner";
+import {
+  saveIncompleteWritingPracticeAction,
+  submitPracticeAction,
+} from "@/app/actions/learner";
 import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
 import type { PublicProductiveTask } from "@/content/shared/types";
@@ -11,10 +14,9 @@ import { SpeakingRecorder } from "@/features/speaking/speaking-recorder";
 import { RequestAiFeedback } from "@/features/writing/request-feedback";
 import { useI18n } from "@/i18n/client";
 import type { ExamId } from "@/types/domain";
+import { WritingLength } from "@/features/writing/writing-length";
+import { canSubmitWriting } from "@/lib/domain/writing-checks";
 import { ModelAnswer } from "./model-answer";
-
-const wordCount = (value: string) =>
-  value.trim() ? value.trim().split(/\s+/).length : 0;
 
 type SessionProps = {
   exam: ExamId;
@@ -29,17 +31,23 @@ type SessionProps = {
 export function ProductiveSession(props: SessionProps) {
   const { t } = useI18n();
   if (!props.tasks.length) return <p>{t.common.errors.notFound}</p>;
-  return <TaskSession {...props} />;
+  return <TaskSession key={`${props.exam}:${props.skill}`} {...props} />;
 }
 
 function TaskSession({
   exam,
   skill,
-  tasks,
+  tasks: initialTasks,
   aiFeedback,
   aiSpeaking,
 }: SessionProps) {
   const { t, locale } = useI18n();
+  const [tasks] = useState(initialTasks);
+  const [timeoutSave, setTimeoutSave] = useState<
+    "idle" | "saving" | "saved" | "failed"
+  >("idle");
+  const [incompleteId, setIncompleteId] = useState<string | null>(null);
+  const savingIncomplete = useRef(false);
   const copy = t.practice.productive;
   const [submissionId] = useState(() => crypto.randomUUID());
   const [index, setIndex] = useState(0);
@@ -63,6 +71,9 @@ function TaskSession({
       : Math.max(0, task.durationSeconds - Math.floor((now - started) / 1000));
   const expired = started !== null && remaining === 0;
   const reviewing = review || expired;
+  const writingValid =
+    skill !== "writing" || canSubmitWriting(response, task.wordCount);
+  const incomplete = skill === "writing" && expired && !writingValid;
   const preparing =
     started !== null &&
     task.preparationSeconds > 0 &&
@@ -73,7 +84,34 @@ function TaskSession({
       ? 0
       : Math.min(task.durationSeconds, Math.floor((now - started) / 1000));
 
+  const saveIncomplete = useCallback(async () => {
+    if (savingIncomplete.current) return;
+    savingIncomplete.current = true;
+    setTimeoutSave("saving");
+    try {
+      const result = await saveIncompleteWritingPracticeAction({
+        exam,
+        taskId: task.id,
+        text: response,
+        submissionId,
+        durationSeconds: task.durationSeconds,
+      });
+      if (result.ok) setIncompleteId(result.id);
+      setTimeoutSave(result.ok ? "saved" : "failed");
+    } catch {
+      setTimeoutSave("failed");
+    } finally {
+      savingIncomplete.current = false;
+    }
+  }, [exam, task.id, task.durationSeconds, response, submissionId]);
+  useEffect(() => {
+    if (!incomplete || timeoutSave !== "idle") return;
+    const pendingSave = setTimeout(() => void saveIncomplete(), 0);
+    return () => clearTimeout(pendingSave);
+  }, [incomplete, timeoutSave, saveIncomplete]);
+
   const finish = async () => {
+    if (!writingValid || saving) return;
     setSaving(true);
     const result = await submitPracticeAction({
       exam,
@@ -194,13 +232,18 @@ function TaskSession({
         <>
           <textarea
             aria-label={copy.responseLabel}
+            aria-describedby="practice-writing-length"
             lang="fr"
             className="min-h-64 w-full rounded border bg-background p-4"
             value={response}
             disabled={started === null || reviewing}
             onChange={(e) => setResponse(e.target.value)}
           />
-          <p>{copy.words(wordCount(response))}</p>
+          <WritingLength
+            id="practice-writing-length"
+            text={response}
+            range={task.wordCount}
+          />
         </>
       )}
       <details>
@@ -208,12 +251,42 @@ function TaskSession({
         <p className="mt-3">{guidanceText}</p>
       </details>
       <Button
-        disabled={started === null || reviewing}
+        disabled={started === null || reviewing || !writingValid}
         onClick={() => setReview(true)}
       >
         {copy.finish}
       </Button>
-      {reviewing && (
+      {incomplete && (
+        <section role="status" className="space-y-3 rounded-xl border p-5">
+          <p>
+            {timeoutSave === "saved"
+              ? t.writing.length.incomplete
+              : timeoutSave === "failed"
+                ? t.writing.length.saveFailed
+                : t.common.saving}
+          </p>
+          {timeoutSave === "failed" && (
+            <Button onClick={saveIncomplete}>
+              {t.writing.length.retrySave}
+            </Button>
+          )}
+          {incompleteId && (
+            <Button variant="secondary" asChild>
+              <a href={`/practice/results?session=${incompleteId}`}>
+                {t.writing.length.viewSaved}
+              </a>
+            </Button>
+          )}
+          {timeoutSave === "saved" && (
+            <Button asChild>
+              <a href="/practice/session?skill=writing">
+                {t.writing.length.retry}
+              </a>
+            </Button>
+          )}
+        </section>
+      )}
+      {reviewing && !incomplete && (
         <section className="space-y-4 rounded-xl border p-6">
           <h2 className="text-xl font-bold">{copy.reviewTitle}</h2>
           <ul className="list-inside list-disc" lang="fr">
@@ -228,6 +301,7 @@ function TaskSession({
             <div className="rounded-xl border bg-card p-5">
               <RequestAiFeedback
                 taskId={task.id}
+                range={task.wordCount!}
                 text={response}
                 practice={{ submissionId, durationSeconds: elapsedSeconds }}
                 disabled={saving}
@@ -238,7 +312,7 @@ function TaskSession({
             variant={
               skill === "writing" && aiFeedback ? "secondary" : "primary"
             }
-            disabled={saving || (skill === "writing" && !response.trim())}
+            disabled={saving || !writingValid}
             onClick={finish}
           >
             {saving ? t.common.saving : copy.save}

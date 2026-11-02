@@ -1,4 +1,11 @@
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  cleanup,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AppProvider } from "@/components/providers/app-provider";
@@ -11,6 +18,8 @@ import { ProductiveSession } from "./productive-session";
 
 const mocks = vi.hoisted(() => ({
   checkAnswer: vi.fn(),
+  saveIncomplete: vi.fn(),
+  submit: vi.fn(),
   getModelResponse: vi.fn(),
 }));
 
@@ -22,7 +31,13 @@ vi.mock("@/app/actions/content", () => ({
   getModelResponseAction: mocks.getModelResponse,
 }));
 
+vi.mock("@/app/actions/learner", () => ({
+  saveIncompleteWritingPracticeAction: mocks.saveIncomplete,
+  submitPracticeAction: mocks.submit,
+}));
+
 afterEach(() => {
+  vi.useRealTimers();
   cleanup();
   localStorage.clear();
   Object.values(mocks).forEach((mock) => mock.mockReset());
@@ -171,6 +186,9 @@ describe("productive practice availability", () => {
     await user.click(
       screen.getByRole("button", { name: "Start timed practice" }),
     );
+    fireEvent.change(screen.getByRole("textbox"), {
+      target: { value: "mot ".repeat(tasks[0].wordCount!.min) },
+    });
     await user.click(screen.getByRole("button", { name: "Finish and review" }));
     expect(mocks.getModelResponse).not.toHaveBeenCalled();
     await user.click(screen.getByText("Original MPK model response"));
@@ -178,5 +196,99 @@ describe("productive practice availability", () => {
       expect(mocks.getModelResponse).toHaveBeenCalledWith(tasks[0].id),
     );
     expect(await screen.findByText("Réponse modèle")).toBeInTheDocument();
+  });
+});
+
+describe("productive writing minimums", () => {
+  it.each([60, 80, 120, 200])(
+    "blocks final submission below %i and allows the exact minimum",
+    async (min) => {
+      const task = {
+        ...getPublicProductiveTasks("TEF Canada", "writing")[0],
+        wordCount: { min, max: min + 60 },
+      };
+      const view = render(
+        <AppProvider>
+          <ProductiveSession exam="TEF Canada" skill="writing" tasks={[task]} />
+        </AppProvider>,
+      );
+      fireEvent.click(
+        await screen.findByRole("button", { name: "Start timed practice" }),
+      );
+      const finish = screen.getByRole("button", { name: "Finish and review" });
+      fireEvent.change(screen.getByRole("textbox"), {
+        target: { value: "mot ".repeat(min - 1) },
+      });
+      expect(finish).toBeDisabled();
+      expect(screen.getByRole("status")).toHaveTextContent(
+        `Write 1 more words to reach the ${min}-word minimum`,
+      );
+      fireEvent.change(screen.getByRole("textbox"), {
+        target: { value: "mot ".repeat(min) },
+      });
+      expect(finish).toBeEnabled();
+      view.rerender(
+        <AppProvider>
+          <ProductiveSession
+            exam="TEF Canada"
+            skill="writing"
+            tasks={[{ ...task, id: "new-server-order" }]}
+          />
+        </AppProvider>,
+      );
+      expect(screen.getByRole("textbox")).toHaveValue("mot ".repeat(min));
+      fireEvent.change(screen.getByRole("textbox"), {
+        target: { value: "mot ".repeat(min + 61) },
+      });
+      expect(finish).toBeEnabled();
+    },
+  );
+  it("retains a short timed-out answer without completion or an AI request", async () => {
+    vi.useFakeTimers();
+    const task = {
+      ...getPublicProductiveTasks("TEF Canada", "writing")[0],
+      durationSeconds: 1,
+    };
+    mocks.saveIncomplete.mockResolvedValue({ ok: true, id: "saved-draft" });
+    render(
+      <AppProvider>
+        <ProductiveSession
+          exam="TEF Canada"
+          skill="writing"
+          tasks={[task]}
+          aiFeedback
+        />
+      </AppProvider>,
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: "Start timed practice" }),
+    );
+    fireEvent.change(screen.getByRole("textbox"), {
+      target: { value: "Un court brouillon." },
+    });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1000);
+    });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1);
+    });
+    expect(screen.getByRole("textbox")).toBeDisabled();
+    expect(mocks.saveIncomplete).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        text: "Un court brouillon.",
+        taskId: task.id,
+        durationSeconds: 1,
+      }),
+    );
+    expect(mocks.submit).not.toHaveBeenCalled();
+    expect(
+      screen.queryByRole("button", { name: "Get AI feedback" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Start a new attempt" }),
+    ).toBeVisible();
+    expect(
+      screen.getByText(/Your draft is saved without completion credit/),
+    ).toBeVisible();
   });
 });

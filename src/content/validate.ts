@@ -144,7 +144,16 @@ export function validateContent(
         const min =
           item.exam === "TEF" ? [80, 200][index] : [60, 120, 120][index];
         const max = item.exam === "TEF" ? undefined : [120, 150, 180][index];
-        if (item.wordCount?.min !== min || item.wordCount?.max !== max)
+        if (
+          !item.wordCount ||
+          !Number.isInteger(item.wordCount.min) ||
+          item.wordCount.min <= 0 ||
+          (item.wordCount.max !== undefined &&
+            (!Number.isInteger(item.wordCount.max) ||
+              item.wordCount.max < item.wordCount.min)) ||
+          item.wordCount.min !== min ||
+          item.wordCount.max !== max
+        )
           fail(item.id, "invalid word range");
         const count = wordCount(item.correction.modelResponse ?? "");
         if (count < min || (max !== undefined && count > max))

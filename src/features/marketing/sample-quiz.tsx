@@ -1,5 +1,7 @@
 "use client";
 
+import { shuffleQuestions } from "@/lib/domain/question-order";
+import { useClientReady } from "@/lib/use-client-ready";
 import Link from "next/link";
 import { useState } from "react";
 import { ArrowRight, RotateCcw } from "lucide-react";
@@ -12,7 +14,23 @@ import { trackFunnelStep } from "@/lib/track-funnel";
 import type { AnswerFeedback, PublicQuestion } from "@/types/domain";
 
 /** Four public questions (one listening) checked on the server, ending on the assessment CTA. */
-export function SampleQuiz({ questions }: { questions: PublicQuestion[] }) {
+export function SampleQuiz(props: { questions: PublicQuestion[] }) {
+  const ready = useClientReady();
+  return ready ? (
+    <SampleQuizAttempt {...props} />
+  ) : (
+    <div className="h-72 animate-pulse rounded-2xl bg-muted" aria-busy="true" />
+  );
+}
+
+function SampleQuizAttempt({
+  questions: sourceQuestions,
+}: {
+  questions: PublicQuestion[];
+}) {
+  const [questions, setQuestions] = useState(() =>
+    shuffleQuestions(sourceQuestions),
+  );
   const { t } = useI18n();
   const copy = t.landing.sample;
   const [index, setIndex] = useState(0);
@@ -70,6 +88,7 @@ export function SampleQuiz({ questions }: { questions: PublicQuestion[] }) {
             <Button
               variant="secondary"
               onClick={() => {
+                setQuestions(shuffleQuestions(sourceQuestions));
                 setIndex(0);
                 setAnswers({});
                 setFeedback({});

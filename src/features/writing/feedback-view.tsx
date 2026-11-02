@@ -16,17 +16,19 @@ import {
   useReviewStatus,
 } from "@/features/feedback/ai-feedback";
 import { useI18n } from "@/i18n/client";
-import type { WritingChecks } from "@/lib/domain/writing-checks";
+import type { WritingChecks, WritingRange } from "@/lib/domain/writing-checks";
 import type { WritingSubmission } from "@/lib/supabase/writing";
 import { RequestAiFeedback } from "./request-feedback";
 
 export function WritingFeedbackView({
   submission,
   taskTitle,
+  range,
   parentBody,
 }: {
   submission: WritingSubmission;
   taskTitle: string;
+  range: WritingRange;
   parentBody: string | null;
 }) {
   const { t } = useI18n();
@@ -71,6 +73,7 @@ export function WritingFeedbackView({
             compact
             label={copy.status.retry}
             taskId={submission.taskId}
+            range={range}
             text={submission.body}
             parentId={submission.parentId ?? undefined}
           />

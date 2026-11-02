@@ -5,7 +5,11 @@ import { z } from "zod";
 import { aiFeedbackNoticeVersion } from "@/config/privacy";
 import { hasPlanFeature } from "@/config/product";
 import { getLocale, getMessages } from "@/i18n/server";
-import { checkWriting } from "@/lib/domain/writing-checks";
+import {
+  checkWriting,
+  canSubmitWriting,
+  countWords,
+} from "@/lib/domain/writing-checks";
 import {
   storedFeedbackSchema,
   type WritingFeedback,
@@ -107,7 +111,16 @@ export async function requestWritingFeedbackAction(
       return fail("not_included");
     if (!isAiWritingConfigured()) return fail("unavailable");
     const task = exam ? getPublicWritingTask(exam, taskId) : null;
-    if (!exam || !task) return fail("invalid");
+    if (!exam || !task || !task.wordCount) return fail("invalid");
+    if (!canSubmitWriting(text, task.wordCount))
+      return {
+        ok: false,
+        reason: "too_short",
+        message: (await getMessages()).writing.length.remaining(
+          task.wordCount.min - countWords(text),
+          task.wordCount.min,
+        ),
+      };
     if (!(await hasCurrentConsent())) return fail("consent_required");
 
     const { supabase } = await requireUserId();
@@ -153,7 +166,7 @@ export async function requestWritingFeedbackAction(
         );
       if (code === "22023")
         return fail(
-          error.message.includes("20 words") ? "too_short" : "invalid",
+          error.message.includes("Writing minimum") ? "too_short" : "invalid",
         );
       throw error;
     }

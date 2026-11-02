@@ -26,7 +26,7 @@ export function ExamPracticeSession({
   exam,
   skill,
   focus,
-  pool,
+  pool: initialPool,
   reviewIds = [],
   mode = "practice",
 }: {
@@ -38,6 +38,7 @@ export function ExamPracticeSession({
   reviewIds?: string[];
   mode?: "practice" | "review";
 }) {
+  const [pool] = useState(initialPool);
   const [submissionId] = useState(() => crypto.randomUUID());
   const [startedAt] = useState(() => Date.now());
   const router = useRouter();

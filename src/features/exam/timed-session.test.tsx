@@ -133,6 +133,21 @@ describe("timed mock browser state", () => {
       expect.objectContaining({ type: "resume" }),
     );
   });
+  it("allows short drafts but requires the configured minimum to finish", async () => {
+    mount();
+    const input = await screen.findByRole("textbox", { name: "Votre réponse" });
+    const finish = screen.getByRole("button", {
+      name: "Terminer cette section",
+    });
+    fireEvent.change(input, { target: { value: "mot ".repeat(79) } });
+    expect(finish).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "Enregistrer le brouillon" }),
+    ).toBeEnabled();
+    fireEvent.change(input, { target: { value: "mot ".repeat(80) } });
+    expect(finish).toBeEnabled();
+    expect(screen.getByRole("status")).toHaveTextContent("80 mots");
+  });
   it("requests authoritative expiry and redirects to completed results", async () => {
     payload.state.deadline = Date.now() - 100;
     mount();

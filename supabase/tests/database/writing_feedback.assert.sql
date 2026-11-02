@@ -5,7 +5,7 @@ do $$
 declare
   uid uuid := 'c0000000-0000-0000-0000-00000000000c';
   other uuid := 'd0000000-0000-0000-0000-00000000000d';
-  essay text := repeat('Je vous écris pour vous parler du projet. ', 6);
+  essay text := repeat('Je vous écris pour vous parler du projet. ', 10);
   task text;
   r jsonb;
   first_id uuid;
@@ -65,7 +65,7 @@ begin
   first_id := (r->>'id')::uuid;
   assert r->>'status' = 'queued', 'queued';
   assert public.mpk_submit_writing('TEF Canada', task, essay, 'fr', '{}', 'k1')->>'id' = first_id::text, 'idempotent';
-  assert (select word_count from public.writing_submissions where id = first_id) = 48, 'words counted in the database';
+  assert (select word_count from public.writing_submissions where id = first_id) = 80, 'words counted in the database';
   r := public.mpk_submit_writing('TEF Canada', task, essay || ' Merci.', 'fr', '{}', 'k2', first_id);
   second_id := (r->>'id')::uuid;
   assert (select parent_id from public.writing_submissions where id = second_id) = first_id, 'rewrite linked to original';

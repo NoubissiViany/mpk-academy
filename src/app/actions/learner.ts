@@ -1,5 +1,7 @@
 "use server";
 
+import { getPublicWritingTask } from "@/lib/server/content";
+import { canSubmitWriting, countWords } from "@/lib/domain/writing-checks";
 import { z } from "zod";
 import { cookies } from "next/headers";
 import { unstable_rethrow } from "next/navigation";
@@ -356,6 +358,21 @@ export async function submitPracticeAction(input: {
     })
     .safeParse(input);
   if (!parsed.success) return invalidSubmission("practice");
+  if (parsed.data.skill === "writing") {
+    for (const answer of parsed.data.answers) {
+      const task = getPublicWritingTask(parsed.data.exam, answer.questionId);
+      if (!task?.wordCount) return invalidSubmission("practice");
+      if (!canSubmitWriting(answer.answer, task.wordCount))
+        return {
+          ok: false,
+          reason: "invalid_submission",
+          message: (await getMessages()).writing.length.remaining(
+            task.wordCount.min - countWords(answer.answer),
+            task.wordCount.min,
+          ),
+        };
+    }
+  }
   const submissionId = parsed.data.submissionId ?? crypto.randomUUID();
   try {
     const { supabase } = await requireUserId();
@@ -493,5 +510,49 @@ export async function updateMistakeStatusAction(
     return await snapshotResult(undefined);
   } catch (error) {
     return failure("update_mistake_status", error);
+  }
+}
+
+/** An expired draft is retained, never credited as a completed practice. */
+export async function saveIncompleteWritingPracticeAction(input: {
+  exam: unknown;
+  taskId: string;
+  text: string;
+  submissionId: string;
+  durationSeconds: number;
+}): Promise<{ ok: true; id: string } | MutationFailure> {
+  const parsed = z
+    .object({
+      exam: examSchema,
+      taskId: z.string(),
+      text: z.string().max(30000),
+      submissionId: z.uuid(),
+      durationSeconds: z.number().int().min(0).max(36000),
+    })
+    .safeParse(input);
+  if (!parsed.success) return invalidSubmission("practice");
+  const task = getPublicWritingTask(parsed.data.exam, parsed.data.taskId);
+  if (
+    !task?.wordCount ||
+    canSubmitWriting(parsed.data.text, task.wordCount) ||
+    parsed.data.durationSeconds < task.durationSeconds
+  )
+    return invalidSubmission("practice");
+  try {
+    const { supabase } = await requireUserId();
+    const { data, error } = await supabase.rpc(
+      "mpk_save_incomplete_writing_practice",
+      {
+        p_exam: parsed.data.exam,
+        p_task_id: task.id,
+        p_body: parsed.data.text,
+        p_submission_id: parsed.data.submissionId,
+        p_duration_seconds: parsed.data.durationSeconds,
+      },
+    );
+    if (error) throw error;
+    return { ok: true, id: z.object({ id: z.uuid() }).parse(data).id };
+  } catch (error) {
+    return failure("save_incomplete_writing", error);
   }
 }

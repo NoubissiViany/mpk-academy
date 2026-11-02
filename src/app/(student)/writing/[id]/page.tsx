@@ -1,7 +1,10 @@
 import { notFound } from "next/navigation";
 import { hasPlanFeature } from "@/config/product";
 import { WritingFeedbackView } from "@/features/writing/feedback-view";
-import { getWritingTaskTitles } from "@/lib/server/content";
+import {
+  getPublicWritingTask,
+  getWritingTaskTitles,
+} from "@/lib/server/content";
 import { getLearnerAccess } from "@/lib/supabase/learner";
 import { getWritingSubmission } from "@/lib/supabase/writing";
 
@@ -19,12 +22,15 @@ export default async function WritingFeedbackPage({
   if (!/^[0-9a-f-]{36}$/.test(id)) notFound();
   const submission = await getWritingSubmission(id);
   if (!submission) notFound();
+  const task = getPublicWritingTask(submission.exam, submission.taskId);
+  if (!task?.wordCount) notFound();
   const parent = submission.parentId
     ? await getWritingSubmission(submission.parentId)
     : null;
   return (
     <WritingFeedbackView
       submission={submission}
+      range={task.wordCount}
       taskTitle={getWritingTaskTitles()[submission.taskId] ?? submission.taskId}
       parentBody={parent?.body ?? null}
     />

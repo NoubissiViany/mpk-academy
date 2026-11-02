@@ -1,4 +1,25 @@
 const en = {
+  length: {
+    incompleteTitle: "Incomplete writing attempt",
+    viewSaved: "View saved response",
+    count: (words: number) => `${words} words`,
+    range: (min: number, max?: number) =>
+      max ? `${min}–${max} words expected` : `${min} words minimum`,
+    remaining: (left: number, min: number) =>
+      `Write ${left} more words to reach the ${min}-word minimum and enable submission.`,
+    over: (max: number) =>
+      `Shorten your response to at most ${max} words to enable submission.`,
+    ready:
+      "Minimum reached: you can submit once the other requirements are met.",
+    unavailable:
+      "The word requirements are unavailable. Please try again later.",
+    incomplete:
+      "Time is up. This response is incomplete because it did not reach the task’s minimum. Your draft is saved without completion credit.",
+    saveFailed:
+      "Your incomplete draft could not be saved. Keep this page open and retry.",
+    retrySave: "Retry saving draft",
+    retry: "Start a new attempt",
+  },
   cta: {
     title: "AI feedback on this text",
     body: "Get a level for each criterion, the corrections that matter most, and one paragraph rewritten at your target level. Usually ready in about a minute.",
@@ -26,7 +47,7 @@ const en = {
       "AI feedback is not available right now. Your text was not sent.",
     daily_limit:
       "You have used today’s AI reviews. Save your practice now and try AI feedback again tomorrow.",
-    too_short: "Write at least 20 words to get AI feedback.",
+    too_short: "Reach the task’s minimum word count to get AI feedback.",
     invalid: "This text cannot be reviewed. Check it and try again.",
     not_found: "This review was not found.",
   },
@@ -152,6 +173,27 @@ const en = {
 };
 
 const fr: typeof en = {
+  length: {
+    incompleteTitle: "Tentative d’écriture incomplète",
+    viewSaved: "Voir le texte enregistré",
+    count: (words: number) => `${words} mots`,
+    range: (min: number, max?: number) =>
+      max ? `${min}–${max} mots attendus` : `${min} mots minimum`,
+    remaining: (left: number, min: number) =>
+      `Encore ${left} mots pour atteindre le minimum de ${min} mots et activer l’envoi.`,
+    over: (max: number) =>
+      `Réduisez votre texte à ${max} mots maximum pour activer l’envoi.`,
+    ready:
+      "Minimum atteint : l’envoi est possible lorsque les autres conditions sont remplies.",
+    unavailable:
+      "Les consignes de longueur sont indisponibles. Réessayez plus tard.",
+    incomplete:
+      "Le temps est écoulé. Cette réponse est incomplète : le minimum demandé n’est pas atteint. Votre brouillon est conservé sans crédit de réalisation.",
+    saveFailed:
+      "Votre brouillon incomplet n’a pas pu être enregistré. Gardez cette page ouverte et réessayez.",
+    retrySave: "Réessayer l’enregistrement",
+    retry: "Commencer un nouvel essai",
+  },
   cta: {
     title: "Correction par IA de ce texte",
     body: "Obtenez un niveau pour chaque critère, les corrections les plus importantes et un paragraphe réécrit à votre niveau cible. Prêt en général en une minute environ.",
@@ -182,7 +224,8 @@ const fr: typeof en = {
       "La correction par IA n’est pas disponible pour le moment. Votre texte n’a pas été envoyé.",
     daily_limit:
       "Vous avez utilisé vos corrections par IA du jour. Enregistrez votre entraînement et réessayez demain.",
-    too_short: "Écrivez au moins 20 mots pour obtenir une correction par IA.",
+    too_short:
+      "Atteignez le nombre minimum de mots demandé pour cette tâche pour obtenir une correction par IA.",
     invalid: "Ce texte ne peut pas être corrigé. Vérifiez-le et réessayez.",
     not_found: "Cette correction est introuvable.",
   },

@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { mockSummaries } from "@/content/mock-summaries";
 import { mockSessionEvent } from "@/app/actions/mock-session";
 import { useI18n } from "@/i18n/client";
+import { WritingLength } from "@/features/writing/writing-length";
+import { canAdvanceWriting } from "./mock-types";
 import type { MockSessionPayload } from "./mock-types";
 import type { Question, ProductivePracticeTask } from "@/types/domain";
 // Historical unit-test/API compatibility. Current scoring is authoritative in Supabase.
@@ -42,7 +44,7 @@ export function ScaledMockSession() {
         <p>{t.exam.session.notOfficial}</p>
       </div>
     );
-  return <TimedSession manifestId={summary.id} />;
+  return <TimedSession key={summary.id} manifestId={summary.id} />;
 }
 function TimedSession({ manifestId }: { manifestId: string }) {
   const { state } = useApp();
@@ -112,7 +114,7 @@ function TimedSession({ manifestId }: { manifestId: string }) {
         return true;
       } catch {
         setMessage(
-          "Connection interrupted. Resume to recover the saved session.",
+          "Connexion interrompue. Reprenez pour retrouver la session enregistrée.",
         );
         return false;
       } finally {
@@ -181,8 +183,15 @@ function TimedSession({ manifestId }: { manifestId: string }) {
       </h1>
       <p>{session.manifest.disclaimer}</p>
       <p>
-        {section.skill} · {session.state.itemIndex + 1}/{section.itemIds.length}{" "}
-        ·{" "}
+        {
+          {
+            reading: "Compréhension écrite",
+            listening: "Compréhension orale",
+            writing: "Expression écrite",
+            speaking: "Expression orale",
+          }[section.skill]
+        }{" "}
+        · {session.state.itemIndex + 1}/{section.itemIds.length} ·{" "}
         <span role="timer">
           {Math.floor(remaining / 60)}:{String(remaining % 60).padStart(2, "0")}
         </span>{" "}
@@ -251,8 +260,11 @@ function TimedSession({ manifestId }: { manifestId: string }) {
           </p>
           <textarea
             aria-label="Votre réponse"
+            aria-describedby="mock-writing-length"
+            maxLength={30000}
             className="min-h-64 w-full rounded border bg-background p-4"
             value={answer}
+            disabled={remaining === 0}
             onChange={(e) => {
               const value = e.target.value;
               draft.current = value;
@@ -260,8 +272,14 @@ function TimedSession({ manifestId }: { manifestId: string }) {
               localStorage.setItem(`${key}:draft:${item.id}`, value);
             }}
           />
+          <WritingLength
+            id="mock-writing-length"
+            text={answer}
+            range={item.wordCount}
+            french
+          />
           <Button disabled={busy} onClick={() => send("answer", answer)}>
-            Enregistrer la réponse
+            Enregistrer le brouillon
           </Button>
         </>
       )}
@@ -279,6 +297,15 @@ function TimedSession({ manifestId }: { manifestId: string }) {
           </Button>
         </>
       )}
+      {item.kind === "writing" &&
+        section.navigation === "free" &&
+        session.state.itemIndex === section.itemIds.length - 1 &&
+        !canAdvanceWriting(session, answer) && (
+          <p role="status">
+            Chaque texte doit atteindre son minimum avant de terminer cette
+            section. Vous pouvez revenir aux tâches précédentes.
+          </p>
+        )}
       <div className="flex justify-between">
         <Button
           variant="secondary"
@@ -296,7 +323,7 @@ function TimedSession({ manifestId }: { manifestId: string }) {
           Précédent
         </Button>
         <Button
-          disabled={busy || preparing}
+          disabled={busy || preparing || !canAdvanceWriting(session, answer)}
           onClick={async () => {
             if (item.kind === "writing" && !(await send("answer", answer)))
               return;

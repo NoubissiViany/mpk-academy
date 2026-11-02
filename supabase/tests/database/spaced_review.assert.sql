@@ -86,7 +86,7 @@ begin
   select id into writing_item from private.question_bank
   where purpose = 'practice' and exam = 'TEF' and skill = 'writing' order by id limit 1;
   perform public.mpk_submit_practice('TEF Canada', 'writing', '', 300, jsonb_build_array(jsonb_build_object(
-    'question_id', writing_item, 'sequence', 0, 'answer', 'Mon texte.', 'submission_id', 'review-writing')));
+    'question_id', writing_item, 'sequence', 0, 'answer', repeat('mot ',80), 'submission_id', 'review-writing')));
   assert not exists (select 1 from public.review_items where user_id = uid and question_id = writing_item), 'writing is not scheduled';
 end;
 $$;

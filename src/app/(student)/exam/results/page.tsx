@@ -1,3 +1,4 @@
+import { canSubmitWriting } from "@/lib/domain/writing-checks";
 import { mockItems } from "@/content/mock-catalog";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -75,7 +76,14 @@ export default async function ExamResultsPage({
                       if (!entries.length) return copy.historical;
                       if (productive)
                         return copy.productive(
-                          entries.filter((a) => a.answer.trim()).length,
+                          entries.filter((a) => {
+                            const task = mockItems.find(
+                              (i) => i.id === a.question_id,
+                            );
+                            return task?.kind === "writing"
+                              ? canSubmitWriting(a.answer, task.wordCount)
+                              : Boolean(a.answer.trim());
+                          }).length,
                           entries.length,
                         );
                       return copy.accuracy(
@@ -111,6 +119,14 @@ export default async function ExamResultsPage({
                     : answer.answer || copy.notCompleted}
                 </span>
               </p>
+              {item.kind === "writing" &&
+                !canSubmitWriting(answer.answer, item.wordCount) && (
+                  <p role="status" className="mt-3 font-semibold">
+                    {locale === "fr"
+                      ? `Réponse incomplète : minimum de ${item.wordCount?.min} mots non atteint.`
+                      : `Incomplete response: the ${item.wordCount?.min}-word minimum was not reached.`}
+                  </p>
+                )}
               {item.kind === "mcq" ? (
                 <>
                   <p className="mt-3">

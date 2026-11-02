@@ -1,3 +1,4 @@
+import { shuffle } from "@/lib/utils";
 import { unstable_rethrow } from "next/navigation";
 import { hasPlanFeature } from "@/config/product";
 import { ExamPracticeSession } from "@/features/practice/exam-practice-session";
@@ -64,7 +65,7 @@ export default async function PracticeSessionPage({
       <ProductiveSession
         exam={exam}
         skill={skill}
-        tasks={getPublicProductiveTasks(exam, skill)}
+        tasks={shuffle(getPublicProductiveTasks(exam, skill))}
         aiFeedback={
           skill === "writing" &&
           hasPlanFeature(planAccess, "aiWritingFeedback") &&
@@ -93,6 +94,7 @@ export default async function PracticeSessionPage({
   });
   return (
     <ExamPracticeSession
+      key={`${exam}:${skill}:${focus}:${reviewOnly}:${first(params.count)}`}
       exam={exam}
       skill={skill}
       focus={focus}

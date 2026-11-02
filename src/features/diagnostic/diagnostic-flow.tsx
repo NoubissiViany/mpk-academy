@@ -1,5 +1,7 @@
 "use client";
 
+import { shuffleQuestions } from "@/lib/domain/question-order";
+import { WritingLength } from "@/features/writing/writing-length";
 import { useRef, useState } from "react";
 import {
   ArrowLeft,
@@ -25,9 +27,9 @@ import {
   diagnosticWritingMinutes,
   diagnosticWritingPrompt,
   diagnosticWritingVersion,
+  diagnosticWritingRange,
   isDiagnosticWritingSample,
 } from "@/lib/domain/diagnostic-writing";
-import { countWords } from "@/lib/domain/writing-checks";
 import { applyDiagnosticResult } from "@/lib/domain/onboarding";
 import { trackFunnelStep } from "@/lib/track-funnel";
 import { guestAssessmentRepository } from "@/repositories/guest-assessment";
@@ -131,7 +133,12 @@ export function DiagnosticFlow({ questions }: { questions: PublicQuestion[] }) {
   return <DiagnosticExperience questions={questions} />;
 }
 
-function DiagnosticExperience({ questions }: { questions: PublicQuestion[] }) {
+function DiagnosticExperience({
+  questions: sourceQuestions,
+}: {
+  questions: PublicQuestion[];
+}) {
+  const [questions, setQuestions] = useState(sourceQuestions);
   const router = useRouter();
   const { state, setState } = useApp();
   const { t } = useI18n();
@@ -175,6 +182,7 @@ function DiagnosticExperience({ questions }: { questions: PublicQuestion[] }) {
       localStorage.removeItem("mpk-assessment-restart");
     }
     submissionId.current = crypto.randomUUID();
+    setQuestions(shuffleQuestions(sourceQuestions, true));
     setState((current) => ({
       ...current,
       diagnosticIntake: intake as DiagnosticIntake,
@@ -441,9 +449,12 @@ function DiagnosticExperience({ questions }: { questions: PublicQuestion[] }) {
           }}
           className="mt-2 w-full rounded-xl border bg-background p-4 focus-visible:outline-primary"
         />
-        <p id="diagnostic-writing-count" role="status" className="mt-2 text-sm">
-          {copy.writing.count(countWords(writingSample.text))}
-        </p>
+        <WritingLength
+          id="diagnostic-writing-count"
+          text={writingSample.text}
+          range={diagnosticWritingRange}
+          enforceMaximum
+        />
         <p
           id="diagnostic-writing-help"
           className="mt-3 text-sm text-muted-foreground"

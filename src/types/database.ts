@@ -1204,6 +1204,16 @@ export type Database = {
         };
         Returns: Json;
       };
+      mpk_save_incomplete_writing_practice: {
+        Args: {
+          p_exam: string;
+          p_task_id: string;
+          p_body: string;
+          p_submission_id: string;
+          p_duration_seconds: number;
+        };
+        Returns: Json;
+      };
       mpk_submit_practice: {
         Args: {
           p_answers: Json;

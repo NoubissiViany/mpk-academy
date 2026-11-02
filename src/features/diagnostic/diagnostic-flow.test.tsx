@@ -46,7 +46,9 @@ const publicQuestions = diagnosticQuestions.map(toPublicQuestion);
 
 async function completeAssessment(user: ReturnType<typeof userEvent.setup>) {
   await user.click(screen.getByRole("button", { name: /Start my assessment/ }));
-  for (const [index, question] of diagnosticQuestions.entries()) {
+  for (let index = 0; index < diagnosticQuestions.length; index++) {
+    const prompt = screen.getByRole("heading", { level: 2 }).textContent;
+    const question = diagnosticQuestions.find((q) => q.prompt === prompt)!;
     if (question.type === "fill_blank") {
       await user.type(screen.getByLabelText("Your answer"), "lirais");
     } else {
@@ -166,7 +168,7 @@ describe("DiagnosticFlow", () => {
     expect(
       screen.getByText(`Question 1 of ${publicQuestions.length}`),
     ).toBeVisible();
-    expect(screen.getByText("Competency · Reading")).toBeVisible();
+    expect(screen.getByText(/^Competency ·/)).toBeVisible();
     expect(
       screen.getByText(
         "Don't worry if you're unsure. Choose the answer that seems best.",
@@ -200,11 +202,14 @@ describe("DiagnosticFlow", () => {
     await user.click(
       screen.getByRole("button", { name: /Start my assessment/ }),
     );
-    fireEvent.click(screen.getByText(diagnosticQuestions[0].options![0].label));
+    const firstQuestion = diagnosticQuestions.find((q) =>
+      screen.queryByText(q.prompt),
+    )!;
+    fireEvent.click(screen.getByText(firstQuestion.options![0].label));
     await user.click(screen.getByRole("button", { name: /Next/ }));
     await user.click(screen.getByRole("button", { name: /Previous/ }));
     expect(
-      screen.getByLabelText(diagnosticQuestions[0].options![0].label),
+      screen.getByLabelText(firstQuestion.options![0].label),
     ).toBeChecked();
     await user.click(screen.getByRole("button", { name: /Previous/ }));
     expect(

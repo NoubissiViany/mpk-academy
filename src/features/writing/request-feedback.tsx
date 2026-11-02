@@ -1,5 +1,10 @@
 "use client";
 
+import {
+  canSubmitWriting,
+  type WritingRange,
+} from "@/lib/domain/writing-checks";
+import { WritingLength } from "./writing-length";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -78,6 +83,7 @@ export function AiConsent({ onAccepted }: { onAccepted?: () => void }) {
 /** Sends a text for AI feedback and opens its feedback page. */
 export function RequestAiFeedback({
   taskId,
+  range,
   text,
   parentId,
   practice,
@@ -86,6 +92,7 @@ export function RequestAiFeedback({
   label,
 }: {
   taskId: string;
+  range: WritingRange;
   text: string;
   parentId?: string;
   practice?: { submissionId: string; durationSeconds: number };
@@ -104,6 +111,7 @@ export function RequestAiFeedback({
     state.user?.aiFeedbackConsent?.version === aiFeedbackNoticeVersion;
 
   const send = async () => {
+    if (!canSubmitWriting(text, range)) return;
     setSending(true);
     const result = await requestWritingFeedbackAction({
       taskId,
@@ -140,8 +148,12 @@ export function RequestAiFeedback({
           </div>
         </div>
       )}
+      <WritingLength text={text} range={range} />
       {consented ? (
-        <Button disabled={disabled || sending || !text.trim()} onClick={send}>
+        <Button
+          disabled={disabled || sending || !canSubmitWriting(text, range)}
+          onClick={send}
+        >
           {sending ? copy.sending : (label ?? copy.button)}
         </Button>
       ) : (

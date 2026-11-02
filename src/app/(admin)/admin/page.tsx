@@ -6,7 +6,7 @@ import {
   updateBetaSettingsAction,
 } from "@/app/actions/admin";
 import { Wordmark } from "@/components/shared";
-import { Button } from "@/components/ui/button";
+import { AdminSubmitButton, CopyInviteCode } from "@/features/admin/controls";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { getAdminEmail } from "@/lib/server/admin";
@@ -189,7 +189,9 @@ export default async function AdminPage({
                   />
                 </label>
               </div>
-              <Button>Create invite</Button>
+              <AdminSubmitButton pendingLabel="Creating invite…">
+                Create invite
+              </AdminSubmitButton>
             </form>
           </CardContent>
         </Card>
@@ -225,7 +227,12 @@ export default async function AdminPage({
                 The free plans are sized for 40 active testers. Raise the limit
                 only after checking Vercel, Supabase, and Groq usage.
               </p>
-              <Button variant="secondary">Save settings</Button>
+              <AdminSubmitButton
+                variant="secondary"
+                pendingLabel="Saving settings…"
+              >
+                Save settings
+              </AdminSubmitButton>
             </form>
           </CardContent>
         </Card>
@@ -248,7 +255,10 @@ export default async function AdminPage({
             <tbody>
               {overview.invites.map((invite) => (
                 <tr key={invite.code} className="border-t">
-                  <td className="px-3 py-2 font-mono">{invite.code}</td>
+                  <td className="px-3 py-2 font-mono">
+                    <span className="select-all">{invite.code}</span>
+                    <CopyInviteCode code={invite.code} />
+                  </td>
                   <td className="px-3 py-2">{invite.label ?? "—"}</td>
                   <td className="px-3 py-2">
                     {invite.useCount} / {invite.maxUses}
@@ -259,9 +269,14 @@ export default async function AdminPage({
                     {!invite.revokedAt && (
                       <form action={revokeBetaInviteAction}>
                         <input type="hidden" name="code" value={invite.code} />
-                        <button className="text-sm font-semibold text-danger hover:underline">
+                        <AdminSubmitButton
+                          variant="ghost"
+                          size="sm"
+                          pendingLabel="Revoking…"
+                          className="text-danger"
+                        >
                           Revoke
-                        </button>
+                        </AdminSubmitButton>
                       </form>
                     )}
                   </td>
