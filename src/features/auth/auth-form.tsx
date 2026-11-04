@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { isBetaMode, type OfferedPlanId } from "@/config/product";
 import { useI18n } from "@/i18n/client";
 import type { Messages } from "@/i18n/messages";
+import { hasPendingAssessment } from "./pending-assessment";
 import { resolveOnboardingDestination } from "@/lib/domain/onboarding";
 import { clearAnonymousState } from "@/lib/persistence";
 import { guestAssessmentRepository } from "@/repositories/guest-assessment";
@@ -205,16 +206,19 @@ export function AuthForm({
         nextPath && nextPath.startsWith("/") && !nextPath.startsWith("//")
           ? nextPath
           : undefined;
+      const pendingAssessment = !guestSession && (await hasPendingAssessment());
       router.push(
-        guestSession?.intake.writingSample ||
-          safeNextPath === "/diagnostic/results"
-          ? "/diagnostic/results"
-          : checkoutPlanId
-            ? `/checkout?plan=${checkoutPlanId}`
-            : resolveOnboardingDestination(
-                cloudState,
-                registering ? undefined : safeNextPath,
-              ),
+        pendingAssessment
+          ? "/diagnostic"
+          : guestSession?.intake.writingSample ||
+              safeNextPath === "/diagnostic/results"
+            ? "/diagnostic/results"
+            : checkoutPlanId
+              ? `/checkout?plan=${checkoutPlanId}`
+              : resolveOnboardingDestination(
+                  cloudState,
+                  registering ? undefined : safeNextPath,
+                ),
       );
       router.refresh();
     } catch (error) {

@@ -39,6 +39,33 @@ export type Database = {
   };
   public: {
     Tables: {
+      diagnostic_drafts: {
+        Row: {
+          user_id: string;
+          attempt_id: string;
+          payload: Json;
+          revision: number;
+          updated_at: string;
+          expires_at: string;
+        };
+        Insert: {
+          user_id: string;
+          attempt_id: string;
+          payload: Json;
+          revision: number;
+          updated_at?: string;
+          expires_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          attempt_id?: string;
+          payload?: Json;
+          revision?: number;
+          updated_at?: string;
+          expires_at?: string;
+        };
+        Relationships: [];
+      };
       assessment_answers: {
         Row: {
           answer: string;
@@ -519,6 +546,7 @@ export type Database = {
       };
       practice_sessions: {
         Row: {
+          mode: string;
           evidence_mode: string;
           completed_at: string | null;
           correct_count: number;
@@ -535,6 +563,7 @@ export type Database = {
           user_id: string;
         };
         Insert: {
+          mode?: string;
           completed_at?: string | null;
           correct_count?: number;
           created_at?: string;
@@ -550,6 +579,7 @@ export type Database = {
           user_id: string;
         };
         Update: {
+          mode?: string;
           completed_at?: string | null;
           correct_count?: number;
           created_at?: string;
@@ -1118,6 +1148,28 @@ export type Database = {
         };
         Returns: Json;
       };
+      mpk_get_diagnostic_draft: {
+        Args: Record<PropertyKey, never>;
+        Returns: Json;
+      };
+      mpk_complete_diagnostic_draft: {
+        Args: {
+          p_id: string;
+          p_revision: number;
+          p_exam: string;
+          p_intake: Json;
+          p_answers: Json;
+        };
+        Returns: Json;
+      };
+      mpk_save_diagnostic_draft: {
+        Args: { p_draft: Json; p_revision: number };
+        Returns: Json;
+      };
+      mpk_discard_diagnostic_draft: {
+        Args: { p_id: string; p_revision: number };
+        Returns: undefined;
+      };
       mpk_submit_diagnostic: {
         Args: {
           p_guest_session_id: string;
@@ -1211,6 +1263,17 @@ export type Database = {
           p_body: string;
           p_submission_id: string;
           p_duration_seconds: number;
+        };
+        Returns: Json;
+      };
+      mpk_submit_practice_mode: {
+        Args: {
+          p_exam: string;
+          p_skill: string;
+          p_focus_competency: string;
+          p_duration_seconds: number;
+          p_answers: Json;
+          p_mode: string;
         };
         Returns: Json;
       };

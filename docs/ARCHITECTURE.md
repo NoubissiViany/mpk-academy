@@ -10,7 +10,7 @@ Provider response types must not enter components. Pure domain rules live outsid
 
 ## State
 
-Signed-in learner state is loaded from Supabase on the server (deduplicated per request with React `cache`) and seeded into the application provider. Anonymous visitors keep only a guest assessment in `localStorage`; the provider skips the server snapshot entirely when no Supabase session cookie exists.
+Signed-in learner state is loaded from Supabase on the server (deduplicated per request with React `cache`) and seeded into the application provider. Anonymous visitors keep a versioned unfinished assessment draft and completed guest assessment in `localStorage`; the provider skips the server snapshot entirely when no Supabase session cookie exists. Signed-in drafts are stored only in Supabase through revision-checked server actions and expire seven days after the last edit. A failed account load blocks assessment editing instead of falling back to guest storage. See [Assessment recovery and learning continuity](UX_RECOVERY_RELEASE.md) for recovery behavior and migration order.
 
 Practice pools are chosen on the server (`src/lib/domain/practice-selection.ts`) from the learner's own `practice_answers` and due `review_items`: due reviews take up to 40% of a session, then unseen items weighted toward weak competencies, then items seen longest ago. The review queue is maintained by a database trigger on `practice_answers`, so no client code can move an item through the 1-, 3-, and 7-day steps. Signed-out visitors to learner areas are redirected to `/login?next=…` by the proxy before any page renders.
 

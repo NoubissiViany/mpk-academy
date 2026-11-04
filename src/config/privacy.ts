@@ -1,5 +1,5 @@
 /** Bump when the privacy notice changes materially; sign-ups record the version accepted. */
-export const privacyNoticeVersion = "2026-10-22";
+export const privacyNoticeVersion = "2026-11-04";
 
 /**
  * The AI feedback section of the notice. Learners agree to it separately before

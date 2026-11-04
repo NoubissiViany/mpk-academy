@@ -79,7 +79,7 @@ export const guestAssessmentRepository: GuestAssessmentRepository = {
     const createdAt = new Date();
     const session: GuestAssessmentSession = {
       ...structuredClone(input),
-      id: crypto.randomUUID(),
+      id: input.id ?? crypto.randomUUID(),
       createdAt: createdAt.toISOString(),
       expiresAt: new Date(
         createdAt.getTime() + productConfig.guestAssessmentTtlMs,

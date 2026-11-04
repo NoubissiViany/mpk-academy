@@ -17,7 +17,10 @@ import { speaking } from "./speaking";
 import { themes } from "./themes";
 import { writing } from "./writing";
 
+import { ux } from "./ux";
+
 const namespaces = {
+  ux,
   account,
   assessment,
   auth,

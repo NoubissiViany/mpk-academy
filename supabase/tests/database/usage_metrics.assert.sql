@@ -69,6 +69,7 @@ begin
   values (returning_uid, 'shared-lesson-001', 'grammar', 'completed', now() - interval '3 days');
 
   m := public.mpk_admin_beta_metrics();
+  assert (m->'summary'->>'firstLearningCompleted')::integer = 3, 'first completed learning after activation';
   assert (m->'summary'->>'activated')::integer = 3, 'three testers activated';
   assert (m->'summary'->>'active7')::integer = 2, 'two testers active in the last 7 days';
   assert (m->'summary'->>'weekEligible')::integer = 2, 'two testers joined at least a week ago';
@@ -84,6 +85,11 @@ begin
   assert not (t->>'returnedAfterWeek')::boolean and (t->>'practiceSessions')::integer = 1, 'unfinished sessions ignored';
   select x into t from jsonb_array_elements(m->'testers') x where x->>'email' = 'recent@example.test';
   assert not (t->>'weekEligible')::boolean and (t->>'speakingTasks')::integer = 1, 'recent tester not yet eligible';
+
+  update public.practice_sessions set completed_at=now()-interval '3 days' where user_id=recent_uid;
+  assert (public.mpk_admin_beta_metrics()->'summary'->>'firstLearningCompleted')::integer=2, 'pre-activation activity does not count';
+  update public.lesson_progress set user_id=recent_uid,completed_at=now() where user_id=returning_uid;
+  assert (public.mpk_admin_beta_metrics()->'summary'->>'firstLearningCompleted')::integer=3, 'a completed lesson also counts';
 
   select x into t from jsonb_array_elements(m->'funnel') x
     where x->>'step' = 'landing_view' and x->>'locale' = 'en';

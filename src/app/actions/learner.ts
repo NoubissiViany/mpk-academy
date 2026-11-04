@@ -287,12 +287,14 @@ export async function claimGuestAssessmentAction(
 
 export async function submitDiagnosticAction(input: {
   submissionId: string;
+  draftRevision?: number;
   intake: unknown;
   answers: Record<string, string>;
 }): Promise<DiagnosticSubmissionResult> {
   const parsed = z
     .object({
       submissionId: z.string().uuid(),
+      draftRevision: z.number().int().positive().optional(),
       intake: intakeSchema.refine((value) => Boolean(value.writingSample)),
       answers: answersSchema,
     })
@@ -314,13 +316,21 @@ export async function submitDiagnosticAction(input: {
     const { supabase } = await requireUserId();
     const exam =
       parsed.data.intake.goal === "TCF Canada" ? "TCF Canada" : "TEF Canada";
-    const { data, error } = await supabase.rpc("mpk_submit_diagnostic", {
-      p_guest_session_id: parsed.data.submissionId,
-      p_kind: "diagnostic",
-      p_exam: exam,
-      p_intake: parsed.data.intake,
-      p_answers: answerRows(parsed.data.answers),
-    });
+    const { data, error } = parsed.data.draftRevision
+      ? await supabase.rpc("mpk_complete_diagnostic_draft", {
+          p_id: parsed.data.submissionId,
+          p_revision: parsed.data.draftRevision,
+          p_exam: exam,
+          p_intake: parsed.data.intake,
+          p_answers: answerRows(parsed.data.answers),
+        })
+      : await supabase.rpc("mpk_submit_diagnostic", {
+          p_guest_session_id: parsed.data.submissionId,
+          p_kind: "diagnostic",
+          p_exam: exam,
+          p_intake: parsed.data.intake,
+          p_answers: answerRows(parsed.data.answers),
+        });
     if (error) return diagnosticFailure("persist_assessment", error);
     const saved = diagnosticResultSchema.safeParse(data);
     if (!saved.success)
@@ -337,6 +347,7 @@ export async function submitDiagnosticAction(input: {
 
 export async function submitPracticeAction(input: {
   submissionId?: string;
+  mode?: "practice" | "review";
   exam: unknown;
   skill: unknown;
   focus?: string | null;
@@ -345,6 +356,7 @@ export async function submitPracticeAction(input: {
 }): Promise<MutationResult<PracticeSubmission>> {
   const parsed = z
     .object({
+      mode: z.enum(["practice", "review"]).default("practice"),
       exam: examSchema,
       skill: z.enum(["reading", "listening", "writing", "speaking"]),
       focus: z.string().nullable().optional(),
@@ -376,7 +388,8 @@ export async function submitPracticeAction(input: {
   const submissionId = parsed.data.submissionId ?? crypto.randomUUID();
   try {
     const { supabase } = await requireUserId();
-    const { data, error } = await supabase.rpc("mpk_submit_practice", {
+    const { data, error } = await supabase.rpc("mpk_submit_practice_mode", {
+      p_mode: parsed.data.mode,
       p_exam: parsed.data.exam,
       p_skill: parsed.data.skill,
       p_focus_competency: parsed.data.focus ?? "",

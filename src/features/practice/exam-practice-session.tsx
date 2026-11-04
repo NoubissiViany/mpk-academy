@@ -87,6 +87,7 @@ export function ExamPracticeSession({
   const finish = async () => {
     setSaving(true);
     const result = await submitPracticeAction({
+      mode,
       exam,
       skill,
       focus,

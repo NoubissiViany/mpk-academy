@@ -21,6 +21,7 @@ import {
 } from "@/lib/domain/readiness";
 import type { Messages } from "@/i18n/messages";
 import type { AppState } from "@/types/domain";
+import { AssessmentSteps } from "./assessment-steps";
 import { DiagnosticWritingResult } from "./writing-result";
 
 function BetaContinueCard({
@@ -136,17 +137,7 @@ export function ResultsView() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <div
-        className="mb-8 flex items-center gap-3"
-        aria-label={t.diagnostic.step(3)}
-      >
-        {[1, 2, 3].map((item) => (
-          <span key={item} className="h-1.5 flex-1 rounded-full bg-primary" />
-        ))}
-        <span className="shrink-0 text-xs font-bold uppercase tracking-[.14em] text-muted-foreground">
-          {t.diagnostic.step(3)}
-        </span>
-      </div>
+      <AssessmentSteps step={4} />
 
       <header className="text-center">
         <p className="eyebrow">{copy.eyebrow}</p>

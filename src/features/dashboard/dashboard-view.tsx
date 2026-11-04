@@ -29,6 +29,13 @@ import {
 import { getReadiness } from "@/lib/domain/readiness";
 import { getStudyPlan, type StudyPlan } from "@/lib/domain/study-plan";
 import { getTodayPlan, type TodayStep } from "@/lib/domain/today";
+import {
+  emptyLearningOverview,
+  type LearningOverview,
+} from "@/lib/domain/learning-overview";
+import { FeedbackSummaryCard } from "./feedback-summary-card";
+import { todayStepAction } from "./next-study-action";
+import { intlLocale } from "@/i18n/config";
 import { cn } from "@/lib/utils";
 import type {
   ExamId,
@@ -44,9 +51,13 @@ const skillIcons = {
   speaking: Mic2,
 } satisfies Record<ExamSkill, typeof BookOpen>;
 
-export function DashboardView() {
+export function DashboardView({
+  overview = emptyLearningOverview,
+}: {
+  overview?: LearningOverview;
+}) {
   const { state, hydrated, replaceState } = useApp();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   // Fixed for the visit, so "today" does not shift between renders.
   const [now] = useState(() => new Date());
   const copy = t.dashboard;
@@ -176,6 +187,30 @@ export function DashboardView() {
         title={copy.welcomeBack(name)}
         description={copy.description}
       />
+      <section
+        className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-card px-5 py-4"
+        aria-label={t.ux.plan.goal}
+      >
+        <div>
+          <p className="font-bold">
+            {activeExam} · {t.diagnostic.intake.targets[target]}
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {user?.goal.targetDate
+              ? new Intl.DateTimeFormat(intlLocale(locale), {
+                  dateStyle: "long",
+                  timeZone: "UTC",
+                }).format(new Date(`${user.goal.targetDate}T12:00:00Z`))
+              : t.ux.plan.noDate}
+          </p>
+        </div>
+        <Link
+          href="/settings"
+          className="text-sm font-bold text-primary hover:underline"
+        >
+          {t.ux.plan.edit}
+        </Link>
+      </section>
       <div className="grid gap-5 lg:grid-cols-[1.25fr_.75fr]">
         <TodayCard today={today} personalized={features.personalized} />
         <StudyPlanCard
@@ -184,6 +219,7 @@ export function DashboardView() {
         />
       </div>
       <ReadinessSection
+        overview={overview}
         exam={activeExam}
         target={target}
         readiness={readiness}
@@ -195,12 +231,14 @@ export function DashboardView() {
   );
 }
 
-function TodayCard({
+export function TodayCard({
   today,
   personalized,
+  preview = false,
 }: {
   today: ReturnType<typeof getTodayPlan>;
   personalized: boolean;
+  preview?: boolean;
 }) {
   const { t, locale } = useI18n();
   const copy = t.dashboard.today;
@@ -220,7 +258,6 @@ function TodayCard({
         : personalized
           ? copy.lessonHint
           : null;
-  const started = today.steps.some((step) => step.done);
   return (
     <Card className="border-primary/20">
       <CardContent className="pt-6">
@@ -237,7 +274,7 @@ function TodayCard({
           {today.steps.map((step, index) => (
             <li key={step.kind}>
               <Link
-                href={step.href}
+                href={preview ? "#how-it-works" : step.href}
                 className={cn(
                   "flex items-start gap-3 rounded-xl border p-4 transition-colors hover:border-primary/40",
                   step.done && "bg-muted/40",
@@ -269,8 +306,14 @@ function TodayCard({
           ))}
         </ol>
         <Button asChild className="mt-6">
-          <Link href={today.next?.href ?? "/practice"}>
-            {today.next ? (started ? copy.continue : copy.start) : copy.extra}
+          <Link
+            href={preview ? "/diagnostic" : (today.next?.href ?? "/practice")}
+          >
+            {preview
+              ? t.landing.hero.primary
+              : today.next
+                ? todayStepAction(today.next, t)
+                : copy.extra}
             <ArrowRight className="size-4" />
           </Link>
         </Button>
@@ -362,6 +405,7 @@ function StudyPlanCard({
 }
 
 function ReadinessSection({
+  overview,
   exam,
   target,
   readiness,
@@ -369,6 +413,7 @@ function ReadinessSection({
   practiceAccuracy,
   practiceAnswered,
 }: {
+  overview: LearningOverview;
   exam: ExamId;
   target: NclcTarget;
   readiness: ReturnType<typeof getReadiness>;
@@ -437,14 +482,22 @@ function ReadinessSection({
         {t.dashboard.skills.title}
       </h3>
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
-        {examSkillOrder.map((skill) => (
-          <SkillCard
-            key={skill}
-            skill={skill}
-            readiness={readiness}
-            detailed={detailed}
-          />
-        ))}
+        {examSkillOrder.map((skill) =>
+          skill === "writing" || skill === "speaking" ? (
+            <FeedbackSummaryCard
+              key={skill}
+              skill={skill}
+              summary={overview[skill]}
+            />
+          ) : (
+            <SkillCard
+              key={skill}
+              skill={skill}
+              readiness={readiness}
+              detailed={detailed}
+            />
+          ),
+        )}
       </div>
     </section>
   );

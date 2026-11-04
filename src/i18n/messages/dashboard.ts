@@ -75,7 +75,7 @@ const en = {
   },
   readiness: {
     eyebrow: "READINESS",
-    title: "MPK readiness",
+    title: "Reading and listening readiness",
     accuracy: "Practice accuracy",
     goal: (goal: number, target: string) =>
       `Goal for ${target}: ${goal}% on MPK practice`,
@@ -189,7 +189,7 @@ const fr: typeof en = {
   },
   readiness: {
     eyebrow: "PRÉPARATION",
-    title: "Préparation MPK",
+    title: "Préparation en compréhension écrite et orale",
     accuracy: "Exactitude à l’entraînement",
     goal: (goal: number, target: string) =>
       `Objectif pour ${target} : ${goal} % à l’entraînement MPK`,

@@ -1,3 +1,4 @@
+import { getLocale } from "@/i18n/server";
 import { notFound } from "next/navigation";
 import { z } from "zod";
 import {
@@ -299,7 +300,7 @@ export default async function AdminPage({
 
       <AiUsageSection usage={aiUsage} configured={isAiWritingConfigured()} />
       <FunnelSection funnel={metrics.funnel} />
-      <EngagementSummary summary={metrics.summary} />
+      <EngagementSummary summary={metrics.summary} locale={await getLocale()} />
       <TestersSection
         access={overview.testers}
         engagement={metrics.testers}

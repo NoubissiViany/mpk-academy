@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { NextStudyAction } from "@/features/dashboard/next-study-action";
 import { useState } from "react";
 import { toast } from "sonner";
 import { checkLessonCheckpointAction } from "@/app/actions/content";
@@ -218,7 +219,8 @@ export function LessonView({
               : copy.complete}
         </Button>
       </section>
-      {next && (
+      {completed && <NextStudyAction />}
+      {next && !completed && (
         <Button asChild>
           <Link href={`/learn/${next.moduleId}/${next.id}`}>{copy.next}</Link>
         </Button>

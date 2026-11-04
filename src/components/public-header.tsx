@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { Wordmark } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { useI18n } from "@/i18n/client";
 
 export function PublicHeader() {
   const [open, setOpen] = useState(false);
+  const menuButton = useRef<HTMLButtonElement>(null);
   const { state } = useApp();
   const { t } = useI18n();
   const nav = t.common.nav;
@@ -22,7 +23,21 @@ export function PublicHeader() {
     ? { href: "/dashboard", label: nav.dashboard }
     : { href: "/login", label: nav.signIn };
   return (
-    <header className="sticky top-0 z-40 border-b border-border/80 bg-background/90 backdrop-blur-xl">
+    <header
+      onClick={(event) => {
+        if ((event.target as Element).closest("a")) {
+          setOpen(false);
+          if (open) menuButton.current?.focus();
+        }
+      }}
+      onKeyDown={(event) => {
+        if (event.key === "Escape" && open) {
+          setOpen(false);
+          menuButton.current?.focus();
+        }
+      }}
+      className="sticky top-0 z-40 border-b border-border/80 bg-background/90 backdrop-blur-xl"
+    >
       <div className="container-page flex h-16 items-center justify-between">
         <Wordmark />
         <nav
@@ -51,6 +66,8 @@ export function PublicHeader() {
         <button
           className="rounded-lg p-2 lg:hidden"
           aria-label={open ? nav.closeMenu : nav.openMenu}
+          ref={menuButton}
+          aria-controls="public-mobile-navigation"
           aria-expanded={open}
           onClick={() => setOpen(!open)}
         >
@@ -60,6 +77,7 @@ export function PublicHeader() {
       {open && (
         <nav
           className="container-page flex flex-col gap-2 border-t py-4 lg:hidden"
+          id="public-mobile-navigation"
           aria-label={nav.mobile}
         >
           {links.map((link) => (
