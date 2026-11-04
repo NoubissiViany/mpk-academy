@@ -17,7 +17,7 @@ function notice(locale: Locale, contact: string): Notice {
   if (locale === "fr")
     return {
       title: "Avis de confidentialité",
-      updated: "Dernière mise à jour : 22 octobre 2026",
+      updated: "Dernière mise à jour : 4 novembre 2026",
       intro:
         "MPK Academy est un outil indépendant de préparation au TEF Canada et au TCF Canada, actuellement en bêta fermée. Cet avis explique quels renseignements nous recueillons, pourquoi, et comment vous pouvez les contrôler.",
       sections: [
@@ -65,7 +65,8 @@ function notice(locale: Locale, contact: string): Notice {
         {
           title: "Conservation",
           items: [
-            "Vos données d’apprentissage sont conservées tant que votre compte existe.",
+            "Vos données d’apprentissage terminées sont conservées tant que votre compte existe.",
+            "Les brouillons d’évaluation sont enregistrés automatiquement : dans ce navigateur pour les visiteurs, dans le compte Supabase pour les personnes connectées. Ils expirent sept jours après la dernière modification et sont supprimés après la fin de l’évaluation ou un redémarrage confirmé. Les brouillons expirés du serveur sont nettoyés chaque jour. Aucun brouillon n’est envoyé à un service d’IA.",
             "Les références d’erreurs techniques sont supprimées automatiquement après 30 jours.",
             "À la fin de la bêta, nous vous informerons avant toute modification de vos données ou de votre accès.",
           ],
@@ -86,7 +87,7 @@ function notice(locale: Locale, contact: string): Notice {
     };
   return {
     title: "Privacy notice",
-    updated: "Last updated: October 22, 2026",
+    updated: "Last updated: November 4, 2026",
     intro:
       "MPK Academy is an independent TEF Canada and TCF Canada preparation tool, currently in a closed beta. This notice explains what we collect, why, and how you control it.",
     sections: [
@@ -135,6 +136,7 @@ function notice(locale: Locale, contact: string): Notice {
         title: "How long we keep it",
         items: [
           "Learning data is kept for as long as your account exists.",
+          "Unfinished assessments expire after seven days without edits. Guest drafts stay in this browser. Signed-in drafts are stored securely in Supabase to continue on another device and are removed when submitted or discarded.",
           "Technical error references are deleted automatically after 30 days.",
           "When the beta ends, we will tell you before anything changes to your data or access.",
         ],

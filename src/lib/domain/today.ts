@@ -6,7 +6,7 @@ import {
   getRecommendedPractice,
 } from "@/lib/domain/personalization";
 import type { ObjectiveSkill } from "@/lib/domain/readiness";
-import type { Activity, AppState, ExamId, Lesson } from "@/types/domain";
+import type { AppState, ExamId, Lesson } from "@/types/domain";
 
 // Today's plan: due reviews, one practice session, one lesson — about 20–30
 // minutes. Steps return data; the dashboard translates them.
@@ -47,13 +47,6 @@ export const isSameLocalDay = (timestamp: string, now: Date) => {
 };
 
 const examCode = (exam: ExamId) => (exam === "TCF Canada" ? "TCF" : "TEF");
-
-function doneToday(activities: Activity[], kind: Activity["kind"], now: Date) {
-  return activities.some(
-    (activity) =>
-      activity.kind === kind && isSameLocalDay(activity.timestamp, now),
-  );
-}
 
 export function getTodayPlan(
   state: AppState,
@@ -98,17 +91,42 @@ export function getTodayPlan(
     (profile.skills.reading.lastPracticedAt ?? "")
       ? "listening"
       : "reading";
-  const practiceSkill = recommended?.skill ?? leastRecent;
+  const completedPractice = state.studyActivity?.practice.find(
+    (session) =>
+      session.exam === exam &&
+      session.mode === "practice" &&
+      (session.skill === "reading" || session.skill === "listening") &&
+      isSameLocalDay(session.completedAt, now),
+  );
+  const practiceSkill =
+    (completedPractice?.skill as ObjectiveSkill | undefined) ??
+    recommended?.skill ??
+    leastRecent;
   steps.push({
     kind: "practice",
     skill: practiceSkill,
     minutes: PRACTICE_MINUTES,
     href:
-      recommended?.href ?? `/practice/session?skill=${practiceSkill}&count=10`,
-    done: doneToday(state.activities, "practice", now),
+      (!completedPractice && recommended?.href) ||
+      `/practice/session?skill=${practiceSkill}&count=10`,
+    done: Boolean(completedPractice),
   });
 
+  const completedLesson = state.studyActivity?.lessons
+    .filter((item) => isSameLocalDay(item.completedAt, now))
+    .map((item) =>
+      allLessons.find((candidate) => candidate.id === item.lessonId),
+    )
+    .find(
+      (candidate) =>
+        candidate &&
+        (!candidate.exam ||
+          candidate.exam === "shared" ||
+          candidate.exam === examCode(exam)) &&
+        canAccessLesson(state.planAccess, candidate),
+    );
   const lesson =
+    completedLesson ??
     (features.personalized ? getRecommendedLessons(state)[0]?.lesson : null) ??
     allLessons.find(
       (candidate) =>
@@ -124,12 +142,15 @@ export function getTodayPlan(
       lesson,
       minutes: lesson.duration,
       href: `/learn/${lesson.moduleId}/${lesson.id}`,
-      done: doneToday(state.activities, "lesson", now),
+      done: Boolean(completedLesson),
     });
 
   return {
     steps,
-    minutes: steps.reduce((sum, step) => sum + step.minutes, 0),
+    minutes: steps.reduce(
+      (sum, step) => sum + (step.done ? 0 : step.minutes),
+      0,
+    ),
     next: steps.find((step) => !step.done) ?? null,
   };
 }

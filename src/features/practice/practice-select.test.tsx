@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { AppProvider } from "@/components/providers/app-provider";
 import { demoState } from "@/test/fixtures";
@@ -42,14 +42,17 @@ describe("personalized practice landing", () => {
       </AppProvider>,
     );
 
-    expect(await screen.findAllByText("Timed self-practice")).toHaveLength(2);
-    expect(screen.getAllByText(/Practise and review the rubric/)).toHaveLength(
-      2,
-    );
-    expect(screen.getByRole("link", { name: /Writing/ })).toHaveAttribute(
-      "href",
-      "/practice/session?skill=writing",
-    );
+    expect(
+      await screen.findAllByText("No practice completed yet"),
+    ).toHaveLength(2);
+    const writing = screen.getByRole("heading", {
+      name: "Writing",
+    }).parentElement!;
+    expect(
+      within(writing as HTMLElement).getByRole("link", {
+        name: "Start practice",
+      }),
+    ).toHaveAttribute("href", "/practice/session?skill=writing");
     expect(screen.queryByText("63% · Improving")).not.toBeInTheDocument();
     expect(screen.queryByText("48% · Priority")).not.toBeInTheDocument();
   });

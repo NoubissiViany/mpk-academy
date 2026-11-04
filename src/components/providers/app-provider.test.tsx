@@ -20,7 +20,8 @@ vi.mock("@/lib/supabase/env", () => ({
 }));
 
 function SessionState() {
-  const { state, hydrated } = useApp();
+  const { state, hydrated, sessionUnavailable } = useApp();
+  if (sessionUnavailable) return <p>session unavailable</p>;
   return (
     <p>{hydrated ? (state.user ? "signed in" : "signed out") : "loading"}</p>
   );
@@ -52,6 +53,7 @@ describe("AppProvider session hydration", () => {
 
   afterEach(() => {
     cleanup();
+    vi.restoreAllMocks();
     document.cookie = `${sessionCookie}=; max-age=0; path=/`;
     document.cookie = "mpk_locale=; max-age=0; path=/";
   });
@@ -125,5 +127,29 @@ describe("AppProvider session hydration", () => {
 
     expect(await screen.findByText("signed out")).toBeVisible();
     expect(mocks.getSnapshot).toHaveBeenCalledOnce();
+  });
+  it("does not treat an unavailable signed-in session as a guest", async () => {
+    document.cookie = `${sessionCookie}=token; path=/`;
+    mocks.getSnapshot.mockResolvedValue({ ok: false, reason: "unavailable" });
+    render(
+      <AppProvider>
+        <SessionState />
+      </AppProvider>,
+    );
+    expect(await screen.findByText("session unavailable")).toBeVisible();
+    expect(screen.queryByText("signed out")).not.toBeInTheDocument();
+  });
+  it("recovers account state even if browser storage is blocked", async () => {
+    document.cookie = `${sessionCookie}=token; path=/`;
+    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+      throw new DOMException("Blocked", "SecurityError");
+    });
+    mocks.getSnapshot.mockResolvedValue({ ok: true, snapshot: demoState });
+    render(
+      <AppProvider>
+        <SessionState />
+      </AppProvider>,
+    );
+    expect(await screen.findByText("signed in")).toBeVisible();
   });
 });

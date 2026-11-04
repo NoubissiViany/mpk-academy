@@ -4,6 +4,8 @@
 - **Course** contains ordered **Modules**, which contain ordered **Lessons** associated with competencies.
 - **Question** is a normalized discriminated union associated with one or more **Competencies**.
 - **Attempt** records one submitted answer; an incorrect attempt may produce a categorized **Mistake**.
+- **DiagnosticDraft** stores the versioned attempt, content version, intake, presentation order, current step, answers and writing before submission; revisions protect edits across tabs and devices.
+- **StudyActivity** carries saved completion metadata used by the shared next-task calculation for the active exam.
 - **DiagnosticResult**, **PracticeSession**, and **ExamSimulation** aggregate attempts for different support modes.
 - **Progress** aggregates lesson, quiz, practice, simulation, and competency evidence.
 - **Readiness** is a versioned derivation from progress and may be absent when evidence is insufficient.

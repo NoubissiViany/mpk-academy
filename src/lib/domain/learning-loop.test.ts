@@ -202,6 +202,18 @@ describe("today's plan", () => {
       {
         ...state,
         reviews: [],
+        studyActivity: {
+          practice: [
+            {
+              id: "p1",
+              exam: "TEF Canada",
+              skill: "listening",
+              mode: "practice",
+              completedAt: new Date(2026, 9, 21, 8).toISOString(),
+            },
+          ],
+          lessons: [],
+        },
         activities: [
           {
             id: "a1",
@@ -238,6 +250,82 @@ describe("today's plan", () => {
       kind: "practice",
       href: "/practice/session?skill=reading&count=10",
     });
+  });
+
+  it("ignores activity for another exam, reviews and productive practice", () => {
+    for (const session of [
+      {
+        exam: "TCF Canada" as const,
+        skill: "reading" as const,
+        mode: "practice" as const,
+      },
+      {
+        exam: "TEF Canada" as const,
+        skill: "reading" as const,
+        mode: "review" as const,
+      },
+      {
+        exam: "TEF Canada" as const,
+        skill: "writing" as const,
+        mode: "practice" as const,
+      },
+    ]) {
+      const plan = getTodayPlan(
+        {
+          ...state,
+          reviews: [],
+          studyActivity: {
+            practice: [
+              { ...session, id: "session", completedAt: now.toISOString() },
+            ],
+            lessons: [],
+          },
+        },
+        now,
+        all,
+      );
+      expect(plan.next?.kind).toBe("practice");
+      expect(plan.steps[0].done).toBe(false);
+    }
+  });
+
+  it("reduces remaining time and reaches a completed plan from saved records", () => {
+    const original = getTodayPlan({ ...state, reviews: [] }, now, all);
+    const lesson = original.steps.find((step) => step.kind === "lesson")!;
+    expect(lesson.kind).toBe("lesson");
+    if (lesson.kind !== "lesson") return;
+    const updated: AppState = {
+      ...state,
+      reviews: [],
+      studyActivity: {
+        practice: [
+          {
+            id: "p",
+            exam: "TEF Canada",
+            skill: "listening",
+            mode: "practice",
+            completedAt: now.toISOString(),
+          },
+        ],
+        lessons: [],
+      },
+    };
+    const afterPractice = getTodayPlan(updated, now, all);
+    expect(afterPractice.minutes).toBe(original.minutes - 12);
+    expect(afterPractice.next?.href).toBe(lesson.href);
+    updated.studyActivity!.lessons.push({
+      lessonId: lesson.lesson.id,
+      completedAt: now.toISOString(),
+    });
+    expect(getTodayPlan(updated, now, all)).toMatchObject({
+      minutes: 0,
+      next: null,
+    });
+    updated.user = {
+      ...updated.user!,
+      goal: { ...updated.user!.goal, exam: "TCF Canada" },
+    };
+    expect(getTodayPlan(updated, now, all).next?.kind).toBe("practice");
   });
 
   it("is empty until an exam is chosen", () => {

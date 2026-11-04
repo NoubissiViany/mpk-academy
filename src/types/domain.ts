@@ -321,7 +321,19 @@ export interface GuestAssessmentSession {
   claimedAt?: string;
 }
 
+export interface StudyActivity {
+  practice: Array<{
+    id: string;
+    exam: ExamId;
+    skill: ExamSkill;
+    mode: "practice" | "review";
+    completedAt: string;
+  }>;
+  lessons: Array<{ lessonId: string; completedAt: string }>;
+}
+
 export interface AppState {
+  studyActivity?: StudyActivity;
   schemaVersion: 5;
   user: User | null;
   planAccess: PlanAccess | null;

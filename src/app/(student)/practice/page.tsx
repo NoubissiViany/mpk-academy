@@ -1,5 +1,5 @@
 import { PracticeSelect } from "@/features/practice/practice-select";
-
-export default function PracticePage() {
-  return <PracticeSelect />;
+import { getLearningOverview } from "@/lib/server/learning-overview";
+export default async function PracticePage() {
+  return <PracticeSelect overview={await getLearningOverview()} />;
 }

@@ -8,7 +8,7 @@ const en = {
     secondary: "How it works",
     secondaryPaid: "Explore plans",
     facts: (questions: number, minutes: number) =>
-      `Free · ${questions} questions · About ${minutes} minutes · No card required`,
+      `Free · ${questions} questions + writing · About ${minutes} minutes · No card required`,
   },
   sample: {
     eyebrow: "Try four questions",
@@ -158,7 +158,7 @@ const fr: typeof en = {
     secondary: "Fonctionnement",
     secondaryPaid: "Voir les formules",
     facts: (questions: number, minutes: number) =>
-      `Gratuit · ${questions} questions · Environ ${minutes} minutes · Sans carte bancaire`,
+      `Gratuit · ${questions} questions + rédaction · Environ ${minutes} minutes · Sans carte bancaire`,
   },
   sample: {
     eyebrow: "Essayez quatre questions",

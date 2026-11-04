@@ -59,7 +59,9 @@ describe("exam-centred dashboard", () => {
       await screen.findByText("Questions you have not seen come first."),
     ).toBeVisible();
     expect(screen.getByText("Practice accuracy")).toBeVisible();
-    expect(screen.queryByText("MPK readiness")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Reading and listening readiness"),
+    ).not.toBeInTheDocument();
     expect(screen.queryByText("Focus skill")).not.toBeInTheDocument();
     expect(screen.queryByText(/missed question/)).not.toBeInTheDocument();
   });
@@ -83,7 +85,7 @@ describe("exam-centred dashboard", () => {
       </AppProvider>,
     );
     expect(
-      await screen.findByRole("heading", { name: /Today’s plan · about/ }),
+      await screen.findByRole("heading", { name: /Today’s plan/ }),
     ).toBeVisible();
     expect(
       screen.getByRole("link", {
@@ -95,7 +97,7 @@ describe("exam-centred dashboard", () => {
     ).toBeVisible();
     expect(screen.getByRole("link", { name: /Lesson ·/ })).toBeVisible();
     expect(
-      screen.getByRole("link", { name: /Start today’s plan/ }),
+      screen.getByRole("link", { name: /Review listening · 3 min/ }),
     ).toHaveAttribute("href", "/practice/session?skill=listening&review=1");
   });
 
@@ -105,7 +107,9 @@ describe("exam-centred dashboard", () => {
         <DashboardView />
       </AppProvider>,
     );
-    expect(await screen.findByText("MPK readiness")).toBeVisible();
+    expect(
+      await screen.findByText("Reading and listening readiness"),
+    ).toBeVisible();
     expect(screen.getByText("63%")).toBeVisible();
     expect(screen.getAllByText("Near your target")[0]).toBeVisible();
     expect(

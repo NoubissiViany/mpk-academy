@@ -27,12 +27,38 @@ describe("admin metrics", () => {
   it("explains when no tester can be measured after week one yet", () => {
     render(
       <EngagementSummary
-        summary={{ activated: 3, active7: 2, weekEligible: 0, weekReturned: 0 }}
+        summary={{
+          activated: 3,
+          active7: 2,
+          weekEligible: 0,
+          weekReturned: 0,
+          firstLearningCompleted: 2,
+        }}
       />,
     );
+    expect(screen.getByText("2 of 3 (67%)")).toBeVisible();
     expect(
       screen.getByText("No tester has passed day 7 yet"),
     ).toBeInTheDocument();
+  });
+
+  it("shows activation completion in French", () => {
+    render(
+      <EngagementSummary
+        locale="fr"
+        summary={{
+          activated: 3,
+          active7: 2,
+          weekEligible: 0,
+          weekReturned: 0,
+          firstLearningCompleted: 2,
+        }}
+      />,
+    );
+    expect(
+      screen.getByText("Première leçon ou séance terminée après l’activation"),
+    ).toBeVisible();
+    expect(screen.getByText("2 sur 3 (67%)")).toBeVisible();
   });
 
   it("joins access and activity for each tester", () => {

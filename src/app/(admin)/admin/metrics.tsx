@@ -1,3 +1,5 @@
+import { messagesFor } from "@/i18n/messages";
+import type { Locale } from "@/i18n/config";
 import { z } from "zod";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -12,6 +14,7 @@ export const metricsSchema = z.object({
   ),
   summary: z.object({
     activated: z.number(),
+    firstLearningCompleted: z.number().optional(),
     active7: z.number(),
     weekEligible: z.number(),
     weekReturned: z.number(),
@@ -119,24 +122,40 @@ export function FunnelSection({ funnel }: { funnel: Metrics["funnel"] }) {
 
 export function EngagementSummary({
   summary,
+  locale = "en",
 }: {
   summary: Metrics["summary"];
+  locale?: Locale;
 }) {
+  const copy = messagesFor(locale).ux.metrics;
   const returned = summary.weekEligible
-    ? `${summary.weekReturned} of ${summary.weekEligible} (${percent(summary.weekReturned, summary.weekEligible)})`
-    : "No tester has passed day 7 yet";
+    ? copy.share(
+        summary.weekReturned,
+        summary.weekEligible,
+        percent(summary.weekReturned, summary.weekEligible),
+      )
+    : copy.noEligible;
   return (
     <section>
-      <h2 className="text-lg font-bold">Engagement</h2>
+      <h2 className="text-lg font-bold">{copy.title}</h2>
       <p className="mt-1 text-sm leading-6 text-muted-foreground">
-        Activity means a completed diagnostic, mock exam, practice session, or
-        lesson; signing in alone does not count.
+        {copy.activity}
       </p>
-      <div className="mt-3 grid gap-4 sm:grid-cols-3">
+      <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          ["Testers activated", String(summary.activated)],
-          ["Active in the last 7 days", String(summary.active7)],
-          ["Active again on day 7 or later", returned],
+          [copy.activated, String(summary.activated)],
+          [
+            copy.firstLearning,
+            summary.firstLearningCompleted === undefined
+              ? "—"
+              : copy.share(
+                  summary.firstLearningCompleted,
+                  summary.activated,
+                  percent(summary.firstLearningCompleted, summary.activated),
+                ),
+          ],
+          [copy.active, String(summary.active7)],
+          [copy.returned, returned],
         ].map(([label, value]) => (
           <Card key={label}>
             <CardContent className="pt-5">

@@ -3,7 +3,7 @@ import type { GuestAssessmentSession } from "@/types/domain";
 export type GuestAssessmentSessionInput = Omit<
   GuestAssessmentSession,
   "id" | "createdAt" | "expiresAt" | "status" | "claimedByUserId" | "claimedAt"
->;
+> & { id?: string };
 
 export interface GuestAssessmentRepository {
   create(input: GuestAssessmentSessionInput): Promise<GuestAssessmentSession>;

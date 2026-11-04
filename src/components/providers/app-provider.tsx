@@ -29,6 +29,7 @@ import type { AppState, Locale, User } from "@/types/domain";
 interface AppContextValue {
   state: AppState;
   hydrated: boolean;
+  sessionUnavailable: boolean;
   setState: (updater: AppState | ((state: AppState) => AppState)) => void;
   replaceState: (state: AppState) => void;
   updateUser: (user: User | null) => void;
@@ -52,6 +53,7 @@ export function AppProvider({
     initialState ?? defaultState,
   );
   const [hydrated, setHydrated] = useState(Boolean(initialState));
+  const [sessionUnavailable, setSessionUnavailable] = useState(false);
   const [preferredLocale, setPreferredLocale] = useState(initialLocale);
   // Set when a server-rendered page seeds the learner state, so the provider
   // does not load the same snapshot a second time.
@@ -60,6 +62,7 @@ export function AppProvider({
 
   const replaceState = useCallback((next: AppState) => {
     seeded.current = true;
+    setSessionUnavailable(false);
     setStateValue(next);
     setHydrated(true);
   }, []);
@@ -69,11 +72,22 @@ export function AppProvider({
     let active = true;
     const timer = window.setTimeout(async () => {
       if (seeded.current) return;
-      const localState = loadState();
+      let localState = structuredClone(defaultState);
+      try {
+        localState = loadState();
+      } catch {
+        /* Account recovery must work when browser storage is blocked. */
+      }
       let nextState = localState;
+      let unavailable = false;
       // Anonymous visitors have no session cookie: skip the server round trip.
       if (isSupabaseConfigured() && hasSupabaseSessionCookie()) {
-        const snapshotResult = await getLearnerSnapshotAction();
+        const snapshotResult = await getLearnerSnapshotAction().catch(() => ({
+          ok: false as const,
+          reason: "unavailable" as const,
+        }));
+        unavailable =
+          !snapshotResult.ok && snapshotResult.reason !== "unauthenticated";
         nextState = snapshotResult.ok
           ? snapshotResult.snapshot
           : snapshotResult.reason === "unauthenticated"
@@ -81,6 +95,7 @@ export function AppProvider({
             : localState;
       }
       if (active && !seeded.current) {
+        setSessionUnavailable(unavailable);
         setStateValue(nextState);
         setHydrated(true);
       }
@@ -132,13 +147,22 @@ export function AppProvider({
     () => ({
       state,
       hydrated,
+      sessionUnavailable,
       setState,
       replaceState,
       updateUser: (user) => setState((current) => ({ ...current, user })),
       locale,
       setLocale,
     }),
-    [state, hydrated, setState, replaceState, locale, setLocale],
+    [
+      state,
+      hydrated,
+      sessionUnavailable,
+      setState,
+      replaceState,
+      locale,
+      setLocale,
+    ],
   );
   const i18n = useMemo(
     () => ({ locale, t: messagesFor(locale), setLocale }),

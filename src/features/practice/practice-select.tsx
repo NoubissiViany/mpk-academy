@@ -19,6 +19,11 @@ import {
   getSkillFocusAreas,
 } from "@/lib/domain/personalization";
 import type { ExamSkill } from "@/types/domain";
+import { FeedbackSummaryCard } from "@/features/dashboard/feedback-summary-card";
+import {
+  emptyLearningOverview,
+  type LearningOverview,
+} from "@/lib/domain/learning-overview";
 import { ReviewDueCard } from "./review-due-card";
 
 const icons = {
@@ -28,7 +33,11 @@ const icons = {
   speaking: Mic2,
 } satisfies Record<ExamSkill, typeof BookOpen>;
 
-export function PracticeSelect() {
+export function PracticeSelect({
+  overview = emptyLearningOverview,
+}: {
+  overview?: LearningOverview;
+}) {
   const { state } = useApp();
   const { t } = useI18n();
   const copy = t.practice.select;
@@ -51,10 +60,17 @@ export function PracticeSelect() {
       <ReviewDueCard className="mb-6 border-primary/20 bg-primary/5" />
       <div className="grid gap-4 sm:grid-cols-2">
         {examSkillOrder.map((skill) => {
+          if (skill === "writing" || skill === "speaking")
+            return (
+              <FeedbackSummaryCard
+                key={skill}
+                skill={skill}
+                summary={overview[skill]}
+              />
+            );
           const Icon = icons[skill];
           const score = profile.skills[skill].current;
           const focusAreas = getSkillFocusAreas(state, skill);
-          const productive = skill === "writing" || skill === "speaking";
           const label = t.practice.skills[skill];
           const frenchLabel = t.practice.frenchSkills[skill];
           return (
@@ -77,13 +93,11 @@ export function PracticeSelect() {
                     </p>
                   )}
                   <p className="mt-5 font-bold">
-                    {productive
-                      ? copy.selfPractice
-                      : score === null
-                        ? t.practice.status.notAssessed
-                        : `${score}% · ${t.practice.status[getSkillStatus(score)]}`}
+                    {score === null
+                      ? t.practice.status.notAssessed
+                      : `${score}% · ${t.practice.status[getSkillStatus(score)]}`}
                   </p>
-                  {!productive && focusAreas.length > 0 && (
+                  {focusAreas.length > 0 && (
                     <div className="mt-4 text-sm text-muted-foreground">
                       <p className="font-semibold text-foreground">
                         {copy.focusAreas}
@@ -95,10 +109,8 @@ export function PracticeSelect() {
                       </ul>
                     </div>
                   )}
-                  <p
-                    className={`mt-5 text-sm font-semibold ${productive ? "text-muted-foreground" : "text-primary"}`}
-                  >
-                    {productive ? copy.reviewRubric : copy.practise}
+                  <p className="mt-5 text-sm font-semibold text-primary">
+                    {copy.practise}
                   </p>
                 </CardContent>
               </Card>
@@ -127,28 +139,11 @@ export function PracticeSelect() {
           </CardContent>
         </Card>
       )}
-      <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
-        {hasPlanFeature(state.planAccess, "aiWritingFeedback") && (
-          <Link
-            href="/writing"
-            className="inline-flex items-center gap-1 text-sm font-bold text-primary hover:underline"
-          >
-            <PenLine className="size-4" aria-hidden="true" />
-            {t.writing.feedback.history}
-          </Link>
-        )}
-        {hasPlanFeature(state.planAccess, "aiSpeakingFeedback") && (
-          <Link
-            href="/speaking"
-            className="inline-flex items-center gap-1 text-sm font-bold text-primary hover:underline"
-          >
-            <Mic2 className="size-4" aria-hidden="true" />
-            {t.speaking.feedback.history}
-          </Link>
-        )}
-      </div>
       <p className="mt-7 text-xs leading-5 text-muted-foreground">
-        {copy.productiveNote}
+        {overview.writing.available || overview.speaking.available
+          ? t.ux.feedback.consent
+          : t.ux.feedback.self}{" "}
+        {overview.speaking.available && t.ux.feedback.speakingLimit}
       </p>
     </>
   );

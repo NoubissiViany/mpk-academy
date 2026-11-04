@@ -270,7 +270,7 @@ export function AiFeedbackBody({
   );
 }
 
-function FixItem({
+export function FixItem({
   index,
   fix,
   alreadyFlagged,
@@ -280,7 +280,7 @@ function FixItem({
   index: number;
   fix: WritingFeedback["fixes"][number];
   alreadyFlagged: boolean;
-  onFlag: FlagAction;
+  onFlag?: FlagAction;
   quoteLabel: string;
 }) {
   const { t } = useI18n();
@@ -288,6 +288,7 @@ function FixItem({
   const [flagged, setFlagged] = useState(alreadyFlagged);
   const [sending, setSending] = useState(false);
   const flag = async () => {
+    if (!onFlag) return;
     setSending(true);
     const result = await onFlag(index);
     setSending(false);
@@ -298,15 +299,17 @@ function FixItem({
     <li className="rounded-xl border p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Badge>{copy.categories[fix.category]}</Badge>
-        <button
-          type="button"
-          className="inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-foreground disabled:opacity-70"
-          disabled={flagged || sending}
-          onClick={flag}
-        >
-          <Flag className="size-3.5" aria-hidden="true" />
-          {flagged ? copy.flagged : copy.flag}
-        </button>
+        {onFlag && (
+          <button
+            type="button"
+            className="inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-foreground disabled:opacity-70"
+            disabled={flagged || sending}
+            onClick={flag}
+          >
+            <Flag className="size-3.5" aria-hidden="true" />
+            {flagged ? copy.flagged : copy.flag}
+          </button>
+        )}
       </div>
       <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-[auto_1fr] sm:gap-x-4">
         <dt className="font-semibold text-muted-foreground">{quoteLabel}</dt>

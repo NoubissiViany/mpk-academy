@@ -1,3 +1,4 @@
+import { diagnosticWritingMinutes } from "./diagnostic-writing";
 import type { DiagnosticResult, Question } from "@/types/domain";
 import {
   diagnosticSkillModules,
@@ -98,3 +99,10 @@ export function scoreDiagnostic(
 /** A rough duration for the assessment: about 0.8 minute a question, to 5. */
 export const diagnosticMinutes = (questions: number) =>
   Math.max(10, Math.round((questions * 0.8) / 5) * 5);
+
+/** Includes the required writing sample on every assessment entry point. */
+export const diagnosticTotalMinutes = (questions: number) =>
+  diagnosticMinutes(questions) + diagnosticWritingMinutes;
+export const diagnosticRemainingMinutes = (questions: number, index: number) =>
+  Math.ceil((diagnosticMinutes(questions) * (questions - index)) / questions) +
+  diagnosticWritingMinutes;

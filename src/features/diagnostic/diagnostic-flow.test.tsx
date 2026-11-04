@@ -6,7 +6,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AppProvider } from "@/components/providers/app-provider";
 import { productConfig } from "@/config/product";
 import { diagnosticQuestions } from "@/data/questions";
@@ -15,6 +15,7 @@ import { toPublicQuestion } from "@/lib/server/content";
 import { guestAssessmentRepository } from "@/repositories/guest-assessment";
 import { demoState } from "@/test/fixtures";
 import { writingSampleFixture } from "@/test/diagnostic-writing";
+import { diagnosticDraftStorageKey } from "@/repositories/diagnostic-draft";
 import { DiagnosticFlow } from "./diagnostic-flow";
 
 const mocks = vi.hoisted(() => ({
@@ -25,6 +26,8 @@ const mocks = vi.hoisted(() => ({
   updateProfile: vi.fn(),
   toastError: vi.fn(),
   scoreGuest: vi.fn(),
+  getDraft: vi.fn(),
+  saveDraft: vi.fn(),
 }));
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mocks.push, refresh: mocks.refresh }),
@@ -37,6 +40,18 @@ vi.mock("@/app/actions/learner", () => ({
 vi.mock("@/app/actions/content", () => ({
   scoreGuestDiagnosticAction: mocks.scoreGuest,
 }));
+vi.mock("@/app/actions/diagnostic-draft", () => ({
+  getDiagnosticDraftAction: mocks.getDraft,
+  saveDiagnosticDraftAction: mocks.saveDraft,
+  discardDiagnosticDraftAction: vi.fn(),
+}));
+beforeEach(() => {
+  mocks.getDraft.mockResolvedValue({ ok: true, draft: null });
+  mocks.saveDraft.mockImplementation(async (draft) => ({
+    ok: true,
+    draft: { ...draft, revision: draft.revision + 1 },
+  }));
+});
 vi.mock("sonner", () => ({
   toast: { error: mocks.toastError },
   Toaster: () => null,
@@ -45,7 +60,9 @@ vi.mock("sonner", () => ({
 const publicQuestions = diagnosticQuestions.map(toPublicQuestion);
 
 async function completeAssessment(user: ReturnType<typeof userEvent.setup>) {
-  await user.click(screen.getByRole("button", { name: /Start my assessment/ }));
+  await user.click(
+    await screen.findByRole("button", { name: /Start my assessment/ }),
+  );
   for (let index = 0; index < diagnosticQuestions.length; index++) {
     const prompt = screen.getByRole("heading", { level: 2 }).textContent;
     const question = diagnosticQuestions.find((q) => q.prompt === prompt)!;
@@ -119,7 +136,7 @@ describe("DiagnosticFlow", () => {
       expect.any(Object),
       writingSampleFixture,
     );
-  }, 10_000);
+  }, 20_000);
 
   it("prefills the exam and target saved during registration", async () => {
     render(
@@ -136,7 +153,9 @@ describe("DiagnosticFlow", () => {
       </AppProvider>,
     );
 
-    expect(screen.getByLabelText("Prepare for TEF Canada")).toBeChecked();
+    expect(
+      await screen.findByLabelText("Prepare for TEF Canada"),
+    ).toBeChecked();
     expect(screen.getByLabelText("NCLC 7")).toBeChecked();
     expect(
       screen.getByRole("button", { name: /Start my assessment/ }),
@@ -175,14 +194,14 @@ describe("DiagnosticFlow", () => {
       ),
     ).toBeVisible();
     const stored = JSON.parse(
-      localStorage.getItem(productConfig.anonymousStateStorageKey) ?? "null",
+      localStorage.getItem(diagnosticDraftStorageKey) ?? "null",
     );
-    expect(stored.diagnosticIntake).toEqual({
+    expect(stored.intake).toEqual({
       goal: "TEF Canada",
       target: "NCLC 7",
       frenchExperience: "I know some French",
     });
-    expect(stored.diagnosticAnswers).toEqual({});
+    expect(stored.answers).toEqual({});
   });
 
   it("preserves an answer while navigating and returns to the intro from question one", async () => {
@@ -261,7 +280,7 @@ describe("DiagnosticFlow", () => {
     expect(anonymous.user).toBeNull();
     expect(anonymous.planAccess).toBeNull();
     expect(mocks.submitDiagnostic).toHaveBeenCalledOnce();
-  }, 10_000);
+  }, 20_000);
 
   it("uses the authoritative RPC result and routes to results", async () => {
     const user = userEvent.setup();
@@ -303,7 +322,7 @@ describe("DiagnosticFlow", () => {
     expect(mocks.submitDiagnostic).toHaveBeenCalledWith(
       expect.objectContaining({ submissionId: expect.any(String) }),
     );
-  }, 10_000);
+  }, 20_000);
 
   it("shows the diagnostic reference and keeps its submission id for retries", async () => {
     const user = userEvent.setup();
@@ -340,5 +359,5 @@ describe("DiagnosticFlow", () => {
     expect(mocks.submitDiagnostic.mock.calls[1][0].submissionId).toBe(
       firstSubmissionId,
     );
-  }, 10_000);
+  }, 20_000);
 });

@@ -1,40 +1,18 @@
 import Link from "next/link";
-import {
-  ArrowDown,
-  ArrowRight,
-  BookOpen,
-  BookOpenCheck,
-  Brain,
-  Headphones,
-  KeyRound,
-  Languages,
-  Mic2,
-  PenLine,
-  ShieldCheck,
-  Target,
-} from "lucide-react";
+import { ArrowRight, KeyRound } from "lucide-react";
 import { PlanComparison } from "@/components/plan-comparison";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { contactEmail, isBetaMode } from "@/config/product";
 import { TrackFunnelStep } from "@/components/track-funnel-step";
 import { SampleQuiz } from "@/features/marketing/sample-quiz";
 import { getMessages } from "@/i18n/server";
-import { diagnosticMinutes } from "@/lib/domain/diagnostic";
+import { ProductPreview } from "@/features/marketing/product-preview";
+import { diagnosticTotalMinutes } from "@/lib/domain/diagnostic";
 import {
   getPublicDiagnosticQuestions,
   getPublicSampleQuestions,
 } from "@/lib/server/content";
-
-const differenceIcons = [Languages, Brain, Target];
-const skillIcons = {
-  reading: BookOpen,
-  listening: Headphones,
-  writing: PenLine,
-  speaking: Mic2,
-} as const;
-const modeIcons = [BookOpenCheck, Target, ShieldCheck];
 
 export async function generateMetadata() {
   return { title: { absolute: (await getMessages()).metadata.defaultTitle } };
@@ -85,151 +63,45 @@ export default async function HomePage() {
             <p className="mt-4 text-xs text-muted-foreground">
               {copy.hero.facts(
                 diagnosticCount,
-                diagnosticMinutes(diagnosticCount),
+                diagnosticTotalMinutes(diagnosticCount),
               )}
             </p>
+            {beta && (
+              <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">
+                {t.ux.betaAccess}
+              </p>
+            )}
           </div>
           <SampleQuiz questions={getPublicSampleQuestions()} />
           <TrackFunnelStep step="landing_view" />
         </div>
       </section>
 
-      <section className="container-page py-20">
-        <div className="mx-auto max-w-2xl text-center">
-          <p className="eyebrow">{copy.differences.eyebrow}</p>
-          <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-            {copy.differences.title}
-          </h2>
-        </div>
-        <div className="mt-12 grid gap-5 md:grid-cols-3">
-          {copy.differences.items.map(({ title, copy: body }, index) => {
-            const Icon = differenceIcons[index];
-            return (
-              <Card key={title}>
-                <CardContent className="pt-6">
-                  <span className="grid size-11 place-items-center rounded-xl bg-primary/10 text-primary">
-                    <Icon className="size-5" aria-hidden="true" />
-                  </span>
-                  <h3 className="mt-5 text-lg font-bold">{title}</h3>
-                  <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                    {body}
-                  </p>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="border-y bg-card py-20">
-        <div className="container-page">
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="eyebrow">{copy.skills.eyebrow}</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-              {copy.skills.title}
-            </h2>
-          </div>
-          <div className="mt-12 grid gap-5 sm:grid-cols-2">
-            {(["reading", "listening", "writing", "speaking"] as const).map(
-              (skill) => {
-                const Icon = skillIcons[skill];
-                return (
-                  <Card key={skill}>
-                    <CardContent className="flex gap-4 pt-6 sm:gap-5">
-                      <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
-                        <Icon className="size-5" aria-hidden="true" />
-                      </span>
-                      <div>
-                        <h3 className="text-lg font-bold">
-                          {t.practice.skills[skill]}
-                        </h3>
-                        <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                          {copy.skills.items[skill]}
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              },
-            )}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-ink py-20 text-white">
-        <div className="container-page">
-          <div className="max-w-2xl">
-            <p className="text-xs font-bold uppercase tracking-[.18em] text-[#74dab8]">
-              {copy.modes.eyebrow}
-            </p>
-            <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
-              {copy.modes.title}
-            </h2>
-          </div>
-          <div className="mt-12 grid gap-5 md:grid-cols-3">
-            {copy.modes.items.map(({ label, title, copy: body }, index) => {
-              const Icon = modeIcons[index];
-              return (
-                <article
-                  key={title}
-                  className="rounded-2xl border border-white/10 bg-white/[.05] p-6"
-                >
-                  <div className="flex items-center justify-between">
-                    <Icon
-                      className="size-6 text-[#74dab8]"
-                      aria-hidden="true"
-                    />
-                    <span className="text-xs text-white/45">0{index + 1}</span>
-                  </div>
-                  <p className="mt-8 text-xs font-bold uppercase tracking-wider text-white/50">
-                    {label}
-                  </p>
-                  <h3 className="mt-2 text-xl font-bold">{title}</h3>
-                  <p className="mt-3 text-sm leading-6 text-white/65">{body}</p>
-                </article>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      <section id="how-it-works" className="container-page scroll-mt-20 py-20">
-        <div className="mx-auto max-w-2xl text-center">
-          <p className="eyebrow">{copy.journey.eyebrow}</p>
-          <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-            {copy.journey.title}
-          </h2>
-          <p className="mt-5 leading-7 text-muted-foreground">
-            {copy.journey.lead}
-          </p>
-        </div>
-        <ol className="mx-auto mt-12 max-w-3xl">
-          {copy.journey.steps.map(({ title, copy: body }, index) => (
-            <li key={title}>
-              <article className="grid gap-4 rounded-2xl border bg-card p-5 shadow-sm sm:grid-cols-[3rem_1fr] sm:items-center sm:p-6">
-                <span className="grid size-12 place-items-center rounded-full bg-primary text-lg font-black text-primary-foreground">
-                  {index + 1}
-                </span>
-                <div>
-                  <h3 className="text-xl font-bold">{title}</h3>
-                  <p className="mt-2 leading-7 text-muted-foreground">{body}</p>
-                </div>
-              </article>
-              {index < copy.journey.steps.length - 1 && (
-                <div
-                  className="flex h-12 items-center justify-center text-primary"
-                  aria-hidden="true"
-                >
-                  <ArrowDown className="size-6" />
-                </div>
-              )}
+      <ProductPreview />
+      <section
+        id="how-it-works"
+        className="container-page scroll-mt-20 py-12 sm:py-16"
+      >
+        <h2 className="text-3xl font-bold tracking-tight">
+          {t.ux.preview.journeyTitle}
+        </h2>
+        <ol className="mt-7 grid gap-5 md:grid-cols-3">
+          {t.ux.preview.steps.map((step, index) => (
+            <li key={step.title} className="rounded-2xl border bg-card p-6">
+              <span className="grid size-9 place-items-center rounded-full bg-primary font-bold text-primary-foreground">
+                {index + 1}
+              </span>
+              <h3 className="mt-4 text-xl font-bold">{step.title}</h3>
+              <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                {step.body}
+              </p>
             </li>
           ))}
         </ol>
       </section>
 
       {beta ? (
-        <section className="border-y bg-card py-20">
+        <section className="border-y bg-card py-12 sm:py-16">
           <div className="container-page">
             <div className="mx-auto max-w-2xl text-center">
               <span className="mx-auto grid size-12 place-items-center rounded-full bg-primary/10 text-primary">
@@ -257,7 +129,7 @@ export default async function HomePage() {
           </div>
         </section>
       ) : (
-        <section id="plans" className="border-y bg-card py-20">
+        <section id="plans" className="border-y bg-card py-12 sm:py-16">
           <div className="container-page">
             <div className="mx-auto max-w-2xl text-center">
               <p className="eyebrow">{copy.plans.eyebrow}</p>
@@ -278,7 +150,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      <section className="container-page py-20">
+      <section className="container-page py-12 sm:py-16">
         <div className="mx-auto max-w-3xl">
           <p className="eyebrow text-center">{copy.faq.eyebrow}</p>
           <h2 className="mt-3 text-center text-3xl font-bold">
@@ -318,6 +190,11 @@ export default async function HomePage() {
               {copy.final.cta} <ArrowRight className="size-4" />
             </Link>
           </Button>
+          {beta && (
+            <p className="mx-auto mt-4 max-w-xl text-sm opacity-90">
+              {t.ux.betaAccess}
+            </p>
+          )}
         </div>
       </section>
     </>

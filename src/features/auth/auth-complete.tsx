@@ -11,6 +11,7 @@ import { isBetaMode } from "@/config/product";
 import { useI18n } from "@/i18n/client";
 import { clearAnonymousState } from "@/lib/persistence";
 import { guestAssessmentRepository } from "@/repositories/guest-assessment";
+import { hasPendingAssessment } from "./pending-assessment";
 import { resolveOnboardingDestination } from "@/lib/domain/onboarding";
 
 export function AuthComplete() {
@@ -47,12 +48,16 @@ export function AuthComplete() {
         await guestAssessmentRepository.clear(guest.id);
         clearAnonymousState();
       }
+      const pendingAssessment = !guest && (await hasPendingAssessment());
+      if (!active) return;
       router.replace(
-        guest?.intake.writingSample
-          ? "/diagnostic/results"
-          : guest && !isBetaMode()
-            ? `/checkout?plan=${snapshot.checkoutIntentPlanId ?? guest.recommendedPlanId}`
-            : resolveOnboardingDestination(snapshot),
+        pendingAssessment
+          ? "/diagnostic"
+          : guest?.intake.writingSample
+            ? "/diagnostic/results"
+            : guest && !isBetaMode()
+              ? `/checkout?plan=${snapshot.checkoutIntentPlanId ?? guest.recommendedPlanId}`
+              : resolveOnboardingDestination(snapshot),
       );
       router.refresh();
     })();

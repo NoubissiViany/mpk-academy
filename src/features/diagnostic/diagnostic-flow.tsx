@@ -1,16 +1,8 @@
 "use client";
 
-import { shuffleQuestions } from "@/lib/domain/question-order";
 import { WritingLength } from "@/features/writing/writing-length";
-import { useRef, useState } from "react";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Check,
-  Clock3,
-  FileQuestion,
-  ShieldCheck,
-} from "lucide-react";
+import { useState } from "react";
+import { ArrowLeft, ArrowRight, Clock3 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useApp } from "@/components/providers/app-provider";
@@ -19,12 +11,19 @@ import { submitDiagnosticAction } from "@/app/actions/learner";
 import { QuestionCard } from "@/features/assessment/question-card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { recommendedPaidPlanId } from "@/config/product";
+import { isBetaMode, recommendedPaidPlanId } from "@/config/product";
 import { defaultState } from "@/data/mock-state";
 import { useI18n } from "@/i18n/client";
-import { diagnosticMinutes } from "@/lib/domain/diagnostic";
 import {
-  diagnosticWritingMinutes,
+  diagnosticTotalMinutes,
+  diagnosticRemainingMinutes,
+} from "@/lib/domain/diagnostic";
+import {
+  createDiagnosticDraft,
+  isCompatibleDraft,
+  restoreDraftQuestions,
+} from "@/lib/domain/diagnostic-draft";
+import {
   diagnosticWritingPrompt,
   diagnosticWritingVersion,
   diagnosticWritingRange,
@@ -41,6 +40,8 @@ import type {
   FrenchExperience,
   PublicQuestion,
 } from "@/types/domain";
+import { AssessmentSteps } from "./assessment-steps";
+import { useDiagnosticDraft } from "./use-diagnostic-draft";
 
 const goalOptions: ExamType[] = ["TEF Canada", "TCF Canada", "Not sure yet"];
 const targetOptions: DiagnosticTarget[] = [
@@ -56,26 +57,6 @@ const experienceOptions: FrenchExperience[] = [
   "I'm already comfortable in French",
   "I'm not sure",
 ];
-
-function StepMarker({ step }: { step: 1 | 2 }) {
-  const { t } = useI18n();
-  return (
-    <div
-      className="mb-8 flex items-center gap-3"
-      aria-label={t.diagnostic.step(step)}
-    >
-      {[1, 2, 3].map((item) => (
-        <span
-          key={item}
-          className={`h-1.5 flex-1 rounded-full ${item <= step ? "bg-primary" : "bg-muted"}`}
-        />
-      ))}
-      <span className="shrink-0 text-xs font-bold uppercase tracking-[.14em] text-muted-foreground">
-        {t.diagnostic.step(step)}
-      </span>
-    </div>
-  );
-}
 
 function ChoiceGroup<T extends string>({
   legend,
@@ -120,17 +101,30 @@ function ChoiceGroup<T extends string>({
 }
 
 export function DiagnosticFlow({ questions }: { questions: PublicQuestion[] }) {
-  const { hydrated } = useApp();
+  const { hydrated, state, sessionUnavailable } = useApp();
   const { t } = useI18n();
-  if (!hydrated) {
+  if (sessionUnavailable)
+    return (
+      <div role="alert" className="mx-auto max-w-xl rounded-xl border p-6">
+        <p>{t.ux.draft.loadError}</p>
+        <Button className="mt-4" onClick={() => window.location.reload()}>
+          {t.ux.draft.retryLoad}
+        </Button>
+      </div>
+    );
+  if (!hydrated)
     return (
       <div
         className="mx-auto h-96 max-w-4xl animate-pulse rounded-2xl bg-muted"
         aria-label={t.diagnostic.intro.loading}
       />
     );
-  }
-  return <DiagnosticExperience questions={questions} />;
+  return (
+    <DiagnosticExperience
+      key={state.user?.id ?? "guest"}
+      questions={questions}
+    />
+  );
 }
 
 function DiagnosticExperience({
@@ -138,67 +132,111 @@ function DiagnosticExperience({
 }: {
   questions: PublicQuestion[];
 }) {
-  const [questions, setQuestions] = useState(sourceQuestions);
   const router = useRouter();
   const { state, setState } = useApp();
   const { t } = useI18n();
   const copy = t.diagnostic;
-  const formatError = (message: string, reference?: string) =>
-    reference ? t.common.errorReference(message, reference) : message;
-  const submissionId = useRef<string | null>(null);
-  const [stage, setStage] = useState<"intro" | "questions" | "writing">(
-    "intro",
-  );
-  const [index, setIndex] = useState(0);
+  const recovery = useDiagnosticDraft(sourceQuestions, state.user?.id);
+  const { draft } = recovery;
   const [finishing, setFinishing] = useState(false);
-  const [intake, setIntake] = useState<Partial<DiagnosticIntake>>(() => ({
-    goal: state.diagnosticIntake?.goal ?? state.user?.goal.exam,
-    target: state.diagnosticIntake?.target ?? state.user?.goal.target,
-    frenchExperience: state.diagnosticIntake?.frenchExperience,
-    writingSample: state.diagnosticResult
-      ? undefined
-      : state.diagnosticIntake?.writingSample,
-  }));
+  const initialIntake: Partial<DiagnosticIntake> = {
+    goal: state.user?.goal.exam,
+    target: state.user?.goal.target,
+    frenchExperience: state.user
+      ? state.diagnosticIntake?.frenchExperience
+      : undefined,
+  };
+  const intake = draft?.intake ?? initialIntake;
+  const stage = draft?.stage ?? "intro";
+  const index = draft?.index ?? 0;
+  const questions = draft
+    ? restoreDraftQuestions(draft, sourceQuestions)
+    : sourceQuestions;
   const question = questions[index];
-  const answers = state.diagnosticAnswers;
+  const answers = draft?.answers ?? {};
   const writingSample = {
     version: diagnosticWritingVersion,
     text: intake.writingSample?.text ?? "",
   };
   const writingValid = isDiagnosticWritingSample(writingSample);
-
   const intakeComplete = Boolean(
     intake.goal && intake.target && intake.frenchExperience,
   );
+  const formatError = (message: string, reference?: string) =>
+    reference ? t.common.errorReference(message, reference) : message;
+  const changeIntake = (next: Partial<DiagnosticIntake>, debounce = false) => {
+    recovery.change(
+      {
+        ...(draft ?? createDiagnosticDraft(sourceQuestions, initialIntake)),
+        intake: next,
+      },
+      debounce,
+    );
+  };
+  const move = (
+    nextStage: "intro" | "questions" | "writing",
+    nextIndex = index,
+  ) => {
+    if (draft)
+      recovery.change({ ...draft, stage: nextStage, index: nextIndex });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
   const start = () => {
     if (!intakeComplete) return;
-    if (
-      localStorage.getItem("mpk-assessment-restart") ||
-      Object.keys(state.diagnosticAnswers).some(
-        (id) => !questions.some((q) => q.id === id),
-      )
-    ) {
-      toast.info(copy.toasts.updated);
-      localStorage.removeItem("mpk-assessment-restart");
-    }
-    submissionId.current = crypto.randomUUID();
-    setQuestions(shuffleQuestions(sourceQuestions, true));
-    setState((current) => ({
-      ...current,
-      diagnosticIntake: intake as DiagnosticIntake,
-      diagnosticAnswers: {},
-      diagnosticResult: null,
-    }));
-    setIndex(0);
-    setStage("questions");
+    recovery.change({
+      ...(draft ?? createDiagnosticDraft(sourceQuestions, intake)),
+      stage: "questions",
+    });
     trackFunnelStep("diagnostic_started");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-  const answer = (value: string) =>
-    setState((current) => ({
-      ...current,
-      diagnosticAnswers: { ...current.diagnosticAnswers, [question.id]: value },
-    }));
+  const answer = (value: string) => {
+    if (draft)
+      recovery.change({
+        ...draft,
+        answers: { ...answers, [question.id]: value },
+      });
+  };
+  const restart = () => {
+    if (window.confirm(t.ux.draft.restartConfirm))
+      void recovery.restart(intake);
+  };
+  const statusBar = (
+    <div className="my-4 text-sm" aria-live="polite">
+      {recovery.status === "saving" && <p>{t.ux.draft.saving}</p>}
+      {recovery.status === "saved" && (
+        <p className="text-primary">{t.ux.draft.saved}</p>
+      )}
+      {recovery.status === "error" && !recovery.loadFailed && (
+        <div role="alert">
+          <p>{t.ux.draft.error}</p>
+          <Button
+            variant="secondary"
+            className="mt-2"
+            onClick={() => void recovery.flush()}
+          >
+            {t.ux.draft.retry}
+          </Button>
+        </div>
+      )}
+      {recovery.status === "conflict" && (
+        <div role="alert">
+          <p>{t.ux.draft.conflict}</p>
+          <Button
+            variant="secondary"
+            className="mt-2"
+            onClick={() => {
+              if (window.confirm(t.ux.draft.reloadConfirm))
+                void recovery.reload();
+            }}
+          >
+            {t.ux.draft.reload}
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+
   const activityFor = (result: DiagnosticResult) => ({
     id: crypto.randomUUID(),
     label: copy.activityLabel,
@@ -216,6 +254,7 @@ function DiagnosticExperience({
       throw new Error(formatError(scored.message, scored.reference));
     const activity = activityFor(scored.result);
     await guestAssessmentRepository.create({
+      id: draft!.id,
       intake: completedIntake,
       answers,
       result: scored.result,
@@ -226,15 +265,16 @@ function DiagnosticExperience({
   };
 
   const finish = async () => {
-    if (!writingValid) return;
+    if (!writingValid || !draft || !(await recovery.flush())) return;
     setFinishing(true);
     const completedIntake = {
-      ...(state.diagnosticIntake ?? (intake as DiagnosticIntake)),
+      ...(intake as DiagnosticIntake),
       writingSample,
     };
     if (state.user) {
       const saved = await submitDiagnosticAction({
-        submissionId: (submissionId.current ??= crypto.randomUUID()),
+        submissionId: draft.id,
+        draftRevision: recovery.current.current?.revision,
         intake: completedIntake,
         answers,
       }).catch(() => ({
@@ -244,6 +284,7 @@ function DiagnosticExperience({
         reference: "",
       }));
       if (saved.ok) {
+        await recovery.complete();
         const result = saved.data.result;
         setState((current) =>
           applyDiagnosticResult(
@@ -288,6 +329,7 @@ function DiagnosticExperience({
     }
     try {
       const { result, activity } = await saveAsGuest(completedIntake);
+      await recovery.complete();
       setState((current) =>
         applyDiagnosticResult(current, completedIntake, result, activity),
       );
@@ -300,68 +342,131 @@ function DiagnosticExperience({
     router.push("/diagnostic/results");
   };
 
-  if (stage === "intro") {
+  if (recovery.status === "loading")
     return (
-      <div className="mx-auto max-w-4xl">
-        <StepMarker step={1} />
-        <div className="grid gap-8 lg:grid-cols-[.9fr_1.1fr] lg:gap-12">
-          <section>
-            <p className="eyebrow">{copy.intro.eyebrow}</p>
-            <h1 className="mt-3 text-4xl font-black tracking-tight sm:text-5xl">
-              {copy.intro.title}
-            </h1>
-            <p className="mt-5 text-lg leading-8 text-muted-foreground">
-              {copy.intro.lead}
-            </p>
-            <p className="mt-4 leading-7 text-muted-foreground">
-              {copy.intro.body}
-            </p>
-            <ul className="mt-7 grid gap-3 text-sm font-semibold sm:grid-cols-2 lg:grid-cols-1">
-              {copy.intro
-                .facts(
-                  questions.length,
-                  diagnosticMinutes(questions.length) +
-                    diagnosticWritingMinutes,
-                )
-                .map((item) => (
-                  <li key={item} className="flex items-center gap-3">
-                    <span className="grid size-6 place-items-center rounded-full bg-primary/10 text-primary">
-                      <Check className="size-4" aria-hidden="true" />
-                    </span>
-                    {item}
-                  </li>
-                ))}
-            </ul>
-            <div className="mt-8 rounded-2xl bg-ink p-6 text-white">
-              <p className="text-sm font-bold uppercase tracking-[.14em] text-white/55">
-                {copy.intro.receiveTitle}
-              </p>
-              <ul className="mt-4 space-y-3 text-sm text-white/80">
-                {copy.intro.receive.map((item) => (
-                  <li key={item} className="flex gap-3">
-                    <span className="text-[#74dab8]" aria-hidden="true">
-                      •
-                    </span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </section>
-
-          <section className="rounded-2xl border bg-card p-5 sm:p-7">
-            <div className="mb-7 flex items-start gap-4 border-b pb-6">
-              <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
-                <ShieldCheck className="size-5" aria-hidden="true" />
-              </span>
-              <div>
-                <h2 className="text-xl font-bold">{copy.intro.goalTitle}</h2>
-                <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                  {copy.intro.goalBody}
+      <p role="status" className="py-8 text-center">
+        {t.ux.draft.loading}
+      </p>
+    );
+  if (recovery.loadFailed)
+    return (
+      <div
+        className="mx-auto max-w-xl rounded-2xl border bg-card p-6"
+        role="alert"
+      >
+        <p>{t.ux.draft.loadError}</p>
+        <Button className="mt-4" onClick={() => void recovery.reload()}>
+          {t.ux.draft.retryLoad}
+        </Button>
+      </div>
+    );
+  if (!draft && recovery.choices.length)
+    return (
+      <section className="mx-auto max-w-3xl">
+        <AssessmentSteps step={1} />
+        <h1 className="text-3xl font-bold">{t.ux.draft.title}</h1>
+        {recovery.choices.length > 1 && (
+          <p className="mt-3">{t.ux.draft.both}</p>
+        )}
+        <div className="mt-5 grid gap-4">
+          {recovery.choices.map((choice) => {
+            const compatible = isCompatibleDraft(choice.draft, sourceQuestions);
+            return (
+              <article
+                key={choice.source}
+                className="rounded-2xl border bg-card p-5"
+              >
+                <h2 className="text-lg font-bold">
+                  {t.ux.draft[choice.source]}
+                </h2>
+                <p className="mt-2 text-sm">
+                  {choice.draft.stage === "questions"
+                    ? t.ux.draft.question(
+                        choice.draft.index + 1,
+                        sourceQuestions.length,
+                      )
+                    : t.ux.stages[choice.draft.stage === "writing" ? 2 : 0]}
                 </p>
-              </div>
-            </div>
-            <div className="space-y-7">
+                {!compatible && (
+                  <>
+                    <p className="mt-3" role="alert">
+                      {t.ux.draft.incompatible}
+                    </p>
+                    {choice.draft.intake.writingSample?.text && (
+                      <>
+                        <label
+                          className="mt-3 block"
+                          htmlFor={`saved-${choice.source}`}
+                        >
+                          {t.ux.draft.savedWriting}
+                        </label>
+                        <textarea
+                          id={`saved-${choice.source}`}
+                          readOnly
+                          className="mt-2 w-full rounded border p-3"
+                          value={choice.draft.intake.writingSample.text}
+                        />
+                      </>
+                    )}
+                  </>
+                )}
+                <Button
+                  className="mt-4"
+                  disabled={!compatible}
+                  onClick={() => {
+                    if (
+                      choice.source === "browser" &&
+                      recovery.choices.some((c) => c.source === "account") &&
+                      !window.confirm(t.ux.draft.replaceConfirm)
+                    )
+                      return;
+                    void recovery.resume(choice);
+                  }}
+                >
+                  {t.ux.draft.resume}
+                </Button>
+              </article>
+            );
+          })}
+        </div>
+        {statusBar}
+        <Button variant="ghost" className="mt-4" onClick={restart}>
+          {t.ux.draft.restart}
+        </Button>
+      </section>
+    );
+
+  if (stage === "intro")
+    return (
+      <div className="mx-auto max-w-3xl">
+        <AssessmentSteps step={1} />
+        <header>
+          <p className="eyebrow">{copy.intro.eyebrow}</p>
+          <h1 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">
+            {copy.intro.title}
+          </h1>
+          <p className="mt-3 text-muted-foreground">{copy.intro.lead}</p>
+          <p className="mt-3 text-sm font-semibold">
+            {copy.intro
+              .facts(
+                sourceQuestions.length,
+                diagnosticTotalMinutes(sourceQuestions.length),
+              )
+              .slice(0, 2)
+              .join(" · ")}
+          </p>
+          {isBetaMode() && (
+            <p className="mt-2 text-sm text-muted-foreground">
+              {t.ux.betaAccess}
+            </p>
+          )}
+        </header>
+        <section
+          className="mt-6 rounded-2xl border bg-card p-5 sm:p-7"
+          aria-label={copy.intro.goalTitle}
+        >
+          <div className="space-y-6">
+            <div>
               <ChoiceGroup
                 legend={copy.intro.goalLegend}
                 name="goal"
@@ -370,10 +475,14 @@ function DiagnosticExperience({
                   label: copy.intake.goals[value],
                 }))}
                 value={intake.goal}
-                onChange={(goal) =>
-                  setIntake((current) => ({ ...current, goal }))
-                }
+                onChange={(goal) => changeIntake({ ...intake, goal })}
               />
+              <details className="mt-2 text-sm text-muted-foreground">
+                <summary className="cursor-pointer py-1">TEF / TCF</summary>
+                <p className="mt-1 leading-6">{t.ux.examHelp}</p>
+              </details>
+            </div>
+            <div>
               <ChoiceGroup
                 legend={copy.intro.targetLegend}
                 name="target"
@@ -382,41 +491,59 @@ function DiagnosticExperience({
                   label: copy.intake.targets[value],
                 }))}
                 value={intake.target}
-                onChange={(target) =>
-                  setIntake((current) => ({ ...current, target }))
-                }
+                onChange={(target) => changeIntake({ ...intake, target })}
               />
-              <ChoiceGroup
-                legend={copy.intro.experienceLegend}
-                name="experience"
-                options={experienceOptions.map((value) => ({
-                  value,
-                  label: copy.intake.experience[value],
-                }))}
-                value={intake.frenchExperience}
-                onChange={(frenchExperience) =>
-                  setIntake((current) => ({ ...current, frenchExperience }))
-                }
-              />
+              <details className="mt-2 text-sm text-muted-foreground">
+                <summary className="cursor-pointer py-1">NCLC</summary>
+                <p className="mt-1 leading-6">{t.ux.targetHelp}</p>
+              </details>
             </div>
-            <Button
-              size="lg"
-              className="mt-8 w-full"
-              disabled={!intakeComplete}
-              onClick={start}
-            >
-              {copy.intro.start} <ArrowRight className="size-4" />
-            </Button>
-          </section>
-        </div>
+            <ChoiceGroup
+              legend={copy.intro.experienceLegend}
+              name="experience"
+              options={experienceOptions.map((value) => ({
+                value,
+                label: copy.intake.experience[value],
+              }))}
+              value={intake.frenchExperience}
+              onChange={(frenchExperience) =>
+                changeIntake({ ...intake, frenchExperience })
+              }
+            />
+          </div>
+          {statusBar}
+          <Button
+            size="lg"
+            className="mt-3 w-full"
+            disabled={!intakeComplete || recovery.status === "conflict"}
+            onClick={start}
+          >
+            {copy.intro.start}
+            <ArrowRight className="size-4" />
+          </Button>
+          <p className="mt-3 text-xs leading-5 text-muted-foreground">
+            {state.user
+              ? t.ux.draft.retentionAccount
+              : t.ux.draft.retentionGuest}
+          </p>
+        </section>
+        <details className="mt-5 rounded-xl border p-4">
+          <summary className="cursor-pointer font-semibold">
+            {copy.intro.receiveTitle}
+          </summary>
+          <ul className="mt-3 list-disc space-y-2 pl-5 text-sm">
+            {copy.intro.receive.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </details>
       </div>
     );
-  }
 
   if (stage === "writing")
     return (
       <div className="mx-auto max-w-3xl">
-        <StepMarker step={2} />
+        <AssessmentSteps step={3} />
         <h1 className="text-3xl font-bold">{copy.writing.title}</h1>
         <p className="mt-3 leading-7">{copy.writing.instructions}</p>
         <p lang="fr" className="my-6 rounded-xl border bg-card p-5 leading-7">
@@ -433,20 +560,19 @@ function DiagnosticExperience({
           maxLength={4000}
           value={writingSample.text}
           aria-describedby="diagnostic-writing-help diagnostic-writing-count"
-          onChange={(event) => {
-            const next: Partial<DiagnosticIntake> = {
-              ...intake,
-              writingSample: {
-                version: diagnosticWritingVersion,
-                text: event.target.value,
+          onBlur={() => void recovery.flush()}
+          onChange={(event) =>
+            changeIntake(
+              {
+                ...intake,
+                writingSample: {
+                  version: diagnosticWritingVersion,
+                  text: event.target.value,
+                },
               },
-            };
-            setIntake(next);
-            setState((current) => ({
-              ...current,
-              diagnosticIntake: next as DiagnosticIntake,
-            }));
-          }}
+              true,
+            )
+          }
           className="mt-2 w-full rounded-xl border bg-background p-4 focus-visible:outline-primary"
         />
         <WritingLength
@@ -455,22 +581,37 @@ function DiagnosticExperience({
           range={diagnosticWritingRange}
           enforceMaximum
         />
+        {statusBar}
         <p
           id="diagnostic-writing-help"
           className="mt-3 text-sm text-muted-foreground"
         >
+          {state.user ? t.ux.draft.retentionAccount : t.ux.draft.retentionGuest}{" "}
           {copy.writing.privacy}
         </p>
+        <Button
+          variant="ghost"
+          className="mt-4"
+          disabled={finishing}
+          onClick={restart}
+        >
+          {t.ux.draft.restart}
+        </Button>
         <div className="mt-6 flex justify-between gap-4">
           <Button
             variant="ghost"
             disabled={finishing}
-            onClick={() => setStage("questions")}
+            onClick={() => move("questions")}
           >
             <ArrowLeft className="size-4" />
             {t.common.previous}
           </Button>
-          <Button disabled={!writingValid || finishing} onClick={finish}>
+          <Button
+            disabled={
+              !writingValid || finishing || recovery.status === "conflict"
+            }
+            onClick={finish}
+          >
             {finishing ? copy.question.finishing : copy.question.finish}
           </Button>
         </div>
@@ -480,31 +621,27 @@ function DiagnosticExperience({
   const total = questions.length;
   return (
     <div className="mx-auto max-w-3xl">
-      <StepMarker step={2} />
-      <div className="mb-7">
-        <div className="mb-3 flex items-center justify-between text-sm">
+      <AssessmentSteps step={2} />
+      <div className="mb-5">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-sm">
           <span className="font-semibold">
             {copy.question.progress(index + 1, total)}
           </span>
           <span className="flex items-center gap-1.5 text-muted-foreground">
             <Clock3 className="size-4" aria-hidden="true" />
             {copy.question.minutesLeft(
-              Math.max(1, Math.ceil((total - index) * (10 / total))),
+              diagnosticRemainingMinutes(total, index),
             )}
           </span>
         </div>
         <Progress
-          value={((index + 1) / total) * 100}
+          value={(index / total) * 100}
           label={copy.question.progressLabel(index + 1, total)}
         />
       </div>
-      <div className="mb-4 flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4 text-sm leading-6">
-        <FileQuestion
-          className="mt-0.5 size-5 shrink-0 text-primary"
-          aria-hidden="true"
-        />
-        <p>{copy.question.reassurance}</p>
-      </div>
+      <p className="mb-4 text-sm leading-6 text-muted-foreground">
+        {copy.question.reassurance}
+      </p>
       <div className="rounded-2xl border bg-card p-5 sm:p-8">
         <p className="mb-4 text-xs font-bold uppercase tracking-[.14em] text-primary">
           {copy.question.competency(
@@ -517,34 +654,33 @@ function DiagnosticExperience({
           onChange={answer}
         />
       </div>
-      <div className="mt-6 flex items-center justify-between">
+      {statusBar}
+      <div className="mt-5 flex items-center justify-between gap-3">
         <Button
           variant="ghost"
           onClick={() =>
-            index === 0 ? setStage("intro") : setIndex(index - 1)
+            index === 0 ? move("intro") : move("questions", index - 1)
           }
         >
-          <ArrowLeft className="size-4" /> {t.common.previous}
+          <ArrowLeft className="size-4" />
+          {t.common.previous}
         </Button>
-        {index < total - 1 ? (
-          <Button
-            disabled={!answers[question.id]}
-            onClick={() => setIndex(index + 1)}
-          >
-            {t.common.next} <ArrowRight className="size-4" />
-          </Button>
-        ) : (
-          <Button
-            disabled={!answers[question.id] || finishing}
-            onClick={() => setStage("writing")}
-          >
-            {copy.writing.continue}
-          </Button>
-        )}
+        <Button
+          disabled={!answers[question.id] || recovery.status === "conflict"}
+          onClick={() =>
+            index < total - 1 ? move("questions", index + 1) : move("writing")
+          }
+        >
+          {index < total - 1 ? t.common.next : copy.writing.continue}
+          <ArrowRight className="size-4" />
+        </Button>
       </div>
-      <p className="mt-8 text-center text-xs text-muted-foreground">
-        {copy.question.disclaimer}
-      </p>
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
+        <p>{copy.question.disclaimer}</p>
+        <Button variant="ghost" onClick={restart}>
+          {t.ux.draft.restart}
+        </Button>
+      </div>
     </div>
   );
 }

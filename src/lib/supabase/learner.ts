@@ -183,6 +183,7 @@ async function loadLearnerSnapshot(): Promise<AppState> {
     practiceResponse,
     mockResponse,
     reviewsResponse,
+    recentPracticeResponse,
   ] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", userId).single(),
     supabase.from("exam_goals").select("*").eq("user_id", userId).single(),
@@ -240,6 +241,14 @@ async function loadLearnerSnapshot(): Promise<AppState> {
       .select("question_id, exam, skill, step, due_at")
       .eq("user_id", userId)
       .order("due_at"),
+    supabase
+      .from("practice_sessions")
+      .select("id, exam, skill, mode, completed_at")
+      .eq("user_id", userId)
+      .eq("status", "completed")
+      .gte("completed_at", new Date(Date.now() - 8 * 86400000).toISOString())
+      .order("completed_at", { ascending: false })
+      .limit(500),
   ]);
 
   if (
@@ -270,6 +279,7 @@ async function loadLearnerSnapshot(): Promise<AppState> {
   if (relatedError) throw relatedError;
   // The review queue is an aid, not a requirement: without it (for example
   // before its migration reaches a project) learners still get their pages.
+  if (recentPracticeResponse.error) throw recentPracticeResponse.error;
   if (reviewsResponse.error)
     logServerError("Review queue unavailable", reviewsResponse.error);
 
@@ -458,6 +468,29 @@ async function loadLearnerSnapshot(): Promise<AppState> {
         dueAt: review.due_at,
       }),
     ),
+    studyActivity: {
+      practice: (recentPracticeResponse.data ?? []).flatMap((row) =>
+        row.completed_at
+          ? [
+              {
+                id: row.id,
+                exam: row.exam as ExamId,
+                skill: row.skill as ExamSkill,
+                mode:
+                  row.mode === "review"
+                    ? ("review" as const)
+                    : ("practice" as const),
+                completedAt: row.completed_at,
+              },
+            ]
+          : [],
+      ),
+      lessons: (lessonsResponse.data ?? []).flatMap((row) =>
+        row.status === "completed" && row.completed_at
+          ? [{ lessonId: row.lesson_id, completedAt: row.completed_at }]
+          : [],
+      ),
+    },
     activities: (historyResponse.data ?? []).map((event) => ({
       id: event.id,
       label: event.label,
