@@ -1,6 +1,6 @@
 "use client";
 import { useI18n } from "@/i18n/client";
-import { transcriptTurns } from "@/content/shared/audio";
+import { AnswerFeedbackPanel } from "./answer-feedback-panel";
 import { competencyLabel } from "@/i18n/format";
 import { cn } from "@/lib/utils";
 import type { AnswerFeedback, PublicQuestion } from "@/types/domain";
@@ -15,12 +15,14 @@ export function QuestionCard({
   onChange,
   feedback = null,
   exam = false,
+  disabled = false,
 }: {
   question: PublicQuestion;
   value?: string;
   onChange: (answer: string) => void;
   feedback?: AnswerFeedback | null;
   exam?: boolean;
+  disabled?: boolean;
 }) {
   const { t } = useI18n();
   const copy = t.assessment;
@@ -58,7 +60,11 @@ export function QuestionCard({
               </p>
             </section>
           ))}
-        <h2 lang="fr" className="text-xl font-bold leading-8 sm:text-2xl">
+        <h2
+          tabIndex={-1}
+          lang="fr"
+          className="text-xl font-bold leading-8 outline-none sm:text-2xl"
+        >
           {question.prompt}
         </h2>
       </div>
@@ -68,7 +74,7 @@ export function QuestionCard({
           <input
             value={value ?? ""}
             onChange={(event) => onChange(event.target.value)}
-            disabled={reveal}
+            disabled={reveal || disabled}
             lang="fr"
             className="min-h-12 w-full rounded-xl border bg-background px-4 outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
             placeholder={copy.answerPlaceholder}
@@ -98,7 +104,7 @@ export function QuestionCard({
                   aria-label={option.label}
                   checked={selected}
                   onChange={() => onChange(option.id)}
-                  disabled={reveal}
+                  disabled={reveal || disabled}
                   className="sr-only"
                 />
                 <span
@@ -125,47 +131,31 @@ export function QuestionCard({
         </fieldset>
       )}
       {reveal && feedback && (
-        <div
-          role="status"
-          className={cn(
-            "mt-6 rounded-xl border p-5",
-            correct
-              ? "border-primary/30 bg-primary/5"
-              : "border-danger/30 bg-danger/5",
-          )}
-        >
-          <p className="font-bold">{correct ? copy.correct : copy.notQuite}</p>
-          {question.type === "fill_blank" && !correct && (
-            <p className="mt-2 text-sm font-semibold" lang="fr">
-              {copy.correctAnswer(feedback.correctAnswer)}
-            </p>
-          )}
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            {feedback.explanation}
-          </p>
-          {feedback.transcript && (
-            <details className="mt-3 text-sm">
-              <summary className="cursor-pointer font-semibold text-primary">
-                {copy.showTranscript}
-              </summary>
-              <div lang="fr" className="mt-2 space-y-1 leading-6">
-                {transcriptTurns(feedback.transcript).map(
-                  (turn, index, turns) => (
-                    <p key={index}>
-                      {turns.length > 1 && `${turn.speaker} : `}
-                      {turn.text}
-                    </p>
-                  ),
-                )}
-              </div>
-            </details>
-          )}
+        <>
+          <AnswerFeedbackPanel
+            feedback={feedback}
+            answer={
+              question.type === "multiple_choice"
+                ? (question.options.find((option) => option.id === value)
+                    ?.label ??
+                  value ??
+                  "")
+                : (value ?? "")
+            }
+            correctAnswer={
+              question.type === "multiple_choice"
+                ? (question.options.find(
+                    (option) => option.id === feedback.correctAnswer,
+                  )?.label ?? feedback.correctAnswer)
+                : feedback.correctAnswer
+            }
+          />
           {question.competencies[0] && (
             <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               {copy.competency(competencyLabel(t, question.competencies[0]))}
             </p>
           )}
-        </div>
+        </>
       )}
     </div>
   );

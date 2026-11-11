@@ -7,6 +7,7 @@ import {
   getDiagnosticDraftAction,
   saveDiagnosticDraftAction,
   discardDiagnosticDraftAction,
+  replaceDiagnosticDraftAction,
 } from "./diagnostic-draft";
 const userId = "dd000000-0000-4000-8000-000000000001";
 beforeEach(() => {
@@ -14,6 +15,43 @@ beforeEach(() => {
   mocks.auth.mockResolvedValue({ userId, supabase: { rpc: mocks.rpc } });
 });
 describe("authenticated draft actions", () => {
+  it("replaces a draft only through the explicit replacement RPC with identity and revision checks", async () => {
+    const draft = {
+      ...createDiagnosticDraft(getPublicDiagnosticQuestions()),
+      revision: 5,
+    };
+    expect(
+      await replaceDiagnosticDraftAction(draft, "previous-account"),
+    ).toEqual({ ok: false, reason: "unavailable" });
+    expect(mocks.rpc).not.toHaveBeenCalled();
+    mocks.rpc.mockResolvedValue({
+      data: { ...draft, revision: 6 },
+      error: null,
+    });
+    expect(await replaceDiagnosticDraftAction(draft, userId)).toMatchObject({
+      ok: true,
+      draft: { id: draft.id, revision: 6 },
+    });
+    expect(mocks.rpc).toHaveBeenCalledWith("mpk_replace_diagnostic_draft", {
+      p_draft: draft,
+      p_revision: 5,
+    });
+  });
+  it("rejects malformed checked answers before RPC and reports immutable-answer violations", async () => {
+    const draft = createDiagnosticDraft(getPublicDiagnosticQuestions());
+    expect(
+      await saveDiagnosticDraftAction(
+        { ...draft, checkedAnswers: { [draft.questionOrder[0]]: "a" } },
+        userId,
+      ),
+    ).toEqual({ ok: false, reason: "invalid" });
+    expect(mocks.rpc).not.toHaveBeenCalled();
+    mocks.rpc.mockResolvedValue({ data: null, error: { code: "22023" } });
+    expect(await saveDiagnosticDraftAction(draft, userId)).toEqual({
+      ok: false,
+      reason: "invalid",
+    });
+  });
   it("validates content and identity before saving", async () => {
     const draft = createDiagnosticDraft(getPublicDiagnosticQuestions());
     expect(

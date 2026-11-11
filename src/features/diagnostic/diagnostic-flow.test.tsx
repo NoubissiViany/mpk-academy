@@ -1,4 +1,5 @@
 import {
+  act,
   cleanup,
   fireEvent,
   render,
@@ -16,6 +17,10 @@ import { guestAssessmentRepository } from "@/repositories/guest-assessment";
 import { demoState } from "@/test/fixtures";
 import { writingSampleFixture } from "@/test/diagnostic-writing";
 import { diagnosticDraftStorageKey } from "@/repositories/diagnostic-draft";
+import {
+  createDiagnosticDraft,
+  type DiagnosticDraft,
+} from "@/lib/domain/diagnostic-draft";
 import { DiagnosticFlow } from "./diagnostic-flow";
 
 const mocks = vi.hoisted(() => ({
@@ -28,6 +33,7 @@ const mocks = vi.hoisted(() => ({
   scoreGuest: vi.fn(),
   getDraft: vi.fn(),
   saveDraft: vi.fn(),
+  checkAnswers: vi.fn(),
 }));
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mocks.push, refresh: mocks.refresh }),
@@ -39,13 +45,34 @@ vi.mock("@/app/actions/learner", () => ({
 }));
 vi.mock("@/app/actions/content", () => ({
   scoreGuestDiagnosticAction: mocks.scoreGuest,
+  checkDiagnosticAnswersAction: mocks.checkAnswers,
 }));
 vi.mock("@/app/actions/diagnostic-draft", () => ({
   getDiagnosticDraftAction: mocks.getDraft,
   saveDiagnosticDraftAction: mocks.saveDraft,
   discardDiagnosticDraftAction: vi.fn(),
+  replaceDiagnosticDraftAction: vi.fn(),
 }));
 beforeEach(() => {
+  Object.defineProperty(window, "scrollTo", { value: vi.fn(), writable: true });
+  mocks.checkAnswers.mockImplementation(
+    async (answers: Record<string, string>) => ({
+      ok: true,
+      feedback: Object.fromEntries(
+        Object.entries(answers).map(([id, answer]) => {
+          const question = diagnosticQuestions.find((item) => item.id === id)!;
+          return [
+            id,
+            {
+              correct: question.correctAnswer === answer,
+              correctAnswer: question.correctAnswer,
+              explanation: question.explanation,
+            },
+          ];
+        }),
+      ),
+    }),
+  );
   mocks.getDraft.mockResolvedValue({ ok: true, draft: null });
   mocks.saveDraft.mockImplementation(async (draft) => ({
     ok: true,
@@ -58,6 +85,45 @@ vi.mock("sonner", () => ({
 }));
 
 const publicQuestions = diagnosticQuestions.map(toPublicQuestion);
+const shortQuestions = publicQuestions
+  .filter((question) => question.type === "multiple_choice")
+  .slice(0, 3);
+
+function smallDraft(): DiagnosticDraft {
+  return {
+    ...createDiagnosticDraft(shortQuestions, {
+      goal: "TEF Canada",
+      target: "NCLC 7",
+      frenchExperience: "I know some French",
+    }),
+    stage: "questions",
+    index: 0,
+    questionOrder: shortQuestions.map((question) => question.id),
+    revision: 1,
+  };
+}
+
+async function resumeAccount(draft: DiagnosticDraft) {
+  mocks.getDraft.mockResolvedValue({ ok: true, draft });
+  const view = render(
+    <AppProvider
+      initialState={{
+        ...structuredClone(demoState),
+        diagnosticAnswers: {},
+        diagnosticResult: null,
+      }}
+    >
+      <DiagnosticFlow questions={shortQuestions} />
+    </AppProvider>,
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Continue assessment" }),
+  );
+  await screen.findByRole("heading", {
+    name: shortQuestions[draft.index].prompt,
+  });
+  return view;
+}
 
 async function completeAssessment(user: ReturnType<typeof userEvent.setup>) {
   await user.click(
@@ -74,12 +140,13 @@ async function completeAssessment(user: ReturnType<typeof userEvent.setup>) {
       )!;
       await user.click(screen.getByLabelText(correct.label));
     }
+    await user.click(screen.getByRole("button", { name: "Next" }));
     await user.click(
-      screen.getByRole("button", {
+      await screen.findByRole("button", {
         name:
           index === diagnosticQuestions.length - 1
-            ? /Continue to writing/
-            : /Next/,
+            ? "Continue to writing"
+            : "Continue",
       }),
     );
   }
@@ -188,11 +255,7 @@ describe("DiagnosticFlow", () => {
       screen.getByText(`Question 1 of ${publicQuestions.length}`),
     ).toBeVisible();
     expect(screen.getByText(/^Competency ·/)).toBeVisible();
-    expect(
-      screen.getByText(
-        "Don't worry if you're unsure. Choose the answer that seems best.",
-      ),
-    ).toBeVisible();
+    expect(screen.getByText(/Don't worry if you're unsure/)).toBeVisible();
     const stored = JSON.parse(
       localStorage.getItem(diagnosticDraftStorageKey) ?? "null",
     );
@@ -226,6 +289,7 @@ describe("DiagnosticFlow", () => {
     )!;
     fireEvent.click(screen.getByText(firstQuestion.options![0].label));
     await user.click(screen.getByRole("button", { name: /Next/ }));
+    await user.click(await screen.findByRole("button", { name: "Continue" }));
     await user.click(screen.getByRole("button", { name: /Previous/ }));
     expect(
       screen.getByLabelText(firstQuestion.options![0].label),
@@ -320,7 +384,10 @@ describe("DiagnosticFlow", () => {
       ),
     );
     expect(mocks.submitDiagnostic).toHaveBeenCalledWith(
-      expect.objectContaining({ submissionId: expect.any(String) }),
+      expect.objectContaining({
+        submissionId: expect.any(String),
+        intake: expect.objectContaining({ feedbackMode: "guided" }),
+      }),
     );
   }, 20_000);
 
@@ -360,4 +427,104 @@ describe("DiagnosticFlow", () => {
       firstSubmissionId,
     );
   }, 20_000);
+
+  it("saves the first submitted answer before revealing feedback and keeps Next on the current question", async () => {
+    const user = userEvent.setup();
+    await resumeAccount(smallDraft());
+    const [first, second] = screen.getAllByRole("radio");
+    await user.click(first);
+    await waitFor(() => expect(mocks.saveDraft).toHaveBeenCalledTimes(1));
+    await screen.findByText("Progress saved");
+    let resolveSave!: (result: unknown) => void;
+    mocks.saveDraft.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveSave = resolve;
+        }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    await waitFor(() => expect(mocks.saveDraft).toHaveBeenCalledTimes(2));
+    const submitted = mocks.saveDraft.mock.calls[1][0] as DiagnosticDraft;
+    expect(submitted.checkedAnswers?.[shortQuestions[0].id]).toBe(
+      (first as HTMLInputElement).value,
+    );
+    expect(mocks.checkAnswers).not.toHaveBeenCalled();
+    expect(first).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Previous" })).toBeDisabled();
+    fireEvent.click(second);
+    expect(first).toBeChecked();
+    await act(async () =>
+      resolveSave({
+        ok: true,
+        draft: { ...submitted, revision: submitted.revision + 1 },
+      }),
+    );
+    expect(await screen.findByRole("status")).toBeVisible();
+    expect(screen.getByText("Question 1 of 3")).toBeVisible();
+    expect(mocks.checkAnswers).toHaveBeenCalledWith(submitted.checkedAnswers);
+    expect(localStorage.getItem(diagnosticDraftStorageKey)).toBeNull();
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+    expect(screen.getByText("Question 2 of 3")).toBeVisible();
+    expect(
+      screen.getByRole("heading", { name: shortQuestions[1].prompt }),
+    ).toHaveFocus();
+  });
+
+  it("does not reveal a correction when saving fails and retries the same locked first answer", async () => {
+    const user = userEvent.setup();
+    let failing = true;
+    mocks.saveDraft.mockImplementation(async (draft: DiagnosticDraft) =>
+      Object.keys(draft.checkedAnswers ?? {}).length && failing
+        ? { ok: false, reason: "unavailable", message: "Unavailable" }
+        : { ok: true, draft: { ...draft, revision: draft.revision + 1 } },
+    );
+    await resumeAccount(smallDraft());
+    const [first, second] = screen.getAllByRole("radio");
+    await user.click(first);
+    await user.click(screen.getByRole("button", { name: "Next" }));
+    const retry = await screen.findByRole("button", { name: "Retry checking" });
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    expect(mocks.checkAnswers).not.toHaveBeenCalled();
+    expect(first).toBeDisabled();
+    fireEvent.click(second);
+    expect(first).toBeChecked();
+    failing = false;
+    await user.click(retry);
+    expect(await screen.findByRole("status")).toBeVisible();
+    expect(mocks.checkAnswers).toHaveBeenCalledWith({
+      [shortQuestions[0].id]: (first as HTMLInputElement).value,
+    });
+    expect(screen.getByText("Question 1 of 3")).toBeVisible();
+  });
+
+  it("restores checked answers without inflating the tally or skipping them on a double-click", async () => {
+    const user = userEvent.setup();
+    const answers = Object.fromEntries(
+      shortQuestions
+        .slice(0, 2)
+        .map((question) => [
+          question.id,
+          diagnosticQuestions.find((source) => source.id === question.id)!
+            .correctAnswer,
+        ]),
+    );
+    const draft = {
+      ...smallDraft(),
+      answers,
+      checkedAnswers: answers,
+      intake: { ...smallDraft().intake, feedbackMode: "guided" as const },
+    };
+    await resumeAccount(draft);
+    expect(await screen.findByText("2 checked · 2 correct")).toBeVisible();
+    expect(mocks.checkAnswers).toHaveBeenCalledTimes(1);
+    expect(mocks.checkAnswers).toHaveBeenCalledWith(answers);
+    for (const option of screen.getAllByRole("radio"))
+      expect(option).toBeDisabled();
+    await user.dblClick(screen.getByRole("button", { name: "Continue" }));
+    expect(screen.getByText("Question 2 of 3")).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "Previous" }));
+    expect(screen.getByText("Question 1 of 3")).toBeVisible();
+    expect(screen.getByText("2 checked · 2 correct")).toBeVisible();
+    expect(mocks.checkAnswers).toHaveBeenCalledTimes(1);
+  });
 });

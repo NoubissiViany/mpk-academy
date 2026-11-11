@@ -15,7 +15,7 @@ Apply these before deploying the app:
 3. `20261102000300_dynamic_writing.sql`
 4. `20261102000400_mock_presentation.sql`
 
-All four were applied to **mpk-academy-staging** (`czbynijgpkflnntgoqgj`) on November 2, 2026. Production has not been migrated or deployed by this change. Verify the target project before any production push; the repository's normal Supabase link is staging.
+All four were applied to **mpk-academy-staging** (`czbynijgpkflnntgoqgj`) on November 2, 2026, and to production on November 4 during the [account-access recovery](UX_RECOVERY_RELEASE.md#production-recovery--november-4-2026), together with their content prerequisites and the assessment-recovery migrations. Production was then current through `20261104000200`; the subsequent [guided-feedback release](GUIDED_FEEDBACK_RELEASE.md) records the November 11 migration. Verify the target project before any future push; the repository's normal Supabase link remains staging.
 
 The database regressions under `supabase/tests/database/` cover minimum boundaries, whitespace, AI character limits, rewrites, incomplete saves, idempotency, permissions, legacy mock order, saved shuffles, free navigation, timeout completion, audio rules, and comprehension scoring. Run `npm run test:db` only against an empty disposable database with the documented PG variables. Its shim is never suitable for hosted Supabase. The assertion files themselves use rollback-only fixtures.
 

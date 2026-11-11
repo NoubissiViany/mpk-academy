@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { messagesFor } from "../src/i18n/messages";
 
-const key = "mpk-academy:diagnostic-draft:v1";
+const key = "mpk-academy:diagnostic-draft:v2";
 for (const locale of ["en", "fr"] as const) {
   test(`${locale}: recover, navigate, reopen and restart an assessment`, async ({
     page,
@@ -43,6 +43,16 @@ for (const locale of ["en", "fr"] as const) {
       (storageKey) => JSON.parse(localStorage.getItem(storageKey)!),
       key,
     );
+    // Simulate an older app's schema-1 draft without checked markers.
+    await page.evaluate((storageKey) => {
+      const oldDraft = JSON.parse(localStorage.getItem(storageKey)!);
+      delete oldDraft.checkedAnswers;
+      localStorage.setItem(
+        storageKey.replace(":v2", ":v1"),
+        JSON.stringify(oldDraft),
+      );
+      localStorage.removeItem(storageKey);
+    }, key);
     await page.reload();
     await page.getByRole("button", { name: t.ux.draft.resume }).click();
     await expect(page.getByRole("heading", { level: 2 })).toHaveText(question!);
@@ -50,9 +60,49 @@ for (const locale of ["en", "fr"] as const) {
       await page.locator('label:has(input[type="radio"])').allTextContents(),
     ).toEqual(options);
     await expect(page.locator('input[type="radio"]').first()).toBeChecked();
+    expect(
+      await page.evaluate(
+        (storageKey) => localStorage.getItem(storageKey.replace(":v2", ":v1")),
+        key,
+      ),
+    ).toBeNull();
     await page
       .getByRole("button", { name: t.common.next, exact: true })
       .click();
+    await expect(
+      page
+        .getByRole("status")
+        .locator("dt")
+        .filter({ hasText: t.assessment.correctAnswerLabel }),
+    ).toBeVisible();
+    await expect(page.getByRole("heading", { level: 2 })).toHaveText(question!);
+    await expect(page.locator('input[type="radio"]').first()).toBeDisabled();
+    const feedback = page.getByRole("status");
+    await expect(feedback).toBeFocused();
+    const bounds = await feedback.boundingBox();
+    expect(bounds!.y).toBeGreaterThanOrEqual(0);
+    expect(bounds!.y).toBeLessThan(page.viewportSize()!.height);
+    await page.reload();
+    await page.getByRole("button", { name: t.ux.draft.resume }).click();
+    await expect(
+      page
+        .getByRole("status")
+        .locator("dt")
+        .filter({ hasText: t.assessment.correctAnswerLabel }),
+    ).toBeVisible();
+    const checked = await page.evaluate(
+      (storageKey) =>
+        JSON.parse(localStorage.getItem(storageKey)!).checkedAnswers,
+      key,
+    );
+    expect(Object.keys(checked)).toHaveLength(1);
+    await page
+      .getByRole("button", { name: t.assessment.continue, exact: true })
+      .click();
+    await expect(page.getByRole("heading", { level: 2 })).toBeFocused();
+    await expect(
+      page.getByText(t.ux.draft.saved, { exact: true }),
+    ).toBeVisible();
     await page.goto("/");
     await page.goto("/diagnostic");
     await page.getByRole("button", { name: t.ux.draft.resume }).click();
@@ -190,4 +240,44 @@ test("writing survives refresh and a storage failure", async ({ page }) => {
   await expect(page.getByLabel("Your message in French")).toHaveValue(
     "Mon nouveau texte est toujours visible.",
   );
+});
+
+test("a failed correction preserves the first answer and retries without advancing", async ({
+  page,
+}) => {
+  await page.goto("/diagnostic");
+  await page.getByLabel("Prepare for TEF Canada").check();
+  await page.getByLabel("NCLC 7", { exact: true }).check();
+  await page.getByLabel("I know some French").check();
+  await page.getByRole("button", { name: "Start my assessment" }).click();
+  const first = page.getByRole("radio").first();
+  await first.press("Space");
+  const selected = await first.inputValue();
+  const heading = await page.getByRole("heading", { level: 2 }).textContent();
+  await page.route("**/diagnostic", async (route) => {
+    if (route.request().method() === "POST") await route.abort("failed");
+    else await route.continue();
+  });
+  await page.getByRole("button", { name: "Next", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Retry checking" }),
+  ).toBeVisible();
+  await expect(first).toBeDisabled();
+  await expect(first).toBeChecked();
+  await expect(page.getByText("Correct answer", { exact: true })).toHaveCount(
+    0,
+  );
+  const saved = await page.evaluate(
+    (storageKey) => JSON.parse(localStorage.getItem(storageKey)!),
+    key,
+  );
+  expect(Object.values(saved.checkedAnswers)).toEqual([selected]);
+  await page.unroute("**/diagnostic");
+  await page.getByRole("button", { name: "Retry checking" }).click();
+  await expect(page.getByRole("status").locator("dt").nth(1)).toHaveText(
+    "Correct answer",
+  );
+  await expect(page.getByRole("heading", { level: 2 })).toHaveText(heading!);
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
+  await expect(page.getByText(/^Question 2 of/)).toBeVisible();
 });

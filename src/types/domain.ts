@@ -101,6 +101,8 @@ export interface ExamConfiguration {
 }
 
 export interface DiagnosticIntake {
+  /** Corrections were available during this attempt; first answers are scored. */
+  feedbackMode?: "guided";
   goal: ExamType;
   target: DiagnosticTarget;
   frenchExperience: FrenchExperience;

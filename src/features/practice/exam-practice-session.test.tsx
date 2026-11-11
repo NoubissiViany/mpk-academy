@@ -77,14 +77,161 @@ describe("comprehension practice", () => {
       </AppProvider>,
     );
     await user.click(screen.getByLabelText(pool[0].options![0].label));
-    await user.click(screen.getByRole("button", { name: "Check answer" }));
+    await user.click(screen.getByRole("button", { name: "Next" }));
 
     expect(mocks.checkAnswer).toHaveBeenCalledWith(
       pool[0].id,
       pool[0].options![0].id,
     );
     expect(await screen.findByText("Server explanation")).toBeVisible();
+    expect(screen.getByText("Question 1 of 5")).toBeVisible();
+    expect(screen.getByText("1 checked · 1 correct")).toBeVisible();
+    expect(screen.getByRole("progressbar")).toHaveAttribute(
+      "aria-valuenow",
+      "20",
+    );
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+    expect(screen.getByRole("heading", { name: pool[1].prompt })).toHaveFocus();
+    await user.click(screen.getByRole("button", { name: "Previous" }));
+    expect(screen.getByText("Server explanation")).toBeVisible();
+    expect(screen.getByText("1 checked · 1 correct")).toBeVisible();
+    expect(mocks.checkAnswer).toHaveBeenCalledTimes(1);
   });
+
+  it("locks the first answer during a check and submits that answer only after Continue", async () => {
+    let resolveCheck!: (value: unknown) => void;
+    mocks.checkAnswer.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveCheck = resolve;
+        }),
+    );
+    mocks.submit.mockResolvedValue({ ok: false, message: "Try saving again" });
+    render(
+      <AppProvider>
+        <ExamPracticeSession
+          exam="TEF Canada"
+          skill="reading"
+          focus={null}
+          pool={[pool[0]]}
+        />
+      </AppProvider>,
+    );
+    const first = screen.getByRole("radio", {
+      name: pool[0].options![0].label,
+    });
+    const second = screen.getByRole("radio", {
+      name: pool[0].options![1].label,
+    });
+    fireEvent.click(first);
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    expect(first).toBeDisabled();
+    expect(second).toBeDisabled();
+    fireEvent.click(second);
+    expect(first).toBeChecked();
+    expect(mocks.submit).not.toHaveBeenCalled();
+    await act(async () =>
+      resolveCheck({
+        ok: true,
+        feedback: {
+          correct: false,
+          correctAnswer: pool[0].options![1].id,
+          explanation: "Review this answer",
+        },
+      }),
+    );
+    expect(mocks.submit).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "See results" }));
+    await waitFor(() => expect(mocks.submit).toHaveBeenCalledTimes(1));
+    expect(mocks.submit.mock.calls[0][0].answers[0].answer).toBe(
+      pool[0].options![0].id,
+    );
+  });
+
+  it("does not skip a previously checked question when Continue is double-clicked", async () => {
+    const user = userEvent.setup();
+    mocks.checkAnswer.mockResolvedValue({
+      ok: true,
+      feedback: {
+        correct: true,
+        correctAnswer: pool[0].options![0].id,
+        explanation: "Checked",
+      },
+    });
+    render(
+      <AppProvider>
+        <ExamPracticeSession
+          exam="TEF Canada"
+          skill="reading"
+          focus={null}
+          pool={pool.slice(0, 3)}
+        />
+      </AppProvider>,
+    );
+    for (let index = 0; index < 2; index++) {
+      await user.click(screen.getAllByRole("radio")[0]);
+      await user.click(screen.getByRole("button", { name: "Next" }));
+      if (index === 0)
+        await user.click(screen.getByRole("button", { name: "Continue" }));
+    }
+    await user.click(screen.getByRole("button", { name: "Previous" }));
+    await user.dblClick(screen.getByRole("button", { name: "Continue" }));
+    expect(screen.getByText("Question 2 of 3")).toBeVisible();
+    expect(screen.getByRole("heading", { name: pool[1].prompt })).toBeVisible();
+    expect(mocks.checkAnswer).toHaveBeenCalledTimes(2);
+  });
+
+  it.each(["rejected", "resolved"])(
+    "allows inline retry after a %s check failure",
+    async (kind) => {
+      const user = userEvent.setup();
+      if (kind === "rejected")
+        mocks.checkAnswer.mockRejectedValueOnce(new Error("offline"));
+      else
+        mocks.checkAnswer.mockResolvedValueOnce({
+          ok: false,
+          message: "Service unavailable",
+        });
+      mocks.checkAnswer.mockResolvedValueOnce({
+        ok: true,
+        feedback: {
+          correct: true,
+          correctAnswer: pool[0].options![0].id,
+          explanation: "Recovered",
+        },
+      });
+      render(
+        <AppProvider>
+          <ExamPracticeSession
+            exam="TEF Canada"
+            skill="reading"
+            focus={null}
+            pool={pool}
+          />
+        </AppProvider>,
+      );
+      const option = screen.getByRole("radio", {
+        name: pool[0].options![0].label,
+      });
+      await user.click(option);
+      await user.click(screen.getByRole("button", { name: "Next" }));
+      expect(await screen.findByRole("alert")).toBeVisible();
+      expect(option).toBeChecked();
+      expect(option).toBeDisabled();
+      fireEvent.click(
+        screen.getByRole("radio", { name: pool[0].options![1].label }),
+      );
+      expect(option).toBeChecked();
+      expect(screen.getByText("0 checked · 0 correct")).toBeVisible();
+      await user.click(screen.getByRole("button", { name: "Retry checking" }));
+      expect(await screen.findByText("Recovered")).toBeVisible();
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+      expect(mocks.checkAnswer).toHaveBeenCalledTimes(2);
+      expect(mocks.checkAnswer.mock.calls[1]).toEqual(
+        mocks.checkAnswer.mock.calls[0],
+      );
+    },
+  );
 });
 
 describe("spaced review", () => {

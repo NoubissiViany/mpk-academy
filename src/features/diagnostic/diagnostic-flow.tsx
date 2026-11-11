@@ -1,7 +1,7 @@
 "use client";
 
 import { WritingLength } from "@/features/writing/writing-length";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Clock3 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -9,8 +9,8 @@ import { useApp } from "@/components/providers/app-provider";
 import { scoreGuestDiagnosticAction } from "@/app/actions/content";
 import { submitDiagnosticAction } from "@/app/actions/learner";
 import { QuestionCard } from "@/features/assessment/question-card";
+import { CheckedProgress } from "@/features/assessment/checked-progress";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { isBetaMode, recommendedPaidPlanId } from "@/config/product";
 import { defaultState } from "@/data/mock-state";
 import { useI18n } from "@/i18n/client";
@@ -42,6 +42,7 @@ import type {
 } from "@/types/domain";
 import { AssessmentSteps } from "./assessment-steps";
 import { useDiagnosticDraft } from "./use-diagnostic-draft";
+import { useDiagnosticFeedback } from "./use-diagnostic-feedback";
 
 const goalOptions: ExamType[] = ["TEF Canada", "TCF Canada", "Not sure yet"];
 const targetOptions: DiagnosticTarget[] = [
@@ -137,8 +138,15 @@ function DiagnosticExperience({
   const { t } = useI18n();
   const copy = t.diagnostic;
   const recovery = useDiagnosticDraft(sourceQuestions, state.user?.id);
+  const checking = useDiagnosticFeedback(recovery);
   const { draft } = recovery;
+  const questionCard = useRef<HTMLDivElement>(null);
   const [finishing, setFinishing] = useState(false);
+  const finishingGuard = useRef(false);
+  const releaseFinish = () => {
+    finishingGuard.current = false;
+    setFinishing(false);
+  };
   const initialIntake: Partial<DiagnosticIntake> = {
     goal: state.user?.goal.exam,
     target: state.user?.goal.target,
@@ -154,6 +162,15 @@ function DiagnosticExperience({
     : sourceQuestions;
   const question = questions[index];
   const answers = draft?.answers ?? {};
+  const feedback = question ? checking.feedback[question.id] : undefined;
+  const checkedCount = Object.keys(checking.feedback).length;
+  const correctCount = Object.values(checking.feedback).filter(
+    (item) => item.correct,
+  ).length;
+  useEffect(() => {
+    if (stage === "questions")
+      questionCard.current?.querySelector("h2")?.focus();
+  }, [stage, index]);
   const writingSample = {
     version: diagnosticWritingVersion,
     text: intake.writingSample?.text ?? "",
@@ -177,6 +194,7 @@ function DiagnosticExperience({
     nextStage: "intro" | "questions" | "writing",
     nextIndex = index,
   ) => {
+    if (checking.checking) return;
     if (draft)
       recovery.change({ ...draft, stage: nextStage, index: nextIndex });
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -191,14 +209,14 @@ function DiagnosticExperience({
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const answer = (value: string) => {
-    if (draft)
+    if (draft && !checking.checking && !draft.checkedAnswers?.[question.id])
       recovery.change({
         ...draft,
         answers: { ...answers, [question.id]: value },
       });
   };
   const restart = () => {
-    if (window.confirm(t.ux.draft.restartConfirm))
+    if (!checking.checking && window.confirm(t.ux.draft.restartConfirm))
       void recovery.restart(intake);
   };
   const statusBar = (
@@ -265,8 +283,13 @@ function DiagnosticExperience({
   };
 
   const finish = async () => {
-    if (!writingValid || !draft || !(await recovery.flush())) return;
+    if (!writingValid || !draft || finishingGuard.current) return;
+    finishingGuard.current = true;
     setFinishing(true);
+    if (!(await recovery.flush())) {
+      releaseFinish();
+      return;
+    }
     const completedIntake = {
       ...(intake as DiagnosticIntake),
       writingSample,
@@ -300,7 +323,7 @@ function DiagnosticExperience({
         return;
       }
       if (saved.reason !== "unauthenticated") {
-        setFinishing(false);
+        releaseFinish();
         toast.error(formatError(saved.message, saved.reference));
         return;
       }
@@ -315,11 +338,11 @@ function DiagnosticExperience({
           ),
         );
       } catch {
-        setFinishing(false);
+        releaseFinish();
         toast.error(copy.toasts.sessionExpiredUnsaved);
         return;
       }
-      setFinishing(false);
+      releaseFinish();
       toast.error(
         formatError(copy.toasts.sessionExpiredSaved, saved.reference),
       );
@@ -334,7 +357,7 @@ function DiagnosticExperience({
         applyDiagnosticResult(current, completedIntake, result, activity),
       );
     } catch {
-      setFinishing(false);
+      releaseFinish();
       toast.error(copy.toasts.saveFailed);
       return;
     }
@@ -624,60 +647,97 @@ function DiagnosticExperience({
       <AssessmentSteps step={2} />
       <div className="mb-5">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-sm">
-          <span className="font-semibold">
-            {copy.question.progress(index + 1, total)}
-          </span>
           <span className="flex items-center gap-1.5 text-muted-foreground">
             <Clock3 className="size-4" aria-hidden="true" />
             {copy.question.minutesLeft(
-              diagnosticRemainingMinutes(total, index),
+              diagnosticRemainingMinutes(total, checkedCount),
             )}
           </span>
         </div>
-        <Progress
-          value={(index / total) * 100}
-          label={copy.question.progressLabel(index + 1, total)}
+        <CheckedProgress
+          position={index + 1}
+          total={total}
+          checked={checkedCount}
+          correct={correctCount}
         />
       </div>
       <p className="mb-4 text-sm leading-6 text-muted-foreground">
-        {copy.question.reassurance}
+        {t.assessment.instruction} {copy.question.reassurance}
       </p>
-      <div className="rounded-2xl border bg-card p-5 sm:p-8">
+      <div ref={questionCard} className="rounded-2xl border bg-card p-5 sm:p-8">
         <p className="mb-4 text-xs font-bold uppercase tracking-[.14em] text-primary">
           {copy.question.competency(
             copy.skills[question.diagnosticSkill].label,
           )}
         </p>
         <QuestionCard
+          key={question.id}
           question={question}
           value={answers[question.id]}
           onChange={answer}
+          feedback={feedback}
+          disabled={
+            checking.checking || Boolean(draft?.checkedAnswers?.[question.id])
+          }
         />
       </div>
       {statusBar}
+      {checking.error && (
+        <div
+          role="alert"
+          className="mt-4 rounded-xl border border-danger/30 p-4 text-sm"
+        >
+          <p>{checking.error}</p>
+          <Button
+            className="mt-3"
+            variant="secondary"
+            disabled={checking.checking || recovery.status === "conflict"}
+            onClick={() => void checking.retry()}
+          >
+            {t.assessment.retry}
+          </Button>
+        </div>
+      )}
       <div className="mt-5 flex items-center justify-between gap-3">
         <Button
           variant="ghost"
-          onClick={() =>
-            index === 0 ? move("intro") : move("questions", index - 1)
-          }
+          disabled={checking.checking}
+          onClick={(event) => {
+            if (event.detail > 1) return;
+            if (index === 0) move("intro");
+            else move("questions", index - 1);
+          }}
         >
           <ArrowLeft className="size-4" />
           {t.common.previous}
         </Button>
         <Button
-          disabled={!answers[question.id] || recovery.status === "conflict"}
-          onClick={() =>
-            index < total - 1 ? move("questions", index + 1) : move("writing")
+          disabled={
+            !answers[question.id]?.trim() ||
+            checking.checking ||
+            Boolean(checking.error) ||
+            recovery.status === "conflict"
           }
+          onClick={(event) => {
+            if (event.detail > 1) return;
+            if (!feedback) void checking.check(question.id);
+            else if (index < total - 1) move("questions", index + 1);
+            else move("writing");
+          }}
         >
-          {index < total - 1 ? t.common.next : copy.writing.continue}
+          {checking.checking
+            ? t.assessment.checking
+            : feedback
+              ? index < total - 1
+                ? t.assessment.continue
+                : copy.writing.continue
+              : t.assessment.next}
           <ArrowRight className="size-4" />
         </Button>
       </div>
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
         <p>{copy.question.disclaimer}</p>
-        <Button variant="ghost" onClick={restart}>
+        <Button variant="ghost" disabled={checking.checking} onClick={restart}>
           {t.ux.draft.restart}
         </Button>
       </div>

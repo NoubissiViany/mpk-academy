@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   discardDiagnosticDraftAction,
   getDiagnosticDraftAction,
+  replaceDiagnosticDraftAction,
   saveDiagnosticDraftAction,
 } from "@/app/actions/diagnostic-draft";
 import {
@@ -39,6 +40,7 @@ export function useDiagnosticDraft(
   const blocked = useRef(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inFlight = useRef<Promise<boolean> | null>(null);
+  const selecting = useRef(false);
   const mounted = useRef(true);
   const publish = useCallback((next: DiagnosticDraft | null) => {
     current.current = next;
@@ -162,6 +164,24 @@ export function useDiagnosticDraft(
   }, [reload, flush]);
 
   const change = (next: DiagnosticDraft, debounce = false) => {
+    const existing = current.current;
+    if (existing?.id === next.id) {
+      const checkedAnswers = {
+        ...next.checkedAnswers,
+        ...existing.checkedAnswers,
+      };
+      if (Object.keys(checkedAnswers).length) {
+        next = {
+          ...next,
+          checkedAnswers,
+          answers: { ...next.answers, ...checkedAnswers },
+          intake: { ...next.intake, feedbackMode: "guided" },
+          contentVersion: existing.contentVersion,
+          questionOrder: existing.questionOrder,
+          optionOrder: existing.optionOrder,
+        };
+      }
+    }
     publish(next);
     sequence.current++;
     if (blocked.current) return;
@@ -174,79 +194,128 @@ export function useDiagnosticDraft(
     else void flush();
   };
 
-  const resume = async (choice: DraftChoice) => {
-    const account = choices.find((item) => item.source === "account");
-    let next = choice.draft;
-    if (choice.source === "browser" && userId) {
-      // Choosing the browser explicitly replaces the account draft atomically.
-      next = {
-        ...next,
-        id: account?.draft.id ?? next.id,
-        revision: account?.draft.revision ?? 0,
-      };
-      saved.current = account?.draft ?? null;
-      change(next);
-      if (!(await flush())) return false;
-      try {
-        await withGuestDraftLock(() =>
-          guestDiagnosticDraft.discard(choice.draft.id, choice.draft.revision),
-        );
-      } catch {
-        /* Keep a newer browser draft. */
-      }
-    } else {
-      saved.current = next;
-      publish(next);
-      setStatus("saved");
-    }
-    setChoices([]);
-    return true;
+  const checkAnswer = async (questionId: string): Promise<boolean> => {
+    const existing = current.current;
+    if (!existing || blocked.current) return false;
+    const answer = existing.answers[questionId];
+    if (!existing.questionOrder.includes(questionId) || !answer?.trim())
+      return false;
+    if (existing.checkedAnswers?.[questionId] === undefined)
+      change({
+        ...existing,
+        checkedAnswers: {
+          ...existing.checkedAnswers,
+          [questionId]: answer,
+        },
+        intake: { ...existing.intake, feedbackMode: "guided" },
+      });
+    // Keep the first answer locked even when saving fails. Retrying waits for
+    // the same payload to become durable before the caller reveals feedback.
+    return flush();
   };
 
-  const restart = async (intake: Partial<DiagnosticIntake>) => {
-    if (timer.current) clearTimeout(timer.current);
-    await inFlight.current;
-    const targets = current.current
-      ? [
-          {
-            source: userId ? ("account" as const) : ("browser" as const),
-            draft: saved.current ?? current.current,
-          },
-        ]
-      : choices;
+  const resume = async (choice: DraftChoice) => {
+    if (selecting.current) return false;
+    selecting.current = true;
     try {
-      for (const choice of targets) {
-        if (choice.source === "account") {
-          const result = await discardDiagnosticDraftAction(
-            choice.draft.id,
-            choice.draft.revision,
-            userId!,
-          );
-          if (!result.ok) {
-            blocked.current = result.reason === "conflict";
+      if (timer.current) clearTimeout(timer.current);
+      await inFlight.current;
+      const account = choices.find((item) => item.source === "account");
+      let next = choice.draft;
+      if (choice.source === "browser" && userId) {
+        // Choosing the browser explicitly replaces the account draft atomically.
+        next = {
+          ...next,
+          revision: account?.draft.revision ?? 0,
+        };
+        setStatus("saving");
+        try {
+          const result = await replaceDiagnosticDraftAction(next, userId);
+          if (!result.ok || !result.draft) {
+            blocked.current = !result.ok && result.reason === "conflict";
             setStatus(blocked.current ? "conflict" : "error");
-            return;
+            return false;
           }
-        } else
+          next = result.draft;
+        } catch {
+          setStatus("error");
+          return false;
+        }
+        try {
           await withGuestDraftLock(() =>
             guestDiagnosticDraft.discard(
               choice.draft.id,
               choice.draft.revision,
             ),
           );
+        } catch {
+          /* Keep a newer browser draft. */
+        }
       }
-      saved.current = null;
+      saved.current = next;
+      publish(next);
       sequence.current = savedSequence.current = 0;
       blocked.current = false;
+      setStatus("saved");
       setChoices([]);
-      change(
-        createDiagnosticDraft(questions, {
-          ...intake,
-          writingSample: undefined,
-        }),
-      );
-    } catch (error) {
-      setStatus(error instanceof DraftConflict ? "conflict" : "error");
+      return true;
+    } finally {
+      selecting.current = false;
+    }
+  };
+
+  const restart = async (intake: Partial<DiagnosticIntake>) => {
+    if (selecting.current) return;
+    selecting.current = true;
+    try {
+      if (timer.current) clearTimeout(timer.current);
+      await inFlight.current;
+      const targets = current.current
+        ? [
+            {
+              source: userId ? ("account" as const) : ("browser" as const),
+              draft: saved.current ?? current.current,
+            },
+          ]
+        : choices;
+      try {
+        for (const choice of targets) {
+          if (choice.source === "account") {
+            const result = await discardDiagnosticDraftAction(
+              choice.draft.id,
+              choice.draft.revision,
+              userId!,
+            );
+            if (!result.ok) {
+              blocked.current = result.reason === "conflict";
+              setStatus(blocked.current ? "conflict" : "error");
+              return;
+            }
+          } else
+            await withGuestDraftLock(() =>
+              guestDiagnosticDraft.discard(
+                choice.draft.id,
+                choice.draft.revision,
+              ),
+            );
+        }
+        saved.current = null;
+        sequence.current = savedSequence.current = 0;
+        blocked.current = false;
+        setChoices([]);
+        publish(null);
+        change(
+          createDiagnosticDraft(questions, {
+            ...intake,
+            writingSample: undefined,
+            feedbackMode: undefined,
+          }),
+        );
+      } catch (error) {
+        setStatus(error instanceof DraftConflict ? "conflict" : "error");
+      }
+    } finally {
+      selecting.current = false;
     }
   };
 
@@ -274,6 +343,7 @@ export function useDiagnosticDraft(
     status,
     loadFailed,
     change,
+    checkAnswer,
     flush,
     reload,
     resume,

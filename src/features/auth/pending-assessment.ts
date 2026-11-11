@@ -1,11 +1,15 @@
 import { productConfig } from "@/config/product";
 import { getDiagnosticDraftAction } from "@/app/actions/diagnostic-draft";
-import { guestDiagnosticDraft } from "@/repositories/diagnostic-draft";
+import {
+  guestDiagnosticDraft,
+  withGuestDraftLock,
+} from "@/repositories/diagnostic-draft";
 
 /** Route a signed-in learner to an explicit choice; never merge drafts here. */
 export async function hasPendingAssessment() {
   try {
-    if (guestDiagnosticDraft.load()) return true;
+    if (await withGuestDraftLock(() => guestDiagnosticDraft.load()))
+      return true;
     const legacy = JSON.parse(
       localStorage.getItem(productConfig.anonymousStateStorageKey) ?? "null",
     );

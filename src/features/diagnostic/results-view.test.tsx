@@ -235,6 +235,60 @@ describe("ResultsView", () => {
       screen.getByRole("link", { name: "Start my assessment" }),
     ).toHaveAttribute("href", "/diagnostic");
   });
+
+  it.each(["en", "fr"] as const)(
+    "labels guided results and first-answer scoring in %s",
+    async (locale) => {
+      render(
+        <AppProvider
+          initialState={{
+            ...demoState,
+            user: { ...demoState.user!, locale },
+            diagnosticIntake: {
+              ...demoState.diagnosticIntake!,
+              feedbackMode: "guided",
+            },
+          }}
+        >
+          <ResultsView />
+        </AppProvider>,
+      );
+      expect(
+        await screen.findByText(
+          locale === "fr" ? "Évaluation guidée" : "Guided assessment",
+        ),
+      ).toBeVisible();
+      expect(
+        screen.getByText(
+          locale === "fr"
+            ? /Le score repose sur vos premières réponses soumises/
+            : /Your score uses your first submitted answers/,
+        ),
+      ).toBeVisible();
+      expect(
+        screen.getByText(
+          locale === "fr"
+            ? /non une évolution de votre niveau de français/
+            : /not a change in your French proficiency/,
+        ),
+      ).toBeVisible();
+    },
+  );
+
+  it("does not relabel a historical assessment as guided", async () => {
+    render(
+      <AppProvider initialState={demoState}>
+        <ResultsView />
+      </AppProvider>,
+    );
+    expect(
+      await screen.findByRole("heading", { name: "Your French Assessment" }),
+    ).toBeVisible();
+    expect(screen.queryByText("Guided assessment")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/Your score uses your first submitted answers/),
+    ).not.toBeInTheDocument();
+  });
 });
 
 describe("ResultsView during the closed beta", () => {

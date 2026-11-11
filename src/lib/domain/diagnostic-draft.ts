@@ -5,38 +5,64 @@ import type { DiagnosticIntake, PublicQuestion } from "@/types/domain";
 
 export const diagnosticDraftTtl = 7 * 24 * 60 * 60 * 1000;
 const ids = z.array(z.string().min(1).max(120)).max(100);
-export const diagnosticDraftSchema = z.object({
-  schemaVersion: z.literal(1),
-  id: z.uuid(),
-  contentVersion: z.string().min(1).max(100),
-  revision: z.number().int().min(0),
-  stage: z.enum(["intro", "questions", "writing"]),
-  index: z.number().int().min(0).max(99),
-  questionOrder: ids.min(1),
-  optionOrder: z.record(z.string().max(120), ids),
-  answers: z.record(z.string().max(120), z.string().max(4000)),
-  intake: z.object({
-    goal: z.enum(["TEF Canada", "TCF Canada", "Not sure yet"]).optional(),
-    target: z.enum(["NCLC 5", "NCLC 7", "NCLC 9+", "I'm not sure"]).optional(),
-    frenchExperience: z
-      .enum([
-        "I'm just starting",
-        "I know some French",
-        "I can communicate in French",
-        "I'm already comfortable in French",
-        "I'm not sure",
-      ])
+export const diagnosticDraftSchema = z
+  .object({
+    schemaVersion: z.literal(1),
+    id: z.uuid(),
+    contentVersion: z.string().min(1).max(100),
+    revision: z.number().int().min(0),
+    stage: z.enum(["intro", "questions", "writing"]),
+    index: z.number().int().min(0).max(99),
+    questionOrder: ids.min(1),
+    optionOrder: z.record(z.string().max(120), ids),
+    answers: z.record(z.string().max(120), z.string().max(4000)),
+    checkedAnswers: z
+      .record(z.string().max(120), z.string().min(1).max(4000))
       .optional(),
-    writingSample: z
-      .object({
-        version: z.literal(diagnosticWritingVersion),
-        text: z.string().max(4000),
-      })
-      .optional(),
-  }),
-  updatedAt: z.iso.datetime({ offset: true }),
-  expiresAt: z.iso.datetime({ offset: true }),
-});
+    intake: z.object({
+      feedbackMode: z.literal("guided").optional(),
+      goal: z.enum(["TEF Canada", "TCF Canada", "Not sure yet"]).optional(),
+      target: z
+        .enum(["NCLC 5", "NCLC 7", "NCLC 9+", "I'm not sure"])
+        .optional(),
+      frenchExperience: z
+        .enum([
+          "I'm just starting",
+          "I know some French",
+          "I can communicate in French",
+          "I'm already comfortable in French",
+          "I'm not sure",
+        ])
+        .optional(),
+      writingSample: z
+        .object({
+          version: z.literal(diagnosticWritingVersion),
+          text: z.string().max(4000),
+        })
+        .optional(),
+    }),
+    updatedAt: z.iso.datetime({ offset: true }),
+    expiresAt: z.iso.datetime({ offset: true }),
+  })
+  .superRefine((draft, context) => {
+    if (
+      Object.keys(draft.checkedAnswers ?? {}).length > 0 &&
+      draft.intake.feedbackMode !== "guided"
+    )
+      context.addIssue({
+        code: "custom",
+        path: ["intake", "feedbackMode"],
+        message: "Checked assessments must be labelled guided",
+      });
+    for (const [id, answer] of Object.entries(draft.checkedAnswers ?? {})) {
+      if (!draft.questionOrder.includes(id) || draft.answers[id] !== answer)
+        context.addIssue({
+          code: "custom",
+          path: ["checkedAnswers", id],
+          message: "Checked answers must match an answer in this assessment",
+        });
+    }
+  });
 
 export type DiagnosticDraft = z.infer<typeof diagnosticDraftSchema>;
 
@@ -67,6 +93,7 @@ export function createDiagnosticDraft(
     contentVersion: diagnosticContentVersion(source),
     intake,
     answers: validAnswers,
+    checkedAnswers: {},
     stage: Object.keys(validAnswers).length
       ? firstUnanswered < 0
         ? "writing"
@@ -80,6 +107,33 @@ export function createDiagnosticDraft(
     updatedAt: now.toISOString(),
     expiresAt: new Date(now.getTime() + diagnosticDraftTtl).toISOString(),
   };
+}
+
+/** Checked answers and their presented content are immutable for this attempt. */
+export function preservesCheckedAnswers(
+  existing: DiagnosticDraft,
+  next: DiagnosticDraft,
+) {
+  const checked = Object.entries(existing.checkedAnswers ?? {});
+  return (
+    checked.every(
+      ([id, answer]) =>
+        next.checkedAnswers?.[id] === answer && next.answers[id] === answer,
+    ) &&
+    (checked.length === 0 ||
+      (existing.contentVersion === next.contentVersion &&
+        JSON.stringify(existing.questionOrder) ===
+          JSON.stringify(next.questionOrder) &&
+        Object.keys(existing.optionOrder).length ===
+          Object.keys(next.optionOrder).length &&
+        existing.questionOrder.every(
+          (id) =>
+            JSON.stringify(existing.optionOrder[id]) ===
+            JSON.stringify(next.optionOrder[id]),
+        ))) &&
+    (existing.intake.feedbackMode !== "guided" ||
+      next.intake.feedbackMode === "guided")
+  );
 }
 
 export function isCompatibleDraft(

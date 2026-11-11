@@ -1,4 +1,10 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AppProvider } from "@/components/providers/app-provider";
@@ -123,23 +129,30 @@ describe("lesson checkpoints", () => {
     expect(screen.getByText("Question 1 of 2")).toBeVisible();
     expect(screen.getByText(/Answer every checkpoint question/)).toBeVisible();
 
-    const groups = screen.getAllByRole("group", { name: "Choose an answer" });
-    const checks = screen.getAllByRole("button", {
-      name: "Check understanding",
-    });
-    await user.click(groups[0].querySelector("input")!);
-    await user.click(checks[0]);
+    await user.click(
+      screen
+        .getByRole("group", { name: "Choose an answer" })
+        .querySelector("input")!,
+    );
+    await user.click(screen.getByRole("button", { name: "Next" }));
     expect(
       await screen.findByText(
         `Explanation ${shuffled.checkpoints[0].index + 1}`,
       ),
     ).toBeVisible();
     expect(complete).toBeDisabled();
+    expect(screen.getByText("Question 1 of 2")).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+    expect(
+      screen.getByRole("heading", { name: shuffled.checkpoints[1].prompt }),
+    ).toHaveFocus();
 
-    await user.click(groups[1].querySelector("input")!);
     await user.click(
-      screen.getByRole("button", { name: "Check understanding" }),
+      screen
+        .getByRole("group", { name: "Choose an answer" })
+        .querySelector("input")!,
     );
+    await user.click(screen.getByRole("button", { name: "Next" }));
     expect(
       await screen.findByText(
         `Explanation ${shuffled.checkpoints[1].index + 1}`,
@@ -151,6 +164,9 @@ describe("lesson checkpoints", () => {
       expect.any(Number),
     );
     expect(complete).toBeEnabled();
+    await user.click(screen.getByRole("button", { name: "Previous" }));
+    expect(screen.getByText("2 checked · 2 correct")).toBeVisible();
+    expect(mocks.check).toHaveBeenCalledTimes(2);
   });
 
   it("shows the French body to a French-speaking learner when it exists", async () => {
@@ -169,6 +185,94 @@ describe("lesson checkpoints", () => {
       </AppProvider>,
     );
     expect(await screen.findByText("Explication en français.")).toBeVisible();
-    expect(screen.getByText("Question 2 sur 2")).toBeVisible();
+    expect(screen.getByText("Question 1 sur 2")).toBeVisible();
+  });
+
+  it("requires all three checkpoint verdicts before saving completion", async () => {
+    const user = userEvent.setup();
+    const content = toPublicLesson(
+      {
+        ...withExtra,
+        extraCheckpoints: [
+          ...withExtra.extraCheckpoints,
+          { ...withExtra.extraCheckpoints[0], prompt: "Third checkpoint?" },
+        ],
+      },
+      "en",
+      () => 0,
+    );
+    mocks.check.mockResolvedValue({
+      ok: true,
+      feedback: {
+        correct: false,
+        correctAnswer: "Expected answer",
+        explanation: "Review the example",
+      },
+    });
+    render(
+      <AppProvider
+        initialState={{
+          ...demoState,
+          progress: { ...demoState.progress, completedLessonIds: [] },
+        }}
+      >
+        <LessonView lesson={lesson} content={content} next={null} />
+      </AppProvider>,
+    );
+    const complete = screen.getByRole("button", { name: "Complete lesson" });
+    for (let index = 0; index < 3; index++) {
+      expect(complete).toBeDisabled();
+      await user.click(screen.getAllByRole("radio")[0]);
+      await user.click(screen.getByRole("button", { name: "Next" }));
+      expect(await screen.findByText("Expected answer")).toBeVisible();
+      expect(screen.getByText(`Question ${index + 1} of 3`)).toBeVisible();
+      if (index < 2)
+        await user.click(screen.getByRole("button", { name: "Continue" }));
+    }
+    expect(complete).toBeEnabled();
+    expect(screen.getByText("3 checked · 0 correct")).toBeVisible();
+    expect(mocks.complete).not.toHaveBeenCalled();
+  });
+
+  it("freezes a submitted checkpoint and retains it after a failed check", async () => {
+    let rejectCheck!: (reason: unknown) => void;
+    mocks.check.mockImplementationOnce(
+      () =>
+        new Promise((_resolve, reject) => {
+          rejectCheck = reject;
+        }),
+    );
+    mocks.check.mockResolvedValueOnce({
+      ok: true,
+      feedback: {
+        correct: false,
+        correctAnswer: "Correct choice",
+        explanation: "Recovered checkpoint",
+      },
+    });
+    render(
+      <AppProvider>
+        <LessonView
+          lesson={lesson}
+          content={toPublicLesson(withExtra)}
+          next={null}
+        />
+      </AppProvider>,
+    );
+    const [first, second] = screen.getAllByRole("radio");
+    fireEvent.click(first);
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    expect(first).toBeDisabled();
+    fireEvent.click(second);
+    expect(first).toBeChecked();
+    await act(async () => rejectCheck(new Error("offline")));
+    expect(screen.getByRole("alert")).toBeVisible();
+    expect(first).toBeChecked();
+    expect(first).toBeDisabled();
+    fireEvent.click(second);
+    expect(first).toBeChecked();
+    fireEvent.click(screen.getByRole("button", { name: "Retry checking" }));
+    expect(await screen.findByText("Recovered checkpoint")).toBeVisible();
+    expect(mocks.check.mock.calls[1]).toEqual(mocks.check.mock.calls[0]);
   });
 });

@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { writingSampleFixture } from "@/test/diagnostic-writing";
+import type { GuestAssessmentSession } from "@/types/domain";
 
 const mocks = vi.hoisted(() => ({
   getSnapshot: vi.fn(),
@@ -22,6 +23,7 @@ vi.mock("@/lib/supabase/learner", () => ({
 import {
   getLearnerSnapshotAction,
   submitDiagnosticAction,
+  claimGuestAssessmentAction,
   submitPracticeAction,
   saveIncompleteWritingPracticeAction,
   updateProfileAction,
@@ -69,6 +71,33 @@ describe("learner action failures", () => {
   });
 
   afterEach(() => vi.restoreAllMocks());
+
+  it("retains guided metadata in authenticated submissions and guest claims", async () => {
+    mocks.rpc.mockResolvedValue({ data: authoritativeResult, error: null });
+    const guided = {
+      ...submission,
+      intake: { ...submission.intake, feedbackMode: "guided" as const },
+    };
+    expect(await submitDiagnosticAction(guided)).toMatchObject({ ok: true });
+    expect(mocks.rpc).toHaveBeenLastCalledWith(
+      "mpk_submit_diagnostic",
+      expect.objectContaining({ p_intake: guided.intake }),
+    );
+    mocks.rpc.mockResolvedValue({
+      data: { id: authoritativeResult.id },
+      error: null,
+    });
+    mocks.getSnapshot.mockResolvedValue({});
+    await claimGuestAssessmentAction({
+      id: submission.submissionId,
+      intake: guided.intake,
+      answers: guided.answers,
+    } as unknown as GuestAssessmentSession);
+    expect(mocks.rpc).toHaveBeenLastCalledWith(
+      "mpk_submit_diagnostic",
+      expect.objectContaining({ p_intake: guided.intake }),
+    );
+  });
 
   it("rejects short writing before reaching a submission RPC", async () => {
     for (const [exam, questionId, min] of [

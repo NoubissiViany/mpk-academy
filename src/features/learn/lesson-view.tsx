@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { NextStudyAction } from "@/features/dashboard/next-study-action";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { checkLessonCheckpointAction } from "@/app/actions/content";
 import { completeLessonAction } from "@/app/actions/learner";
@@ -13,6 +13,8 @@ import { useI18n } from "@/i18n/client";
 import { lessonTitle } from "@/i18n/format";
 import { cn } from "@/lib/utils";
 import type { AnswerFeedback, Lesson } from "@/types/domain";
+import { AnswerFeedbackPanel } from "@/features/assessment/answer-feedback-panel";
+import { CheckedProgress } from "@/features/assessment/checked-progress";
 
 export function LessonView({
   lesson,
@@ -50,6 +52,17 @@ export function LessonView({
   const [feedback, setFeedback] = useState<Record<number, AnswerFeedback>>({});
   const [checking, setChecking] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
+  const [position, setPosition] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+  const pending = useRef(false);
+  const [submitted, setSubmitted] = useState<Record<number, number>>({});
+  const prompt = useRef<HTMLHeadingElement>(null);
+  const focusNext = useRef(false);
+  useEffect(() => {
+    if (!focusNext.current) return;
+    prompt.current?.focus();
+    focusNext.current = false;
+  }, [position]);
   const completed = state.progress.completedLessonIds.includes(lesson.id);
   const total = content.checkpoints.length;
   const allAnswered = Object.keys(feedback).length === total;
@@ -67,25 +80,51 @@ export function LessonView({
       : result.message;
 
   const check = async (checkpoint: number) => {
-    const answer = answers[checkpoint];
-    if (answer === undefined) return;
+    const answer = submitted[checkpoint] ?? answers[checkpoint];
+    if (answer === undefined || pending.current || feedback[checkpoint]) return;
+    setSubmitted((current) => ({ ...current, [checkpoint]: answer }));
+    pending.current = true;
+    setError(null);
     setChecking(checkpoint);
-    const result = await checkLessonCheckpointAction(
-      lesson.id,
-      checkpoint,
-      answer,
-    );
-    setChecking(null);
-    if (!result.ok) return toast.error(errorText(result));
-    setFeedback((current) => ({ ...current, [checkpoint]: result.feedback }));
+    try {
+      const result = await checkLessonCheckpointAction(
+        lesson.id,
+        checkpoint,
+        answer,
+      );
+      if (!result.ok) {
+        setError(errorText(result));
+        return;
+      }
+      setFeedback((current) => ({ ...current, [checkpoint]: result.feedback }));
+    } catch {
+      setError(t.assessment.feedbackError);
+    } finally {
+      pending.current = false;
+      setChecking(null);
+    }
   };
   const save = async () => {
+    if (pending.current || !allAnswered || completed) return;
+    pending.current = true;
     setSaving(true);
-    const result = await completeLessonAction(lesson.id);
-    setSaving(false);
-    if (!result.ok) return toast.error(result.message);
-    replaceState(result.snapshot);
-    toast.success(copy.saved);
+    try {
+      const result = await completeLessonAction(lesson.id);
+      if (!result.ok) return toast.error(result.message);
+      replaceState(result.snapshot);
+      toast.success(copy.saved);
+    } catch {
+      toast.error(t.common.errors.unavailable);
+    } finally {
+      pending.current = false;
+      setSaving(false);
+    }
+  };
+  const navigate = (nextPosition: number) => {
+    if (pending.current) return;
+    setError(null);
+    focusNext.current = true;
+    setPosition(nextPosition);
   };
 
   return (
@@ -133,20 +172,32 @@ export function LessonView({
       </section>
       <section className="rounded-xl border p-6">
         <h2 className="text-xl font-bold">{copy.checkpoint}</h2>
+        <p className="my-4 text-sm text-muted-foreground">
+          {t.assessment.instruction}
+        </p>
+        <CheckedProgress
+          position={position + 1}
+          total={total}
+          checked={Object.keys(feedback).length}
+          correct={
+            Object.values(feedback).filter((item) => item.correct).length
+          }
+        />
         <ol className="mt-4 space-y-8">
-          {checkpoints.map((checkpoint, position) => {
+          {checkpoints.map((checkpoint, checkpointPosition) => {
+            if (checkpointPosition !== position) return null;
             const answer = answers[checkpoint.index];
             const verdict = feedback[checkpoint.index];
             return (
-              <li key={checkpoint.prompt}>
-                {total > 1 && (
-                  <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
-                    {copy.checkpointProgress(position + 1, total)}
-                  </p>
-                )}
-                <p className="mt-2" lang="fr">
+              <li key={checkpoint.index}>
+                <h3
+                  ref={prompt}
+                  tabIndex={-1}
+                  className="mt-2 outline-none"
+                  lang={locale}
+                >
                   {checkpoint.prompt}
-                </p>
+                </h3>
                 <fieldset className="my-5 space-y-3">
                   <legend className="sr-only">{copy.chooseAnswer}</legend>
                   {checkpoint.options.map((option) => (
@@ -171,35 +222,78 @@ export function LessonView({
                         name={`${lesson.id}-${position}`}
                         className="size-4 accent-primary"
                         checked={answer === option.index}
-                        disabled={Boolean(verdict)}
-                        onChange={() =>
+                        disabled={
+                          Boolean(verdict) ||
+                          checking !== null ||
+                          saving ||
+                          submitted[checkpoint.index] !== undefined
+                        }
+                        onChange={() => {
+                          if (
+                            pending.current ||
+                            submitted[checkpoint.index] !== undefined ||
+                            verdict
+                          )
+                            return;
                           setAnswers((current) => ({
                             ...current,
                             [checkpoint.index]: option.index,
-                          }))
-                        }
+                          }));
+                        }}
                       />
-                      <span lang="fr">{option.label}</span>
+                      <span lang={locale}>{option.label}</span>
                     </label>
                   ))}
                 </fieldset>
-                {!verdict ? (
-                  <Button
-                    disabled={answer === undefined || checking !== null}
-                    onClick={() => check(checkpoint.index)}
-                  >
-                    {checking === checkpoint.index
-                      ? t.assessment.checking
-                      : copy.check}
-                  </Button>
-                ) : (
-                  <p role="status" className="leading-7">
-                    <strong>
-                      {verdict.correct ? copy.correct : copy.review}
-                    </strong>{" "}
-                    {verdict.explanation}
+                {verdict && (
+                  <AnswerFeedbackPanel
+                    answerLanguage={locale}
+                    feedback={verdict}
+                    answer={
+                      checkpoint.options.find(
+                        (option) => option.index === answer,
+                      )?.label ?? ""
+                    }
+                    correctAnswer={verdict.correctAnswer}
+                  />
+                )}
+                {error && (
+                  <p role="alert" className="mt-4 text-sm text-danger">
+                    {error}
                   </p>
                 )}
+                <div className="mt-5 flex justify-between gap-3">
+                  <Button
+                    variant="ghost"
+                    disabled={position === 0 || checking !== null || saving}
+                    onClick={(event) => {
+                      if (event.detail <= 1) navigate(position - 1);
+                    }}
+                  >
+                    {t.common.previous}
+                  </Button>
+                  {!verdict ? (
+                    <Button
+                      disabled={answer === undefined || checking !== null}
+                      onClick={() => check(checkpoint.index)}
+                    >
+                      {checking === checkpoint.index
+                        ? t.assessment.checking
+                        : error
+                          ? t.assessment.retry
+                          : t.assessment.next}
+                    </Button>
+                  ) : position < total - 1 ? (
+                    <Button
+                      disabled={saving}
+                      onClick={(event) => {
+                        if (event.detail <= 1) navigate(position + 1);
+                      }}
+                    >
+                      {t.assessment.continue}
+                    </Button>
+                  ) : null}
+                </div>
               </li>
             );
           })}

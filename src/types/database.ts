@@ -1166,6 +1166,10 @@ export type Database = {
         Args: { p_draft: Json; p_revision: number };
         Returns: Json;
       };
+      mpk_replace_diagnostic_draft: {
+        Args: { p_draft: Json; p_revision: number };
+        Returns: Json;
+      };
       mpk_discard_diagnostic_draft: {
         Args: { p_id: string; p_revision: number };
         Returns: undefined;

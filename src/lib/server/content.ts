@@ -77,6 +77,23 @@ const diagnosticQuestions = diagnosticItems.map(toQuestion);
 export const getPublicDiagnosticQuestions = () =>
   diagnosticQuestions.map(toPublicQuestion);
 
+/** Only explicitly submitted answers in the public diagnostic bank may be checked. */
+export function checkDiagnosticAnswer(
+  questionId: string,
+  answer: string,
+  locale: Locale,
+): AnswerFeedback | null {
+  const question = diagnosticQuestions.find((item) => item.id === questionId);
+  if (
+    !question ||
+    !answer.trim() ||
+    (question.type === "multiple_choice" &&
+      !question.options.some((option) => option.id === answer))
+  )
+    return null;
+  return feedbackFor(question, answer, locale);
+}
+
 export const scoreGuestDiagnostic = (answers: Record<string, string>) =>
   scoreDiagnostic(diagnosticQuestions, answers);
 
