@@ -7,6 +7,7 @@ import { getLocale, getMessages } from "@/i18n/server";
 import { isDiagnosticWritingSample } from "@/lib/domain/diagnostic-writing";
 import { canAccessLesson } from "@/lib/domain/access";
 import {
+  checkDiagnosticAnswer,
   checkLessonCheckpoint,
   checkPracticeAnswer,
   checkSampleAnswer,
@@ -63,6 +64,27 @@ async function access(operation: string) {
 const answersSchema = z
   .record(z.string().max(100), z.string().max(500))
   .refine((answers) => Object.keys(answers).length <= 60);
+
+/** Rebuild corrections only for submitted diagnostic answers, including recovery. */
+export async function checkDiagnosticAnswersAction(
+  answers: Record<string, string>,
+): Promise<{ ok: true; feedback: Record<string, AnswerFeedback> } | Failure> {
+  const parsed = answersSchema.safeParse(answers);
+  if (!parsed.success || !Object.keys(parsed.data).length)
+    return fail("invalid");
+  try {
+    const locale = await getLocale();
+    const feedback: Record<string, AnswerFeedback> = {};
+    for (const [id, answer] of Object.entries(parsed.data)) {
+      const checked = checkDiagnosticAnswer(id, answer, locale);
+      if (!checked) return fail("invalid");
+      feedback[id] = checked;
+    }
+    return { ok: true, feedback };
+  } catch (error) {
+    return fail("unavailable", error, "check_diagnostic_answers");
+  }
+}
 
 /** Guests are scored on the server so the answer key never reaches the browser. */
 export async function scoreGuestDiagnosticAction(

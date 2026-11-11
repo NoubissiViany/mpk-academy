@@ -17,6 +17,33 @@ Unedited drafts expire after seven days. Expired rows cannot be read through RLS
 
 The second migration records `practice` versus `review` on new practice sessions. Existing sessions retain the `practice` default because older records do not distinguish the originating UI. It extends the existing beta metrics function with the number of activated testers who completed a lesson or practice after activation; no new tracking events are introduced.
 
+## Production recovery — November 4, 2026
+
+Production `mpk-academy` (`uhbuvskmiojqjegpuuln`, serving `mpkacademy.com`) was brought up to all 32 repository migrations through `20261104000200`. The application had reached production before eight database migrations. Its learner snapshot selected the absent `practice_sessions.mode` column, causing PostgreSQL `42809` (`WITHIN GROUP is required for ordered-set aggregate mode`). The account-draft table and functions were also absent.
+
+The production migration history and dry run were reviewed before applying these existing migrations in order:
+
+1. `20261030000100_content_sync.sql`
+2. `20261030000200_content_sync.sql`
+3. `20261102000100_writing_requirements_schema.sql`
+4. `20261102000200_content_sync.sql`
+5. `20261102000300_dynamic_writing.sql`
+6. `20261102000400_mock_presentation.sql`
+7. `20261104000100_diagnostic_drafts.sql`
+8. `20261104000200_learning_continuity.sql`
+
+The push explicitly targeted production with `--project-ref uhbuvskmiojqjegpuuln --skip-vault`; the repository's staging link was preserved. A subsequent dry run reported no pending migrations. `NOTIFY pgrst, 'reload schema'` refreshed the API schema cache. No application deployment or authentication/invitation configuration change was needed.
+
+Production verification:
+
+- The previously failing API selection succeeds. The draft table, owner-scoped RLS, all four public draft functions, practice-mode function, and active daily expiry-cleanup job are present.
+- Before/after record counts and fingerprints match for existing profiles, assessments, assessment answers, practice sessions (excluding the newly added mode), practice answers, and lesson progress. Existing mock sessions all have a presentation snapshot.
+- The rollback-only `diagnostic_drafts.assert.sql` and `learning_continuity.assert.sql` checks passed against production, including account isolation, malformed drafts, revision conflicts, expiry, successful-submission cleanup, idempotent retries, practice/review separation, and server scoring. Their synthetic fixtures were rolled back; the disposable-database harness was not used on production.
+- Hosted browser checks on `mpkacademy.com` verified password sign-in, refresh recovery with stable question/option order, all 26 answers and writing recovered in a fresh mobile browser session, successful assessment submission, atomic draft cleanup, and an idempotent submission retry. Authenticated drafts were absent from browser storage.
+- Focused hosted checks verified the returning-learner dashboard, a saved five-question reading practice, its direct next-lesson link, three lesson checkpoints and saved completion, and the completed daily plan after dashboard refresh. Tests used disposable, admin-confirmed accounts with temporary entitlements; no invitation codes, real learner records, emails, or AI-feedback requests were used.
+- The French mobile dashboard and its saved language preference passed after switching language through the application and refreshing. No horizontal overflow was found. Temporary test accounts and their cascading test records were removed after each run.
+- Final verification at 17:52:41 UTC found zero remaining smoke accounts, unchanged original learner-record fingerprints, and zero durable application errors since the schema verification at 17:44:19 UTC. Content validation and documentation formatting/diff checks also passed. The application source was unchanged, so no additional build or deployment was performed.
+
 ## Recovery behavior
 
 - Guest drafts use a separate versioned browser key. Compatible legacy answers are migrated. Question and option order, attempt ID, intake, position, answers and writing survive navigation and reopening.
@@ -57,4 +84,4 @@ Verified locally on November 4, 2026:
 - Typecheck, lint, formatting, content validation, and production builds passed. Client-bundle checks found none of 1,022 protected content strings in 81 client files.
 - English/French desktop/mobile visual checks found no horizontal overflow or browser errors.
 
-Browser tests use an isolated local server with hosted service credentials disabled. Signed-in recovery across devices and feedback states are covered by component/action tests and database assertions; an authenticated hosted-browser smoke check remains part of the deployment process after migrations are applied.
+The local browser tests above use an isolated server with hosted service credentials disabled. The subsequent authenticated production checks are recorded in the production recovery section. Continue to run an authenticated hosted-browser smoke check after future migrations and releases; component tests do not replace it.

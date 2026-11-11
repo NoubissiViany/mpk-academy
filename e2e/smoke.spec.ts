@@ -32,9 +32,14 @@ async function completeGuestAssessment(page: import("@playwright/test").Page) {
     if (await radio.count())
       await radio.evaluate((element: HTMLInputElement) => element.click());
     else await page.getByPlaceholder("Votre réponse").fill("lirais");
+    await page.getByRole("button", { name: "Next", exact: true }).click();
+    await expect(
+      page.getByText("Correct answer", { exact: true }),
+    ).toBeVisible();
+    await expect(page.getByText(`Question ${index} of ${total}`)).toBeVisible();
     await page
       .getByRole("button", {
-        name: index === total ? "Continue to writing" : "Next",
+        name: index === total ? "Continue to writing" : "Continue",
         exact: true,
       })
       .click();
@@ -73,6 +78,7 @@ async function expectGuestAssessmentStored(
     intake: {
       goal: "TEF Canada",
       target: "NCLC 7",
+      feedbackMode: "guided",
       writingSample: {
         version: "mpk-diagnostic-writing-v1",
         text: expect.any(String),
@@ -103,9 +109,9 @@ test("the landing sample is checked by the server", async ({ page }) => {
     await expect(sample.locator('input[type="radio"]').first()).toBeVisible();
     if (await sample.locator("audio").count()) break;
     await sample.locator('label:has(input[type="radio"])').first().click();
-    await sample.getByRole("button", { name: "Check answer" }).click();
+    await sample.getByRole("button", { name: "Next" }).click();
     await expect(sample.getByRole("status")).toBeVisible({ timeout: 15_000 });
-    await sample.getByRole("button", { name: "Next question" }).click();
+    await sample.getByRole("button", { name: "Continue" }).click();
   }
   const audio = sample.locator("audio");
   await expect(audio).toBeVisible();
@@ -124,7 +130,7 @@ test("the landing sample is checked by the server", async ({ page }) => {
   await expect(sample.getByText(/Bonjour, je vous appelle/)).toHaveCount(0);
 
   await sample.locator('label:has(input[type="radio"])').first().click();
-  await sample.getByRole("button", { name: "Check answer" }).click();
+  await sample.getByRole("button", { name: "Next" }).click();
   await sample.getByText("Read what was said").click();
   await expect(sample.getByText(/Bonjour, je vous appelle/)).toBeVisible();
 });

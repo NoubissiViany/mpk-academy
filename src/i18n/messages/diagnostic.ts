@@ -159,6 +159,9 @@ const en = {
     },
   },
   results: {
+    guided: "Guided assessment",
+    guidedNote:
+      "You saw corrections during this assessment. Your score uses your first submitted answers. The tally describes this attempt, not a change in your French proficiency.",
     loading: "Loading assessment results",
     emptyTitle: "No assessment result yet",
     emptyBody:
@@ -375,6 +378,9 @@ const fr: typeof en = {
     },
   },
   results: {
+    guided: "Évaluation guidée",
+    guidedNote:
+      "Vous avez consulté les corrections pendant cette évaluation. Le score repose sur vos premières réponses soumises. Le bilan décrit cette tentative, et non une évolution de votre niveau de français.",
     loading: "Chargement des résultats",
     emptyTitle: "Pas encore de résultat",
     emptyBody:

@@ -77,6 +77,7 @@ const sessionAnswersSchema = z.array(
   }),
 );
 const intakeSchema = z.object({
+  feedbackMode: z.literal("guided").optional(),
   writingSample: z
     .object({
       version: z.literal(diagnosticWritingVersion),

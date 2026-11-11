@@ -1,4 +1,12 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from "@testing-library/react";
+import { I18nContextProvider } from "@/i18n/client";
+import { messagesFor } from "@/i18n/messages";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { diagnosticQuestions } from "@/data/questions";
 import { toPublicQuestion } from "@/lib/server/content";
@@ -72,5 +80,75 @@ describe("QuestionCard", () => {
       />,
     );
     expect(screen.queryByText(feedback.explanation)).not.toBeInTheDocument();
+  });
+
+  it.each(["en", "fr"] as const)(
+    "names both full answers in %s, independently of shuffled positions",
+    (locale) => {
+      if (question.type !== "multiple_choice")
+        throw new Error("MCQ fixture required");
+      const options = [...question.options].reverse();
+      const correctOption = options[0];
+      const chosenOption = options[1];
+      render(
+        <I18nContextProvider
+          value={{ locale, t: messagesFor(locale), setLocale: async () => {} }}
+        >
+          <QuestionCard
+            question={{ ...question, options }}
+            value={chosenOption.id}
+            onChange={vi.fn()}
+            feedback={{
+              correct: false,
+              correctAnswer: correctOption.id,
+              explanation: "Explanation",
+            }}
+          />
+        </I18nContextProvider>,
+      );
+      const panel = screen.getByRole("status");
+      expect(within(panel).getByText(chosenOption.label)).toBeVisible();
+      expect(within(panel).getByText(correctOption.label)).toBeVisible();
+      expect(
+        within(panel).getByText(
+          locale === "fr" ? "Votre réponse" : "Your answer",
+        ),
+      ).toBeVisible();
+      expect(
+        within(panel).getByText(
+          locale === "fr" ? "Bonne réponse" : "Correct answer",
+        ),
+      ).toBeVisible();
+      expect(panel).toHaveFocus();
+    },
+  );
+
+  it("disables answer controls while checking", () => {
+    render(<QuestionCard question={question} onChange={vi.fn()} disabled />);
+    for (const option of screen.getAllByRole("radio"))
+      expect(option).toBeDisabled();
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+
+  it("shows the correct fill-in answer explicitly", () => {
+    const fillQuestion = {
+      ...question,
+      type: "fill_blank" as const,
+      options: undefined,
+    };
+    render(
+      <QuestionCard
+        question={fillQuestion}
+        value="avais"
+        onChange={vi.fn()}
+        feedback={{
+          correct: false,
+          correctAnswer: "avait",
+          explanation: "Third person singular",
+        }}
+      />,
+    );
+    expect(within(screen.getByRole("status")).getByText("avait")).toBeVisible();
+    expect(screen.getByRole("textbox")).toBeDisabled();
   });
 });

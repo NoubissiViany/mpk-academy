@@ -144,6 +144,14 @@ export function ResultsView() {
         <h1 className="mt-3 text-4xl font-black tracking-tight sm:text-5xl">
           {copy.title}
         </h1>
+        {intake?.feedbackMode === "guided" && (
+          <div className="mx-auto mt-4 max-w-2xl">
+            <Badge>{copy.guided}</Badge>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              {copy.guidedNote}
+            </p>
+          </div>
+        )}
       </header>
 
       <Card className="mt-8 border-primary/20">

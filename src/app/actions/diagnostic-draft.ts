@@ -23,8 +23,10 @@ function failure(error: unknown): DraftActionResult {
       error &&
       typeof error === "object" &&
       "code" in error &&
-      error.code === "40001"
-        ? "conflict"
+      (error.code === "40001" || error.code === "22023")
+        ? error.code === "40001"
+          ? "conflict"
+          : "invalid"
         : "unavailable",
   };
 }
@@ -44,6 +46,22 @@ export async function saveDiagnosticDraftAction(
   input: unknown,
   expectedUserId: string,
 ): Promise<DraftActionResult> {
+  return writeDraft(input, expectedUserId, "mpk_save_diagnostic_draft");
+}
+
+/** Used only after the learner explicitly chooses the browser draft. */
+export async function replaceDiagnosticDraftAction(
+  input: unknown,
+  expectedUserId: string,
+): Promise<DraftActionResult> {
+  return writeDraft(input, expectedUserId, "mpk_replace_diagnostic_draft");
+}
+
+async function writeDraft(
+  input: unknown,
+  expectedUserId: string,
+  operation: "mpk_save_diagnostic_draft" | "mpk_replace_diagnostic_draft",
+): Promise<DraftActionResult> {
   const parsed = diagnosticDraftSchema.safeParse(input);
   if (
     !parsed.success ||
@@ -53,7 +71,7 @@ export async function saveDiagnosticDraftAction(
   try {
     const { supabase, userId } = await requireUserId();
     if (userId !== expectedUserId) return { ok: false, reason: "unavailable" };
-    const { data, error } = await supabase.rpc("mpk_save_diagnostic_draft", {
+    const { data, error } = await supabase.rpc(operation, {
       p_draft: parsed.data as unknown as Json,
       p_revision: parsed.data.revision,
     });

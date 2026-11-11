@@ -4,8 +4,10 @@
 
 - Organization: `NoubissiViany's Org` (`otnxgfnmgvxcrswbbrds`)
 - Staging and the usual CLI link: `mpk-academy-staging` (`czbynijgpkflnntgoqgj`), serving `mpk-academy-sandbox.vercel.app`
-- Production: `mpk-academy` (`uhbuvskmiojqjegpuuln`), serving `mpk-academy.vercel.app`. It is active and configured as of October 29, 2026; the earlier paused/unused description is obsolete.
-- October 30 audit (UTC): staging and production both have the earlier 24 migrations, including diagnostic writing. Two new local content migrations (`20261030000100` and `20261030000200`) await owner-run pushes. Both private mock buckets contain all 79 required clip names. Exact release commands: [Phase 4 checklist](PHASE4_COMPLETION.md#2-release-the-current-content-changes).
+- Production: `mpk-academy` (`uhbuvskmiojqjegpuuln`), serving `mpkacademy.com` and `mpk-academy.vercel.app`. It is active and configured.
+- November 11 guided-feedback release (UTC): production has all **33** repository migrations through `20261111000100`. The migration was applied before the matching application release; hosted assessment recovery, practice, lessons and dashboard checks passed with no new snapshot failures. See [the guided-feedback release record](GUIDED_FEEDBACK_RELEASE.md#production-application-and-verification). The usual CLI link remains staging.
+- November 4 recovery (UTC): production has all 32 repository migrations through `20261104000200`, including the October 30 content additions, November 2 writing/presentation changes, and November 4 assessment recovery/learning continuity changes. The eight pending migrations were applied in timestamp order to restore learner snapshots. See [the production recovery record](UX_RECOVERY_RELEASE.md#production-recovery--november-4-2026). The usual CLI link remains staging; this recovery did not migrate staging.
+- The October 30 audit verified all 79 required clip names in both private mock buckets. The older [Phase 4 checklist](PHASE4_COMPLETION.md#2-release-the-current-content-changes) is historical; check current migration history before planning another push.
 - Database password: GNOME Login keyring item `MPK Academy Supabase database`
 
 Free projects pause after a week without traffic. Before pointing a deployment at the database, confirm `npx supabase projects list` shows it as `ACTIVE_HEALTHY` and `supabase/.temp/project-ref` matches `NEXT_PUBLIC_SUPABASE_URL`.
