@@ -46,13 +46,11 @@ export default async function ExamResultsPage({
         description={copy.description}
       />
       <div className="grid gap-5 lg:grid-cols-[.7fr_1.3fr]">
-        <Card className="bg-exam text-white">
+        <Card className="bg-exam text-exam-foreground">
           <CardContent className="pt-6">
-            <p className="text-sm text-white/70">{copy.scoreLabel}</p>
+            <p className="text-sm">{copy.scoreLabel}</p>
             <p className="mt-3 text-6xl font-black">{result.score}%</p>
-            <p className="mt-4 text-xs leading-5 text-white/60">
-              {copy.scoreNote(exam)}
-            </p>
+            <p className="mt-4 text-xs leading-5">{copy.scoreNote(exam)}</p>
           </CardContent>
         </Card>
         <Card>

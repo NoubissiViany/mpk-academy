@@ -182,7 +182,7 @@ export default async function HomePage() {
           <h2 className="text-3xl font-bold tracking-tight">
             {copy.final.title}
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-6 opacity-80">
+          <p className="mx-auto mt-4 max-w-xl text-sm leading-6">
             {copy.final.body}
           </p>
           <Button asChild size="lg" variant="secondary" className="mt-7">
@@ -191,9 +191,7 @@ export default async function HomePage() {
             </Link>
           </Button>
           {beta && (
-            <p className="mx-auto mt-4 max-w-xl text-sm opacity-90">
-              {t.ux.betaAccess}
-            </p>
+            <p className="mx-auto mt-4 max-w-xl text-sm">{t.ux.betaAccess}</p>
           )}
         </div>
       </section>

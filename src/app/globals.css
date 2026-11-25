@@ -9,14 +9,16 @@
   --primary-foreground: #ffffff;
   --accent: #b8483f;
   --muted: #ebece7;
-  --muted-foreground: #5f6d67;
+  --muted-foreground: #42534a;
   --border: #d9ddd6;
   --input: #cdd4cd;
   --danger: #b42318;
   --ink: #13231d;
   --learn: #2164a8;
   --practice: #8b5b0b;
+  --practice-foreground: #ffffff;
   --exam: #8d3438;
+  --exam-foreground: #ffffff;
 }
 
 @theme inline {
@@ -35,7 +37,9 @@
   --color-ink: var(--ink);
   --color-learn: var(--learn);
   --color-practice: var(--practice);
+  --color-practice-foreground: var(--practice-foreground);
   --color-exam: var(--exam);
+  --color-exam-foreground: var(--exam-foreground);
   --font-sans: var(--font-sans);
 }
 
@@ -82,13 +86,15 @@ body {
     --primary-foreground: #0c2119;
     --accent: #e78179;
     --muted: #24312b;
-    --muted-foreground: #aebdb5;
+    --muted-foreground: #c8d4cc;
     --border: #33443c;
     --input: #43564d;
     --danger: #ef6f65;
     --ink: #080d0b;
     --learn: #7db7ed;
     --practice: #e1b968;
+    --practice-foreground: #0c2119;
     --exam: #ef989b;
+    --exam-foreground: #0c2119;
   }
 }
