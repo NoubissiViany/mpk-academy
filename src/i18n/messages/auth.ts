@@ -34,6 +34,8 @@ const en = {
     loading: "Loading account…",
     submitting: "Preparing…",
     createAccount: "Create my account",
+    confirmationNotice:
+      "After you create your account, you’ll receive an email with a confirmation link. Check your inbox and spam folder, and open it promptly before it expires.",
     signIn: "Sign in",
     forgotPassword: "Forgot your password?",
     haveAccount: "Already have an account?",
@@ -104,10 +106,15 @@ const en = {
     eyebrow: "One more step",
     title: "Check your email.",
     body: (email?: string) =>
-      `We sent a confirmation link${email ? ` to ${email}` : ""}. Open it in this browser to activate your account. If you completed the free assessment first, using this browser keeps its saved result.`,
+      `We sent a confirmation email${email ? ` to ${email}` : ""}.`,
+    inboxHint:
+      "Check your inbox and spam folder, and open the confirmation link promptly before it expires.",
+    browserHint:
+      "Open the link in this browser to activate your account. If you completed the free assessment first, using this browser keeps its saved result.",
     resend: "Resend confirmation email",
     sending: "Sending…",
-    resent: "A new confirmation email has been requested.",
+    resent:
+      "A new confirmation email has been requested. Check your inbox and spam folder, and open the link promptly before it expires.",
     back: "Back to sign in",
   },
   complete: {
@@ -153,6 +160,8 @@ const fr: typeof en = {
     loading: "Chargement du compte…",
     submitting: "Préparation…",
     createAccount: "Créer mon compte",
+    confirmationNotice:
+      "Après la création de votre compte, vous recevrez un courriel contenant un lien de confirmation. Vérifiez votre boîte de réception et vos indésirables, puis ouvrez le lien rapidement avant qu’il expire.",
     signIn: "Se connecter",
     forgotPassword: "Mot de passe oublié ?",
     haveAccount: "Vous avez déjà un compte ?",
@@ -229,10 +238,15 @@ const fr: typeof en = {
     eyebrow: "Encore une étape",
     title: "Vérifiez vos courriels.",
     body: (email?: string) =>
-      `Nous avons envoyé un lien de confirmation${email ? ` à ${email}` : ""}. Ouvrez-le dans ce navigateur pour activer votre compte. Si vous avez d’abord fait l’évaluation gratuite, utiliser ce navigateur permet de conserver son résultat.`,
+      `Nous avons envoyé un courriel de confirmation${email ? ` à ${email}` : ""}.`,
+    inboxHint:
+      "Vérifiez votre boîte de réception et vos indésirables, puis ouvrez le lien de confirmation rapidement avant qu’il expire.",
+    browserHint:
+      "Ouvrez le lien dans ce navigateur pour activer votre compte. Si vous avez d’abord fait l’évaluation gratuite, utiliser ce navigateur permet de conserver son résultat.",
     resend: "Renvoyer le courriel de confirmation",
     sending: "Envoi…",
-    resent: "Un nouveau courriel de confirmation a été demandé.",
+    resent:
+      "Un nouveau courriel de confirmation a été demandé. Vérifiez votre boîte de réception et vos indésirables, puis ouvrez le lien rapidement avant qu’il expire.",
     back: "Retour à la connexion",
   },
   complete: {

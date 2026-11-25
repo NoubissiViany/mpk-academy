@@ -59,13 +59,13 @@ export default async function PracticeResultsPage({
         description={scored ? copy.scored : copy.unscored}
       />
       <div className="grid gap-5 sm:grid-cols-2">
-        <Card className="bg-practice text-white">
+        <Card className="bg-practice text-practice-foreground">
           <CardContent className="pt-6">
-            <p className="text-sm text-white/70">{copy.sessionResult}</p>
+            <p className="text-sm">{copy.sessionResult}</p>
             <p className="mt-2 text-5xl font-black">
               {scored ? `${result.score}%` : copy.completed}
             </p>
-            <p className="mt-2 text-xs text-white/70">
+            <p className="mt-2 text-xs">
               {scored
                 ? copy.correctCount(result.correct_count, result.question_count)
                 : result.evidence_mode === "transcript"

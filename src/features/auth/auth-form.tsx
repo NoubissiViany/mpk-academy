@@ -1,5 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Mail } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
@@ -345,6 +346,15 @@ export function AuthForm({
             )}
           </div>
         </>
+      )}
+      {registering && (
+        <div className="flex gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4 text-sm leading-6">
+          <Mail
+            className="mt-0.5 size-5 shrink-0 text-primary"
+            aria-hidden="true"
+          />
+          <p>{copy.confirmationNotice}</p>
+        </div>
       )}
       <Button
         className="w-full"

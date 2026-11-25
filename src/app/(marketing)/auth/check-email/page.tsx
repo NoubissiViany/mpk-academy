@@ -1,3 +1,4 @@
+import { Mail } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,8 +22,18 @@ export default async function CheckEmailPage({
         <CardContent className="pt-6">
           <p className="eyebrow">{t.eyebrow}</p>
           <h1 className="mt-3 text-3xl font-bold">{t.title}</h1>
+          <div className="mt-5 flex gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4 text-sm leading-6">
+            <Mail
+              className="mt-0.5 size-5 shrink-0 text-primary"
+              aria-hidden="true"
+            />
+            <div className="min-w-0">
+              <p className="wrap-anywhere font-semibold">{t.body(email)}</p>
+              <p className="mt-2">{t.inboxHint}</p>
+            </div>
+          </div>
           <p className="mt-4 text-sm leading-6 text-muted-foreground">
-            {t.body(email)}
+            {t.browserHint}
           </p>
           {email && <ResendConfirmation email={email} />}
           <Button
