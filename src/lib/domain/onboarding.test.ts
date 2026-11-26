@@ -208,3 +208,35 @@ describe("onboarding route resolution", () => {
     );
   });
 });
+
+describe("email preferences return path", () => {
+  it("allows authenticated learners before onboarding without permitting other bypasses", () => {
+    const incomplete = {
+      ...demoState,
+      diagnosticResult: null,
+      planAccess: null,
+    };
+    expect(
+      resolveOnboardingDestination(
+        incomplete,
+        "/email-preferences",
+        undefined,
+        { beta: true },
+      ),
+    ).toBe("/email-preferences");
+    expect(
+      resolveOnboardingDestination(
+        incomplete,
+        "/email-preferences/../../admin",
+        undefined,
+        { beta: true },
+      ),
+    ).toBe("/beta");
+    expect(
+      resolveOnboardingDestination(
+        { ...incomplete, user: null },
+        "/email-preferences",
+      ),
+    ).toBe("/login");
+  });
+});

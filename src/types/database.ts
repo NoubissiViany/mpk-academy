@@ -1022,6 +1022,64 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      mpk_get_reminder_preferences: { Args: never; Returns: Json };
+      mpk_update_reminder_preferences: {
+        Args: {
+          p_enabled: boolean;
+          p_time_zone: string;
+          p_manual: boolean;
+          p_target_date: string | null;
+          p_update_target_date?: boolean;
+        };
+        Returns: Json;
+      };
+      mpk_record_study_visit: {
+        Args: { p_time_zone: string };
+        Returns: undefined;
+      };
+      mpk_reminder_candidates: { Args: never; Returns: Json };
+      mpk_claim_reminder: {
+        Args: {
+          p_context: Json;
+          p_kind: string;
+          p_payload: Json;
+          p_id: string;
+          p_controlled_recipient?: string;
+        };
+        Returns: Json;
+      };
+      mpk_reminder_send_context: {
+        Args: { p_id: string; p_lease: string };
+        Returns: Json;
+      };
+      mpk_finish_reminder: {
+        Args: {
+          p_id: string;
+          p_lease: string;
+          p_status: string;
+          p_provider_id?: string;
+          p_error?: string;
+          p_pause_until?: string;
+        };
+        Returns: undefined;
+      };
+      mpk_unsubscribe_reminders: {
+        Args: { p_user_id: string; p_version: string };
+        Returns: boolean;
+      };
+      mpk_reminder_webhook: {
+        Args: {
+          p_event_id: string;
+          p_type: string;
+          p_provider_id: string;
+          p_email: string;
+          p_delivery_id?: string;
+        };
+        Returns: undefined;
+      };
+      mpk_reminder_maintenance: { Args: never; Returns: undefined };
+      mpk_reminder_metrics: { Args: never; Returns: Json };
+
       mpk_complete_lesson: { Args: { p_lesson_id: string }; Returns: Json };
       mpk_admin_beta_overview: { Args: never; Returns: Json };
       mpk_admin_beta_metrics: { Args: never; Returns: Json };

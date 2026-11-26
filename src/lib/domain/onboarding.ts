@@ -33,6 +33,7 @@ type StudentRoute =
   | "weaknesses";
 
 export type OnboardingDestination =
+  | "/email-preferences"
   | "/login"
   | "/beta"
   | "/diagnostic"
@@ -102,6 +103,7 @@ export function resolveOnboardingDestination(
 ): OnboardingDestination {
   const stage = getOnboardingStage(state, now, options);
   if (stage === "authentication") return "/login";
+  if (requestedPath === "/email-preferences") return "/email-preferences";
   if (stage === "beta_access") return "/beta";
   if (stage === "assessment") return "/diagnostic";
   if (stage === "results_checkout") return "/diagnostic/results";

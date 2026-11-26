@@ -10,6 +10,7 @@ export async function proxy(request: NextRequest) {
 // round trip, which matters on the free plans' invocation and egress budgets.
 export const config = {
   matcher: [
+    "/email-preferences",
     "/dashboard/:path*",
     "/learn/:path*",
     "/practice/:path*",

@@ -238,6 +238,10 @@ content_path = "./supabase/templates/confirmation.html"
 subject = '{{ if eq .Data.locale "fr" }}Réinitialisez votre mot de passe MPK Academy{{ else }}Reset your MPK Academy password{{ end }}'
 content_path = "./supabase/templates/recovery.html"
 
+[auth.email.template.magic_link]
+subject = '{{ if eq .Data.locale "fr" }}Votre code de connexion MPK Academy{{ else }}Your MPK Academy sign-in code{{ end }}'
+content_path = "./supabase/templates/magic_link.html"
+
 # Uncomment to customize notification email template
 # [auth.email.notification.password_changed]
 # enabled = true
