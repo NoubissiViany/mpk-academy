@@ -9,6 +9,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { ActivityTracker } from "@/features/reminders/activity-tracker";
 import { Toaster } from "sonner";
 import {
   getLearnerSnapshotAction,
@@ -171,6 +172,7 @@ export function AppProvider({
   return (
     <AppContext.Provider value={value}>
       <I18nContextProvider value={i18n}>
+        <ActivityTracker userId={state.user?.id} />
         {children}
         <Toaster richColors position="top-center" />
       </I18nContextProvider>

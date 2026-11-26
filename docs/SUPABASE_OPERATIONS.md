@@ -5,6 +5,7 @@
 - Organization: `NoubissiViany's Org` (`otnxgfnmgvxcrswbbrds`)
 - Staging and the usual CLI link: `mpk-academy-staging` (`czbynijgpkflnntgoqgj`), serving `mpk-academy-sandbox.vercel.app`
 - Production: `mpk-academy` (`uhbuvskmiojqjegpuuln`), serving `mpkacademy.com` and `mpk-academy.vercel.app`. It is active and configured.
+- November 26 study-reminder release: production has all **35** repository migrations through `20261126000200`. Preferences were initialized for 13 accounts. Sending is **enabled** after the controlled email was delivered and webhook/unsubscribe checks passed; the scheduler runs every 15 minutes and regular delivery begins at 18:00 in each learner's time zone. Budgets remain 50/day and 1,500/month. Authentication SMTP is unchanged. See [reminder rollout status](STUDY_REMINDERS.md#november-26-2026-rollout-status).
 - November 11 guided-feedback release (UTC): production has all **33** repository migrations through `20261111000100`. The migration was applied before the matching application release; hosted assessment recovery, practice, lessons and dashboard checks passed with no new snapshot failures. See [the guided-feedback release record](GUIDED_FEEDBACK_RELEASE.md#production-application-and-verification). The usual CLI link remains staging.
 - November 4 recovery (UTC): production has all 32 repository migrations through `20261104000200`, including the October 30 content additions, November 2 writing/presentation changes, and November 4 assessment recovery/learning continuity changes. The eight pending migrations were applied in timestamp order to restore learner snapshots. See [the production recovery record](UX_RECOVERY_RELEASE.md#production-recovery--november-4-2026). The usual CLI link remains staging; this recovery did not migrate staging.
 - The October 30 audit verified all 79 required clip names in both private mock buckets. The older [Phase 4 checklist](PHASE4_COMPLETION.md#2-release-the-current-content-changes) is historical; check current migration history before planning another push.
@@ -32,9 +33,9 @@ Custom confirmation and recovery templates are versioned under `supabase/templat
 
 ## Production authentication email
 
-Supabase Auth sends confirmation and password-reset emails through Resend SMTP from `MPK Academy <no-reply@mpkacademy.com>`. The application does not use the Resend SDK or a custom email route.
+Supabase Auth sends confirmation, sign-in code and password-reset emails through Resend SMTP from `MPK Academy <no-reply@mpkacademy.com>`. Authentication delivery stays in Supabase; the application's Resend SDK is used only for study reminders.
 
-Never place the Resend API key in this repository, application environment variables, Vercel, documentation, screenshots, or support logs.
+Never place the **authentication SMTP Resend key** in this repository, application environment variables, Vercel, documentation, screenshots, or support logs. Study reminders use a separate server-only sending key in the same Free account; see [Study reminder operations](STUDY_REMINDERS.md). Keep the SMTP credential and configuration unchanged.
 
 ### 1. Verify mpkacademy.com in Resend
 
@@ -74,7 +75,17 @@ Switching the sender before verification makes every confirmation email fail. Th
 
 ### 3. Templates and language
 
-`supabase/templates/confirmation.html` and `recovery.html`, and their subjects in `supabase/config.toml`, branch on `.Data.locale` — the user metadata set at sign-up and kept in step by the profile language setting. Anything other than `fr` receives English. Push them with the safe change workflow above (`config diff`, then `config push`) and never change the production `site_url` or redirect URLs as a side effect.
+`supabase/templates/confirmation.html`, `recovery.html`, and `magic_link.html`, and their subjects in `supabase/config.toml`, branch on `.Data.locale` — the user metadata set at sign-up and kept in step by the profile language setting. Anything other than `fr` receives English. The magic-link/OTP body displays the actual `.Token`; confirmation and recovery retain their existing token-hash callbacks.
+
+These templates share the reminder layout in `src/lib/email/layout.ts`. After changing the shell or authentication copy, regenerate the HTML with Node 22.18 or later:
+
+```bash
+node --experimental-strip-types scripts/email/generate-templates.mjs
+```
+
+For hosted template bodies use the [Supabase Management API](https://supabase.com/docs/guides/auth/auth-email-templates#editing-email-templates), `PATCH /v1/projects/<explicit-project-ref>/config/auth`. Include only `mailer_templates_confirmation_content`, `mailer_templates_recovery_content`, `mailer_templates_magic_link_content` and their corresponding `mailer_subjects_*` fields. Read the files as strings and serialize a JSON object; never interpolate HTML into shell commands. Verify the saved bodies exactly match the local files. The installed CLI's configuration diff reports subject changes but does not compare the HTML body files, so a clean CLI diff alone is insufficient. Preserve SMTP, OTP settings, Site URL, redirect URLs and all other authentication configuration.
+
+On November 26 the three bilingual authentication templates were published and read back successfully, alongside the reminder redesign. Only those template/subject fields and Supabase's derived “custom contents” flags changed. The existing authentication settings and SMTP credential were preserved. The common design uses table layouts, inline fallback styles, a readable mobile OTP panel, and optional dark-mode styles; 84 browser combinations passed at 320/390/1440 pixels in both languages and themes. Actual email clients may apply their own dark-mode transformations.
 
 The versioned target rate is 30 authentication emails per hour. Increase it only after checking provider quotas and abuse protection. Keep **Confirm email** enabled, keep the production Site URL at `https://mpk-academy.vercel.app`, and retain these redirect URLs:
 

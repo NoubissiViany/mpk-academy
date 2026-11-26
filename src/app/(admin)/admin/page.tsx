@@ -1,3 +1,4 @@
+import { ReminderMetrics } from "@/features/reminders/admin-metrics";
 import { getLocale } from "@/i18n/server";
 import { notFound } from "next/navigation";
 import { z } from "zod";
@@ -131,6 +132,7 @@ export default async function AdminPage({
         </p>
       )}
 
+      <ReminderMetrics />
       <section className="grid gap-4 sm:grid-cols-3">
         {[
           ["Seats used", `${overview.seatsUsed} / ${overview.seatLimit}`],

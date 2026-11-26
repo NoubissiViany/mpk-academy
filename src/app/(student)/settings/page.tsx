@@ -1,3 +1,4 @@
+import { ReminderPreferencesForm } from "@/features/reminders/preferences";
 import { PageHeader } from "@/components/shared";
 import { SettingsForm } from "@/features/settings/settings-form";
 import { AiConsentSettings } from "@/features/writing/ai-consent-settings";
@@ -13,6 +14,7 @@ export default async function SettingsPage() {
         description={copy.description}
       />
       <SettingsForm />
+      <ReminderPreferencesForm editExamDate={false} />
       <AiConsentSettings />
     </>
   );

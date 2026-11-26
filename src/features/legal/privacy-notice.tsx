@@ -17,7 +17,7 @@ function notice(locale: Locale, contact: string): Notice {
   if (locale === "fr")
     return {
       title: "Avis de confidentialité",
-      updated: "Dernière mise à jour : 11 novembre 2026",
+      updated: "Dernière mise à jour : 26 novembre 2026",
       intro:
         "MPK Academy est un outil indépendant de préparation au TEF Canada et au TCF Canada, actuellement en bêta fermée. Cet avis explique quels renseignements nous recueillons, pourquoi, et comment vous pouvez les contrôler.",
       sections: [
@@ -30,6 +30,14 @@ function notice(locale: Locale, contact: string): Notice {
             "Bêta : le code d’invitation utilisé et la période d’accès.",
             "Technique : des témoins essentiels (session de connexion et langue) et, en cas d’erreur, une référence technique sans le contenu de vos réponses ni votre mot de passe.",
             "Statistiques de fréquentation : nous comptons combien de visiteurs atteignent quelques étapes clés (par exemple, commencer l’évaluation), sous forme de totaux quotidiens par langue qui ne vous identifient jamais. Un repère enregistré dans votre navigateur évite seulement de vous compter deux fois le même jour. Les navigateurs qui envoient le signal « Do Not Track » ou « Global Privacy Control » ne sont pas comptés.",
+          ],
+        },
+        {
+          title: "Rappels d’étude",
+          paragraphs: [
+            "Les rappels sont activés pour les comptes vérifiés et peuvent être désactivés dans les Paramètres, sur /email-preferences ou par le lien de désabonnement de chaque rappel. Nous utilisons votre prénom, votre langue, votre date d’examen facultative, votre plan d’étude, votre progression et votre dernière activité pour personnaliser ces courriels envoyés par Resend.",
+            "Lors de vos visites connectées, nous enregistrons au plus une fois toutes les dix minutes votre dernière présence et votre fuseau horaire, sans historique des pages consultées. Vous pouvez choisir un fuseau manuellement. Les rappels arrivent vers 18 h, au maximum trois fois sur sept jours, espacés d’au moins 48 heures. Après 30 jours d’inactivité, ils passent à un par semaine.",
+            "Les journaux de livraison et événements de rappel sont supprimés après 30 jours. Les compteurs de volume sans identité sont conservés pour les quotas. Les adresses ayant fait l’objet d’un rebond ou d’une plainte restent sur une liste d’exclusion afin d’éviter de nouveaux envois ; vous pouvez nous contacter pour les faire examiner. Les préférences et la dernière activité restent associées à votre compte jusqu’à sa suppression.",
           ],
         },
         {
@@ -59,7 +67,7 @@ function notice(locale: Locale, contact: string): Notice {
         {
           title: "Où sont stockées vos données",
           paragraphs: [
-            "Vos données sont stockées chez Supabase (base de données et authentification). Le site est hébergé par Vercel, les courriels du compte sont envoyés par Resend et, si vous l’acceptez, la transcription et la correction de vos réponses sont réalisées par Groq. Ces fournisseurs peuvent traiter des données à l’extérieur du Canada.",
+            "Vos données sont stockées chez Supabase (base de données et authentification). Le site est hébergé par Vercel, les courriels du compte et les rappels sont envoyés par Resend et, si vous l’acceptez, la transcription et la correction de vos réponses sont réalisées par Groq. Ces fournisseurs peuvent traiter des données à l’extérieur du Canada.",
           ],
         },
         {
@@ -87,7 +95,7 @@ function notice(locale: Locale, contact: string): Notice {
     };
   return {
     title: "Privacy notice",
-    updated: "Last updated: November 11, 2026",
+    updated: "Last updated: November 26, 2026",
     intro:
       "MPK Academy is an independent TEF Canada and TCF Canada preparation tool, currently in a closed beta. This notice explains what we collect, why, and how you control it.",
     sections: [
@@ -100,6 +108,14 @@ function notice(locale: Locale, contact: string): Notice {
           "Beta: the invite code you used and your access period.",
           "Technical: essential cookies (sign-in session and language) and, when something fails, a technical reference that never includes your answers or password.",
           "Usage counts: we count how many visitors reach a few key steps (for example, starting the assessment), as daily totals per language that never identify you. A marker stored in your browser only prevents counting you twice on the same day. Browsers that send Do Not Track or Global Privacy Control are not counted.",
+        ],
+      },
+      {
+        title: "Study reminders",
+        paragraphs: [
+          "Reminders are enabled for verified accounts. Turn them off in Settings, at /email-preferences, or using the unsubscribe link in each reminder. We use your first name, language, optional exam date, study plan, progress and latest activity to personalize these emails sent by Resend.",
+          "During signed-in visits we record your latest presence and time zone at most once every ten minutes, without a history of pages visited. You can choose a time zone manually. Reminders arrive around 6 p.m., at most three times in seven days and at least 48 hours apart. After 30 days of inactivity, they drop to once a week.",
+          "Reminder delivery logs and events are deleted after 30 days. Volume counters without identities are retained for quotas. Addresses with bounces or complaints remain on a suppression list to prevent further sends; contact us to have these reviewed. Preferences and your latest activity remain associated with your account until deletion.",
         ],
       },
       {
@@ -129,7 +145,7 @@ function notice(locale: Locale, contact: string): Notice {
       {
         title: "Where your data is stored",
         paragraphs: [
-          "Your data is stored with Supabase (database and authentication). The site is hosted by Vercel, account emails are sent by Resend, and, if you agree, your answers are transcribed and reviewed by Groq. These providers may process data outside Canada.",
+          "Your data is stored with Supabase (database and authentication). The site is hosted by Vercel, account emails and reminders are sent by Resend, and, if you agree, your answers are transcribed and reviewed by Groq. These providers may process data outside Canada.",
         ],
       },
       {

@@ -44,6 +44,7 @@ export async function updateSession(request: NextRequest) {
 // Learner areas only: /auth, /checkout, /beta, and /admin answer signed-out
 // visitors themselves (callbacks, the account prompt, and a plain 404).
 const learnerAreas = [
+  "/email-preferences",
   "/dashboard",
   "/learn",
   "/practice",

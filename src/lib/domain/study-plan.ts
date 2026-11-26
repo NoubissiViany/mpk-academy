@@ -1,3 +1,4 @@
+import { calendarDaysUntil } from "@/lib/reminders/time";
 import { currentWeeklyStats } from "@/lib/domain/exam-progress";
 import { targetAccuracy } from "@/lib/domain/readiness";
 import type { NclcTarget, WeeklyExamStats } from "@/types/domain";
@@ -24,16 +25,13 @@ export type StudyPlan =
       expectedByToday: number;
     };
 
-const startOfLocalDay = (value: Date) =>
-  new Date(value.getFullYear(), value.getMonth(), value.getDate());
-
-/** Days from today to a YYYY-MM-DD date, both in the learner's time zone. */
-export function daysUntil(date: string, now: Date) {
-  const [year, month, day] = date.split("-").map(Number);
-  const exam = new Date(year, month - 1, day);
-  return Math.round(
-    (exam.getTime() - startOfLocalDay(now).getTime()) / 86_400_000,
-  );
+/** Calendar days, without DST-dependent 23/25-hour-day arithmetic. */
+export function daysUntil(
+  date: string,
+  now: Date,
+  timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone,
+) {
+  return calendarDaysUntil(date, now, timeZone);
 }
 
 export function getStudyPlan({
@@ -42,16 +40,18 @@ export function getStudyPlan({
   readiness,
   weekly,
   now,
+  timeZone,
 }: {
   targetDate?: string;
   target: NclcTarget;
   readiness: number | null;
   weekly: WeeklyExamStats;
   now: Date;
+  timeZone?: string;
 }): StudyPlan {
   if (!targetDate || !/^\d{4}-\d{2}-\d{2}$/.test(targetDate))
     return { status: "noDate" };
-  const daysLeft = daysUntil(targetDate, now);
+  const daysLeft = daysUntil(targetDate, now, timeZone);
   if (daysLeft < 0) return { status: "past", daysLeft };
 
   const weeksLeft = Math.max(1, Math.ceil(daysLeft / 7));
@@ -62,7 +62,7 @@ export function getStudyPlan({
       (gap > 10 && weeksLeft <= 8 ? 1 : 0) +
       (gap > 20 && weeksLeft <= 4 ? 1 : 0),
   );
-  const weekday = now.getDay() || 7; // Monday 1 … Sunday 7
+  const weekday = now.getUTCDay() || 7; // Monday 1 … Sunday 7
   const expectedByToday = Math.floor((sessionsPerWeek * weekday) / 7);
   const sessionsThisWeek = currentWeeklyStats(weekly, now).practiceSessions;
   return {
