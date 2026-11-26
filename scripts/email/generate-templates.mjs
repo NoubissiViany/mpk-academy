@@ -2,6 +2,7 @@
 // Authentication bodies share the reminder shell; Supabase evaluates Go tokens.
 import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { format, resolveConfig } from "prettier";
 import {
   emailParagraph,
   renderEmailLayout,
@@ -101,6 +102,10 @@ for (const type of ["confirmation", "recovery", "magic_link"]) {
   const path = fileURLToPath(
     new URL(`../../supabase/templates/${type}.html`, import.meta.url),
   );
-  writeFileSync(path, html.replace(/[\t ]+$/gm, ""));
+  const formatted = await format(html, {
+    ...(await resolveConfig(path)),
+    filepath: path,
+  });
+  writeFileSync(path, formatted);
   console.log(`Generated ${type}.html`);
 }
