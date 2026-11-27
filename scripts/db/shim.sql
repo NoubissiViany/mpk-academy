@@ -17,6 +17,7 @@ create table auth.users (
   banned_until timestamptz,
   email_confirmed_at timestamptz
 );
+comment on table auth.users is 'mpk-disposable-migration-test';
 create function auth.uid() returns uuid language sql stable as
 $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
 create function auth.role() returns text language sql stable as

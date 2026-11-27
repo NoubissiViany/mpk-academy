@@ -21,4 +21,5 @@ for file in "$root"/supabase/tests/database/*.assert.sql; do
   echo "check $(basename "$file")"
   run -f "$file"
 done
+python3 "$root/scripts/db/test-beta-concurrency.py"
 echo "Database assertions passed."

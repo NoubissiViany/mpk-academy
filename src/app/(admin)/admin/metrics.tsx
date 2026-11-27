@@ -40,14 +40,33 @@ export const metricsSchema = z.object({
 });
 
 export type Metrics = z.infer<typeof metricsSchema>;
-export type TesterAccess = {
-  email: string | null;
-  firstName: string;
-  code: string;
-  redeemedAt: string;
-  accessUntil: string | null;
-  active: boolean;
-};
+export const overviewSchema = z.object({
+  seatLimit: z.number(),
+  accessDays: z.number(),
+  seatsUsed: z.number(),
+  invites: z.array(
+    z.object({
+      code: z.string(),
+      label: z.string().nullable(),
+      maxUses: z.number(),
+      useCount: z.number(),
+      expiresAt: z.string().nullable(),
+      revokedAt: z.string().nullable(),
+      createdAt: z.string(),
+    }),
+  ),
+  testers: z.array(
+    z.object({
+      email: z.string().nullable(),
+      firstName: z.string(),
+      code: z.string().nullable(),
+      redeemedAt: z.string(),
+      accessUntil: z.string().nullable(),
+      active: z.boolean(),
+    }),
+  ),
+});
+export type TesterAccess = z.infer<typeof overviewSchema>["testers"][number];
 
 const funnelRows = [
   ["landing_view", "Viewed the landing page"],
@@ -232,7 +251,9 @@ export function TestersSection({
                       {tester.email}
                     </span>
                   </td>
-                  <td className="px-3 py-2 font-mono">{tester.code}</td>
+                  <td className="px-3 py-2 font-mono">
+                    {tester.code ?? "Removed"}
+                  </td>
                   <td className="whitespace-nowrap px-3 py-2">
                     {formatDate(tester.redeemedAt)}
                   </td>

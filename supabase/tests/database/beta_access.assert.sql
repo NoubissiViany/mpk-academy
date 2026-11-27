@@ -45,7 +45,7 @@ begin
   assert public.mpk_redeem_beta_invite('TEAM-CODE2')->>'status' = 'already_active', 'active learners do not consume a second seat';
 
   perform set_config('request.jwt.claim.sub', second_uid::text, true);
-  assert public.mpk_redeem_beta_invite('SOLO-CODE1')->>'status' = 'exhausted', 'single-use code cannot be reused';
+  assert public.mpk_redeem_beta_invite('SOLO-CODE1')->>'status' = 'invalid', 'deleted single-use code cannot be reused';
   assert public.mpk_redeem_beta_invite('OLD-CODE03')->>'status' = 'expired', 'expired code cannot be redeemed';
 
   perform public.mpk_admin_update_beta_settings(1, 90);

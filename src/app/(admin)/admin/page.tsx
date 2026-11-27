@@ -20,38 +20,12 @@ import {
   EngagementSummary,
   FunnelSection,
   metricsSchema,
+  overviewSchema,
   TestersSection,
 } from "./metrics";
 
 // No title: the route should not announce itself to visitors who get a 404.
 export const metadata = { robots: { index: false, follow: false } };
-
-const overviewSchema = z.object({
-  seatLimit: z.number(),
-  accessDays: z.number(),
-  seatsUsed: z.number(),
-  invites: z.array(
-    z.object({
-      code: z.string(),
-      label: z.string().nullable(),
-      maxUses: z.number(),
-      useCount: z.number(),
-      expiresAt: z.string().nullable(),
-      revokedAt: z.string().nullable(),
-      createdAt: z.string(),
-    }),
-  ),
-  testers: z.array(
-    z.object({
-      email: z.string().nullable(),
-      firstName: z.string(),
-      code: z.string(),
-      redeemedAt: z.string(),
-      accessUntil: z.string().nullable(),
-      active: z.boolean(),
-    }),
-  ),
-});
 
 const errorsSchema = z.array(
   z.object({
