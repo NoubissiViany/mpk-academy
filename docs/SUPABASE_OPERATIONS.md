@@ -5,6 +5,7 @@
 - Organization: `NoubissiViany's Org` (`otnxgfnmgvxcrswbbrds`)
 - Staging and the usual CLI link: `mpk-academy-staging` (`czbynijgpkflnntgoqgj`), serving `mpk-academy-sandbox.vercel.app`
 - Production: `mpk-academy` (`uhbuvskmiojqjegpuuln`), serving `mpkacademy.com` and `mpk-academy.vercel.app`. It is active and configured.
+- November 27 beta invitation cleanup: production has all **36** repository migrations through `20261127000100`. The null-compatible administrator update was deployed before the migration. Cleanup removed 9 inactive invitations, erased 9 historical code values, and cleared 10 stale metadata references; 1 valid invitation remains. Aggregate comparisons confirmed all 13 accounts, 11 redemptions, 11 active beta seats, entitlement records, unrelated metadata, and engagement metrics were preserved. See [beta invitation cleanup](#beta-invitation-cleanup).
 - November 26 study-reminder release: production has all **35** repository migrations through `20261126000200`. Preferences were initialized for 13 accounts. Sending is **enabled** after the controlled email was delivered and webhook/unsubscribe checks passed; the scheduler runs every 15 minutes and regular delivery begins at 18:00 in each learner's time zone. Budgets remain 50/day and 1,500/month. Authentication SMTP is unchanged. See [reminder rollout status](STUDY_REMINDERS.md#november-26-2026-rollout-status).
 - November 11 guided-feedback release (UTC): production has all **33** repository migrations through `20261111000100`. The migration was applied before the matching application release; hosted assessment recovery, practice, lessons and dashboard checks passed with no new snapshot failures. See [the guided-feedback release record](GUIDED_FEEDBACK_RELEASE.md#production-application-and-verification). The usual CLI link remains staging.
 - November 4 recovery (UTC): production has all 32 repository migrations through `20261104000200`, including the October 30 content additions, November 2 writing/presentation changes, and November 4 assessment recovery/learning continuity changes. The eight pending migrations were applied in timestamp order to restore learner snapshots. See [the production recovery record](UX_RECOVERY_RELEASE.md#production-recovery--november-4-2026). The usual CLI link remains staging; this recovery did not migrate staging.
@@ -30,6 +31,38 @@ npx supabase gen types typescript --linked
 Review every configuration diff. The versioned production `site_url` is `https://mpk-academy.vercel.app`; its confirmation and recovery paths are allow-listed alongside local development callbacks.
 
 Custom confirmation and recovery templates are versioned under `supabase/templates`, but Supabase's default email provider does not deliver production mail to arbitrary learner addresses. The application supports the default provider's PKCE `code` callback for development, but custom SMTP is required before a production signup test.
+
+## Beta invitation cleanup
+
+Migration `20261127000100` deletes exhausted invitations in the final successful redemption transaction and deletes revoked invitations in the administrator's revocation transaction. The private `private.purge_beta_invites()` function removes expired invitations (`expires_at <= now()`), remaining exhausted/revoked invitations, and orphan `beta_invite_code` account metadata. [Supabase Cron](https://supabase.com/docs/guides/cron) runs it as `mpk-cleanup-beta-invites` every 15 minutes. Invitations without an expiry remain until exhausted or revoked. The migration also runs the cleanup immediately for existing records.
+
+Deleted code text becomes null in redemption history; the administrator sees **Removed**. Accounts, entitlement links, access windows, activation dates, and engagement metrics remain. Only the `beta_invite_code` metadata key is removed; other metadata is preserved. Auth confirmation, OTP, and recovery tokens are outside this cleanup. Deleted codes return the existing invalid-code response; active learners retain the already-active response.
+
+Invitation creation, redemption, revocation, and cleanup lock the settings row before invitations or metadata. Maintenance is restricted to the database owner/scheduler; anonymous, authenticated, and service-role clients cannot execute it directly. Existing authorized administrator operations keep their public signatures and permissions.
+
+Rollout order is mandatory: **deploy the admin reader that accepts null tester codes, then apply the migration**. Use an explicit project reference because the usual CLI link is staging. Inspect the affected rows first:
+
+```sql
+select count(*) as invitations,
+  count(*) filter (where use_count >= max_uses or revoked_at is not null or expires_at <= now()) as removable
+from private.beta_invites;
+select count(*) as redemptions, private.beta_seats_used() as seats from private.beta_redemptions;
+```
+
+After migration, confirm no inactive invitations remain, compare redemption/entitlement records and metrics with the preflight snapshot, and verify the registered job and a successful run:
+
+```sql
+select jobid, schedule, active, command
+from cron.job where jobname = 'mpk-cleanup-beta-invites';
+select r.status, r.start_time, r.end_time, r.return_message
+from cron.job_run_details r join cron.job j using (jobid)
+where j.jobname = 'mpk-cleanup-beta-invites'
+order by r.start_time desc limit 5;
+```
+
+`npm run test:db` requires `psql` and Python 3 and refuses an existing Auth schema. It applies migrations to an empty disposable database, checks cleanup and access preservation, then uses independent database sessions to verify final-use, expiry, revocation, and seat-limit races. The concurrency script additionally requires the disposable auth-table marker and removes its committed fixtures afterward.
+
+The November 27 application deployment is [dpl_CtMUipEjUX2aqo3E8s4R1zudq1pj](https://vercel.com/noubissivianys-projects/mpk-academy/CtMUipEjUX2aqo3E8s4R1zudq1pj). Validation passed all 492 application tests, 14 database assertion files, four concurrent-transaction scenarios, an upgrade with legacy data, content validation, formatting, lint, TypeScript, the production build, and the client-bundle scan. Hosted checks confirmed the private maintenance permissions and all 11 testers in the admin overview, including 9 removed codes. Cron job 4 ran successfully at `2026-11-27 16:39:00 UTC` (run 52742) during a temporary one-minute verification interval; its active `*/15 * * * *` schedule was then restored and read back. The usual CLI link remains staging.
 
 ## Production authentication email
 

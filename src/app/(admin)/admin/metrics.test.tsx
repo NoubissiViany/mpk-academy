@@ -1,6 +1,11 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import { EngagementSummary, FunnelSection, TestersSection } from "./metrics";
+import {
+  EngagementSummary,
+  FunnelSection,
+  overviewSchema,
+  TestersSection,
+} from "./metrics";
 
 afterEach(cleanup);
 
@@ -61,29 +66,36 @@ describe("admin metrics", () => {
     expect(screen.getByText("2 sur 3 (67%)")).toBeVisible();
   });
 
-  it("joins access and activity for each tester", () => {
+  it("keeps access and activity visible after an invitation is removed", () => {
     const joinedAt = "2026-10-01T12:00:00+00:00";
+    const overview = overviewSchema.parse({
+      seatLimit: 40,
+      accessDays: 90,
+      seatsUsed: 2,
+      invites: [],
+      testers: [
+        {
+          email: "amina@example.test",
+          firstName: "Amina",
+          code: null,
+          redeemedAt: joinedAt,
+          accessUntil: null,
+          active: true,
+        },
+        {
+          email: "new@example.test",
+          firstName: "New",
+          code: "MPK-CCCC-DDDD",
+          redeemedAt: "2026-10-18T12:00:00+00:00",
+          accessUntil: null,
+          active: true,
+        },
+      ],
+    });
     render(
       <TestersSection
         formatDate={(value) => value ?? "—"}
-        access={[
-          {
-            email: "amina@example.test",
-            firstName: "Amina",
-            code: "MPK-AAAA-BBBB",
-            redeemedAt: joinedAt,
-            accessUntil: null,
-            active: true,
-          },
-          {
-            email: "new@example.test",
-            firstName: "New",
-            code: "MPK-CCCC-DDDD",
-            redeemedAt: "2026-10-18T12:00:00+00:00",
-            accessUntil: null,
-            active: true,
-          },
-        ]}
+        access={overview.testers}
         engagement={[
           {
             email: "amina@example.test",
@@ -105,10 +117,14 @@ describe("admin metrics", () => {
       />,
     );
     const amina = screen.getByText("amina@example.test").closest("tr")!;
+    expect(within(amina).getByText("Removed")).toBeInTheDocument();
+    expect(within(amina).getByText(joinedAt)).toBeInTheDocument();
+    expect(within(amina).getByText("Active")).toBeInTheDocument();
     expect(within(amina).getByText("Yes")).toBeInTheDocument();
     expect(within(amina).getByText("6")).toBeInTheDocument();
     expect(within(amina).getByText("fr")).toBeInTheDocument();
     const fresh = screen.getByText("new@example.test").closest("tr")!;
+    expect(within(fresh).getByText("MPK-CCCC-DDDD")).toBeInTheDocument();
     expect(within(fresh).getByText("Too early")).toBeInTheDocument();
   });
 });
